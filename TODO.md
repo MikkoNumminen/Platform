@@ -34,21 +34,21 @@ All 30 tasks across Infrastructure, Shared Packages, Authentication, Core Featur
 ### Phase 2: Wire Board System to Database
 > "Shouting board" — replace mock data with real CRUD via server actions.
 
-- [ ] 🟣 Build board feature module (actions/queries/schemas) — Claude 1
-- [ ] 🔵 Build post feature module (actions/queries/schemas) — Claude 1
-- [ ] 🔵 Wire board listing page to database — Claude 1
+- [x] 🟣 Build board feature module (actions/queries/schemas) — Claude 1
+- [x] 🔵 Build post feature module (actions/queries/schemas) — Claude 1
+- [x] 🔵 Wire board listing page to database — Claude 1
 - [ ] 🔵 Build create/edit/delete board UI — Claude 1
 - [ ] 🔵 Build create/edit/delete post UI — Claude 1
-- [ ] 🔵 Wire thread/comment system to database — Claude 1
+- [x] 🔵 Wire thread/comment system to database — Claude 1
 - [ ] 🔵 Add board & post test suite — Claude 1
 
 ### Phase 3: Wire Calendar to Database
 > Replace mock events with real CRUD via server actions.
 
-- [ ] 🟣 Build calendar event feature module (actions/queries/schemas) — Claude 3
-- [ ] 🔵 Wire calendar page to database — Claude 3
-- [ ] 🔵 Build create/edit/delete event UI — Claude 3
-- [ ] 🔵 Add calendar test suite — Claude 3
+- [x] 🟣 Build calendar event feature module (actions/queries/schemas) — Claude 3
+- [x] 🔵 Wire calendar page to database — Claude 3
+- [x] 🔵 Build create/edit/delete event UI — Claude 3
+- [x] 🔵 Add calendar test suite — Claude 3
 
 ### Phase 4: Shared Components
 > Port HRM's battle-tested shared components.

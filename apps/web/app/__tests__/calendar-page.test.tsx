@@ -1,6 +1,26 @@
 import { render, screen } from "@testing-library/react";
 import { axe } from "jest-axe";
-import CalendarPage from "../calendar/page";
+
+jest.mock("@/lib/db", () => ({
+  prisma: {
+    calendarEvent: {
+      findMany: jest.fn().mockResolvedValue([]),
+    },
+  },
+}));
+
+jest.mock("@/auth", () => ({
+  auth: jest.fn().mockResolvedValue({
+    user: { id: "u1", permissions: {} },
+  }),
+}));
+
+jest.mock("@/lib/calendar-actions", () => ({
+  fetchEvents: jest.fn(),
+  createEvent: jest.fn(),
+  updateEvent: jest.fn(),
+  deleteEvent: jest.fn(),
+}));
 
 jest.mock("../components/TopBar", () => {
   return function MockTopBar({ title }: { title: string }) {
@@ -8,28 +28,27 @@ jest.mock("../components/TopBar", () => {
   };
 });
 
+import CalendarPage from "../calendar/page";
+
 describe("CalendarPage", () => {
-  test("renders the TopBar with 'Calendar' title", () => {
-    render(<CalendarPage />);
+  test("renders the TopBar with 'Calendar' title", async () => {
+    const Page = await CalendarPage();
+    render(Page);
     const topbar = screen.getByTestId("topbar");
     expect(topbar).toHaveTextContent("Calendar");
   });
 
-  test("renders the CalendarGrid with day headers", () => {
-    render(<CalendarPage />);
+  test("renders the CalendarGrid with day headers", async () => {
+    const Page = await CalendarPage();
+    render(Page);
     for (const label of ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]) {
       expect(screen.getByText(label)).toBeInTheDocument();
     }
   });
 
-  test("renders mock events from getMockEvents", () => {
-    render(<CalendarPage />);
-    // getMockEvents returns events including "Community Meetup"
-    expect(screen.getByText("Community Meetup")).toBeInTheDocument();
-  });
-
   test("has no accessibility violations", async () => {
-    const { container } = render(<CalendarPage />);
+    const Page = await CalendarPage();
+    const { container } = render(Page);
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });

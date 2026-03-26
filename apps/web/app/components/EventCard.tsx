@@ -2,10 +2,12 @@
 
 import {
   Box,
+  Button,
   Card,
   CardContent,
   Chip,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogTitle,
   IconButton,
@@ -15,7 +17,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import PlaceIcon from "@mui/icons-material/Place";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { colors } from "../styles";
-import type { CalendarEvent } from "../data/mockEvents";
+import type { CalendarEvent } from "../types/calendar";
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
@@ -77,9 +79,21 @@ interface EventDetailDialogProps {
   event: CalendarEvent | null;
   open: boolean;
   onClose: () => void;
+  onEdit?: (event: CalendarEvent) => void;
+  onDelete?: (event: CalendarEvent) => void;
+  canEdit?: boolean;
+  canDelete?: boolean;
 }
 
-export function EventDetailDialog({ event, open, onClose }: EventDetailDialogProps) {
+export function EventDetailDialog({
+  event,
+  open,
+  onClose,
+  onEdit,
+  onDelete,
+  canEdit = false,
+  canDelete = false,
+}: EventDetailDialogProps) {
   if (!event) return null;
 
   return (
@@ -133,6 +147,38 @@ export function EventDetailDialog({ event, open, onClose }: EventDetailDialogPro
           {event.description}
         </Typography>
       </DialogContent>
+
+      {(canEdit || canDelete) && (
+        <DialogActions sx={{ px: 3, pb: 2, justifyContent: "flex-end", gap: 1 }}>
+          {canDelete && onDelete && (
+            <Button
+              onClick={() => {
+                onDelete(event);
+                onClose();
+              }}
+              sx={{ color: colors.error }}
+            >
+              Delete
+            </Button>
+          )}
+          {canEdit && onEdit && (
+            <Button
+              onClick={() => {
+                onEdit(event);
+                onClose();
+              }}
+              variant="outlined"
+              sx={{
+                borderColor: colors.green400,
+                color: colors.green400,
+                "&:hover": { borderColor: colors.green400, backgroundColor: colors.hoverOverlay },
+              }}
+            >
+              Edit
+            </Button>
+          )}
+        </DialogActions>
+      )}
     </Dialog>
   );
 }

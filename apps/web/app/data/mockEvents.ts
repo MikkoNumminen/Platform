@@ -1,13 +1,6 @@
-export interface CalendarEvent {
-  id: string;
-  title: string;
-  description: string;
-  location: string | null;
-  startTime: Date;
-  endTime: Date;
-  allDay: boolean;
-  authorId: string;
-}
+import type { CalendarEvent } from "../types/calendar";
+
+export type { CalendarEvent };
 
 /**
  * Returns mock calendar events anchored to the current month

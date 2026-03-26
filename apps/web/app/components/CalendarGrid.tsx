@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
-import { Box, IconButton, Typography } from "@mui/material";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { Box, Button, IconButton, Typography } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { colors } from "../styles";
-import type { CalendarEvent } from "../data/mockEvents";
+import type { CalendarEvent } from "../types/calendar";
 import { EventChip, EventDetailDialog } from "./EventCard";
+import EventFormDialog, { type EventFormData } from "./EventFormDialog";
 
 /* ------------------------------------------------------------------ */
 /*  Date helpers                                                       */
@@ -25,7 +27,6 @@ function isSameDay(a: Date, b: Date): boolean {
 /** Return the Monday on or before the 1st of the given month. */
 function getGridStart(year: number, month: number): Date {
   const first = new Date(year, month, 1);
-  // getDay(): 0=Sun … 6=Sat → shift so Mon=0
   const dayOfWeek = (first.getDay() + 6) % 7;
   const start = new Date(first);
   start.setDate(first.getDate() - dayOfWeek);
@@ -47,21 +48,78 @@ function formatMonthYear(year: number, month: number): string {
   return d.toLocaleDateString(undefined, { month: "long", year: "numeric" });
 }
 
+/** Server actions serialize Dates as strings — rehydrate them. */
+function rehydrateEvents(events: CalendarEvent[]): CalendarEvent[] {
+  return events.map((e) => ({
+    ...e,
+    startTime: new Date(e.startTime),
+    endTime: new Date(e.endTime),
+  }));
+}
+
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
 
 interface CalendarGridProps {
   events: CalendarEvent[];
+  onMonthChange?: (year: number, month: number) => Promise<CalendarEvent[]>;
+  onCreateEvent?: (data: EventFormData) => Promise<{ error?: string; code?: string } | undefined>;
+  onUpdateEvent?: (
+    id: string,
+    data: EventFormData,
+  ) => Promise<{ error?: string; code?: string } | undefined>;
+  onDeleteEvent?: (id: string) => Promise<{ error?: string; code?: string } | undefined>;
+  canCreate?: boolean;
+  canEdit?: boolean;
+  canDelete?: boolean;
 }
 
-export default function CalendarGrid({ events }: CalendarGridProps) {
+export default function CalendarGrid({
+  events: initialEvents,
+  onMonthChange,
+  onCreateEvent,
+  onUpdateEvent,
+  onDeleteEvent,
+  canCreate = false,
+  canEdit = false,
+  canDelete = false,
+}: CalendarGridProps) {
   const today = useMemo(() => new Date(), []);
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
+  const [events, setEvents] = useState(initialEvents);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
 
   const dates = useMemo(() => buildGridDates(year, month), [year, month]);
+
+  const refreshEvents = useCallback(
+    async (y: number, m: number) => {
+      if (!onMonthChange) return;
+      const fetched = await onMonthChange(y, m);
+      setEvents(rehydrateEvents(fetched));
+    },
+    [onMonthChange],
+  );
+
+  // Fetch events when month changes
+  useEffect(() => {
+    if (year === today.getFullYear() && month === today.getMonth()) {
+      setEvents(initialEvents);
+      return;
+    }
+    if (!onMonthChange) return;
+
+    let cancelled = false;
+    onMonthChange(year, month).then((fetched) => {
+      if (!cancelled) setEvents(rehydrateEvents(fetched));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [year, month, onMonthChange, initialEvents, today]);
 
   /** Map day-string → events for O(1) lookup per cell. */
   const eventsByDate = useMemo(() => {
@@ -98,6 +156,28 @@ export default function CalendarGrid({ events }: CalendarGridProps) {
     }
   };
 
+  const handleCreate = async (data: EventFormData) => {
+    if (!onCreateEvent) return;
+    const result = await onCreateEvent(data);
+    if (result?.error) throw new Error(result.error);
+    await refreshEvents(year, month);
+  };
+
+  const handleEdit = async (data: EventFormData) => {
+    if (!onUpdateEvent || !editingEvent) return;
+    const result = await onUpdateEvent(editingEvent.id, data);
+    if (result?.error) throw new Error(result.error);
+    setEditingEvent(null);
+    await refreshEvents(year, month);
+  };
+
+  const handleDelete = async (event: CalendarEvent) => {
+    if (!onDeleteEvent) return;
+    if (!confirm("Are you sure you want to delete this event?")) return;
+    await onDeleteEvent(event.id);
+    await refreshEvents(year, month);
+  };
+
   /* ---------------------------------------------------------------- */
   /*  Render                                                           */
   /* ---------------------------------------------------------------- */
@@ -121,12 +201,29 @@ export default function CalendarGrid({ events }: CalendarGridProps) {
           <ChevronLeftIcon />
         </IconButton>
 
-        <Typography
-          variant="h6"
-          sx={{ color: colors.slate100, fontWeight: 600, userSelect: "none" }}
-        >
-          {formatMonthYear(year, month)}
-        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Typography
+            variant="h6"
+            sx={{ color: colors.slate100, fontWeight: 600, userSelect: "none" }}
+          >
+            {formatMonthYear(year, month)}
+          </Typography>
+          {canCreate && (
+            <Button
+              startIcon={<AddIcon />}
+              onClick={() => setFormOpen(true)}
+              size="small"
+              sx={{
+                color: colors.green400,
+                borderColor: colors.green400,
+                "&:hover": { borderColor: colors.green400, backgroundColor: colors.hoverOverlay },
+              }}
+              variant="outlined"
+            >
+              Event
+            </Button>
+          )}
+        </Box>
 
         <IconButton onClick={goToNextMonth} aria-label="Next month" sx={{ color: colors.slate100 }}>
           <ChevronRightIcon />
@@ -225,7 +322,27 @@ export default function CalendarGrid({ events }: CalendarGridProps) {
         event={selectedEvent}
         open={selectedEvent !== null}
         onClose={() => setSelectedEvent(null)}
+        onEdit={(evt) => {
+          setEditingEvent(evt);
+          setFormOpen(true);
+        }}
+        onDelete={handleDelete}
+        canEdit={canEdit}
+        canDelete={canDelete}
       />
+
+      {/* ---- Create / Edit form dialog ---- */}
+      {formOpen && (
+        <EventFormDialog
+          open={formOpen}
+          onClose={() => {
+            setFormOpen(false);
+            setEditingEvent(null);
+          }}
+          onSubmit={editingEvent ? handleEdit : handleCreate}
+          event={editingEvent}
+        />
+      )}
     </>
   );
 }
