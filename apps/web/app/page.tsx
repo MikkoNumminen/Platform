@@ -1,40 +1,12 @@
-import { Box, Button, Card, CardContent, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import TopBar from "./components/TopBar";
-import { colors } from "./styles";
+import SurveyCTA from "./components/SurveyCTA";
 
 export default function Home() {
   return (
     <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
       <TopBar title="Platform" />
-      <Card
-        sx={{
-          maxWidth: 600,
-          mx: "auto",
-          mt: 4,
-          border: `1px solid ${colors.green400}`,
-        }}
-      >
-        <CardContent sx={{ p: 4, textAlign: "center" }}>
-          <Typography variant="h5" gutterBottom>
-            Help us build this
-          </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-            We&apos;re building a new community platform and want your input. Take a quick survey to
-            tell us what features matter most to you.
-          </Typography>
-          <Button
-            variant="contained"
-            size="large"
-            href="/survey"
-            sx={{
-              backgroundColor: colors.green400,
-              "&:hover": { backgroundColor: colors.green900 },
-            }}
-          >
-            Take the survey
-          </Button>
-        </CardContent>
-      </Card>
+      <SurveyCTA />
     </Box>
   );
 }

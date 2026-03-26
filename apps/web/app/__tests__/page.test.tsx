@@ -8,21 +8,21 @@ jest.mock("../components/TopBar", () => {
   };
 });
 
+jest.mock("../components/SurveyCTA", () => {
+  return function MockSurveyCTA() {
+    return <div data-testid="survey-cta">Survey CTA</div>;
+  };
+});
+
 describe("Home", () => {
   test("renders the TopBar with title", () => {
     render(<Home />);
     expect(screen.getByTestId("topbar")).toHaveTextContent("Platform");
   });
 
-  test("renders the survey CTA heading", () => {
+  test("renders SurveyCTA", () => {
     render(<Home />);
-    expect(screen.getByText("Help us build this")).toBeInTheDocument();
-  });
-
-  test("renders survey link", () => {
-    render(<Home />);
-    const link = screen.getByRole("link", { name: /take the survey/i });
-    expect(link).toHaveAttribute("href", "/survey");
+    expect(screen.getByTestId("survey-cta")).toBeInTheDocument();
   });
 
   test("has no accessibility violations", async () => {
