@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "installCommand": "cd ../.. && npm install --ignore-scripts && cd apps/web && npx prisma generate",
-  "buildCommand": "next build",
+  "installCommand": "npm install --ignore-scripts",
+  "buildCommand": "npx prisma generate && next build",
   "ignoreCommand": "npx turbo-ignore"
 }
