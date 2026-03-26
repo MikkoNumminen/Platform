@@ -42,3 +42,4 @@
 
 ## Polish & Deployment
 - [ ] 🔵 Configure Vercel deployment for apps/web — Claude 1 (queued)
+- [ ] 🔵 Monitor Vercel and CI pipeline deployments, autofix failures — Claude 3 (in progress)
