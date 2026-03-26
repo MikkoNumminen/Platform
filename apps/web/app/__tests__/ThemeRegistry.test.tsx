@@ -11,7 +11,7 @@ describe("ThemeRegistry", () => {
     render(
       <ThemeRegistry>
         <p>child content</p>
-      </ThemeRegistry>
+      </ThemeRegistry>,
     );
     expect(screen.getByText("child content")).toBeInTheDocument();
   });
@@ -20,7 +20,7 @@ describe("ThemeRegistry", () => {
     render(
       <ThemeRegistry>
         <ThemeConsumer />
-      </ThemeRegistry>
+      </ThemeRegistry>,
     );
     expect(screen.getByTestId("theme")).toHaveTextContent("dark");
   });

@@ -16,9 +16,7 @@ describe("Home", () => {
 
   test("renders the description", () => {
     render(<Home />);
-    expect(
-      screen.getByText("Community platform — coming soon.")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Community platform — coming soon.")).toBeInTheDocument();
   });
 
   test("has no accessibility violations", async () => {

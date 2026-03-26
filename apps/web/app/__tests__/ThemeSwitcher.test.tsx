@@ -6,7 +6,7 @@ function renderWithTheme() {
   return render(
     <ThemeRegistry>
       <ThemeSwitcher />
-    </ThemeRegistry>
+    </ThemeRegistry>,
   );
 }
 

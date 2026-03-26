@@ -28,9 +28,20 @@ describe("themeConfig", () => {
 
   test("every theme has a complete palette", () => {
     const requiredKeys = [
-      "slate100", "slate300", "slate400", "slate600", "slate700",
-      "green400", "green900", "rowHover", "hoverOverlay",
-      "error", "errorBg", "warning", "info", "success",
+      "slate100",
+      "slate300",
+      "slate400",
+      "slate600",
+      "slate700",
+      "green400",
+      "green900",
+      "rowHover",
+      "hoverOverlay",
+      "error",
+      "errorBg",
+      "warning",
+      "info",
+      "success",
     ];
     for (const name of THEME_NAMES) {
       for (const key of requiredKeys) {

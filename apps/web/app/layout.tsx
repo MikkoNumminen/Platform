@@ -12,9 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="fi">
       <body>
         <AppRouterCacheProvider>
-          <ThemeRegistry>
-            {children}
-          </ThemeRegistry>
+          <ThemeRegistry>{children}</ThemeRegistry>
         </AppRouterCacheProvider>
       </body>
     </html>

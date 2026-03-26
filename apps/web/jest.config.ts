@@ -12,11 +12,7 @@ const config: Config = {
     "^@/(.*)$": "<rootDir>/app/$1",
   },
   testPathIgnorePatterns: ["/node_modules/", "/e2e/"],
-  collectCoverageFrom: [
-    "app/**/*.{ts,tsx}",
-    "!app/**/*.d.ts",
-    "!app/**/layout.tsx",
-  ],
+  collectCoverageFrom: ["app/**/*.{ts,tsx}", "!app/**/*.d.ts", "!app/**/layout.tsx"],
 };
 
 export default createJestConfig(config);
