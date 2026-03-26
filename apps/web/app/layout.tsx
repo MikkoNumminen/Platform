@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Box } from "@mui/material";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import ThemeRegistry from "./components/ThemeRegistry";
 import SessionProvider from "./components/SessionProvider";
@@ -18,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <AppRouterCacheProvider>
             <ThemeRegistry>
               <SnackbarProvider>
-                {children}
+                <Box sx={{ pt: 2 }}>{children}</Box>
                 <KeyboardShortcuts />
               </SnackbarProvider>
             </ThemeRegistry>
