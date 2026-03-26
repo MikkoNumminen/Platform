@@ -9,7 +9,7 @@
 - [x] 🔵 Create minimal Next.js web app (apps/web) — Claude 1
 - [x] 🔵 Set up turbo.json with v2 task syntax — Claude 1
 - [x] 🔵 Set up testing stack (Jest, Testing Library, jest-axe) — Claude 1
-- [x] 🔵 Add theme system with 6 switchable themes — Claude 1
+- [x] 🔵 Add theme system with 7 switchable themes — Claude 1
 - [x] 🔵 Add TopBar component with MUI — Claude 1
 - [x] 🔵 Set up linting and formatting (ESLint, Prettier) — Claude 1
 - [x] 🔵 Configure CI/CD pipeline — Claude 1
@@ -32,7 +32,7 @@
 - [x] 🟣 Calendar system — Claude 1
 
 ## Themes
-- [ ] 🔵 Add WoW-inspired "Fantasy" theme — Claude 3 (in progress)
+- [x] 🔵 Add WoW-inspired "Fantasy" theme — Claude 3
 
 ## Testing
 - [x] 🔵 Add tests for board system — Claude 1
