@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "npm install --ignore-scripts",
-  "buildCommand": "npx prisma generate --schema=apps/web/prisma/schema.prisma && npx --prefix apps/web next build",
-  "outputDirectory": "apps/web/.next",
+  "buildCommand": "npx prisma generate --schema=apps/web/prisma/schema.prisma && cd apps/web && ./node_modules/.bin/next build",
+  "outputDirectory": ".next",
   "framework": "nextjs"
 }
