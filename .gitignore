@@ -4,7 +4,6 @@ dist
 .next
 .env
 .env.local
-package-lock.json
 .claude/
 CLAUDE.md
 *.tsbuildinfo
