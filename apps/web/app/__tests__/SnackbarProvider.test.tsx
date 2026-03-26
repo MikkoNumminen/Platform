@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, act } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import SnackbarProvider, { useSnackbar } from "../components/SnackbarProvider";
 
 function TestConsumer() {
@@ -87,9 +87,7 @@ describe("SnackbarProvider", () => {
 
     // MUI Alert has a close button
     const closeButtons = screen.getAllByRole("button", { name: /close/i });
-    act(() => {
-      fireEvent.click(closeButtons[0]);
-    });
+    fireEvent.click(closeButtons[0]);
     expect(screen.queryByText("Success!")).not.toBeInTheDocument();
   });
 

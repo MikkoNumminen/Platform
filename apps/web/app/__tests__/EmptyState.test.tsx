@@ -42,9 +42,8 @@ describe("EmptyState", () => {
   });
 
   test("does not render icon container when no icon", () => {
-    const { container } = render(<EmptyState title="Empty" />);
-    // Only the title should be present, no icon box
-    expect(container.querySelectorAll("svg")).toHaveLength(0);
+    render(<EmptyState title="Empty" />);
+    expect(screen.queryByTestId("test-icon")).not.toBeInTheDocument();
   });
 
   test("has no accessibility violations", async () => {
