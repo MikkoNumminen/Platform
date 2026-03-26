@@ -22,7 +22,9 @@
 - [x] 🔵 Create shared types/config package — Claude 1
 
 ## Authentication
-- [ ] 🟣 Set up NextAuth for web app (separate from HRM) — Claude 2 (in progress)
+- [x] 🟣 Set up NextAuth for web app (separate from HRM) — Claude 2
+- [x] 🔵 Add login button and user menu with HRM integration — Claude 2
+- [x] 🔵 Fix CI pipeline (lockfile, lint errors, formatting) — Claude 2
 
 ## Core Features
 - [x] 🟣 Database schema design for community features — Claude 1
@@ -41,5 +43,5 @@
 - [x] 🔵 Add tests for calendar system — Claude 1
 
 ## Polish & Deployment
-- [ ] 🔵 Configure Vercel deployment for apps/web — Claude 1 (queued)
-- [ ] 🔵 Monitor Vercel and CI pipeline deployments, autofix failures — Claude 3 (in progress)
+- [x] 🔵 Configure Vercel deployment for apps/web — Claude 1
+- [x] 🔵 Monitor Vercel and CI pipeline deployments, autofix failures — Claude 3
