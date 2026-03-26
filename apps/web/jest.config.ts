@@ -14,7 +14,13 @@ const config: Config = {
     "^next-auth$": "<rootDir>/app/__mocks__/next-auth.ts",
   },
   testPathIgnorePatterns: ["/node_modules/", "/e2e/"],
-  collectCoverageFrom: ["app/**/*.{ts,tsx}", "!app/**/*.d.ts", "!app/**/layout.tsx"],
+  collectCoverageFrom: [
+    "app/**/*.{ts,tsx}",
+    "lib/**/*.{ts,tsx}",
+    "!app/**/*.d.ts",
+    "!app/**/layout.tsx",
+    "!lib/db.ts",
+  ],
 };
 
 export default createJestConfig(config);
