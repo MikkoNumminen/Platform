@@ -188,6 +188,19 @@ model CalendarEvent {
   @@index([startTime, endTime])
 }
 
+// ─── Rate Limiting ──────────────────────────────────────────────────────────
+
+model RateLimit {
+  id          String   @id @default(uuid())
+  identifier  String
+  action      String
+  count       Int      @default(1)
+  windowStart DateTime @default(now())
+
+  @@unique([identifier, action])
+  @@index([windowStart])
+}
+
 // ─── Survey ─────────────────────────────────────────────────────────────────
 
 model SurveyResponse {
