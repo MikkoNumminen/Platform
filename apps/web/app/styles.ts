@@ -1,0 +1,16 @@
+export const colors = {
+  slate100: "var(--platform-slate100)",
+  slate300: "var(--platform-slate300)",
+  slate400: "var(--platform-slate400)",
+  slate600: "var(--platform-slate600)",
+  slate700: "var(--platform-slate700)",
+  green400: "var(--platform-green400)",
+  green900: "var(--platform-green900)",
+  rowHover: "var(--platform-rowHover)",
+  hoverOverlay: "var(--platform-hoverOverlay)",
+  error: "var(--platform-error)",
+  errorBg: "var(--platform-errorBg)",
+  warning: "var(--platform-warning)",
+  info: "var(--platform-info)",
+  success: "var(--platform-success)",
+};
