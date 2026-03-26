@@ -60,13 +60,13 @@ describe("EventFormDialog", () => {
 
     await waitFor(() => {
       expect(defaultProps.onSubmit).toHaveBeenCalledTimes(1);
-      expect(defaultProps.onSubmit).toHaveBeenCalledWith(
-        expect.objectContaining({
-          title: "New Event",
-          allDay: false,
-        }),
-      );
     });
+    expect(defaultProps.onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "New Event",
+        allDay: false,
+      }),
+    );
   });
 
   test("calls onClose after successful submit", async () => {
