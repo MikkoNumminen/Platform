@@ -15,7 +15,7 @@ All 30 tasks across Infrastructure, Shared Packages, Authentication, Core Featur
 - [x] 🔵 Add /survey page and homepage CTA — Claude 2
 - [x] 🔵 Add admin survey results page — Claude 2
 - [x] 🔵 Add survey test suite (12 test files) — Claude 2
-- [ ] 🔵 Set up PostgreSQL and run first migration — User
+- [x] 🔵 Set up PostgreSQL and run first migration — Claude 1
 
 ---
 
@@ -65,7 +65,7 @@ All 30 tasks across Infrastructure, Shared Packages, Authentication, Core Featur
 - [x] 🔵 Add CSP with nonce and security headers — Claude 1
 - [x] 🔵 Add loading skeletons for all routes — Claude 1
 - [x] 🔵 Add keyboard shortcuts system — Claude 1
-- [x] 🔵 Fix lint errors in Phase 5 tests and components (26 errors) — Claude 1
+- [x] 🔵 Fix lint errors in Phase 5 tests and components (26 errors) — Claude 3
 
 ### Documentation
 - [x] 🔵 Update README.md with new features, structure, and commands — Claude 1
