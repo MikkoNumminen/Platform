@@ -6,5 +6,6 @@ dist
 .env.local
 package-lock.json
 .claude/
+CLAUDE.md
 *.tsbuildinfo
 next-env.d.ts
