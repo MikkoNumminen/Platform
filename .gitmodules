@@ -1,0 +1,3 @@
+[submodule "apps/hrm"]
+	path = apps/hrm
+	url = https://github.com/MikkoNumminen/HRManager.git
