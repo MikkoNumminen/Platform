@@ -1,0 +1,163 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── User ────────────────────────────────────────────────────────────────────
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  name      String
+  avatarUrl String?
+  bio       String?
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  posts          Post[]
+  topics         Topic[]
+  threads        Thread[]
+  calendarEvents CalendarEvent[]
+
+  @@index([deletedAt])
+  @@index([email])
+}
+
+// ─── Board System ────────────────────────────────────────────────────────────
+
+model Board {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  sortOrder   Int       @default(0)
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  posts Post[]
+
+  @@index([deletedAt])
+  @@index([sortOrder])
+}
+
+model Post {
+  id        String    @id @default(uuid())
+  title     String
+  slug      String
+  body      String
+  pinned    Boolean   @default(false)
+  authorId  String
+  boardId   String
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  author User  @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  board  Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  @@unique([boardId, slug])
+  @@index([deletedAt])
+  @@index([authorId])
+  @@index([boardId])
+  @@index([pinned])
+  @@index([createdAt])
+}
+
+// ─── Forum System ────────────────────────────────────────────────────────────
+
+model Forum {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  sortOrder   Int       @default(0)
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  topics Topic[]
+
+  @@index([deletedAt])
+  @@index([sortOrder])
+}
+
+model Topic {
+  id        String    @id @default(uuid())
+  title     String
+  slug      String
+  body      String
+  pinned    Boolean   @default(false)
+  locked    Boolean   @default(false)
+  authorId  String
+  forumId   String
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  author User  @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  forum  Forum @relation(fields: [forumId], references: [id], onDelete: Cascade)
+
+  @@unique([forumId, slug])
+  @@index([deletedAt])
+  @@index([authorId])
+  @@index([forumId])
+  @@index([pinned])
+  @@index([createdAt])
+}
+
+// ─── Unified Thread/Reply System ─────────────────────────────────────────────
+
+enum ParentType {
+  POST
+  TOPIC
+}
+
+model Thread {
+  id         String     @id @default(uuid())
+  body       String
+  parentType ParentType
+  parentId   String
+  authorId   String
+  replyToId  String?
+  deletedAt  DateTime?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  author  User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  replyTo Thread?  @relation("ThreadReplies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies Thread[] @relation("ThreadReplies")
+
+  @@index([parentType, parentId])
+  @@index([deletedAt])
+  @@index([authorId])
+  @@index([replyToId])
+  @@index([createdAt])
+}
+
+// ─── Calendar System ─────────────────────────────────────────────────────────
+
+model CalendarEvent {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  location    String?
+  startTime   DateTime
+  endTime     DateTime
+  allDay      Boolean   @default(false)
+  authorId    String?
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  author User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([deletedAt])
+  @@index([authorId])
+  @@index([startTime, endTime])
+}
