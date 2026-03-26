@@ -11,8 +11,8 @@ describe("themeConfig", () => {
     expect(THEME_NAMES).toHaveLength(7);
   });
 
-  test("default theme is dark", () => {
-    expect(DEFAULT_THEME).toBe("dark");
+  test("default theme is fantasy", () => {
+    expect(DEFAULT_THEME).toBe("fantasy");
   });
 
   test("storage key is platform-prefixed", () => {

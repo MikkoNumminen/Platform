@@ -10,7 +10,7 @@ export const THEME_NAMES = [
 export type ThemeName = (typeof THEME_NAMES)[number];
 
 export const THEME_STORAGE_KEY = "platform-theme";
-export const DEFAULT_THEME: ThemeName = "dark";
+export const DEFAULT_THEME: ThemeName = "fantasy";
 
 export interface ThemeColors {
   slate100: string;

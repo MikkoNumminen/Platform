@@ -35,6 +35,7 @@
 
 ## Themes
 - [x] 🔵 Add WoW-inspired "Fantasy" theme — Claude 3
+- [x] 🔵 Set Fantasy as default theme — Claude 1
 
 ## Testing
 - [x] 🔵 Add tests for board system — Claude 1
