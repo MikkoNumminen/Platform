@@ -8,6 +8,8 @@ A Turborepo monorepo for a community platform. The goal is to build community fe
 - **This is a portfolio/showcase project** intended to demonstrate professional skills for job applications. It is also used by the community in production. The GitHub repository should be exemplary — clean commits, good documentation, clear PR descriptions, well-structured code. Treat every public-facing aspect (README, commit messages, code quality, project structure) as something a potential employer would review.
 - **Always update README.md** when making changes that affect project structure, setup, commands, or features.
 - **Maintain TODO.md** as the central task list. When the user asks for todos, refer to this file. Each task is prefixed with 🟣 (Opus — complex/architectural tasks) or 🔵 (Sonnet — straightforward implementation tasks).
+- **Never add Co-Authored-By or any Claude/AI attribution to commit messages.** Keep commits clean.
+- **Always use conventional commit messages.** Format: `type(scope): description`. Types: feat, fix, chore, docs, refactor, test, ci, style, perf, build.
 
 ## Architecture
 

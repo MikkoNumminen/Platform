@@ -5,3 +5,6 @@ dist
 .env
 .env.local
 package-lock.json
+.claude/
+*.tsbuildinfo
+next-env.d.ts
