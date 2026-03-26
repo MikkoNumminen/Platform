@@ -10,6 +10,7 @@ A Turborepo monorepo for a community platform. The goal is to build community fe
 - **Maintain TODO.md** as the central task list. When the user asks for todos, refer to this file. Each task is prefixed with 🟣 (Opus — complex/architectural tasks) or 🔵 (Sonnet — straightforward implementation tasks).
 - **Never add Co-Authored-By or any Claude/AI attribution to commit messages.** Keep commits clean.
 - **Always use conventional commit messages.** Format: `type(scope): description`. Types: feat, fix, chore, docs, refactor, test, ci, style, perf, build.
+- **100% test coverage.** Every feature, component, and function must have tests. No exceptions.
 
 ## Architecture
 
