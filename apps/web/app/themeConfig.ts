@@ -1,4 +1,4 @@
-export const THEME_NAMES = ["dark", "light", "cyberpunk", "retro", "bubblegum", "ocean"] as const;
+export const THEME_NAMES = ["dark", "light", "cyberpunk", "retro", "bubblegum", "ocean", "fantasy"] as const;
 export type ThemeName = (typeof THEME_NAMES)[number];
 
 export const THEME_STORAGE_KEY = "platform-theme";
@@ -28,6 +28,7 @@ export const THEME_LABELS: Record<ThemeName, string> = {
   retro: "Retro Terminal",
   bubblegum: "Bubblegum",
   ocean: "Ocean",
+  fantasy: "Fantasy",
 };
 
 export const THEME_PALETTES: Record<ThemeName, ThemeColors> = {
@@ -126,5 +127,21 @@ export const THEME_PALETTES: Record<ThemeName, ThemeColors> = {
     warning: "#FBBF24",
     info: "#38BDF8",
     success: "#2DD4BF",
+  },
+  fantasy: {
+    slate100: "#F2D899",
+    slate300: "#C9A94E",
+    slate400: "#8B7340",
+    slate600: "#1E1608",
+    slate700: "#0D0A05",
+    green400: "#FFD100",
+    green900: "#3D2E0A",
+    rowHover: "#261C0A",
+    hoverOverlay: "rgba(255, 209, 0, 0.10)",
+    error: "#C41E3A",
+    errorBg: "rgba(196, 30, 58, 0.12)",
+    warning: "#FF8C00",
+    info: "#0070DD",
+    success: "#1EFF00",
   },
 };

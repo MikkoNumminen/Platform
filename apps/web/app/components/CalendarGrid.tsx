@@ -114,7 +114,7 @@ export default function CalendarGrid({ events }: CalendarGridProps) {
           mb: 1.5,
         }}
       >
-        <IconButton onClick={goToPreviousMonth} sx={{ color: colors.slate100 }}>
+        <IconButton onClick={goToPreviousMonth} aria-label="Previous month" sx={{ color: colors.slate100 }}>
           <ChevronLeftIcon />
         </IconButton>
 
@@ -125,7 +125,7 @@ export default function CalendarGrid({ events }: CalendarGridProps) {
           {formatMonthYear(year, month)}
         </Typography>
 
-        <IconButton onClick={goToNextMonth} sx={{ color: colors.slate100 }}>
+        <IconButton onClick={goToNextMonth} aria-label="Next month" sx={{ color: colors.slate100 }}>
           <ChevronRightIcon />
         </IconButton>
       </Box>

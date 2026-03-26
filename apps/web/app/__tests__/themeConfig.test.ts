@@ -7,8 +7,8 @@ import {
 } from "../themeConfig";
 
 describe("themeConfig", () => {
-  test("has 6 themes", () => {
-    expect(THEME_NAMES).toHaveLength(6);
+  test("has 7 themes", () => {
+    expect(THEME_NAMES).toHaveLength(7);
   });
 
   test("default theme is dark", () => {
