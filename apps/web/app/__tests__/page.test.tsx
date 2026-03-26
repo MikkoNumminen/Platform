@@ -14,9 +14,15 @@ describe("Home", () => {
     expect(screen.getByTestId("topbar")).toHaveTextContent("Platform");
   });
 
-  test("renders the description", () => {
+  test("renders the survey CTA heading", () => {
     render(<Home />);
-    expect(screen.getByText("Community platform — coming soon.")).toBeInTheDocument();
+    expect(screen.getByText("Help us build this")).toBeInTheDocument();
+  });
+
+  test("renders survey link", () => {
+    render(<Home />);
+    const link = screen.getByRole("link", { name: /take the survey/i });
+    expect(link).toHaveAttribute("href", "/survey");
   });
 
   test("has no accessibility violations", async () => {

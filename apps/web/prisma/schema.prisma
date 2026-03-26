@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // ─── User ────────────────────────────────────────────────────────────────────
@@ -160,4 +159,18 @@ model CalendarEvent {
   @@index([deletedAt])
   @@index([authorId])
   @@index([startTime, endTime])
+}
+
+// ─── Survey ─────────────────────────────────────────────────────────────────
+
+model SurveyResponse {
+  id                String   @id @default(uuid())
+  conversationStyle String
+  features          String[]
+  mustHave          String
+  dealbreaker       String?
+  otherFeedback     String?
+  submittedAt       DateTime @default(now())
+
+  @@index([submittedAt])
 }

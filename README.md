@@ -18,6 +18,7 @@ packages/config/ — Shared types and config (@platform/config)
 - **Calendar** — Monthly calendar view with event management
 - **Themes** — 7 switchable themes (dark, light, cyberpunk, retro, bubblegum, ocean, fantasy)
 - **Authentication** — NextAuth with Google and GitHub OAuth
+- **Community Survey** — Feature prioritization survey with admin results dashboard
 
 ## Getting started
 
@@ -25,6 +26,13 @@ packages/config/ — Shared types and config (@platform/config)
 git clone --recurse-submodules <this-repo-url>
 npm install --ignore-scripts
 cp apps/web/.env.example apps/web/.env.local  # Configure env vars
+
+# Database setup (required for survey feature)
+# Option 1: Local PostgreSQL
+# Option 2: Free Neon.tech instance (https://neon.tech)
+# Set DATABASE_URL in apps/web/.env.local, then:
+cd apps/web && npx prisma migrate dev && cd ../..
+
 npx turbo run dev --filter=web
 ```
 
@@ -41,7 +49,7 @@ npx turbo run build --filter=web # Production build
 
 ## Testing
 
-118 tests across 23 test suites with accessibility checks (jest-axe).
+203 tests across 36 test suites with accessibility checks (jest-axe).
 
 ```bash
 npx turbo run test --filter=web           # All tests
@@ -58,6 +66,7 @@ Required environment variables:
 - `AUTH_SECRET`
 - `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET`
 - `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET`
+- `NEXT_PUBLIC_HRM_URL`
 
 ## CI/CD
 
