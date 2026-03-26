@@ -8,6 +8,12 @@ jest.mock("../components/ThemeSwitcher", () => {
   };
 });
 
+jest.mock("../components/UserMenu", () => {
+  return function MockUserMenu() {
+    return <div data-testid="user-menu">UserMenu</div>;
+  };
+});
+
 describe("TopBar", () => {
   test("renders the title", () => {
     render(<TopBar title="Test Title" />);

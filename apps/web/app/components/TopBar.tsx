@@ -3,6 +3,7 @@
 import { AppBar, Box, Toolbar, Typography } from "@mui/material";
 import { colors } from "../styles";
 import ThemeSwitcher from "./ThemeSwitcher";
+import UserMenu from "./UserMenu";
 
 interface TopBarProps {
   title: string;
@@ -31,8 +32,9 @@ export default function TopBar({ title }: TopBarProps) {
         >
           {title}
         </Typography>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <ThemeSwitcher />
+          <UserMenu />
         </Box>
       </Toolbar>
     </AppBar>
