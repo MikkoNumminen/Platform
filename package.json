@@ -2,7 +2,7 @@
   "name": "platform",
   "private": true,
   "workspaces": [
-    "apps/*",
+    "apps/web",
     "packages/*"
   ],
   "packageManager": "npm@10.9.4",
