@@ -62,9 +62,10 @@ All 30 tasks across Infrastructure, Shared Packages, Authentication, Core Featur
 ### Phase 5: Polish & Security Hardening
 > Final security layers and UX polish.
 
-- [ ] 🔵 Add CSP with nonce and security headers — Claude 3
-- [ ] 🔵 Add loading skeletons for all routes — Claude 3
-- [ ] 🔵 Add keyboard shortcuts system — Claude 3
+- [x] 🔵 Add CSP with nonce and security headers — Claude 1
+- [x] 🔵 Add loading skeletons for all routes — Claude 1
+- [x] 🔵 Add keyboard shortcuts system — Claude 1
+- [x] 🔵 Fix lint errors in Phase 5 tests and components (26 errors) — Claude 1
 
 ### Future — HRM Features (not started)
 > These come later once the community platform is solid.
