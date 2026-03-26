@@ -112,9 +112,7 @@ describe("DataTable", () => {
       name: `User ${i}`,
       age: 20 + i,
     }));
-    render(
-      <DataTable columns={columns} rows={manyRows} keyAccessor={keyAccessor} pageSize={5} />,
-    );
+    render(<DataTable columns={columns} rows={manyRows} keyAccessor={keyAccessor} pageSize={5} />);
     // First page shows 5 rows
     expect(screen.getByText("User 0")).toBeInTheDocument();
     expect(screen.getByText("User 4")).toBeInTheDocument();
@@ -124,9 +122,7 @@ describe("DataTable", () => {
   });
 
   test("does not show pagination when all rows fit", () => {
-    render(
-      <DataTable columns={columns} rows={rows} keyAccessor={keyAccessor} pageSize={10} />,
-    );
+    render(<DataTable columns={columns} rows={rows} keyAccessor={keyAccessor} pageSize={10} />);
     expect(screen.queryByText(/1–/)).not.toBeInTheDocument();
   });
 

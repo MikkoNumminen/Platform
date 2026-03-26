@@ -4,11 +4,7 @@ import { colors } from "../styles";
 export default function BoardsLoading() {
   return (
     <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-      <Skeleton
-        variant="rounded"
-        height={64}
-        sx={{ mb: 1.5, bgcolor: colors.slate600 }}
-      />
+      <Skeleton variant="rounded" height={64} sx={{ mb: 1.5, bgcolor: colors.slate600 }} />
       <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
         <Skeleton variant="rounded" width={120} height={36} sx={{ bgcolor: colors.slate600 }} />
       </Box>
@@ -20,12 +16,7 @@ export default function BoardsLoading() {
         }}
       >
         {Array.from({ length: 6 }).map((_, i) => (
-          <Skeleton
-            key={i}
-            variant="rounded"
-            height={140}
-            sx={{ bgcolor: colors.slate600 }}
-          />
+          <Skeleton key={i} variant="rounded" height={140} sx={{ bgcolor: colors.slate600 }} />
         ))}
       </Box>
     </Box>

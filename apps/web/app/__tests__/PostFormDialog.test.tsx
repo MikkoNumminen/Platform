@@ -27,7 +27,15 @@ describe("PostFormDialog", () => {
   });
 
   test("renders edit title in edit mode", () => {
-    render(<PostFormDialog {...defaultProps} mode="edit" postId="p1" initialTitle="Old" initialBody="Body" />);
+    render(
+      <PostFormDialog
+        {...defaultProps}
+        mode="edit"
+        postId="p1"
+        initialTitle="Old"
+        initialBody="Body"
+      />,
+    );
     expect(screen.getByText("Edit Post")).toBeInTheDocument();
   });
 
@@ -70,7 +78,9 @@ describe("PostFormDialog", () => {
   });
 
   test("shows Save button in edit mode", () => {
-    render(<PostFormDialog {...defaultProps} mode="edit" postId="p1" initialTitle="T" initialBody="B" />);
+    render(
+      <PostFormDialog {...defaultProps} mode="edit" postId="p1" initialTitle="T" initialBody="B" />,
+    );
     expect(screen.getByText("Save")).toBeInTheDocument();
   });
 

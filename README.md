@@ -1,6 +1,6 @@
 # Platform
 
-A Turborepo monorepo for a community platform built with Next.js, React 19, and Material UI.
+A Turborepo monorepo for a community platform built with Next.js 15, React 19, and Material UI.
 
 ## Structure
 
@@ -13,12 +13,29 @@ packages/config/ — Shared types and config (@platform/config)
 
 ## Features
 
-- **Boards** — Categorized posts with pinned content
+### Community
+- **Boards** — Categorized discussion boards with full CRUD, pinned posts, and threaded comments
 - **Forums** — Discussion forums with topics and threaded replies
-- **Calendar** — Monthly calendar view with event management
+- **Calendar** — Monthly calendar view with event creation, editing, and deletion
 - **Themes** — 7 switchable themes (dark, light, cyberpunk, retro, bubblegum, ocean, fantasy)
-- **Authentication** — NextAuth with Google and GitHub OAuth
 - **Community Survey** — Feature prioritization survey with admin results dashboard
+
+### Security
+- **Authentication** — NextAuth v5 with Google and GitHub OAuth
+- **Role-based permissions** — Superuser, admin, and user roles with granular permission overrides
+- **guardedAction** — Server action wrapper enforcing auth, permissions, and rate limiting
+- **Rate limiting** — PostgreSQL-based atomic sliding window (30 req/60s per user)
+- **Security headers** — CSP, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy
+
+### Shared Components
+- **DataTable** — Generic sortable, paginated, searchable table with column configuration
+- **EmptyState** — Reusable empty state with icon, description, and action button
+- **SnackbarProvider** — Context-based notification system with `useSnackbar()` hook
+- **ConfirmDeleteDialog** — Reusable delete confirmation dialog
+
+### UX Polish
+- **Loading skeletons** — Skeleton loading states for all routes
+- **Keyboard shortcuts** — `g+h/b/f/c` for navigation, `?` for help dialog
 
 ## Getting started
 
@@ -27,7 +44,7 @@ git clone --recurse-submodules <this-repo-url>
 npm install --ignore-scripts
 cp apps/web/.env.example apps/web/.env.local  # Configure env vars
 
-# Database setup (required for survey feature)
+# Database setup (required for all features)
 # Option 1: Local PostgreSQL
 # Option 2: Free Neon.tech instance (https://neon.tech)
 # Set DATABASE_URL in apps/web/.env.local, then:
@@ -49,7 +66,7 @@ npx turbo run build --filter=web # Production build
 
 ## Testing
 
-203 tests across 36 test suites with accessibility checks (jest-axe).
+428 tests across 60 test suites with accessibility checks (jest-axe).
 
 ```bash
 npx turbo run test --filter=web           # All tests

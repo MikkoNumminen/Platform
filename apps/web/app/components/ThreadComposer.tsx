@@ -29,13 +29,7 @@ export default function ThreadComposer({
   function handleSubmit() {
     setError(null);
     startTransition(async () => {
-      const result = await createThread(
-        parentType,
-        parentId,
-        body,
-        replyToId,
-        revalidateUrl,
-      );
+      const result = await createThread(parentType, parentId, body, replyToId, revalidateUrl);
       if (result?.error) {
         setError(result.error);
       } else {

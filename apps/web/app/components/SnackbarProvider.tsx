@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
 import { Alert, Snackbar } from "@mui/material";
 
 type Severity = "success" | "error" | "warning" | "info";
@@ -42,13 +36,10 @@ export default function SnackbarProvider({
 }: SnackbarProviderProps) {
   const [messages, setMessages] = useState<SnackbarMessage[]>([]);
 
-  const showSnackbar = useCallback(
-    (message: string, severity: Severity = "success") => {
-      const id = nextId++;
-      setMessages((prev) => [...prev, { id, message, severity }]);
-    },
-    [],
-  );
+  const showSnackbar = useCallback((message: string, severity: Severity = "success") => {
+    const id = nextId++;
+    setMessages((prev) => [...prev, { id, message, severity }]);
+  }, []);
 
   function handleClose(id: number) {
     setMessages((prev) => prev.filter((m) => m.id !== id));
@@ -64,7 +55,7 @@ export default function SnackbarProvider({
           autoHideDuration={autoHideDuration}
           onClose={() => handleClose(msg.id)}
           anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          sx={{ bottom: `${(index * 60) + 24}px !important` }}
+          sx={{ bottom: `${index * 60 + 24}px !important` }}
         >
           <Alert
             onClose={() => handleClose(msg.id)}

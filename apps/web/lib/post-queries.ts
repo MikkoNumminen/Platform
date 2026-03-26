@@ -9,9 +9,7 @@ export interface PostListItem {
   createdAt: Date;
 }
 
-export async function getPostsByBoard(
-  boardId: string,
-): Promise<PostListItem[]> {
+export async function getPostsByBoard(boardId: string): Promise<PostListItem[]> {
   const posts = await prisma.post.findMany({
     where: { boardId, deletedAt: null },
     orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
@@ -39,10 +37,7 @@ export interface PostDetail {
   createdAt: Date;
 }
 
-export async function getPostBySlug(
-  boardId: string,
-  postSlug: string,
-): Promise<PostDetail | null> {
+export async function getPostBySlug(boardId: string, postSlug: string): Promise<PostDetail | null> {
   const post = await prisma.post.findFirst({
     where: { boardId, slug: postSlug, deletedAt: null },
     include: { author: { select: { name: true } } },

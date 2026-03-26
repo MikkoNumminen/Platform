@@ -50,14 +50,9 @@ jest.mock("@/lib/guardedAction", () => {
         if (!session?.user) {
           throw new ActionError("permissionDenied", "Not authenticated");
         }
-        const permissions = session.user.permissions as
-          | Record<string, boolean>
-          | undefined;
+        const permissions = session.user.permissions as Record<string, boolean> | undefined;
         if (!permissions?.[permission]) {
-          throw new ActionError(
-            "permissionDenied",
-            `Missing permission: ${permission}`,
-          );
+          throw new ActionError("permissionDenied", `Missing permission: ${permission}`);
         }
         await rateLimit(rateLimitKey);
         await fn(...args);
@@ -184,9 +179,7 @@ describe("updateEvent", () => {
   });
 
   test("returns error without event:edit permission", async () => {
-    mockAuth.mockResolvedValue(
-      authenticatedSession({ "event:edit": false }),
-    );
+    mockAuth.mockResolvedValue(authenticatedSession({ "event:edit": false }));
     const result = await updateEvent({ ...validInput, id: eventId });
     expect(result).toEqual({
       error: "Missing permission: event:edit",
@@ -235,9 +228,7 @@ describe("deleteEvent", () => {
   });
 
   test("returns error without event:delete permission", async () => {
-    mockAuth.mockResolvedValue(
-      authenticatedSession({ "event:delete": false }),
-    );
+    mockAuth.mockResolvedValue(authenticatedSession({ "event:delete": false }));
     const result = await deleteEvent(eventId);
     expect(result).toEqual({
       error: "Missing permission: event:delete",

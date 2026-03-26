@@ -35,7 +35,13 @@ describe("getBoards", () => {
 
     const boards = await getBoards();
     expect(boards).toEqual([
-      { id: "b1", name: "General", slug: "general", description: "General discussion", postCount: 5 },
+      {
+        id: "b1",
+        name: "General",
+        slug: "general",
+        description: "General discussion",
+        postCount: 5,
+      },
       { id: "b2", name: "Help", slug: "help", description: null, postCount: 0 },
     ]);
   });

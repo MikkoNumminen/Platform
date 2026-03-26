@@ -23,10 +23,7 @@ function validatePostTitle(title: string): string {
     throw new ActionError("invalidPostTitle", "Post title is required");
   }
   if (trimmed.length > 200) {
-    throw new ActionError(
-      "postTitleTooLong",
-      "Post title must be 200 characters or less",
-    );
+    throw new ActionError("postTitleTooLong", "Post title must be 200 characters or less");
   }
   return trimmed;
 }
@@ -127,48 +124,40 @@ export const updatePost = guardedAction(
   },
 );
 
-export const togglePostPin = guardedAction(
-  "post:edit",
-  "post:edit",
-  async (postId: string) => {
-    validateUUID(postId, "postId");
+export const togglePostPin = guardedAction("post:edit", "post:edit", async (postId: string) => {
+  validateUUID(postId, "postId");
 
-    const post = await prisma.post.findFirst({
-      where: { id: postId, deletedAt: null },
-      include: { board: { select: { slug: true } } },
-    });
-    if (!post) {
-      throw new ActionError("postNotFound", "Post not found");
-    }
+  const post = await prisma.post.findFirst({
+    where: { id: postId, deletedAt: null },
+    include: { board: { select: { slug: true } } },
+  });
+  if (!post) {
+    throw new ActionError("postNotFound", "Post not found");
+  }
 
-    await prisma.post.update({
-      where: { id: postId },
-      data: { pinned: !post.pinned },
-    });
+  await prisma.post.update({
+    where: { id: postId },
+    data: { pinned: !post.pinned },
+  });
 
-    revalidatePath(`/boards/${post.board.slug}`);
-  },
-);
+  revalidatePath(`/boards/${post.board.slug}`);
+});
 
-export const deletePost = guardedAction(
-  "post:delete",
-  "post:delete",
-  async (postId: string) => {
-    validateUUID(postId, "postId");
+export const deletePost = guardedAction("post:delete", "post:delete", async (postId: string) => {
+  validateUUID(postId, "postId");
 
-    const post = await prisma.post.findFirst({
-      where: { id: postId, deletedAt: null },
-      include: { board: { select: { slug: true } } },
-    });
-    if (!post) {
-      throw new ActionError("postNotFound", "Post not found");
-    }
+  const post = await prisma.post.findFirst({
+    where: { id: postId, deletedAt: null },
+    include: { board: { select: { slug: true } } },
+  });
+  if (!post) {
+    throw new ActionError("postNotFound", "Post not found");
+  }
 
-    await prisma.post.update({
-      where: { id: postId },
-      data: { deletedAt: new Date() },
-    });
+  await prisma.post.update({
+    where: { id: postId },
+    data: { deletedAt: new Date() },
+  });
 
-    revalidatePath(`/boards/${post.board.slug}`);
-  },
-);
+  revalidatePath(`/boards/${post.board.slug}`);
+});

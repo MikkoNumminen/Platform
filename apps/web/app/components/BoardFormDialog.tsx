@@ -67,7 +67,9 @@ export default function BoardFormDialog({
       <DialogTitle sx={{ color: colors.slate100 }}>
         {mode === "create" ? "Create Board" : "Edit Board"}
       </DialogTitle>
-      <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: "8px !important" }}>
+      <DialogContent
+        sx={{ display: "flex", flexDirection: "column", gap: 2, pt: "8px !important" }}
+      >
         <TextField
           label="Board name"
           value={name}

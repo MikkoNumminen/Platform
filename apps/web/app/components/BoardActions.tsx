@@ -35,11 +35,7 @@ export default function BoardActions() {
       >
         New Board
       </Button>
-      <BoardFormDialog
-        open={showCreate}
-        onClose={() => setShowCreate(false)}
-        mode="create"
-      />
+      <BoardFormDialog open={showCreate} onClose={() => setShowCreate(false)} mode="create" />
     </>
   );
 }

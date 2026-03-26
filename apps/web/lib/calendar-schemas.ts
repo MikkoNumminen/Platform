@@ -62,10 +62,7 @@ export function validateEventInput(input: CreateEventInput): {
     throw new ActionError("invalidEventTitle", "Invalid end time");
   }
   if (endTime < startTime) {
-    throw new ActionError(
-      "eventEndBeforeStart",
-      "End time must be after start time",
-    );
+    throw new ActionError("eventEndBeforeStart", "End time must be after start time");
   }
 
   return {

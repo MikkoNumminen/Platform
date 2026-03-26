@@ -2,14 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Box,
-  Typography,
-  IconButton,
-} from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, Box, Typography, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { colors } from "../styles";
 
@@ -96,11 +89,7 @@ export default function KeyboardShortcuts() {
     (e: KeyboardEvent) => {
       // Ignore shortcuts when typing in input fields
       const target = e.target as HTMLElement;
-      if (
-        target.tagName === "INPUT" ||
-        target.tagName === "TEXTAREA" ||
-        target.isContentEditable
-      ) {
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) {
         return;
       }
 
@@ -183,10 +172,7 @@ export default function KeyboardShortcuts() {
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        <Typography
-          variant="caption"
-          sx={{ color: colors.slate400, mb: 1.5, display: "block" }}
-        >
+        <Typography variant="caption" sx={{ color: colors.slate400, mb: 1.5, display: "block" }}>
           Navigation
         </Typography>
         {shortcuts.map((s) => (

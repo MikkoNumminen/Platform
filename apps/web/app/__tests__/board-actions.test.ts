@@ -32,7 +32,13 @@ jest.mock("@/lib/db", () => ({
 
 import { createBoard, updateBoard, deleteBoard } from "@/lib/board-actions";
 
-function authedSession(permissions: Record<string, boolean> = { "board:create": true, "board:edit": true, "board:delete": true }) {
+function authedSession(
+  permissions: Record<string, boolean> = {
+    "board:create": true,
+    "board:edit": true,
+    "board:delete": true,
+  },
+) {
   return { user: { id: "user-1", permissions } };
 }
 
@@ -76,13 +82,19 @@ describe("createBoard", () => {
 
   test("returns error for name over 100 characters", async () => {
     const result = await createBoard("a".repeat(101));
-    expect(result).toEqual({ error: "Board name must be 100 characters or less", code: "boardNameTooLong" });
+    expect(result).toEqual({
+      error: "Board name must be 100 characters or less",
+      code: "boardNameTooLong",
+    });
   });
 
   test("returns error when slug already exists", async () => {
     mockBoardFindFirst.mockResolvedValue({ id: "existing" });
     const result = await createBoard("General");
-    expect(result).toEqual({ error: "A board with this name already exists", code: "boardSlugExists" });
+    expect(result).toEqual({
+      error: "A board with this name already exists",
+      code: "boardSlugExists",
+    });
   });
 
   test("returns error when not authenticated", async () => {

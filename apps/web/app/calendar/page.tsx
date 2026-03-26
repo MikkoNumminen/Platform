@@ -2,12 +2,7 @@ import { Box } from "@mui/material";
 import TopBar from "../components/TopBar";
 import CalendarGrid from "../components/CalendarGrid";
 import { getEvents } from "@/lib/calendar-queries";
-import {
-  fetchEvents,
-  createEvent,
-  updateEvent,
-  deleteEvent,
-} from "@/lib/calendar-actions";
+import { fetchEvents, createEvent, updateEvent, deleteEvent } from "@/lib/calendar-actions";
 import { auth } from "@/auth";
 import type { CalendarEvent } from "../types/calendar";
 import type { CreateEventInput, UpdateEventInput } from "@/lib/calendar-schemas";

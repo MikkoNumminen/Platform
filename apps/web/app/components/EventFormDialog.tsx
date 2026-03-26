@@ -122,7 +122,9 @@ export default function EventFormDialog({
         {isEdit ? "Edit Event" : "Create Event"}
       </DialogTitle>
 
-      <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: "8px !important" }}>
+      <DialogContent
+        sx={{ display: "flex", flexDirection: "column", gap: 2, pt: "8px !important" }}
+      >
         <TextField
           label="Title"
           value={title}
@@ -206,9 +208,7 @@ export default function EventFormDialog({
           </Box>
         )}
 
-        {error && (
-          <Box sx={{ color: "#ef4444", fontSize: "0.875rem" }}>{error}</Box>
-        )}
+        {error && <Box sx={{ color: "#ef4444", fontSize: "0.875rem" }}>{error}</Box>}
       </DialogContent>
 
       <DialogActions sx={{ px: 3, pb: 2 }}>

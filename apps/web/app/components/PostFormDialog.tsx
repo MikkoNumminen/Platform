@@ -87,7 +87,9 @@ export default function PostFormDialog({
       <DialogTitle sx={{ color: colors.slate100 }}>
         {mode === "create" ? "Create Post" : "Edit Post"}
       </DialogTitle>
-      <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: "8px !important" }}>
+      <DialogContent
+        sx={{ display: "flex", flexDirection: "column", gap: 2, pt: "8px !important" }}
+      >
         <TextField
           label="Title"
           value={title}

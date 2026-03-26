@@ -51,9 +51,7 @@ describe("rateLimit", () => {
     mockQueryRaw.mockResolvedValue([{ count: 31 }]);
 
     await expect(rateLimit("create-board")).rejects.toThrow(RateLimitError);
-    await expect(rateLimit("create-board")).rejects.toThrow(
-      "Rate limit exceeded for create-board",
-    );
+    await expect(rateLimit("create-board")).rejects.toThrow("Rate limit exceeded for create-board");
   });
 
   test("uses user ID as identifier when authenticated", async () => {

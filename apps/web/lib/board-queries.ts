@@ -35,9 +35,7 @@ export interface BoardDetail {
   description: string | null;
 }
 
-export async function getBoardBySlug(
-  slug: string,
-): Promise<BoardDetail | null> {
+export async function getBoardBySlug(slug: string): Promise<BoardDetail | null> {
   return prisma.board.findFirst({
     where: { slug, deletedAt: null },
     select: { id: true, name: true, slug: true, description: true },

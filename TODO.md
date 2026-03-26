@@ -67,6 +67,14 @@ All 30 tasks across Infrastructure, Shared Packages, Authentication, Core Featur
 - [x] 🔵 Add keyboard shortcuts system — Claude 1
 - [x] 🔵 Fix lint errors in Phase 5 tests and components (26 errors) — Claude 1
 
+### Documentation
+- [x] 🔵 Update README.md with new features, structure, and commands — Claude 1
+
+### Deployment & Auth
+- [x] 🟣 Add roles, permissions, and user creation on login — Claude 2
+- [x] 🔵 Hide survey CTA after submission — Claude 2
+- [ ] 🔵 Fix Vercel deployment for monorepo — Claude 2 (in progress)
+
 ### Future — HRM Features (not started)
 > These come later once the community platform is solid.
 

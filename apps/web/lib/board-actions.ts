@@ -22,10 +22,7 @@ function validateBoardName(name: string): string {
     throw new ActionError("invalidBoardName", "Board name is required");
   }
   if (trimmed.length > 100) {
-    throw new ActionError(
-      "boardNameTooLong",
-      "Board name must be 100 characters or less",
-    );
+    throw new ActionError("boardNameTooLong", "Board name must be 100 characters or less");
   }
   return trimmed;
 }

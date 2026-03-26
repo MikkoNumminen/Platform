@@ -100,9 +100,7 @@ describe("guardedAction", () => {
   test("returns rateLimited error when rate limit throws", async () => {
     mockAuth.mockResolvedValue(makeSession({ "post:create": true }));
     const { RateLimitError } = await import("@/lib/actionErrors");
-    mockRateLimit.mockRejectedValue(
-      new RateLimitError("Rate limit exceeded for post"),
-    );
+    mockRateLimit.mockRejectedValue(new RateLimitError("Rate limit exceeded for post"));
     const fn = jest.fn();
     const action = guardedAction("post:create", "create-post", fn);
 
@@ -117,9 +115,7 @@ describe("guardedAction", () => {
   test("returns error when action throws ActionError", async () => {
     mockAuth.mockResolvedValue(makeSession({ "board:edit": true }));
     const { ActionError } = await import("@/lib/actionErrors");
-    const fn = jest.fn().mockRejectedValue(
-      new ActionError("boardNotFound", "Board not found"),
-    );
+    const fn = jest.fn().mockRejectedValue(new ActionError("boardNotFound", "Board not found"));
     const action = guardedAction("board:edit", "edit-board", fn);
 
     const result = await action();

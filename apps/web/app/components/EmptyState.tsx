@@ -28,13 +28,8 @@ export default function EmptyState({
         textAlign: "center",
       }}
     >
-      {icon && (
-        <Box sx={{ color: colors.slate400, mb: 2, fontSize: 48 }}>{icon}</Box>
-      )}
-      <Typography
-        variant="h6"
-        sx={{ color: colors.slate100, fontWeight: 600, mb: 0.5 }}
-      >
+      {icon && <Box sx={{ color: colors.slate400, mb: 2, fontSize: 48 }}>{icon}</Box>}
+      <Typography variant="h6" sx={{ color: colors.slate100, fontWeight: 600, mb: 0.5 }}>
         {title}
       </Typography>
       {description && (

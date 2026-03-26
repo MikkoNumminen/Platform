@@ -34,11 +34,13 @@ jest.mock("@/lib/db", () => ({
 
 import { createPost, updatePost, togglePostPin, deletePost } from "@/lib/post-actions";
 
-function authedSession(permissions: Record<string, boolean> = {
-  "post:create": true,
-  "post:edit": true,
-  "post:delete": true,
-}) {
+function authedSession(
+  permissions: Record<string, boolean> = {
+    "post:create": true,
+    "post:edit": true,
+    "post:delete": true,
+  },
+) {
   return { user: { id: "user-1", permissions } };
 }
 
@@ -78,7 +80,10 @@ describe("createPost", () => {
 
   test("returns error for title over 200 characters", async () => {
     const result = await createPost(boardId, "a".repeat(201), "Body");
-    expect(result).toEqual({ error: "Post title must be 200 characters or less", code: "postTitleTooLong" });
+    expect(result).toEqual({
+      error: "Post title must be 200 characters or less",
+      code: "postTitleTooLong",
+    });
   });
 
   test("returns error for empty body", async () => {

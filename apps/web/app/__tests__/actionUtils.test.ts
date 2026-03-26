@@ -3,15 +3,11 @@ import { ActionError, RateLimitError } from "@/lib/actionErrors";
 
 describe("validateUUID", () => {
   test("accepts a valid UUID", () => {
-    expect(() =>
-      validateUUID("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11", "id"),
-    ).not.toThrow();
+    expect(() => validateUUID("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11", "id")).not.toThrow();
   });
 
   test("accepts uppercase UUID", () => {
-    expect(() =>
-      validateUUID("A0EEBC99-9C0B-4EF8-BB6D-6BB9BD380A11", "id"),
-    ).not.toThrow();
+    expect(() => validateUUID("A0EEBC99-9C0B-4EF8-BB6D-6BB9BD380A11", "id")).not.toThrow();
   });
 
   test("rejects an empty string", () => {
@@ -24,9 +20,7 @@ describe("validateUUID", () => {
   });
 
   test("rejects UUID without hyphens", () => {
-    expect(() =>
-      validateUUID("a0eebc999c0b4ef8bb6d6bb9bd380a11", "id"),
-    ).toThrow(ActionError);
+    expect(() => validateUUID("a0eebc999c0b4ef8bb6d6bb9bd380a11", "id")).toThrow(ActionError);
   });
 
   test("thrown error has invalidId code", () => {
@@ -49,9 +43,9 @@ describe("validateUUID", () => {
   });
 
   test("rejects UUID with extra characters", () => {
-    expect(() =>
-      validateUUID("550e8400-e29b-41d4-a716-446655440000-extra", "id"),
-    ).toThrow(ActionError);
+    expect(() => validateUUID("550e8400-e29b-41d4-a716-446655440000-extra", "id")).toThrow(
+      ActionError,
+    );
   });
 });
 
@@ -84,10 +78,7 @@ describe("safe", () => {
       error: "An unexpected error occurred",
       code: "unexpectedError",
     });
-    expect(consoleSpy).toHaveBeenCalledWith(
-      "Unexpected action error:",
-      expect.any(Error),
-    );
+    expect(consoleSpy).toHaveBeenCalledWith("Unexpected action error:", expect.any(Error));
     consoleSpy.mockRestore();
   });
 

@@ -33,11 +33,7 @@ export default function ThreadList({
         Discussion ({threads.length})
       </Typography>
 
-      <ThreadComposer
-        parentType={parentType}
-        parentId={parentId}
-        revalidateUrl={revalidateUrl}
-      />
+      <ThreadComposer parentType={parentType} parentId={parentId} revalidateUrl={revalidateUrl} />
 
       <Box
         sx={{

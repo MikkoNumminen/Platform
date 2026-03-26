@@ -27,12 +27,8 @@ describe("validateEventInput", () => {
   });
 
   test("throws invalidEventTitle for empty title", () => {
-    expect(() => validateEventInput({ ...validInput, title: "" })).toThrow(
-      ActionError,
-    );
-    expect(() => validateEventInput({ ...validInput, title: "  " })).toThrow(
-      ActionError,
-    );
+    expect(() => validateEventInput({ ...validInput, title: "" })).toThrow(ActionError);
+    expect(() => validateEventInput({ ...validInput, title: "  " })).toThrow(ActionError);
   });
 
   test("throws eventTitleTooLong for title exceeding 200 chars", () => {
@@ -96,15 +92,13 @@ describe("validateEventInput", () => {
   });
 
   test("throws for invalid start time", () => {
-    expect(() =>
-      validateEventInput({ ...validInput, startTime: "not-a-date" }),
-    ).toThrow(ActionError);
+    expect(() => validateEventInput({ ...validInput, startTime: "not-a-date" })).toThrow(
+      ActionError,
+    );
   });
 
   test("throws for invalid end time", () => {
-    expect(() =>
-      validateEventInput({ ...validInput, endTime: "not-a-date" }),
-    ).toThrow(ActionError);
+    expect(() => validateEventInput({ ...validInput, endTime: "not-a-date" })).toThrow(ActionError);
   });
 
   test("converts allDay to boolean", () => {

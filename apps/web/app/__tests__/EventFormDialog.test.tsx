@@ -86,9 +86,7 @@ describe("EventFormDialog", () => {
     fireEvent.click(screen.getByRole("button", { name: /create/i }));
 
     await waitFor(() => {
-      expect(
-        screen.getByText("Failed to save event. Please try again."),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Failed to save event. Please try again.")).toBeInTheDocument();
     });
   });
 

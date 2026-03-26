@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1774505850669" clover="3.2.0">
+  <project timestamp="1774505850669" name="All files">
+    <metrics statements="65" coveredstatements="65" conditionals="33" coveredconditionals="33" methods="10" coveredmethods="10" elements="108" coveredelements="108" complexity="0" loc="65" ncloc="65" packages="1" files="4" classes="4"/>
+    <file name="actionErrors.ts" path="/Users/mikko/koodailua/Platform/apps/web/lib/actionErrors.ts">
+      <metrics statements="6" coveredstatements="6" conditionals="1" coveredconditionals="1" methods="2" coveredmethods="2"/>
+      <line num="38" count="60" type="stmt"/>
+      <line num="43" count="44" type="stmt"/>
+      <line num="44" count="44" type="stmt"/>
+      <line num="48" count="13" type="stmt"/>
+      <line num="50" count="7" type="stmt"/>
+      <line num="51" count="7" type="stmt"/>
+    </file>
+    <file name="actionUtils.ts" path="/Users/mikko/koodailua/Platform/apps/web/lib/actionUtils.ts">
+      <metrics statements="19" coveredstatements="19" conditionals="16" coveredconditionals="16" methods="2" coveredmethods="2"/>
+      <line num="1" count="2" type="stmt"/>
+      <line num="6" count="2" type="stmt"/>
+      <line num="8" count="9" type="stmt"/>
+      <line num="9" count="9" type="cond" truecount="2" falsecount="0"/>
+      <line num="10" count="7" type="stmt"/>
+      <line num="17" count="19" type="stmt"/>
+      <line num="18" count="19" type="stmt"/>
+      <line num="19" count="19" type="stmt"/>
+      <line num="20" count="5" type="stmt"/>
+      <line num="23" count="14" type="cond" truecount="2" falsecount="0"/>
+      <line num="28" count="2" type="stmt"/>
+      <line num="32" count="12" type="cond" truecount="5" falsecount="0"/>
+      <line num="33" count="1" type="stmt"/>
+      <line num="36" count="11" type="cond" truecount="2" falsecount="0"/>
+      <line num="37" count="6" type="stmt"/>
+      <line num="40" count="5" type="cond" truecount="2" falsecount="0"/>
+      <line num="41" count="2" type="stmt"/>
+      <line num="45" count="3" type="stmt"/>
+      <line num="46" count="3" type="stmt"/>
+    </file>
+    <file name="guardedAction.ts" path="/Users/mikko/koodailua/Platform/apps/web/lib/guardedAction.ts">
+      <metrics statements="15" coveredstatements="15" conditionals="4" coveredconditionals="4" methods="3" coveredmethods="3"/>
+      <line num="3" count="1" type="stmt"/>
+      <line num="4" count="1" type="stmt"/>
+      <line num="5" count="1" type="stmt"/>
+      <line num="6" count="1" type="stmt"/>
+      <line num="9" count="11" type="stmt"/>
+      <line num="14" count="11" type="stmt"/>
+      <line num="15" count="11" type="stmt"/>
+      <line num="17" count="11" type="stmt"/>
+      <line num="18" count="11" type="cond" truecount="2" falsecount="0"/>
+      <line num="19" count="2" type="stmt"/>
+      <line num="23" count="9" type="stmt"/>
+      <line num="26" count="9" type="cond" truecount="2" falsecount="0"/>
+      <line num="27" count="2" type="stmt"/>
+      <line num="34" count="7" type="stmt"/>
+      <line num="37" count="6" type="stmt"/>
+    </file>
+    <file name="rateLimit.ts" path="/Users/mikko/koodailua/Platform/apps/web/lib/rateLimit.ts">
+      <metrics statements="25" coveredstatements="25" conditionals="12" coveredconditionals="12" methods="3" coveredmethods="3"/>
+      <line num="1" count="1" type="stmt"/>
+      <line num="2" count="1" type="stmt"/>
+      <line num="3" count="1" type="stmt"/>
+      <line num="4" count="1" type="stmt"/>
+      <line num="6" count="1" type="stmt"/>
+      <line num="7" count="1" type="stmt"/>
+      <line num="10" count="4" type="stmt"/>
+      <line num="12" count="4" type="stmt"/>
+      <line num="13" count="4" type="cond" truecount="2" falsecount="0"/>
+      <line num="15" count="3" type="stmt"/>
+      <line num="16" count="3" type="cond" truecount="2" falsecount="0"/>
+      <line num="18" count="2" type="stmt"/>
+      <line num="19" count="2" type="cond" truecount="2" falsecount="0"/>
+      <line num="21" count="1" type="stmt"/>
+      <line num="24" count="10" type="stmt"/>
+      <line num="25" count="10" type="stmt"/>
+      <line num="26" count="10" type="cond" truecount="2" falsecount="0"/>
+      <line num="27" count="10" type="stmt"/>
+      <line num="35" count="10" type="stmt"/>
+      <line num="36" count="10" type="stmt"/>
+      <line num="37" count="10" type="stmt"/>
+      <line num="39" count="10" type="stmt"/>
+      <line num="54" count="10" type="cond" truecount="2" falsecount="0"/>
+      <line num="55" count="10" type="cond" truecount="2" falsecount="0"/>
+      <line num="56" count="2" type="stmt"/>
+    </file>
+  </project>
+</coverage>

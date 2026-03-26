@@ -13,10 +13,7 @@ import {
   type UpdateEventInput,
 } from "./calendar-schemas";
 
-export async function fetchEvents(
-  year: number,
-  month: number,
-): Promise<CalendarEvent[]> {
+export async function fetchEvents(year: number, month: number): Promise<CalendarEvent[]> {
   const dbEvents = await getEvents(year, month);
   return dbEvents.map((e) => ({
     id: e.id,
@@ -67,22 +64,18 @@ export const updateEvent = guardedAction(
   },
 );
 
-export const deleteEvent = guardedAction(
-  "event:delete",
-  "event:delete",
-  async (id: string) => {
-    validateUUID(id, "event ID");
+export const deleteEvent = guardedAction("event:delete", "event:delete", async (id: string) => {
+  validateUUID(id, "event ID");
 
-    const existing = await prisma.calendarEvent.findFirst({
-      where: { id, deletedAt: null },
-    });
-    if (!existing) {
-      throw new ActionError("eventNotFound", "Event not found");
-    }
+  const existing = await prisma.calendarEvent.findFirst({
+    where: { id, deletedAt: null },
+  });
+  if (!existing) {
+    throw new ActionError("eventNotFound", "Event not found");
+  }
 
-    await prisma.calendarEvent.update({
-      where: { id },
-      data: { deletedAt: new Date() },
-    });
-  },
-);
+  await prisma.calendarEvent.update({
+    where: { id },
+    data: { deletedAt: new Date() },
+  });
+});

@@ -62,9 +62,7 @@ describe("withSecurityHeaders", () => {
   });
 
   test("preserves existing headers", async () => {
-    const existing = [
-      { source: "/api/(.*)", headers: [{ key: "X-Custom", value: "test" }] },
-    ];
+    const existing = [{ source: "/api/(.*)", headers: [{ key: "X-Custom", value: "test" }] }];
     const config = withSecurityHeaders({
       async headers() {
         return existing;

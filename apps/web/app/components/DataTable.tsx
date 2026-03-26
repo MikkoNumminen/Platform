@@ -68,9 +68,7 @@ export default function DataTable<T>({
     if (!searchQuery.trim()) return rows;
     const query = searchQuery.toLowerCase();
     return rows.filter((row) =>
-      searchableColumns.some((col) =>
-        String(col.accessor(row)).toLowerCase().includes(query),
-      ),
+      searchableColumns.some((col) => String(col.accessor(row)).toLowerCase().includes(query)),
     );
   }, [rows, searchQuery, searchableColumns]);
 
@@ -85,10 +83,7 @@ export default function DataTable<T>({
     });
   }, [filteredRows, sortColumn, sortDirection, columns]);
 
-  const paginatedRows = sortedRows.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage,
-  );
+  const paginatedRows = sortedRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   function handleSort(columnId: string) {
     if (sortColumn === columnId) {
@@ -202,10 +197,7 @@ export default function DataTable<T>({
                   }}
                 >
                   {columns.map((col) => (
-                    <TableCell
-                      key={col.id}
-                      sx={{ color: colors.slate100, fontSize: "0.85rem" }}
-                    >
+                    <TableCell key={col.id} sx={{ color: colors.slate100, fontSize: "0.85rem" }}>
                       {col.render ? col.render(row) : String(col.accessor(row))}
                     </TableCell>
                   ))}

@@ -18,14 +18,9 @@ export function guardedAction<TArgs extends unknown[]>(
       }
 
       // 2. Permission check
-      const permissions = session.user.permissions as
-        | Record<string, boolean>
-        | undefined;
+      const permissions = session.user.permissions as Record<string, boolean> | undefined;
       if (!permissions?.[permission]) {
-        throw new ActionError(
-          "permissionDenied",
-          `Missing permission: ${permission}`,
-        );
+        throw new ActionError("permissionDenied", `Missing permission: ${permission}`);
       }
 
       // 3. Rate limit check
