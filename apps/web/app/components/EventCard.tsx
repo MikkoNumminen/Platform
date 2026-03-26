@@ -129,10 +129,7 @@ export function EventDetailDialog({ event, open, onClose }: EventDetailDialogPro
           </Box>
         )}
 
-        <Typography
-          variant="body2"
-          sx={{ color: colors.slate400, lineHeight: 1.7, mt: 1 }}
-        >
+        <Typography variant="body2" sx={{ color: colors.slate400, lineHeight: 1.7, mt: 1 }}>
           {event.description}
         </Typography>
       </DialogContent>
@@ -159,17 +156,12 @@ export default function EventCard({ event, onClick }: EventCardProps) {
         borderRadius: "6px",
         cursor: onClick ? "pointer" : "default",
         transition: "border-color 0.2s ease",
-        "&:hover": onClick
-          ? { borderColor: colors.green400 }
-          : undefined,
+        "&:hover": onClick ? { borderColor: colors.green400 } : undefined,
       }}
       elevation={0}
     >
       <CardContent sx={{ py: 1.5, "&:last-child": { pb: 1.5 } }}>
-        <Typography
-          variant="subtitle2"
-          sx={{ color: colors.green400, fontWeight: 600, mb: 0.5 }}
-        >
+        <Typography variant="subtitle2" sx={{ color: colors.green400, fontWeight: 600, mb: 0.5 }}>
           {event.title}
         </Typography>
 

@@ -23,16 +23,10 @@ export default function ForumCard({ name, slug, description, topicCount }: Forum
     >
       <CardActionArea component={Link} href={`/forums/${slug}`}>
         <CardContent>
-          <Typography
-            variant="h6"
-            sx={{ color: colors.green400, fontWeight: 600, mb: 0.5 }}
-          >
+          <Typography variant="h6" sx={{ color: colors.green400, fontWeight: 600, mb: 0.5 }}>
             {name}
           </Typography>
-          <Typography
-            variant="body2"
-            sx={{ color: colors.slate100, mb: 1.5 }}
-          >
+          <Typography variant="body2" sx={{ color: colors.slate100, mb: 1.5 }}>
             {description}
           </Typography>
           <Typography variant="caption" sx={{ color: colors.slate400 }}>

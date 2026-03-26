@@ -33,8 +33,7 @@ export function getMockEvents(): CalendarEvent[] {
     {
       id: "evt-2",
       title: "Platform Maintenance Window",
-      description:
-        "Scheduled downtime for database migration and infrastructure updates.",
+      description: "Scheduled downtime for database migration and infrastructure updates.",
       location: null,
       startTime: new Date(year, month, 12),
       endTime: new Date(year, month, 12),
@@ -55,8 +54,7 @@ export function getMockEvents(): CalendarEvent[] {
     {
       id: "evt-4",
       title: "Open Source Sprint",
-      description:
-        "Full-day contribution sprint. Pick an issue, pair up, and ship code together.",
+      description: "Full-day contribution sprint. Pick an issue, pair up, and ship code together.",
       location: "Maria 01, Helsinki",
       startTime: new Date(year, month, 20),
       endTime: new Date(year, month, 20),
@@ -66,8 +64,7 @@ export function getMockEvents(): CalendarEvent[] {
     {
       id: "evt-5",
       title: "Board Game Night",
-      description:
-        "Casual evening of board games and snacks. All skill levels welcome.",
+      description: "Casual evening of board games and snacks. All skill levels welcome.",
       location: "Cafe Picnic, Kallio",
       startTime: new Date(year, month, 22, 17, 30),
       endTime: new Date(year, month, 22, 21, 0),
@@ -77,8 +74,7 @@ export function getMockEvents(): CalendarEvent[] {
     {
       id: "evt-6",
       title: "Deadline: Project Proposals",
-      description:
-        "Last day to submit project proposals for the spring batch.",
+      description: "Last day to submit project proposals for the spring batch.",
       location: null,
       startTime: new Date(year, month, 28),
       endTime: new Date(year, month, 28),

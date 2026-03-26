@@ -190,10 +190,7 @@ export default async function PostPage({ params }: PostPageProps) {
           p: { xs: 2, sm: 3 },
         }}
       >
-        <Typography
-          variant="h6"
-          sx={{ color: colors.slate100, mb: 1 }}
-        >
+        <Typography variant="h6" sx={{ color: colors.slate100, mb: 1 }}>
           Comments
         </Typography>
         <Typography variant="body2" sx={{ color: colors.slate400 }}>

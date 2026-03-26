@@ -1,4 +1,12 @@
-export const THEME_NAMES = ["dark", "light", "cyberpunk", "retro", "bubblegum", "ocean", "fantasy"] as const;
+export const THEME_NAMES = [
+  "dark",
+  "light",
+  "cyberpunk",
+  "retro",
+  "bubblegum",
+  "ocean",
+  "fantasy",
+] as const;
 export type ThemeName = (typeof THEME_NAMES)[number];
 
 export const THEME_STORAGE_KEY = "platform-theme";

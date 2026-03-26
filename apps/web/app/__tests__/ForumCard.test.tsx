@@ -2,9 +2,13 @@ import { render, screen } from "@testing-library/react";
 import { axe } from "jest-axe";
 import ForumCard from "../components/ForumCard";
 
-jest.mock("next/link", () => function MockLink({ children, href }: { children: React.ReactNode; href: string }) {
-  return <a href={href}>{children}</a>;
-});
+jest.mock(
+  "next/link",
+  () =>
+    function MockLink({ children, href }: { children: React.ReactNode; href: string }) {
+      return <a href={href}>{children}</a>;
+    },
+);
 
 const defaultProps = {
   name: "Development",
@@ -21,7 +25,9 @@ describe("ForumCard", () => {
 
   test("renders the description", () => {
     render(<ForumCard {...defaultProps} />);
-    expect(screen.getByText("Technical discussions about software development.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Technical discussions about software development."),
+    ).toBeInTheDocument();
   });
 
   test("renders topic count with plural form", () => {

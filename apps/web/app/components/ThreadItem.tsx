@@ -63,16 +63,10 @@ export default function ThreadItem({ thread, depth = 0 }: ThreadItemProps) {
 
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
-            <Typography
-              variant="body2"
-              sx={{ fontWeight: 600, color: colors.slate100 }}
-            >
+            <Typography variant="body2" sx={{ fontWeight: 600, color: colors.slate100 }}>
               {thread.authorName}
             </Typography>
-            <Typography
-              variant="caption"
-              sx={{ color: colors.slate400 }}
-            >
+            <Typography variant="caption" sx={{ color: colors.slate400 }}>
               {formatTimestamp(thread.createdAt)}
             </Typography>
           </Box>

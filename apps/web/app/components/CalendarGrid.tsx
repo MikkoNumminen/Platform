@@ -76,8 +76,7 @@ export default function CalendarGrid({ events }: CalendarGridProps) {
   }, [events]);
 
   const eventsForDate = useCallback(
-    (d: Date) =>
-      eventsByDate.get(`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`) ?? [],
+    (d: Date) => eventsByDate.get(`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`) ?? [],
     [eventsByDate],
   );
 
@@ -114,7 +113,11 @@ export default function CalendarGrid({ events }: CalendarGridProps) {
           mb: 1.5,
         }}
       >
-        <IconButton onClick={goToPreviousMonth} aria-label="Previous month" sx={{ color: colors.slate100 }}>
+        <IconButton
+          onClick={goToPreviousMonth}
+          aria-label="Previous month"
+          sx={{ color: colors.slate100 }}
+        >
           <ChevronLeftIcon />
         </IconButton>
 
@@ -178,13 +181,9 @@ export default function CalendarGrid({ events }: CalendarGridProps) {
               sx={{
                 minHeight: { xs: 56, sm: 90 },
                 p: 0.5,
-                borderRight:
-                  (idx + 1) % 7 !== 0 ? `1px solid ${colors.slate300}` : "none",
-                borderBottom:
-                  idx < 35 ? `1px solid ${colors.slate300}` : "none",
-                backgroundColor: isToday
-                  ? colors.hoverOverlay
-                  : "transparent",
+                borderRight: (idx + 1) % 7 !== 0 ? `1px solid ${colors.slate300}` : "none",
+                borderBottom: idx < 35 ? `1px solid ${colors.slate300}` : "none",
+                backgroundColor: isToday ? colors.hoverOverlay : "transparent",
                 opacity: isCurrentMonth ? 1 : 0.35,
                 display: "flex",
                 flexDirection: "column",
@@ -214,11 +213,7 @@ export default function CalendarGrid({ events }: CalendarGridProps) {
 
               {/* Event chips */}
               {dayEvents.map((evt) => (
-                <EventChip
-                  key={evt.id}
-                  event={evt}
-                  onClick={setSelectedEvent}
-                />
+                <EventChip key={evt.id} event={evt} onClick={setSelectedEvent} />
               ))}
             </Box>
           );

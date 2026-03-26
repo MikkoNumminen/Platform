@@ -35,9 +35,7 @@ describe("ThreadList", () => {
   test("renders the empty state when no threads", () => {
     render(<ThreadList threads={[]} />);
     expect(screen.getByText("Discussion (0)")).toBeInTheDocument();
-    expect(
-      screen.getByText("No comments yet. Start the conversation.")
-    ).toBeInTheDocument();
+    expect(screen.getByText("No comments yet. Start the conversation.")).toBeInTheDocument();
   });
 
   test("renders the ThreadComposer", () => {

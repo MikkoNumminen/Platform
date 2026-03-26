@@ -47,9 +47,7 @@ export default function ThreadList({ threads }: ThreadListProps) {
             No comments yet. Start the conversation.
           </Typography>
         ) : (
-          threads.map((thread) => (
-            <ThreadItem key={thread.id} thread={thread} />
-          ))
+          threads.map((thread) => <ThreadItem key={thread.id} thread={thread} />)
         )}
       </Box>
     </Box>

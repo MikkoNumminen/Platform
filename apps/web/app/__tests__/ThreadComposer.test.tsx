@@ -5,9 +5,7 @@ import ThreadComposer from "../components/ThreadComposer";
 describe("ThreadComposer", () => {
   test("renders the text field with placeholder", () => {
     render(<ThreadComposer />);
-    expect(
-      screen.getByPlaceholderText("Write a comment...")
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Write a comment...")).toBeInTheDocument();
   });
 
   test("renders the submit button", () => {

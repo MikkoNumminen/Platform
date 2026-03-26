@@ -16,8 +16,7 @@ const forums = [
     id: "2",
     name: "Development",
     slug: "development",
-    description:
-      "Technical discussions about software development, tools, and best practices.",
+    description: "Technical discussions about software development, tools, and best practices.",
     sortOrder: 2,
     topicCount: 3,
   },

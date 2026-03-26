@@ -12,13 +12,7 @@ interface PostListItemProps {
   href: string;
 }
 
-export default function PostListItem({
-  title,
-  authorName,
-  date,
-  pinned,
-  href,
-}: PostListItemProps) {
+export default function PostListItem({ title, authorName, date, pinned, href }: PostListItemProps) {
   return (
     <Box
       component={Link}

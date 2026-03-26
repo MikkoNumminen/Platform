@@ -41,26 +41,20 @@ describe("EventChip", () => {
 
 describe("EventDetailDialog", () => {
   test("renders event details when open", () => {
-    render(
-      <EventDetailDialog event={sampleEvent} open={true} onClose={jest.fn()} />
-    );
+    render(<EventDetailDialog event={sampleEvent} open={true} onClose={jest.fn()} />);
     expect(screen.getByText("Community Meetup")).toBeInTheDocument();
-    expect(
-      screen.getByText("Monthly get-together for platform members.")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Monthly get-together for platform members.")).toBeInTheDocument();
     expect(screen.getByText("Helsinki Hub, Kamppi")).toBeInTheDocument();
   });
 
   test("shows 'All day' for all-day events", () => {
-    render(
-      <EventDetailDialog event={allDayEvent} open={true} onClose={jest.fn()} />
-    );
+    render(<EventDetailDialog event={allDayEvent} open={true} onClose={jest.fn()} />);
     expect(screen.getByText("All day")).toBeInTheDocument();
   });
 
   test("does not render when event is null", () => {
     const { container } = render(
-      <EventDetailDialog event={null} open={false} onClose={jest.fn()} />
+      <EventDetailDialog event={null} open={false} onClose={jest.fn()} />,
     );
     expect(container).toBeEmptyDOMElement();
   });

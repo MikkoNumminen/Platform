@@ -15,8 +15,7 @@ const MOCK_BOARDS = [
     id: "2",
     name: "Feature Requests",
     slug: "feature-requests",
-    description:
-      "Suggest new features, vote on ideas, and discuss improvements to the platform.",
+    description: "Suggest new features, vote on ideas, and discuss improvements to the platform.",
     postCount: 8,
   },
   {

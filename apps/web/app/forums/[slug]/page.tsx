@@ -69,8 +69,7 @@ const forumData: Record<string, Forum> = {
   development: {
     name: "Development",
     slug: "development",
-    description:
-      "Technical discussions about software development, tools, and best practices.",
+    description: "Technical discussions about software development, tools, and best practices.",
     topics: [
       {
         id: "5",

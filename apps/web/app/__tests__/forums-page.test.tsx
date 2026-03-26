@@ -2,13 +2,21 @@ import { render, screen } from "@testing-library/react";
 import { axe } from "jest-axe";
 import ForumsPage from "../forums/page";
 
-jest.mock("next/link", () => function MockLink({ children, href }: { children: React.ReactNode; href: string }) {
-  return <a href={href}>{children}</a>;
-});
+jest.mock(
+  "next/link",
+  () =>
+    function MockLink({ children, href }: { children: React.ReactNode; href: string }) {
+      return <a href={href}>{children}</a>;
+    },
+);
 
-jest.mock("../components/TopBar", () => function MockTopBar({ title }: { title: string }) {
-  return <div data-testid="topbar">{title}</div>;
-});
+jest.mock(
+  "../components/TopBar",
+  () =>
+    function MockTopBar({ title }: { title: string }) {
+      return <div data-testid="topbar">{title}</div>;
+    },
+);
 
 describe("ForumsPage", () => {
   test("renders the TopBar with title Forums", () => {

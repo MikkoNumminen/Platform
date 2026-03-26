@@ -23,9 +23,7 @@ describe("getMockEvents", () => {
       expect(typeof event.allDay).toBe("boolean");
       expect(typeof event.authorId).toBe("string");
       // location is string | null
-      expect(
-        event.location === null || typeof event.location === "string"
-      ).toBe(true);
+      expect(event.location === null || typeof event.location === "string").toBe(true);
     }
   });
 
