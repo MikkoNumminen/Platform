@@ -12,21 +12,24 @@
 - [x] 🔵 Add theme system with 6 switchable themes — Claude 1
 - [x] 🔵 Add TopBar component with MUI — Claude 1
 - [x] 🔵 Set up linting and formatting (ESLint, Prettier) — Claude 1
-- [ ] 🔵 Configure CI/CD pipeline
-- [ ] 🔵 Add TypeScript path aliases for shared packages
-
-## Core Features
-- [ ] 🟣 Board system
-- [ ] 🟣 Forum system
-- [ ] 🟣 Thread system
-- [ ] 🟣 Calendar system
+- [x] 🔵 Configure CI/CD pipeline — Claude 1
+- [x] 🔵 Add TypeScript path aliases for shared packages — Claude 1
+- [x] 🔵 Set up environment variable management — Claude 1
 
 ## Shared Packages
-- [ ] 🟣 Design shared package architecture (packages/)
-- [ ] 🔵 Create shared UI component package
-- [ ] 🔵 Create shared types/config package
+- [x] 🟣 Design shared package architecture (packages/) — Claude 1
+- [x] 🔵 Create shared UI component package — Claude 1
+- [x] 🔵 Create shared types/config package — Claude 1
+
+## Authentication
+- [ ] 🟣 Set up NextAuth for web app (separate from HRM) — Claude 2 (in progress)
+
+## Core Features
+- [x] 🟣 Database schema design for community features — Claude 1
+- [x] 🟣 Board system — Claude 1
+- [x] 🟣 Forum system — Claude 1
+- [x] 🟣 Thread system — Claude 1
+- [x] 🟣 Calendar system — Claude 1
 
 ## Polish & Deployment
-- [ ] 🔵 Configure Vercel deployment for apps/web
-- [ ] 🟣 Database schema design for community features
-- [ ] 🔵 Set up environment variable management
+- [ ] 🔵 Configure Vercel deployment for apps/web — Claude 1 (queued)
