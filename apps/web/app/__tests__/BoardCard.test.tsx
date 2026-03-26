@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { axe } from "jest-axe";
 import BoardCard from "../components/BoardCard";
 
-jest.mock("next/link", () => function MockLink({ children, href }: any) {
+jest.mock("next/link", () => function MockLink({ children, href }: { children: React.ReactNode; href: string }) {
   return <a href={href}>{children}</a>;
 });
 

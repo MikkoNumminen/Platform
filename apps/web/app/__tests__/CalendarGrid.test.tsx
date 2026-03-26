@@ -45,8 +45,8 @@ describe("CalendarGrid", () => {
       year: "numeric",
     });
 
-    const prevButton = screen.getByTestId("ChevronLeftIcon").closest("button")!;
-    fireEvent.click(prevButton);
+    const prevButtons = screen.getAllByRole("button");
+    fireEvent.click(prevButtons[0]);
     expect(screen.getByText(expected)).toBeInTheDocument();
   });
 
@@ -59,8 +59,8 @@ describe("CalendarGrid", () => {
       year: "numeric",
     });
 
-    const nextButton = screen.getByTestId("ChevronRightIcon").closest("button")!;
-    fireEvent.click(nextButton);
+    const buttons = screen.getAllByRole("button");
+    fireEvent.click(buttons[1]);
     expect(screen.getByText(expected)).toBeInTheDocument();
   });
 

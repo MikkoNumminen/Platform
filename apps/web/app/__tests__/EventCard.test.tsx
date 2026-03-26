@@ -62,7 +62,7 @@ describe("EventDetailDialog", () => {
     const { container } = render(
       <EventDetailDialog event={null} open={false} onClose={jest.fn()} />
     );
-    expect(container.innerHTML).toBe("");
+    expect(container).toBeEmptyDOMElement();
   });
 });
 

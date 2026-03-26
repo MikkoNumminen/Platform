@@ -19,6 +19,8 @@ const eslintConfig = [
         "error",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
+      // Disable rule incompatible with ESLint 10 (uses removed context.getSourceCode API)
+      "jest-dom/prefer-to-have-class": "off",
     },
   },
 ];
