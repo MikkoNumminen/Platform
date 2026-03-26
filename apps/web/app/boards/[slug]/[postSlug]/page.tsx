@@ -2,6 +2,7 @@ import { Box, Chip, Divider, Typography } from "@mui/material";
 import PushPinIcon from "@mui/icons-material/PushPin";
 import { notFound } from "next/navigation";
 import TopBar from "../../../components/TopBar";
+import PostAdminBar from "../../../components/PostAdminBar";
 import ThreadList from "../../../components/ThreadList";
 import { colors } from "../../../styles";
 import { getBoardBySlug } from "@/lib/board-queries";
@@ -36,6 +37,15 @@ export default async function PostPage({ params }: PostPageProps) {
   return (
     <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
       <TopBar title={post.title} />
+
+      <PostAdminBar
+        postId={post.id}
+        postTitle={post.title}
+        postBody={post.body}
+        pinned={post.pinned}
+        boardId={board.id}
+        boardSlug={slug}
+      />
 
       <Box
         sx={{

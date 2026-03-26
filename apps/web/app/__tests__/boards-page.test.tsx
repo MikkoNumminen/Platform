@@ -18,6 +18,14 @@ jest.mock(
     },
 );
 
+jest.mock(
+  "../components/BoardActions",
+  () =>
+    function MockBoardActions() {
+      return null;
+    },
+);
+
 jest.mock("@/lib/board-queries", () => ({
   getBoards: jest.fn().mockResolvedValue([
     {

@@ -37,10 +37,10 @@ All 30 tasks across Infrastructure, Shared Packages, Authentication, Core Featur
 - [x] 🟣 Build board feature module (actions/queries/schemas) — Claude 1
 - [x] 🔵 Build post feature module (actions/queries/schemas) — Claude 1
 - [x] 🔵 Wire board listing page to database — Claude 1
-- [ ] 🔵 Build create/edit/delete board UI — Claude 1
-- [ ] 🔵 Build create/edit/delete post UI — Claude 1
+- [x] 🔵 Build create/edit/delete board UI — Claude 1
+- [x] 🔵 Build create/edit/delete post UI — Claude 1
 - [x] 🔵 Wire thread/comment system to database — Claude 1
-- [ ] 🔵 Add board & post test suite — Claude 1
+- [x] 🔵 Add board & post test suite — Claude 1
 
 ### Phase 3: Wire Calendar to Database
 > Replace mock events with real CRUD via server actions.

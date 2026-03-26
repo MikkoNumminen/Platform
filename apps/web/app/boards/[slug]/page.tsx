@@ -2,6 +2,7 @@ import { Box, Typography } from "@mui/material";
 import { notFound } from "next/navigation";
 import TopBar from "../../components/TopBar";
 import PostListItem from "../../components/PostListItem";
+import BoardAdminBar from "../../components/BoardAdminBar";
 import { colors } from "../../styles";
 import { getBoardBySlug } from "@/lib/board-queries";
 import { getPostsByBoard } from "@/lib/post-queries";
@@ -26,6 +27,12 @@ export default async function BoardPage({ params }: BoardPageProps) {
       <Typography variant="body2" sx={{ color: colors.slate400, mb: 2 }}>
         {board.description}
       </Typography>
+      <BoardAdminBar
+        boardId={board.id}
+        boardName={board.name}
+        boardDescription={board.description ?? ""}
+        boardSlug={board.slug}
+      />
       <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
         {posts.map((post) => (
           <PostListItem
