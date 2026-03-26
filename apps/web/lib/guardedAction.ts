@@ -1,5 +1,3 @@
-"use server";
-
 import { auth } from "@/auth";
 import { ActionError } from "./actionErrors";
 import { safe, type ActionResult } from "./actionUtils";
