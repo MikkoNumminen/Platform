@@ -4,6 +4,8 @@ import BoardCard from "../components/BoardCard";
 import BoardActions from "../components/BoardActions";
 import { getBoards } from "@/lib/board-queries";
 
+export const dynamic = "force-dynamic";
+
 export default async function BoardsPage() {
   const boards = await getBoards();
 
