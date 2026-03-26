@@ -24,12 +24,12 @@ All 30 tasks across Infrastructure, Shared Packages, Authentication, Core Featur
 ### Phase 1: Security Infrastructure
 > Port HRM's security patterns: guardedAction, actionErrors, rate limiting, audit logging.
 
-- [ ] 🟣 Build guardedAction utility (permission check + rate limiting wrapper) — Claude 3
-- [ ] 🔵 Build actionErrors system (typed error codes + ActionError class) — Claude 3
-- [ ] 🔵 Build actionUtils (safe wrapper, ActionResult type, UUID validation) — Claude 3
-- [ ] 🔵 Build rate limiting (PostgreSQL-based atomic sliding window) — Claude 3
-- [ ] 🔵 Add RateLimit model to Prisma schema — Claude 3
-- [ ] 🔵 Add security infrastructure test suite — Claude 3
+- [x] 🟣 Build guardedAction utility (permission check + rate limiting wrapper) — Claude 3
+- [x] 🔵 Build actionErrors system (typed error codes + ActionError class) — Claude 3
+- [x] 🔵 Build actionUtils (safe wrapper, ActionResult type, UUID validation) — Claude 3
+- [x] 🔵 Build rate limiting (PostgreSQL-based atomic sliding window) — Claude 3
+- [x] 🔵 Add RateLimit model to Prisma schema — Claude 3
+- [x] 🔵 Add security infrastructure test suite — Claude 1
 
 ### Phase 2: Wire Board System to Database
 > "Shouting board" — replace mock data with real CRUD via server actions.
