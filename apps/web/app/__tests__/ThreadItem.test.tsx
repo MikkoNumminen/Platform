@@ -3,6 +3,10 @@ import { axe } from "jest-axe";
 import ThreadItem from "../components/ThreadItem";
 import type { ThreadData } from "../types/thread";
 
+jest.mock("@/lib/thread-actions", () => ({
+  createThread: jest.fn().mockResolvedValue(undefined),
+}));
+
 const baseThread: ThreadData = {
   id: "t1",
   body: "Hello world",
@@ -11,31 +15,37 @@ const baseThread: ThreadData = {
   replies: [],
 };
 
+const defaultProps = {
+  parentType: "POST" as const,
+  parentId: "post-1",
+  revalidateUrl: "/boards/general/test-post",
+};
+
 describe("ThreadItem", () => {
   test("renders the author name", () => {
-    render(<ThreadItem thread={baseThread} />);
+    render(<ThreadItem thread={baseThread} {...defaultProps} />);
     expect(screen.getByText("Mika Virtanen")).toBeInTheDocument();
   });
 
   test("renders the body text", () => {
-    render(<ThreadItem thread={baseThread} />);
+    render(<ThreadItem thread={baseThread} {...defaultProps} />);
     expect(screen.getByText("Hello world")).toBeInTheDocument();
   });
 
   test("renders the formatted date", () => {
-    render(<ThreadItem thread={baseThread} />);
+    render(<ThreadItem thread={baseThread} {...defaultProps} />);
     // formatTimestamp uses en-US locale with month, day, year, hour, minute
     expect(screen.getByText(/Mar/)).toBeInTheDocument();
     expect(screen.getByText(/2026/)).toBeInTheDocument();
   });
 
   test("renders author initials in the avatar", () => {
-    render(<ThreadItem thread={baseThread} />);
+    render(<ThreadItem thread={baseThread} {...defaultProps} />);
     expect(screen.getByText("MV")).toBeInTheDocument();
   });
 
   test("renders a Reply button", () => {
-    render(<ThreadItem thread={baseThread} />);
+    render(<ThreadItem thread={baseThread} {...defaultProps} />);
     expect(screen.getByText("Reply")).toBeInTheDocument();
   });
 
@@ -61,7 +71,7 @@ describe("ThreadItem", () => {
       ],
     };
 
-    render(<ThreadItem thread={threadWithReplies} />);
+    render(<ThreadItem thread={threadWithReplies} {...defaultProps} />);
     expect(screen.getByText("Hello world")).toBeInTheDocument();
     expect(screen.getByText("First reply")).toBeInTheDocument();
     expect(screen.getByText("Nested reply")).toBeInTheDocument();
@@ -70,7 +80,7 @@ describe("ThreadItem", () => {
   });
 
   test("has no accessibility violations", async () => {
-    const { container } = render(<ThreadItem thread={baseThread} />);
+    const { container } = render(<ThreadItem thread={baseThread} {...defaultProps} />);
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });

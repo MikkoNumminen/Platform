@@ -34,13 +34,13 @@ All 30 tasks across Infrastructure, Shared Packages, Authentication, Core Featur
 ### Phase 2: Wire Board System to Database
 > "Shouting board" — replace mock data with real CRUD via server actions.
 
-- [ ] 🟣 Build board feature module (actions/queries/schemas) — Claude 3
-- [ ] 🔵 Build post feature module (actions/queries/schemas) — Claude 3
-- [ ] 🔵 Wire board listing page to database — Claude 3
-- [ ] 🔵 Build create/edit/delete board UI — Claude 3
-- [ ] 🔵 Build create/edit/delete post UI — Claude 3
-- [ ] 🔵 Wire thread/comment system to database — Claude 3
-- [ ] 🔵 Add board & post test suite — Claude 3
+- [ ] 🟣 Build board feature module (actions/queries/schemas) — Claude 1
+- [ ] 🔵 Build post feature module (actions/queries/schemas) — Claude 1
+- [ ] 🔵 Wire board listing page to database — Claude 1
+- [ ] 🔵 Build create/edit/delete board UI — Claude 1
+- [ ] 🔵 Build create/edit/delete post UI — Claude 1
+- [ ] 🔵 Wire thread/comment system to database — Claude 1
+- [ ] 🔵 Add board & post test suite — Claude 1
 
 ### Phase 3: Wire Calendar to Database
 > Replace mock events with real CRUD via server actions.

@@ -8,9 +8,17 @@ import ThreadComposer from "./ThreadComposer";
 
 interface ThreadListProps {
   threads: ThreadData[];
+  parentType: "POST" | "TOPIC";
+  parentId: string;
+  revalidateUrl: string;
 }
 
-export default function ThreadList({ threads }: ThreadListProps) {
+export default function ThreadList({
+  threads,
+  parentType,
+  parentId,
+  revalidateUrl,
+}: ThreadListProps) {
   return (
     <Box>
       <Typography
@@ -25,7 +33,11 @@ export default function ThreadList({ threads }: ThreadListProps) {
         Discussion ({threads.length})
       </Typography>
 
-      <ThreadComposer />
+      <ThreadComposer
+        parentType={parentType}
+        parentId={parentId}
+        revalidateUrl={revalidateUrl}
+      />
 
       <Box
         sx={{
@@ -47,7 +59,15 @@ export default function ThreadList({ threads }: ThreadListProps) {
             No comments yet. Start the conversation.
           </Typography>
         ) : (
-          threads.map((thread) => <ThreadItem key={thread.id} thread={thread} />)
+          threads.map((thread) => (
+            <ThreadItem
+              key={thread.id}
+              thread={thread}
+              parentType={parentType}
+              parentId={parentId}
+              revalidateUrl={revalidateUrl}
+            />
+          ))
         )}
       </Box>
     </Box>

@@ -1,8 +1,10 @@
 "use client";
 
 import { Avatar, Box, Button, Typography } from "@mui/material";
+import { useState } from "react";
 import { colors } from "../styles";
 import { ThreadData } from "../types/thread";
+import ThreadComposer from "./ThreadComposer";
 
 const MAX_NESTING_DEPTH = 3;
 
@@ -28,9 +30,19 @@ function formatTimestamp(iso: string): string {
 interface ThreadItemProps {
   thread: ThreadData;
   depth?: number;
+  parentType: "POST" | "TOPIC";
+  parentId: string;
+  revalidateUrl: string;
 }
 
-export default function ThreadItem({ thread, depth = 0 }: ThreadItemProps) {
+export default function ThreadItem({
+  thread,
+  depth = 0,
+  parentType,
+  parentId,
+  revalidateUrl,
+}: ThreadItemProps) {
+  const [showReply, setShowReply] = useState(false);
   const clampedDepth = Math.min(depth, MAX_NESTING_DEPTH);
 
   return (
@@ -85,6 +97,7 @@ export default function ThreadItem({ thread, depth = 0 }: ThreadItemProps) {
 
           <Button
             size="small"
+            onClick={() => setShowReply(!showReply)}
             sx={{
               mt: 0.5,
               px: 1,
@@ -100,12 +113,32 @@ export default function ThreadItem({ thread, depth = 0 }: ThreadItemProps) {
           >
             Reply
           </Button>
+
+          {showReply && (
+            <Box sx={{ mt: 1 }}>
+              <ThreadComposer
+                parentType={parentType}
+                parentId={parentId}
+                revalidateUrl={revalidateUrl}
+                replyToId={thread.id}
+                onCancel={() => setShowReply(false)}
+                placeholder="Write a reply..."
+              />
+            </Box>
+          )}
         </Box>
       </Box>
 
       {thread.replies.length > 0 &&
         thread.replies.map((reply) => (
-          <ThreadItem key={reply.id} thread={reply} depth={depth + 1} />
+          <ThreadItem
+            key={reply.id}
+            thread={reply}
+            depth={depth + 1}
+            parentType={parentType}
+            parentId={parentId}
+            revalidateUrl={revalidateUrl}
+          />
         ))}
     </Box>
   );
