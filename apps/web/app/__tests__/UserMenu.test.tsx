@@ -76,12 +76,13 @@ describe("UserMenu", () => {
       expect(screen.getByText("Manage Users")).toBeInTheDocument();
     });
 
-    test("Manage Users links to HRM", async () => {
+    test("Manage Users links to HRM in same window", async () => {
       const user = userEvent.setup();
       render(<UserMenu />);
       await user.click(screen.getByRole("button"));
       const manageLink = screen.getByRole("menuitem", { name: /manage users/i });
-      expect(manageLink).toHaveAttribute("target", "_blank");
+      expect(manageLink).toHaveAttribute("href");
+      expect(manageLink).not.toHaveAttribute("target", "_blank");
     });
 
     test("calls signOut when Sign Out is clicked", async () => {

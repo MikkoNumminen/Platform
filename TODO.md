@@ -73,17 +73,34 @@ All 30 tasks across Infrastructure, Shared Packages, Authentication, Core Featur
 ### Deployment & Auth
 - [x] 🟣 Add roles, permissions, and user creation on login — Claude 2
 - [x] 🔵 Hide survey CTA after submission — Claude 2
-- [ ] 🔵 Fix Vercel deployment for monorepo — Claude 2 (in progress)
+- [x] 🔵 Fix Vercel deployment for monorepo — Claude 2
 
-### Future — HRM Features (not started)
-> These come later once the community platform is solid.
+### Vercel Cleanup
+- [x] 🔵 Copy env vars from "web" project to "platform" — User
+- [x] 🔵 Delete duplicate "web" Vercel project — User
+- [x] 🔵 Fix Vercel deployment build errors — Claude 3
+- [x] 🔵 Configure Google OAuth redirect URI for production — User
 
-- [ ] 🟣 Person/Employee management
+### Architecture & Documentation
+- [x] 🔵 Document separate-databases architecture decision and update README — Claude 3
+
+### Phase 6: Admin & User Management
+> Platform-native admin UI. New users get "pending" role until approved by admin.
+
+- [ ] 🟣 Add "pending" role — new users have zero permissions until approved
+- [ ] 🟣 Build /admin/users page (list users, change roles, toggle permissions)
+- [ ] 🔵 Add "pending approval" message for unapproved users
+- [ ] 🔵 Add admin user management test suite
+
+### Future — Port HRM Features to Platform
+> Develop in HRM repo first, then port to Platform using same patterns, fresh code.
+> HRM and Platform use SEPARATE databases. HRM is a standalone showpiece.
+
 - [ ] 🟣 Department & Team management
 - [ ] 🟣 Leave management system
 - [ ] 🟣 Performance review system
 - [ ] 🟣 Admin dashboard & analytics
-- [ ] 🟣 Audit logging (MongoDB + hash chain)
-- [ ] 🟣 i18n (next-intl, 18 locales)
+- [ ] 🟣 Audit logging
+- [ ] 🟣 i18n (next-intl)
 - [ ] 🔵 2FA (TOTP) support
 - [ ] 🔵 Concurrent session limiting

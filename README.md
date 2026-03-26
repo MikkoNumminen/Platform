@@ -2,11 +2,13 @@
 
 A Turborepo monorepo for a community platform built with Next.js 15, React 19, and Material UI.
 
+**Live:** [platform-numminenmikkopetteri-6027s-projects.vercel.app](https://platform-numminenmikkopetteri-6027s-projects.vercel.app)
+
 ## Structure
 
 ```
-apps/hrm/        — HRM application (git submodule from HRManager)
-apps/web/        — Community website (Next.js)
+apps/hrm/        — HRM application (git submodule, standalone showpiece)
+apps/web/        — Community platform (Next.js 15)
 packages/ui/     — Shared UI components (@platform/ui)
 packages/config/ — Shared types and config (@platform/config)
 ```
@@ -22,7 +24,8 @@ packages/config/ — Shared types and config (@platform/config)
 
 ### Security
 - **Authentication** — NextAuth v5 with Google and GitHub OAuth
-- **Role-based permissions** — Superuser, admin, and user roles with granular permission overrides
+- **Role-based permissions** — Superuser, admin, user, and pending roles with granular permission overrides
+- **Pending user approval** — New users get zero permissions until approved by an admin
 - **guardedAction** — Server action wrapper enforcing auth, permissions, and rate limiting
 - **Rate limiting** — PostgreSQL-based atomic sliding window (30 req/60s per user)
 - **Security headers** — CSP, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy
@@ -73,17 +76,36 @@ npx turbo run test --filter=web           # All tests
 npx turbo run test:coverage --filter=web  # With coverage
 ```
 
+## Architecture
+
+### Two apps, two databases
+
+Platform and HRM are **separate applications with separate databases**. They are both portfolio showpieces:
+
+- **Platform** — the production community app with boards, forums, calendar, user management
+- **HRM** — a standalone HR management showpiece (git submodule at `apps/hrm/`)
+
+New features are developed in the HRM repo first, then ported to Platform as needed using the same patterns but fresh code. HRM is never modified from within this repo.
+
+### User access model
+
+1. A new user signs in with Google OAuth
+2. They get a `"pending"` role with **zero permissions** — no access to community content
+3. An admin approves them via `/admin/users` and assigns a role (`user`, `admin`, or `superuser`)
+4. The first user to sign up automatically gets `superuser` role (bootstrap admin)
+
 ## Deployment
 
-The web app deploys to Vercel. Set the root directory to `apps/web` in your Vercel project settings.
+The web app auto-deploys to Vercel on every push to master. Vercel project settings:
+- **Root Directory:** `apps/web`
+- **Framework Preset:** Next.js
 
 Required environment variables:
-- `NEXT_PUBLIC_APP_NAME`
-- `DATABASE_URL`
-- `AUTH_SECRET`
-- `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET`
-- `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET`
-- `NEXT_PUBLIC_HRM_URL`
+- `DATABASE_URL` — PostgreSQL connection string
+- `AUTH_SECRET` — NextAuth secret (`openssl rand -base64 32`)
+- `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` — Google OAuth credentials
+- `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` — GitHub OAuth credentials (optional)
+- `NEXT_PUBLIC_APP_NAME` — App name displayed in UI
 
 ## CI/CD
 
