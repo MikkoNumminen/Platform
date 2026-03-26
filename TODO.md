@@ -31,5 +31,14 @@
 - [x] 🟣 Thread system — Claude 1
 - [x] 🟣 Calendar system — Claude 1
 
+## Themes
+- [ ] 🔵 Add WoW-inspired "Fantasy" theme — Claude 3 (in progress)
+
+## Testing
+- [x] 🔵 Add tests for board system — Claude 1
+- [x] 🔵 Add tests for forum system — Claude 1
+- [x] 🔵 Add tests for thread system — Claude 1
+- [x] 🔵 Add tests for calendar system — Claude 1
+
 ## Polish & Deployment
 - [ ] 🔵 Configure Vercel deployment for apps/web — Claude 1 (queued)
