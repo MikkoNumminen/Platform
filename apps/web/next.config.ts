@@ -1,8 +1,6 @@
 import type { NextConfig } from "next";
 import { withSecurityHeaders } from "./lib/security-headers";
 
-const nextConfig: NextConfig = withSecurityHeaders({
-  output: "standalone",
-});
+const nextConfig: NextConfig = withSecurityHeaders({});
 
 export default nextConfig;
