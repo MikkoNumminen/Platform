@@ -75,8 +75,6 @@ export default function UserMenu() {
         <MenuItem
           component="a"
           href={process.env.NEXT_PUBLIC_HRM_URL || "http://localhost:3000"}
-          target="_blank"
-          rel="noopener noreferrer"
         >
           Manage Users
         </MenuItem>
