@@ -1,5 +1,16 @@
 import { handlers, auth } from "@/auth";
 
+jest.mock("@/lib/db", () => ({
+  prisma: {
+    user: { findUnique: jest.fn(), count: jest.fn(), upsert: jest.fn() },
+    $transaction: jest.fn(),
+  },
+}));
+
+jest.mock("@/lib/permissions", () => ({
+  resolvePermissions: jest.fn(() => ({})),
+}));
+
 jest.mock("next-auth/providers/google", () => ({
   __esModule: true,
   default: { id: "google", name: "Google", type: "oidc" },

@@ -9,22 +9,49 @@ datasource db {
 // ─── User ────────────────────────────────────────────────────────────────────
 
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  name      String
-  avatarUrl String?
-  bio       String?
-  deletedAt DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id                 String    @id @default(uuid())
+  email              String    @unique
+  name               String?
+  image              String?
+  avatarUrl          String?
+  bio                String?
+  role               String    @default("user")
+  permissionsVersion Int       @default(0)
+  deletedAt          DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   posts          Post[]
   topics         Topic[]
   threads        Thread[]
   calendarEvents CalendarEvent[]
+  permissions    UserPermission[]
 
   @@index([deletedAt])
   @@index([email])
+}
+
+// ─── Permissions ──────────────────────────────────────────────────────────────
+
+model Permission {
+  id          String           @id @default(uuid())
+  key         String           @unique
+  description String?
+  users       UserPermission[]
+}
+
+model UserPermission {
+  id           String  @id @default(uuid())
+  userId       String
+  permissionId String
+  granted      Boolean @default(true)
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, permissionId])
+  @@index([userId])
+  @@index([permissionId])
 }
 
 // ─── Board System ────────────────────────────────────────────────────────────
