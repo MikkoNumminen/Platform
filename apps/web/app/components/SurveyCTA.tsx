@@ -1,24 +1,7 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import { Button, Card, CardContent, Typography } from "@mui/material";
 import { colors } from "../styles";
-import { LOCALSTORAGE_KEY } from "@/lib/survey-config";
 
 export default function SurveyCTA() {
-  const [submitted, setSubmitted] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    setSubmitted(localStorage.getItem(LOCALSTORAGE_KEY) === "true");
-  }, []);
-
-  // Don't render anything until we've checked localStorage (avoids flash)
-  if (submitted === null) return null;
-
-  if (submitted) {
-    return null;
-  }
-
   return (
     <Card
       sx={{

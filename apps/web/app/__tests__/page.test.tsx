@@ -35,6 +35,11 @@ jest.mock("@/lib/shout-queries", () => ({
   getRecentShouts: jest.fn().mockResolvedValue([]),
 }));
 
+const mockGetSurveyStatus = jest.fn();
+jest.mock("@/lib/survey-user-queries", () => ({
+  getUserSurveyStatus: (...args: unknown[]) => mockGetSurveyStatus(...args),
+}));
+
 import Home from "../page";
 
 describe("Home", () => {
@@ -43,6 +48,7 @@ describe("Home", () => {
   describe("authenticated user", () => {
     beforeEach(() => {
       mockAuth.mockResolvedValue({ user: { id: "u1", alias: "Test" } });
+      mockGetSurveyStatus.mockResolvedValue({ u1: false });
     });
 
     test("renders the TopBar with title", async () => {
@@ -55,9 +61,15 @@ describe("Home", () => {
       expect(screen.getByTestId("shoutbox")).toBeInTheDocument();
     });
 
-    test("renders SurveyCTA", async () => {
+    test("renders SurveyCTA when survey not completed", async () => {
       render(await Home());
       expect(screen.getByTestId("survey-cta")).toBeInTheDocument();
+    });
+
+    test("hides SurveyCTA when survey completed", async () => {
+      mockGetSurveyStatus.mockResolvedValue({ u1: true });
+      render(await Home());
+      expect(screen.queryByTestId("survey-cta")).not.toBeInTheDocument();
     });
   });
 
@@ -84,6 +96,7 @@ describe("Home", () => {
 
   test("has no accessibility violations", async () => {
     mockAuth.mockResolvedValue({ user: { id: "u1" } });
+    mockGetSurveyStatus.mockResolvedValue({ u1: false });
     const { container } = render(await Home());
     const results = await axe(container);
     expect(results).toHaveNoViolations();
