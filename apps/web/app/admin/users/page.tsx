@@ -91,9 +91,7 @@ export default async function AdminUsersPage() {
                         currentRole={user.role}
                         isSelf={user.id === session?.user?.id}
                       />
-                      {user.role === "pending" && (
-                        <ApproveButton userId={user.id} />
-                      )}
+                      {user.role === "pending" && <ApproveButton userId={user.id} />}
                       {!surveyStatus[user.id] && (
                         <Chip
                           label="Survey pending"
