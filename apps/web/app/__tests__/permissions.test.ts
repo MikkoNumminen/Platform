@@ -1,8 +1,8 @@
 import { resolvePermissions, ROLES, PERMISSIONS } from "@/lib/permissions";
 
 describe("permissions", () => {
-  test("ROLES contains superuser, admin, user, pending", () => {
-    expect(ROLES).toEqual(["superuser", "admin", "user", "pending"]);
+  test("ROLES contains all roles in hierarchy order", () => {
+    expect(ROLES).toEqual(["superuser", "vuohi", "admin", "user", "pending"]);
   });
 
   test("PERMISSIONS has expected keys", () => {
@@ -25,6 +25,14 @@ describe("permissions", () => {
       expect(perms["thread:create"]).toBe(true);
       expect(perms["admin:users"]).toBe(false);
       expect(perms["board:delete"]).toBe(false);
+    });
+
+    test("vuohi gets admin-level permissions including admin:users", () => {
+      const perms = resolvePermissions("vuohi");
+      expect(perms["admin:users"]).toBe(true);
+      expect(perms["admin:settings"]).toBe(true);
+      expect(perms["board:create"]).toBe(true);
+      expect(perms["survey:results"]).toBe(true);
     });
 
     test("admin gets most permissions but not admin:users", () => {

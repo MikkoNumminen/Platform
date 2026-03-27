@@ -2,9 +2,7 @@ import { metadata } from "../layout";
 
 describe("RootLayout metadata", () => {
   test("has correct default title", () => {
-    expect(metadata.title).toEqual(
-      expect.objectContaining({ default: "Platform" }),
-    );
+    expect(metadata.title).toEqual(expect.objectContaining({ default: "Platform" }));
   });
 
   test("has title template", () => {

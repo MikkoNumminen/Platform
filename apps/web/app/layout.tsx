@@ -17,9 +17,7 @@ export const metadata: Metadata = {
     template: `%s | ${appName}`,
   },
   description: "Community platform for members",
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_BASE_URL || "https://vuohiliitto.com",
-  ),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://vuohiliitto.com"),
   openGraph: {
     title: appName,
     description: "Community platform for members",

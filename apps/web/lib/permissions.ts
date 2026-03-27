@@ -1,4 +1,4 @@
-export const ROLES = ["superuser", "admin", "user", "pending"] as const;
+export const ROLES = ["superuser", "vuohi", "admin", "user", "pending"] as const;
 export type Role = (typeof ROLES)[number];
 
 export const PERMISSIONS = {
@@ -36,6 +36,29 @@ export type PermissionKey = keyof typeof PERMISSIONS;
 
 const ROLE_DEFAULTS: Record<Role, PermissionKey[]> = {
   superuser: Object.keys(PERMISSIONS) as PermissionKey[],
+  vuohi: [
+    "admin:users",
+    "admin:settings",
+    "board:create",
+    "board:edit",
+    "board:delete",
+    "post:create",
+    "post:edit",
+    "post:delete",
+    "forum:create",
+    "forum:edit",
+    "forum:delete",
+    "topic:create",
+    "topic:edit",
+    "topic:delete",
+    "thread:create",
+    "thread:edit",
+    "thread:delete",
+    "event:create",
+    "event:edit",
+    "event:delete",
+    "survey:results",
+  ],
   admin: [
     "board:create",
     "board:edit",

@@ -10,9 +10,6 @@
 
 - 🟣 **Ongoing:** Monitor CI pipeline and Vercel deployments, fix errors immediately — Claude 1
 
-### Vuohi Rank
-- [ ] 🔵 Add vuohi role to permissions system and admin UI — Claude 1
-
 ### Vuohi Exclusive Features
 > Features only visible to vuohi and superuser members.
 
