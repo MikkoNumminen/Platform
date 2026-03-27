@@ -16,13 +16,13 @@ export async function getThreadsByParent(
   const flat = await prisma.thread.findMany({
     where: { parentType, parentId, deletedAt: null },
     orderBy: { createdAt: "asc" },
-    include: { author: { select: { name: true } } },
+    include: { author: { select: { alias: true, name: true } } },
   });
 
   const threads: FlatThread[] = flat.map((t) => ({
     id: t.id,
     body: t.body,
-    authorName: t.author.name ?? "Unknown",
+    authorName: t.author.alias ?? t.author.name ?? "Unknown",
     createdAt: t.createdAt,
     replyToId: t.replyToId,
   }));

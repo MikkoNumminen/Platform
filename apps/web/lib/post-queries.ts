@@ -13,7 +13,7 @@ export async function getPostsByBoard(boardId: string): Promise<PostListItem[]> 
   const posts = await prisma.post.findMany({
     where: { boardId, deletedAt: null },
     orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
-    include: { author: { select: { name: true } } },
+    include: { author: { select: { alias: true, name: true } } },
   });
 
   return posts.map((p) => ({
@@ -21,7 +21,7 @@ export async function getPostsByBoard(boardId: string): Promise<PostListItem[]> 
     title: p.title,
     slug: p.slug,
     pinned: p.pinned,
-    authorName: p.author.name ?? "Unknown",
+    authorName: p.author.alias ?? p.author.name ?? "Unknown",
     createdAt: p.createdAt,
   }));
 }
@@ -40,7 +40,7 @@ export interface PostDetail {
 export async function getPostBySlug(boardId: string, postSlug: string): Promise<PostDetail | null> {
   const post = await prisma.post.findFirst({
     where: { boardId, slug: postSlug, deletedAt: null },
-    include: { author: { select: { name: true } } },
+    include: { author: { select: { alias: true, name: true } } },
   });
 
   if (!post) return null;
@@ -52,7 +52,7 @@ export async function getPostBySlug(boardId: string, postSlug: string): Promise<
     body: post.body,
     pinned: post.pinned,
     authorId: post.authorId,
-    authorName: post.author.name ?? "Unknown",
+    authorName: post.author.alias ?? post.author.name ?? "Unknown",
     createdAt: post.createdAt,
   };
 }

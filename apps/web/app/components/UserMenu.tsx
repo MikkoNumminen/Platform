@@ -47,6 +47,7 @@ export default function UserMenu() {
   }
 
   const user = session.user;
+  const displayName = user.alias ?? user.name;
   const permissions = (user.permissions as Record<string, boolean>) ?? {};
   const canManageUsers = Boolean(permissions["admin:users"]);
 
@@ -55,10 +56,10 @@ export default function UserMenu() {
       <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small">
         <Avatar
           src={user.image ?? undefined}
-          alt={user.name ?? "User"}
+          alt={displayName ?? "User"}
           sx={{ width: 32, height: 32, fontSize: "0.875rem" }}
         >
-          {getInitials(user.name)}
+          {getInitials(displayName)}
         </Avatar>
       </IconButton>
       <Menu
@@ -69,7 +70,7 @@ export default function UserMenu() {
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
         <Box sx={{ px: 2, py: 1 }}>
-          <Typography variant="subtitle2">{user.name}</Typography>
+          <Typography variant="subtitle2">{displayName}</Typography>
           <Typography variant="caption" color="text.secondary">
             {user.email}
           </Typography>

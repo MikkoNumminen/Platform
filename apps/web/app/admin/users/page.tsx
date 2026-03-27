@@ -57,14 +57,21 @@ export default async function AdminUsersPage() {
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                     <Avatar
                       src={user.image ?? undefined}
-                      alt={user.name ?? "User"}
+                      alt={user.alias ?? user.name ?? "User"}
                       sx={{ width: 32, height: 32, fontSize: "0.8rem" }}
                     >
-                      {user.name?.[0]?.toUpperCase() ?? "?"}
+                      {(user.alias ?? user.name)?.[0]?.toUpperCase() ?? "?"}
                     </Avatar>
-                    <Typography variant="body2" sx={{ color: colors.slate100 }}>
-                      {user.name ?? "—"}
-                    </Typography>
+                    <Box>
+                      <Typography variant="body2" sx={{ color: colors.slate100 }}>
+                        {user.alias ?? user.name ?? "—"}
+                      </Typography>
+                      {user.alias && user.name && (
+                        <Typography variant="caption" sx={{ color: colors.slate400 }}>
+                          {user.name}
+                        </Typography>
+                      )}
+                    </Box>
                   </Box>
                 </TableCell>
                 <TableCell sx={{ borderColor: colors.slate300 }}>
