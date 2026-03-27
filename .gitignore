@@ -4,6 +4,7 @@ dist
 .next
 .env
 .env.local
+.env.*-backup
 .claude/
 CLAUDE.md
 TODO.md
