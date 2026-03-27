@@ -30,91 +30,93 @@ export default async function AdminUsersPage() {
   const users = await getUsers();
 
   return (
-    <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
+    <>
       <TopBar title="Manage Users" backHref="/" />
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{ color: colors.slate400, borderColor: colors.slate300 }}>
-                User
-              </TableCell>
-              <TableCell sx={{ color: colors.slate400, borderColor: colors.slate300 }}>
-                Email
-              </TableCell>
-              <TableCell sx={{ color: colors.slate400, borderColor: colors.slate300 }}>
-                Role
-              </TableCell>
-              <TableCell sx={{ color: colors.slate400, borderColor: colors.slate300 }}>
-                Joined
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell sx={{ borderColor: colors.slate300 }}>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                    <Avatar
-                      src={user.image ?? undefined}
-                      alt={user.alias ?? user.name ?? "User"}
-                      sx={{ width: 32, height: 32, fontSize: "0.8rem" }}
-                    >
-                      {(user.alias ?? user.name)?.[0]?.toUpperCase() ?? "?"}
-                    </Avatar>
-                    <Box>
-                      <Typography variant="body2" sx={{ color: colors.slate100 }}>
-                        {user.alias ?? user.name ?? "—"}
-                      </Typography>
-                      {user.alias && user.name && (
-                        <Typography variant="caption" sx={{ color: colors.slate400 }}>
-                          {user.name}
-                        </Typography>
-                      )}
-                    </Box>
-                  </Box>
+      <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ color: colors.slate400, borderColor: colors.slate300 }}>
+                  User
                 </TableCell>
-                <TableCell sx={{ borderColor: colors.slate300 }}>
-                  <Typography variant="body2" sx={{ color: colors.slate400 }}>
-                    {user.email}
-                  </Typography>
+                <TableCell sx={{ color: colors.slate400, borderColor: colors.slate300 }}>
+                  Email
                 </TableCell>
-                <TableCell sx={{ borderColor: colors.slate300 }}>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <UserRoleSelect
-                      userId={user.id}
-                      currentRole={user.role}
-                      isSelf={user.id === session?.user?.id}
-                    />
-                    {user.role === "pending" && (
-                      <Chip
-                        label="Needs approval"
-                        size="small"
-                        sx={{
-                          backgroundColor: colors.warning,
-                          color: colors.slate700,
-                          fontWeight: 600,
-                          fontSize: "0.7rem",
-                        }}
-                      />
-                    )}
-                  </Box>
+                <TableCell sx={{ color: colors.slate400, borderColor: colors.slate300 }}>
+                  Role
                 </TableCell>
-                <TableCell sx={{ borderColor: colors.slate300 }}>
-                  <Typography variant="body2" sx={{ color: colors.slate400 }}>
-                    {user.createdAt.toLocaleDateString()}
-                  </Typography>
+                <TableCell sx={{ color: colors.slate400, borderColor: colors.slate300 }}>
+                  Joined
                 </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      {users.length === 0 && (
-        <Typography sx={{ color: colors.slate400, textAlign: "center", mt: 4 }}>
-          No users found.
-        </Typography>
-      )}
-    </Box>
+            </TableHead>
+            <TableBody>
+              {users.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell sx={{ borderColor: colors.slate300 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                      <Avatar
+                        src={user.image ?? undefined}
+                        alt={user.alias ?? user.name ?? "User"}
+                        sx={{ width: 32, height: 32, fontSize: "0.8rem" }}
+                      >
+                        {(user.alias ?? user.name)?.[0]?.toUpperCase() ?? "?"}
+                      </Avatar>
+                      <Box>
+                        <Typography variant="body2" sx={{ color: colors.slate100 }}>
+                          {user.alias ?? user.name ?? "—"}
+                        </Typography>
+                        {user.alias && user.name && (
+                          <Typography variant="caption" sx={{ color: colors.slate400 }}>
+                            {user.name}
+                          </Typography>
+                        )}
+                      </Box>
+                    </Box>
+                  </TableCell>
+                  <TableCell sx={{ borderColor: colors.slate300 }}>
+                    <Typography variant="body2" sx={{ color: colors.slate400 }}>
+                      {user.email}
+                    </Typography>
+                  </TableCell>
+                  <TableCell sx={{ borderColor: colors.slate300 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <UserRoleSelect
+                        userId={user.id}
+                        currentRole={user.role}
+                        isSelf={user.id === session?.user?.id}
+                      />
+                      {user.role === "pending" && (
+                        <Chip
+                          label="Needs approval"
+                          size="small"
+                          sx={{
+                            backgroundColor: colors.warning,
+                            color: colors.slate700,
+                            fontWeight: 600,
+                            fontSize: "0.7rem",
+                          }}
+                        />
+                      )}
+                    </Box>
+                  </TableCell>
+                  <TableCell sx={{ borderColor: colors.slate300 }}>
+                    <Typography variant="body2" sx={{ color: colors.slate400 }}>
+                      {user.createdAt.toLocaleDateString()}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        {users.length === 0 && (
+          <Typography sx={{ color: colors.slate400, textAlign: "center", mt: 4 }}>
+            No users found.
+          </Typography>
+        )}
+      </Box>
+    </>
   );
 }

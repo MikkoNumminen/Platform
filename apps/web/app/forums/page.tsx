@@ -33,22 +33,24 @@ const forums = [
 
 export default function ForumsPage() {
   return (
-    <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
+    <>
       <TopBar title="Forums" backHref="/" />
-      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
-        Browse community discussions by category.
-      </Typography>
-      <Stack spacing={1.5}>
-        {forums.map((forum) => (
-          <ForumCard
-            key={forum.id}
-            name={forum.name}
-            slug={forum.slug}
-            description={forum.description}
-            topicCount={forum.topicCount}
-          />
-        ))}
-      </Stack>
-    </Box>
+      <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
+          Browse community discussions by category.
+        </Typography>
+        <Stack spacing={1.5}>
+          {forums.map((forum) => (
+            <ForumCard
+              key={forum.id}
+              name={forum.name}
+              slug={forum.slug}
+              description={forum.description}
+              topicCount={forum.topicCount}
+            />
+          ))}
+        </Stack>
+      </Box>
+    </>
   );
 }

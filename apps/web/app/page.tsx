@@ -24,41 +24,46 @@ const sections = [
 
 export default function Home() {
   return (
-    <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
+    <>
       <TopBar title="Platform" />
-      <SurveyCTA />
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)" },
-          gap: 2,
-          mt: 2,
-        }}
-      >
-        {sections.map((section) => (
-          <Card
-            key={section.href}
-            sx={{
-              backgroundColor: colors.slate600,
-              border: `1px solid ${colors.slate300}`,
-              transition: "border-color 0.2s ease",
-              "&:hover": { borderColor: colors.green400 },
-            }}
-            elevation={0}
-          >
-            <CardActionArea component={Link} href={section.href}>
-              <CardContent>
-                <Typography variant="h6" sx={{ color: colors.slate100, fontWeight: 600, mb: 0.5 }}>
-                  {section.title}
-                </Typography>
-                <Typography variant="body2" sx={{ color: colors.slate400, lineHeight: 1.5 }}>
-                  {section.description}
-                </Typography>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        ))}
+      <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
+        <SurveyCTA />
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)" },
+            gap: 2,
+            mt: 2,
+          }}
+        >
+          {sections.map((section) => (
+            <Card
+              key={section.href}
+              sx={{
+                backgroundColor: colors.slate600,
+                border: `1px solid ${colors.slate300}`,
+                transition: "border-color 0.2s ease",
+                "&:hover": { borderColor: colors.green400 },
+              }}
+              elevation={0}
+            >
+              <CardActionArea component={Link} href={section.href}>
+                <CardContent>
+                  <Typography
+                    variant="h6"
+                    sx={{ color: colors.slate100, fontWeight: 600, mb: 0.5 }}
+                  >
+                    {section.title}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: colors.slate400, lineHeight: 1.5 }}>
+                    {section.description}
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          ))}
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 }

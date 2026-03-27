@@ -4,9 +4,11 @@ import SurveyForm from "../components/survey/SurveyForm";
 
 export default function SurveyPage() {
   return (
-    <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
+    <>
       <TopBar title="Community Survey" backHref="/" />
-      <SurveyForm />
-    </Box>
+      <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
+        <SurveyForm />
+      </Box>
+    </>
   );
 }

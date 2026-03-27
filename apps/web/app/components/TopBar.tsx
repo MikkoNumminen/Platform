@@ -19,12 +19,12 @@ export default function TopBar({ title, backHref }: TopBarProps) {
       sx={{
         mb: 1.5,
         backgroundColor: colors.slate600,
-        borderRadius: "4px",
-        border: `1px solid ${colors.slate300}`,
+        borderRadius: 0,
+        borderBottom: `1px solid ${colors.slate300}`,
       }}
       elevation={0}
     >
-      <Toolbar>
+      <Toolbar sx={{ maxWidth: 1280, width: "100%", mx: "auto", px: { xs: 1, sm: 2 } }}>
         {backHref && (
           <IconButton
             component={Link}

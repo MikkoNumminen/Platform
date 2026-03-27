@@ -143,78 +143,79 @@ export default async function TopicPage({ params }: TopicPageProps) {
   }
 
   return (
-    <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
+    <>
       <TopBar title={topic.title} backHref={`/forums/${slug}`} />
+      <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
+        {topic.locked && (
+          <Chip
+            icon={<LockIcon sx={{ fontSize: 16 }} />}
+            label="This topic is locked"
+            size="small"
+            sx={{
+              mb: 2,
+              backgroundColor: colors.warning,
+              color: colors.slate700,
+              fontWeight: 600,
+              "& .MuiChip-icon": { color: colors.slate700 },
+            }}
+          />
+        )}
 
-      {topic.locked && (
-        <Chip
-          icon={<LockIcon sx={{ fontSize: 16 }} />}
-          label="This topic is locked"
-          size="small"
+        <Paper
+          elevation={0}
           sx={{
-            mb: 2,
-            backgroundColor: colors.warning,
-            color: colors.slate700,
-            fontWeight: 600,
-            "& .MuiChip-icon": { color: colors.slate700 },
-          }}
-        />
-      )}
-
-      <Paper
-        elevation={0}
-        sx={{
-          backgroundColor: colors.slate700,
-          border: `1px solid ${colors.slate300}`,
-          borderRadius: "4px",
-          p: { xs: 2, sm: 3 },
-          mb: 3,
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            mb: 2,
+            backgroundColor: colors.slate700,
+            border: `1px solid ${colors.slate300}`,
+            borderRadius: "4px",
+            p: { xs: 2, sm: 3 },
+            mb: 3,
           }}
         >
-          <Typography variant="subtitle2" sx={{ color: colors.green400 }}>
-            {topic.authorName}
-          </Typography>
-          <Typography variant="caption" sx={{ color: colors.slate400 }}>
-            &middot; {topic.createdAt}
-          </Typography>
-        </Box>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              mb: 2,
+            }}
+          >
+            <Typography variant="subtitle2" sx={{ color: colors.green400 }}>
+              {topic.authorName}
+            </Typography>
+            <Typography variant="caption" sx={{ color: colors.slate400 }}>
+              &middot; {topic.createdAt}
+            </Typography>
+          </Box>
 
-        <Typography
-          variant="body1"
+          <Typography
+            variant="body1"
+            sx={{
+              color: colors.slate100,
+              whiteSpace: "pre-line",
+              lineHeight: 1.7,
+            }}
+          >
+            {topic.body}
+          </Typography>
+        </Paper>
+
+        <Divider sx={{ borderColor: colors.slate300, mb: 3 }} />
+
+        <Paper
+          elevation={0}
           sx={{
-            color: colors.slate100,
-            whiteSpace: "pre-line",
-            lineHeight: 1.7,
+            backgroundColor: colors.slate700,
+            border: `1px solid ${colors.slate300}`,
+            borderRadius: "4px",
+            p: { xs: 2, sm: 3 },
+            textAlign: "center",
           }}
         >
-          {topic.body}
-        </Typography>
-      </Paper>
-
-      <Divider sx={{ borderColor: colors.slate300, mb: 3 }} />
-
-      <Paper
-        elevation={0}
-        sx={{
-          backgroundColor: colors.slate700,
-          border: `1px solid ${colors.slate300}`,
-          borderRadius: "4px",
-          p: { xs: 2, sm: 3 },
-          textAlign: "center",
-        }}
-      >
-        <Typography variant="body2" sx={{ color: colors.slate400 }}>
-          Replies and comments coming soon.
-        </Typography>
-      </Paper>
-    </Box>
+          <Typography variant="body2" sx={{ color: colors.slate400 }}>
+            Replies and comments coming soon.
+          </Typography>
+        </Paper>
+      </Box>
+    </>
   );
 }

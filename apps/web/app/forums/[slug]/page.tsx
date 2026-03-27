@@ -155,41 +155,43 @@ export default async function ForumPage({ params }: ForumPageProps) {
   });
 
   return (
-    <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
+    <>
       <TopBar title={forum.name} backHref="/forums" />
-      <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
-        {forum.description}
-      </Typography>
-      <Paper
-        elevation={0}
-        sx={{
-          backgroundColor: colors.slate700,
-          border: `1px solid ${colors.slate300}`,
-          borderRadius: "4px",
-          overflow: "hidden",
-        }}
-      >
-        {sortedTopics.length === 0 ? (
-          <Box sx={{ p: 3, textAlign: "center" }}>
-            <Typography variant="body2" sx={{ color: colors.slate400 }}>
-              No topics yet. Be the first to start a discussion.
-            </Typography>
-          </Box>
-        ) : (
-          sortedTopics.map((topic) => (
-            <TopicListItem
-              key={topic.id}
-              title={topic.title}
-              slug={topic.slug}
-              forumSlug={forum.slug}
-              authorName={topic.authorName}
-              createdAt={topic.createdAt}
-              pinned={topic.pinned}
-              locked={topic.locked}
-            />
-          ))
-        )}
-      </Paper>
-    </Box>
+      <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
+        <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
+          {forum.description}
+        </Typography>
+        <Paper
+          elevation={0}
+          sx={{
+            backgroundColor: colors.slate700,
+            border: `1px solid ${colors.slate300}`,
+            borderRadius: "4px",
+            overflow: "hidden",
+          }}
+        >
+          {sortedTopics.length === 0 ? (
+            <Box sx={{ p: 3, textAlign: "center" }}>
+              <Typography variant="body2" sx={{ color: colors.slate400 }}>
+                No topics yet. Be the first to start a discussion.
+              </Typography>
+            </Box>
+          ) : (
+            sortedTopics.map((topic) => (
+              <TopicListItem
+                key={topic.id}
+                title={topic.title}
+                slug={topic.slug}
+                forumSlug={forum.slug}
+                authorName={topic.authorName}
+                createdAt={topic.createdAt}
+                pinned={topic.pinned}
+                locked={topic.locked}
+              />
+            ))
+          )}
+        </Paper>
+      </Box>
+    </>
   );
 }

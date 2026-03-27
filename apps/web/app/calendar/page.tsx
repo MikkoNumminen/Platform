@@ -77,18 +77,20 @@ export default async function CalendarPage() {
   }));
 
   return (
-    <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
+    <>
       <TopBar title="Calendar" backHref="/" />
-      <CalendarGrid
-        events={events}
-        onMonthChange={fetchEvents}
-        onCreateEvent={handleCreateEvent}
-        onUpdateEvent={handleUpdateEvent}
-        onDeleteEvent={handleDeleteEvent}
-        canCreate={Boolean(permissions["event:create"])}
-        canEdit={Boolean(permissions["event:edit"])}
-        canDelete={Boolean(permissions["event:delete"])}
-      />
-    </Box>
+      <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
+        <CalendarGrid
+          events={events}
+          onMonthChange={fetchEvents}
+          onCreateEvent={handleCreateEvent}
+          onUpdateEvent={handleUpdateEvent}
+          onDeleteEvent={handleDeleteEvent}
+          canCreate={Boolean(permissions["event:create"])}
+          canEdit={Boolean(permissions["event:edit"])}
+          canDelete={Boolean(permissions["event:delete"])}
+        />
+      </Box>
+    </>
   );
 }
