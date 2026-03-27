@@ -28,6 +28,9 @@ export type ErrorCode =
   | "eventTitleTooLong"
   | "eventNotFound"
   | "eventEndBeforeStart"
+  // Alias
+  | "invalidInput"
+  | "conflict"
   // General
   | "notFound"
   | "invalidId"
