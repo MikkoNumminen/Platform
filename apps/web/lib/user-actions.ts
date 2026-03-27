@@ -54,6 +54,20 @@ export const updateUserRole = guardedAction(
   },
 );
 
+export async function fetchUserPermissionOverrides(
+  userId: string,
+): Promise<Array<{ key: string; granted: boolean }>> {
+  const session = await auth();
+  const permissions = (session?.user as { permissions?: Record<string, boolean> })?.permissions;
+  if (!permissions?.["admin:users"]) return [];
+
+  const overrides = await prisma.userPermission.findMany({
+    where: { userId },
+    include: { permission: true },
+  });
+  return overrides.map((o) => ({ key: o.permission.key, granted: o.granted }));
+}
+
 export const updateUserPermissions = guardedAction(
   "admin:users",
   "admin:updatePermissions",

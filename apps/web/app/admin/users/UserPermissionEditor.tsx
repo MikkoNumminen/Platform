@@ -13,8 +13,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { PERMISSIONS, resolvePermissions, type PermissionKey } from "@/lib/permissions";
-import { getUserPermissionOverrides } from "@/lib/user-queries";
-import { updateUserPermissions } from "@/lib/user-actions";
+import { fetchUserPermissionOverrides, updateUserPermissions } from "@/lib/user-actions";
 import { colors } from "../../styles";
 
 interface UserPermissionEditorProps {
@@ -48,7 +47,7 @@ export default function UserPermissionEditor({
 
   useEffect(() => {
     if (open && !loaded) {
-      getUserPermissionOverrides(userId).then((result) => {
+      fetchUserPermissionOverrides(userId).then((result) => {
         const map: Record<string, boolean | null> = {};
         for (const o of result) {
           map[o.key] = o.granted;
