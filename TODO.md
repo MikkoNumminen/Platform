@@ -10,8 +10,15 @@
 
 - 🟣 **Ongoing:** Monitor CI pipeline and Vercel deployments, fix errors immediately — Claude 1
 
-### Site Icon
-- [ ] 🟣 Create goat head icon for all favicon/icon placements — Claude 2
+### Vuohi Rank
+- [ ] 🔵 Add vuohi role to permissions system and admin UI — Claude 1
+
+### Vuohi Exclusive Features
+> Features only visible to vuohi and superuser members.
+
+- [ ] 🟣 Exclusive vuohi view/dashboard (separate from regular user view)
+- [ ] 🟣 Shared calendar for vuohi members
+- [ ] 🟣 Additional vuohi-only features TBD
 
 ### Community Features — Review & Test (hidden from UI)
 > These features are hidden while we evaluate whether they're needed and in what form.
