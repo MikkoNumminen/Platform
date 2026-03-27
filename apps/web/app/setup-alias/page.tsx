@@ -60,8 +60,8 @@ export default function SetupAliasPage() {
             Choose your alias
           </Typography>
           <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ mb: 3 }}>
-            Pick a public display name. This will be shown instead of your real name in all community
-            areas.
+            Pick a public display name. This will be shown instead of your real name in all
+            community areas.
           </Typography>
 
           <Box component="form" onSubmit={handleSubmit}>

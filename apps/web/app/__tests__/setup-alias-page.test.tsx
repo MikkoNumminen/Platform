@@ -23,7 +23,10 @@ import SetupAliasPage from "@/app/setup-alias/page";
 describe("SetupAliasPage", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseSession.mockReturnValue({ data: { user: { id: "u1", alias: null } }, status: "authenticated" });
+    mockUseSession.mockReturnValue({
+      data: { user: { id: "u1", alias: null } },
+      status: "authenticated",
+    });
     mockSetAlias.mockResolvedValue(undefined);
     mockUpdate.mockResolvedValue(undefined);
   });
