@@ -2,10 +2,13 @@
 
 import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { colors } from "../styles";
 import ThemeSwitcher from "./ThemeSwitcher";
 import UserMenu from "./UserMenu";
+
+const ELEVATED_ROLES = ["superuser", "vuohi"];
 
 interface TopBarProps {
   title: string;
@@ -13,6 +16,11 @@ interface TopBarProps {
 }
 
 export default function TopBar({ title, backHref }: TopBarProps) {
+  const { data: session } = useSession();
+  const role = String(session?.user?.role || "");
+  const displayTitle =
+    title === "Platform" && ELEVATED_ROLES.includes(role) ? "Vuohiliitto" : title;
+
   return (
     <AppBar
       position="static"
@@ -44,7 +52,7 @@ export default function TopBar({ title, backHref }: TopBarProps) {
             fontSize: { xs: "1.1rem", sm: "1.5rem" },
           }}
         >
-          {title}
+          {displayTitle}
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <ThemeSwitcher />
