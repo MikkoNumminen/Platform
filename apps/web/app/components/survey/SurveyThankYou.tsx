@@ -2,9 +2,11 @@
 
 import { Box, Button, Typography } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import { useTranslations } from "next-intl";
 import { colors } from "../../styles";
 
 export default function SurveyThankYou() {
+  const t = useTranslations("survey.thankYou");
   return (
     <Box
       sx={{
@@ -28,13 +30,13 @@ export default function SurveyThankYou() {
         }}
       />
       <Typography variant="h4" gutterBottom>
-        Thank you!
+        {t("title")}
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        Your feedback will help us build something great.
+        {t("message")}
       </Typography>
       <Button variant="outlined" href="/">
-        Back to home
+        {t("backHome")}
       </Button>
     </Box>
   );

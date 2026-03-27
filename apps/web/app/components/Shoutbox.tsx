@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Box, TextField, Typography } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { colors } from "../styles";
 import { createShout } from "@/lib/shout-actions";
 import type { ShoutData } from "@/lib/shout-queries";
@@ -17,6 +18,7 @@ interface ShoutboxProps {
 
 export default function Shoutbox({ initialShouts }: ShoutboxProps) {
   const { data: session } = useSession();
+  const t = useTranslations("shoutbox");
   const [shouts, setShouts] = useState(initialShouts);
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
@@ -77,7 +79,7 @@ export default function Shoutbox({ initialShouts }: ShoutboxProps) {
           variant="caption"
           sx={{ color: colors.slate400, fontFamily: "inherit", fontWeight: 600 }}
         >
-          Shoutbox
+          {t("title")}
         </Typography>
       </Box>
 
@@ -100,7 +102,7 @@ export default function Shoutbox({ initialShouts }: ShoutboxProps) {
             variant="body2"
             sx={{ color: colors.slate400, fontFamily: "inherit", fontStyle: "italic" }}
           >
-            No messages yet. Be the first to shout!
+            {t("empty")}
           </Typography>
         ) : (
           shouts.map((shout) => (
@@ -161,7 +163,7 @@ export default function Shoutbox({ initialShouts }: ShoutboxProps) {
           <TextField
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type a message..."
+            placeholder={t("placeholder")}
             size="small"
             fullWidth
             autoComplete="off"

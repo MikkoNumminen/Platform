@@ -10,11 +10,13 @@ import CardContent from "@mui/material/CardContent";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Alert from "@mui/material/Alert";
+import { useTranslations } from "next-intl";
 import { setAlias } from "@/lib/alias-actions";
 
 export default function SetupAliasPage() {
   const { data: session, update } = useSession();
   const router = useRouter();
+  const t = useTranslations("alias");
   const [alias, setAliasValue] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -57,11 +59,10 @@ export default function SetupAliasPage() {
       <Card sx={{ maxWidth: 440, width: "100%", mx: 2 }}>
         <CardContent sx={{ p: 4 }}>
           <Typography variant="h5" component="h1" gutterBottom textAlign="center">
-            Choose your alias
+            {t("title")}
           </Typography>
           <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ mb: 3 }}>
-            Pick a public display name. This will be shown instead of your real name in all
-            community areas.
+            {t("description")}
           </Typography>
 
           <Box component="form" onSubmit={handleSubmit}>
@@ -89,7 +90,7 @@ export default function SetupAliasPage() {
               fullWidth
               disabled={submitting || alias.trim().length < 2}
             >
-              {submitting ? "Saving..." : "Set Alias"}
+              {submitting ? "Saving..." : t("button")}
             </Button>
           </Box>
         </CardContent>

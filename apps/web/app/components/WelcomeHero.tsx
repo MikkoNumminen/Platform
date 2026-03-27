@@ -2,9 +2,11 @@
 
 import { Box, Card, CardContent, Typography } from "@mui/material";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { colors } from "../styles";
 
 export default function WelcomeHero() {
+  const t = useTranslations("welcome");
   return (
     <Box
       sx={{
@@ -90,7 +92,7 @@ export default function WelcomeHero() {
                   textAlign: "center",
                 }}
               >
-                Welcome
+                {t("title")}
               </Typography>
             </motion.div>
 
@@ -103,14 +105,13 @@ export default function WelcomeHero() {
                 variant="body1"
                 sx={{ color: colors.slate100, mb: 1, textAlign: "center", lineHeight: 1.7 }}
               >
-                This is a private community platform.
+                {t("subtitle")}
               </Typography>
               <Typography
                 variant="body2"
                 sx={{ color: colors.slate400, textAlign: "center", lineHeight: 1.7 }}
               >
-                Sign in to get started. After signing in, you&apos;ll be asked to complete a quick
-                survey. An admin will then review and approve your account.
+                {t("description")}
               </Typography>
             </motion.div>
 
@@ -130,16 +131,16 @@ export default function WelcomeHero() {
                   }}
                 >
                   <Typography variant="body2" sx={{ color: colors.slate100 }}>
-                    <strong>1.</strong> Sign in with Google or GitHub
+                    <strong>1.</strong> {t("step1")}
                   </Typography>
                   <Typography variant="body2" sx={{ color: colors.slate100 }}>
-                    <strong>2.</strong> Choose your alias
+                    <strong>2.</strong> {t("step2")}
                   </Typography>
                   <Typography variant="body2" sx={{ color: colors.slate100 }}>
-                    <strong>3.</strong> Take the community survey
+                    <strong>3.</strong> {t("step3")}
                   </Typography>
                   <Typography variant="body2" sx={{ color: colors.slate100 }}>
-                    <strong>4.</strong> Wait for admin approval
+                    <strong>4.</strong> {t("step4")}
                   </Typography>
                 </Box>
               </Box>

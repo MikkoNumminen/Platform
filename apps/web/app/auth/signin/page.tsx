@@ -7,8 +7,10 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
+import { useTranslations } from "next-intl";
 
 export default function SignInPage() {
+  const t = useTranslations("auth");
   return (
     <Box
       sx={{
@@ -21,10 +23,10 @@ export default function SignInPage() {
       <Card sx={{ maxWidth: 400, width: "100%", mx: 2 }}>
         <CardContent sx={{ p: 4 }}>
           <Typography variant="h5" component="h1" gutterBottom textAlign="center">
-            Sign in
+            {t("signInTitle")}
           </Typography>
           <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ mb: 3 }}>
-            Choose a provider to continue
+            {t("signInTitle")}
           </Typography>
           <Divider sx={{ mb: 3 }} />
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -33,14 +35,14 @@ export default function SignInPage() {
               fullWidth
               onClick={() => signIn("google", { callbackUrl: "/" })}
             >
-              Continue with Google
+              {t("signInGoogle")}
             </Button>
             <Button
               variant="outlined"
               fullWidth
               onClick={() => signIn("github", { callbackUrl: "/" })}
             >
-              Continue with GitHub
+              {t("signInGithub")}
             </Button>
           </Box>
         </CardContent>

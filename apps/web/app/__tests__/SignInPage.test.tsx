@@ -22,25 +22,25 @@ describe("SignInPage", () => {
 
   test("renders Google sign in button", () => {
     render(<SignInPage />);
-    expect(screen.getByRole("button", { name: /continue with google/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /sign in with google/i })).toBeInTheDocument();
   });
 
   test("renders GitHub sign in button", () => {
     render(<SignInPage />);
-    expect(screen.getByRole("button", { name: /continue with github/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /sign in with github/i })).toBeInTheDocument();
   });
 
   test("calls signIn with google provider when Google button clicked", async () => {
     const user = userEvent.setup();
     render(<SignInPage />);
-    await user.click(screen.getByRole("button", { name: /continue with google/i }));
+    await user.click(screen.getByRole("button", { name: /sign in with google/i }));
     expect(mockSignIn).toHaveBeenCalledWith("google", { callbackUrl: "/" });
   });
 
   test("calls signIn with github provider when GitHub button clicked", async () => {
     const user = userEvent.setup();
     render(<SignInPage />);
-    await user.click(screen.getByRole("button", { name: /continue with github/i }));
+    await user.click(screen.getByRole("button", { name: /sign in with github/i }));
     expect(mockSignIn).toHaveBeenCalledWith("github", { callbackUrl: "/" });
   });
 

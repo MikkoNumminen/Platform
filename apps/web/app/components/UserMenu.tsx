@@ -19,6 +19,7 @@ import BugReportIcon from "@mui/icons-material/BugReport";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { colors } from "../styles";
 import { LOCALSTORAGE_KEY } from "@/lib/survey-config";
 
@@ -36,6 +37,8 @@ export default function UserMenu() {
   const { data: session } = useSession();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const router = useRouter();
+  const t = useTranslations("common");
+  const tm = useTranslations("userMenu");
 
   if (!session?.user) {
     return (
@@ -62,7 +65,7 @@ export default function UserMenu() {
           },
         }}
       >
-        Sign In
+        {t("signIn")}
       </Button>
     );
   }
@@ -101,12 +104,12 @@ export default function UserMenu() {
         <Divider />
         {canManageUsers && (
           <MenuItem component={Link} href="/admin/users">
-            Manage Users
+            {tm("manageUsers")}
           </MenuItem>
         )}
         {canViewSurveyResults && (
           <MenuItem component={Link} href="/admin/survey-results">
-            Survey Results
+            {tm("surveyResults")}
           </MenuItem>
         )}
         <Divider />
@@ -114,7 +117,7 @@ export default function UserMenu() {
           <ListItemIcon>
             <FeedbackIcon fontSize="small" />
           </ListItemIcon>
-          Feedback & Survey
+          {tm("feedbackSurvey")}
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -126,24 +129,24 @@ export default function UserMenu() {
           <ListItemIcon>
             <ReplayIcon fontSize="small" />
           </ListItemIcon>
-          Redo Survey
+          {tm("redoSurvey")}
         </MenuItem>
         {isApproved && (
           <MenuItem component={Link} href="/issues">
             <ListItemIcon>
               <ListAltIcon fontSize="small" />
             </ListItemIcon>
-            Issue Tracker
+            {tm("issueTracker")}
           </MenuItem>
         )}
         <MenuItem component={Link} href="/report-issue">
           <ListItemIcon>
             <BugReportIcon fontSize="small" />
           </ListItemIcon>
-          Report Issue
+          {tm("reportIssue")}
         </MenuItem>
         <Divider />
-        <MenuItem onClick={() => signOut()}>Sign Out</MenuItem>
+        <MenuItem onClick={() => signOut()}>{t("signOut")}</MenuItem>
       </Menu>
     </Box>
   );

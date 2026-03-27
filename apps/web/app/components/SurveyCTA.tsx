@@ -1,7 +1,11 @@
+"use client";
+
 import { Button, Card, CardContent, Typography } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { colors } from "../styles";
 
 export default function SurveyCTA() {
+  const t = useTranslations("survey.cta");
   return (
     <Card
       sx={{
@@ -13,11 +17,10 @@ export default function SurveyCTA() {
     >
       <CardContent sx={{ p: 4, textAlign: "center" }}>
         <Typography variant="h5" gutterBottom>
-          Help us build this
+          {t("heading")}
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-          We&apos;re building a new community platform and want your input. Take a quick survey to
-          tell us what features matter most to you.
+          {t("description")}
         </Typography>
         <Button
           variant="contained"
@@ -28,7 +31,7 @@ export default function SurveyCTA() {
             "&:hover": { backgroundColor: colors.green900 },
           }}
         >
-          Take the survey
+          {t("button")}
         </Button>
       </CardContent>
     </Card>
