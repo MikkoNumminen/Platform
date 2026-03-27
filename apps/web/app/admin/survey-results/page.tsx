@@ -3,10 +3,18 @@ import TopBar from "../../components/TopBar";
 import ResultsBarChart from "../../components/survey/ResultsBarChart";
 import TextResponseList from "../../components/survey/TextResponseList";
 import { getSurveyResults } from "@/lib/survey-queries";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default async function SurveyResultsPage() {
+  const session = await auth();
+  const permissions = (session?.user?.permissions as Record<string, boolean>) ?? {};
+  if (!permissions["survey:results"]) {
+    redirect("/");
+  }
+
   const results = await getSurveyResults();
 
   return (
