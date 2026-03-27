@@ -12,6 +12,7 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
+import Link from "next/link";
 import { colors } from "../styles";
 
 function getInitials(name?: string | null): string {
@@ -46,6 +47,8 @@ export default function UserMenu() {
   }
 
   const user = session.user;
+  const permissions = (user.permissions as Record<string, boolean>) ?? {};
+  const canManageUsers = Boolean(permissions["admin:users"]);
 
   return (
     <Box>
@@ -72,13 +75,11 @@ export default function UserMenu() {
           </Typography>
         </Box>
         <Divider />
-        <MenuItem
-          component="a"
-          href={process.env.NEXT_PUBLIC_HRM_URL || "http://localhost:3000"}
-        >
-          Manage Users
-        </MenuItem>
-        <Divider />
+        {canManageUsers && (
+          <MenuItem component={Link} href="/admin/users">
+            Manage Users
+          </MenuItem>
+        )}
         <MenuItem onClick={() => signOut()}>Sign Out</MenuItem>
       </Menu>
     </Box>

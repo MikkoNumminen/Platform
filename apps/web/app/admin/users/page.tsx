@@ -1,0 +1,113 @@
+export const dynamic = "force-dynamic";
+
+import {
+  Avatar,
+  Box,
+  Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
+import TopBar from "../../components/TopBar";
+import { getUsers } from "@/lib/user-queries";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { colors } from "../../styles";
+import UserRoleSelect from "./UserRoleSelect";
+
+export default async function AdminUsersPage() {
+  const session = await auth();
+  const permissions = (session?.user?.permissions as Record<string, boolean>) ?? {};
+
+  if (!permissions["admin:users"]) {
+    redirect("/");
+  }
+
+  const users = await getUsers();
+
+  return (
+    <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
+      <TopBar title="Manage Users" />
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ color: colors.slate400, borderColor: colors.slate300 }}>
+                User
+              </TableCell>
+              <TableCell sx={{ color: colors.slate400, borderColor: colors.slate300 }}>
+                Email
+              </TableCell>
+              <TableCell sx={{ color: colors.slate400, borderColor: colors.slate300 }}>
+                Role
+              </TableCell>
+              <TableCell sx={{ color: colors.slate400, borderColor: colors.slate300 }}>
+                Joined
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {users.map((user) => (
+              <TableRow key={user.id}>
+                <TableCell sx={{ borderColor: colors.slate300 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                    <Avatar
+                      src={user.image ?? undefined}
+                      alt={user.name ?? "User"}
+                      sx={{ width: 32, height: 32, fontSize: "0.8rem" }}
+                    >
+                      {user.name?.[0]?.toUpperCase() ?? "?"}
+                    </Avatar>
+                    <Typography variant="body2" sx={{ color: colors.slate100 }}>
+                      {user.name ?? "—"}
+                    </Typography>
+                  </Box>
+                </TableCell>
+                <TableCell sx={{ borderColor: colors.slate300 }}>
+                  <Typography variant="body2" sx={{ color: colors.slate400 }}>
+                    {user.email}
+                  </Typography>
+                </TableCell>
+                <TableCell sx={{ borderColor: colors.slate300 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <UserRoleSelect
+                      userId={user.id}
+                      currentRole={user.role}
+                      isSelf={user.id === session?.user?.id}
+                    />
+                    {user.role === "pending" && (
+                      <Chip
+                        label="Needs approval"
+                        size="small"
+                        sx={{
+                          backgroundColor: colors.warning,
+                          color: colors.slate700,
+                          fontWeight: 600,
+                          fontSize: "0.7rem",
+                        }}
+                      />
+                    )}
+                  </Box>
+                </TableCell>
+                <TableCell sx={{ borderColor: colors.slate300 }}>
+                  <Typography variant="body2" sx={{ color: colors.slate400 }}>
+                    {user.createdAt.toLocaleDateString()}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      {users.length === 0 && (
+        <Typography sx={{ color: colors.slate400, textAlign: "center", mt: 4 }}>
+          No users found.
+        </Typography>
+      )}
+    </Box>
+  );
+}

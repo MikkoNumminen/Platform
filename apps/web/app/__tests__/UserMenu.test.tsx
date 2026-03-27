@@ -69,20 +69,30 @@ describe("UserMenu", () => {
       expect(screen.getByText("test@example.com")).toBeInTheDocument();
     });
 
-    test("shows Manage Users link in menu", async () => {
+    test("hides Manage Users when user lacks admin:users permission", async () => {
       const user = userEvent.setup();
       render(<UserMenu />);
       await user.click(screen.getByRole("button"));
-      expect(screen.getByText("Manage Users")).toBeInTheDocument();
+      expect(screen.queryByText("Manage Users")).not.toBeInTheDocument();
     });
 
-    test("Manage Users links to HRM in same window", async () => {
+    test("shows Manage Users link for admin users", async () => {
+      mockSession = {
+        data: {
+          user: {
+            id: "user-1",
+            name: "Admin User",
+            email: "admin@example.com",
+            image: null,
+            permissions: { "admin:users": true },
+          },
+        },
+      };
       const user = userEvent.setup();
       render(<UserMenu />);
       await user.click(screen.getByRole("button"));
       const manageLink = screen.getByRole("menuitem", { name: /manage users/i });
-      expect(manageLink).toHaveAttribute("href");
-      expect(manageLink).not.toHaveAttribute("target", "_blank");
+      expect(manageLink).toHaveAttribute("href", "/admin/users");
     });
 
     test("calls signOut when Sign Out is clicked", async () => {

@@ -20,7 +20,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           if (!existing) {
             const userCount = await tx.user.count();
-            const role = userCount === 0 ? "superuser" : "user";
+            const role = userCount === 0 ? "superuser" : "pending";
 
             await tx.user.upsert({
               where: { email: user.email! },

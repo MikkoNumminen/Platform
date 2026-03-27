@@ -1,4 +1,4 @@
-export const ROLES = ["superuser", "admin", "user"] as const;
+export const ROLES = ["superuser", "admin", "user", "pending"] as const;
 export type Role = (typeof ROLES)[number];
 
 export const PERMISSIONS = {
@@ -58,13 +58,14 @@ const ROLE_DEFAULTS: Record<Role, PermissionKey[]> = {
     "survey:results",
   ],
   user: ["post:create", "topic:create", "thread:create", "event:create"],
+  pending: [],
 };
 
 export function resolvePermissions(
   role: string,
   overrides: Array<{ key: string; granted: boolean }> = [],
 ): Record<string, boolean> {
-  const defaults = ROLE_DEFAULTS[role as Role] || ROLE_DEFAULTS.user;
+  const defaults = ROLE_DEFAULTS[role as Role] || ROLE_DEFAULTS.pending;
   const permissions: Record<string, boolean> = {};
 
   for (const key of Object.keys(PERMISSIONS)) {

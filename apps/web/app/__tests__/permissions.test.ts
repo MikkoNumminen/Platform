@@ -1,8 +1,8 @@
 import { resolvePermissions, ROLES, PERMISSIONS } from "@/lib/permissions";
 
 describe("permissions", () => {
-  test("ROLES contains superuser, admin, user", () => {
-    expect(ROLES).toEqual(["superuser", "admin", "user"]);
+  test("ROLES contains superuser, admin, user, pending", () => {
+    expect(ROLES).toEqual(["superuser", "admin", "user", "pending"]);
   });
 
   test("PERMISSIONS has expected keys", () => {
@@ -34,10 +34,16 @@ describe("permissions", () => {
       expect(perms["admin:users"]).toBe(false);
     });
 
-    test("unknown role defaults to user permissions", () => {
+    test("pending role gets zero permissions", () => {
+      const perms = resolvePermissions("pending");
+      const allFalse = Object.values(perms).every((v) => v === false);
+      expect(allFalse).toBe(true);
+    });
+
+    test("unknown role defaults to pending permissions (zero)", () => {
       const perms = resolvePermissions("unknown");
-      const userPerms = resolvePermissions("user");
-      expect(perms).toEqual(userPerms);
+      const pendingPerms = resolvePermissions("pending");
+      expect(perms).toEqual(pendingPerms);
     });
 
     test("overrides can grant additional permissions", () => {
