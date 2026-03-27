@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
 import { withSecurityHeaders } from "./lib/security-headers";
+
+const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 const nextConfig: NextConfig = withSecurityHeaders({});
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

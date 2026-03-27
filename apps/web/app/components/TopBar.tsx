@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { colors } from "../styles";
 import ThemeSwitcher from "./ThemeSwitcher";
+import LanguageSwitcher from "./LanguageSwitcher";
 import UserMenu from "./UserMenu";
 
 const ELEVATED_ROLES = ["superuser", "vuohi"];
@@ -55,6 +56,7 @@ export default function TopBar({ title, backHref }: TopBarProps) {
           {displayTitle}
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <LanguageSwitcher />
           <ThemeSwitcher />
           <UserMenu />
         </Box>

@@ -1,0 +1,90 @@
+{
+  "common": {
+    "signIn": "Soo gal",
+    "signOut": "Ka bax",
+    "back": "Dib u noqo",
+    "submit": "Dir",
+    "submitting": "Waa la dirayaa...",
+    "save": "Kaydi",
+    "cancel": "Ka noqo",
+    "next": "Xiga",
+    "loading": "Waa la soo rarayaa..."
+  },
+  "topBar": {
+    "language": "Luqad",
+    "theme": "Muuqaal"
+  },
+  "welcome": {
+    "title": "Soo dhawoow",
+    "subtitle": "Tani waa barnamij bulshada oo gaar ah.",
+    "description": "Soo gal si aad u bilowdo. Ka dib marka aad soo gasho, waxaa lagaa codsanayaa inaad buuxiso xog-ururin yar. Maamulaha ayaa dib u eegaya oo oggolaanaya akoonkaaga.",
+    "step1": "Ku soo gal Google ama GitHub",
+    "step2": "Dooro magacaaga",
+    "step3": "Buuxi xog-uruurinta bulshada",
+    "step4": "Sug ogolaanshaha maamulaha"
+  },
+  "pending": {
+    "banner": "Soo dhawoow! Waad soo gashay. Fadlan buuxi xog-uruurinta hoose — maamulaha ayaa dib u eegaya gelitaankaaga ka dib markaad dirto."
+  },
+  "survey": {
+    "title": "Xog-uruurinta Bulshada",
+    "cta": {
+      "heading": "Naga caawi dhismaha",
+      "description": "Waxaan dhisaynaa barnamij bulshada oo cusub waxaanan rabna ra'yigaaga. Buuxi xog-ururin yar si aad noo sheegto sifooyinka kuugu muhiimsan.",
+      "button": "Buuxi xog-uruurinta"
+    },
+    "thankYou": {
+      "title": "Mahadsanid!",
+      "message": "Ra'yigaagu wuxuu naga caawimayaa inaan dhisno wax wanaagsan.",
+      "backHome": "Ku noqo bogga hore"
+    }
+  },
+  "shoutbox": {
+    "title": "Shoutbox",
+    "placeholder": "Qor fariin...",
+    "empty": "Fariimo ma jiraan wali. Noqo kii ugu horreeyay!"
+  },
+  "userMenu": {
+    "manageUsers": "Maamul isticmaalayaasha",
+    "surveyResults": "Natiijooyinka xog-uruurinta",
+    "feedbackSurvey": "Jawaab celin & xog-ururin",
+    "redoSurvey": "Dib u buuxi",
+    "issueTracker": "Raadraaca dhibaatooyinka",
+    "reportIssue": "Soo sheeg dhibaato"
+  },
+  "admin": {
+    "users": {
+      "title": "Maamul isticmaalayaasha",
+      "user": "Isticmaale",
+      "email": "Iimayl",
+      "role": "Door",
+      "joined": "Ku biiray",
+      "needsApproval": "U baahan ogolaansho",
+      "surveyDone": "Xog-ururin la dhammeeyay",
+      "surveyPending": "Xog-ururin la sugayo",
+      "approve": "Oggolow",
+      "noUsers": "Isticmaale lama helin."
+    },
+    "surveyResults": {
+      "title": "Natiijooyinka xog-uruurinta",
+      "totalResponses": "Wadarta jawaabaha",
+      "conversationStyle": "Hab-wadaagga wada hadalka",
+      "featurePopularity": "Caan-ka ah sifooyinka",
+      "mustHave": "#1 Sifada lagama maarmaan ah",
+      "dealbreaker": "#1 Waxa kaa celin kara",
+      "otherFeedback": "Jawaab celin kale",
+      "noResponses": "Jawaab ma jirto"
+    }
+  },
+  "auth": {
+    "signInTitle": "Soo gal",
+    "signInGoogle": "Ku soo gal Google",
+    "signInGithub": "Ku soo gal GitHub"
+  },
+  "alias": {
+    "title": "Dooro magacaaga",
+    "description": "Tani waxay u muuqan doontaa xubnaha kale ee bulshada.",
+    "placeholder": "Magacaaga",
+    "button": "Deji magaca"
+  }
+}

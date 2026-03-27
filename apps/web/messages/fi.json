@@ -1,0 +1,90 @@
+{
+  "common": {
+    "signIn": "Kirjaudu sisään",
+    "signOut": "Kirjaudu ulos",
+    "back": "Takaisin",
+    "submit": "Lähetä",
+    "submitting": "Lähetetään...",
+    "save": "Tallenna",
+    "cancel": "Peruuta",
+    "next": "Seuraava",
+    "loading": "Ladataan..."
+  },
+  "topBar": {
+    "language": "Kieli",
+    "theme": "Teema"
+  },
+  "welcome": {
+    "title": "Tervetuloa",
+    "subtitle": "Tämä on yksityinen yhteisöalusta.",
+    "description": "Kirjaudu sisään aloittaaksesi. Kirjautumisen jälkeen sinua pyydetään vastaamaan lyhyeen kyselyyn. Ylläpitäjä tarkistaa ja hyväksyy tilisi.",
+    "step1": "Kirjaudu Googlella tai GitHubilla",
+    "step2": "Valitse nimimerkki",
+    "step3": "Vastaa yhteisökyselyyn",
+    "step4": "Odota ylläpitäjän hyväksyntää"
+  },
+  "pending": {
+    "banner": "Tervetuloa! Olet kirjautunut sisään. Täytä alla oleva kysely — ylläpitäjä tarkistaa pääsysi sen jälkeen."
+  },
+  "survey": {
+    "title": "Yhteisökysely",
+    "cta": {
+      "heading": "Auta meitä rakentamaan tämä",
+      "description": "Rakennamme uutta yhteisöalustaa ja haluamme mielipiteesi. Vastaa lyhyeen kyselyyn kertoaksesi mitkä ominaisuudet ovat sinulle tärkeimpiä.",
+      "button": "Vastaa kyselyyn"
+    },
+    "thankYou": {
+      "title": "Kiitos!",
+      "message": "Palautteesi auttaa meitä rakentamaan jotain hienoa.",
+      "backHome": "Takaisin etusivulle"
+    }
+  },
+  "shoutbox": {
+    "title": "Shoutbox",
+    "placeholder": "Kirjoita viesti...",
+    "empty": "Ei viestejä vielä. Ole ensimmäinen!"
+  },
+  "userMenu": {
+    "manageUsers": "Hallinnoi käyttäjiä",
+    "surveyResults": "Kyselyn tulokset",
+    "feedbackSurvey": "Palaute ja kysely",
+    "redoSurvey": "Vastaa uudelleen",
+    "issueTracker": "Ongelmaseuranta",
+    "reportIssue": "Ilmoita ongelma"
+  },
+  "admin": {
+    "users": {
+      "title": "Hallinnoi käyttäjiä",
+      "user": "Käyttäjä",
+      "email": "Sähköposti",
+      "role": "Rooli",
+      "joined": "Liittynyt",
+      "needsApproval": "Odottaa hyväksyntää",
+      "surveyDone": "Kysely tehty",
+      "surveyPending": "Kysely tekemättä",
+      "approve": "Hyväksy",
+      "noUsers": "Käyttäjiä ei löytynyt."
+    },
+    "surveyResults": {
+      "title": "Kyselyn tulokset",
+      "totalResponses": "Vastauksia yhteensä",
+      "conversationStyle": "Keskustelutyylien suosio",
+      "featurePopularity": "Ominaisuuksien suosio",
+      "mustHave": "#1 Välttämätön ominaisuus",
+      "dealbreaker": "#1 Kynnyskysymys",
+      "otherFeedback": "Muu palaute",
+      "noResponses": "Ei vastauksia"
+    }
+  },
+  "auth": {
+    "signInTitle": "Kirjaudu sisään",
+    "signInGoogle": "Kirjaudu Googlella",
+    "signInGithub": "Kirjaudu GitHubilla"
+  },
+  "alias": {
+    "title": "Valitse nimimerkki",
+    "description": "Tämä näkyy muille yhteisön jäsenille.",
+    "placeholder": "Nimimerkkisi",
+    "button": "Aseta nimimerkki"
+  }
+}

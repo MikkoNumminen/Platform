@@ -1,0 +1,90 @@
+{
+  "common": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "back": "Back",
+    "submit": "Submit",
+    "submitting": "Submitting...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "next": "Next",
+    "loading": "Loading..."
+  },
+  "topBar": {
+    "language": "Language",
+    "theme": "Theme"
+  },
+  "welcome": {
+    "title": "Welcome",
+    "subtitle": "This is a private community platform.",
+    "description": "Sign in to get started. After signing in, you'll be asked to complete a quick survey. An admin will then review and approve your account.",
+    "step1": "Sign in with Google or GitHub",
+    "step2": "Choose your alias",
+    "step3": "Take the community survey",
+    "step4": "Wait for admin approval"
+  },
+  "pending": {
+    "banner": "Welcome! You are signed in. Please complete the survey below — an admin will review your access after you submit it."
+  },
+  "survey": {
+    "title": "Community Survey",
+    "cta": {
+      "heading": "Help us build this",
+      "description": "We're building a new community platform and want your input. Take a quick survey to tell us what features matter most to you.",
+      "button": "Take the survey"
+    },
+    "thankYou": {
+      "title": "Thank you!",
+      "message": "Your feedback will help us build something great.",
+      "backHome": "Back to home"
+    }
+  },
+  "shoutbox": {
+    "title": "Shoutbox",
+    "placeholder": "Type a message...",
+    "empty": "No messages yet. Be the first!"
+  },
+  "userMenu": {
+    "manageUsers": "Manage Users",
+    "surveyResults": "Survey Results",
+    "feedbackSurvey": "Feedback & Survey",
+    "redoSurvey": "Redo Survey",
+    "issueTracker": "Issue Tracker",
+    "reportIssue": "Report Issue"
+  },
+  "admin": {
+    "users": {
+      "title": "Manage Users",
+      "user": "User",
+      "email": "Email",
+      "role": "Role",
+      "joined": "Joined",
+      "needsApproval": "Needs approval",
+      "surveyDone": "Survey done",
+      "surveyPending": "Survey pending",
+      "approve": "Approve",
+      "noUsers": "No users found."
+    },
+    "surveyResults": {
+      "title": "Survey Results",
+      "totalResponses": "Total responses",
+      "conversationStyle": "Conversation Style Preference",
+      "featurePopularity": "Feature Popularity",
+      "mustHave": "#1 Must-Have Feature",
+      "dealbreaker": "#1 Dealbreaker",
+      "otherFeedback": "Other Feedback",
+      "noResponses": "No responses"
+    }
+  },
+  "auth": {
+    "signInTitle": "Sign In",
+    "signInGoogle": "Sign in with Google",
+    "signInGithub": "Sign in with GitHub"
+  },
+  "alias": {
+    "title": "Choose your alias",
+    "description": "This will be visible to other community members.",
+    "placeholder": "Your alias",
+    "button": "Set alias"
+  }
+}

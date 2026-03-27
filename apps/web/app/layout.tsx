@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Cinzel } from "next/font/google";
 import { Box } from "@mui/material";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import ThemeRegistry from "./components/ThemeRegistry";
 import SessionProvider from "./components/SessionProvider";
 import SnackbarProvider from "./components/SnackbarProvider";
@@ -40,26 +42,31 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="fi" className={cinzel.variable}>
+    <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} className={cinzel.variable}>
       <body>
         <SessionProvider>
-          <AppRouterCacheProvider>
-            <ThemeRegistry>
-              <SnackbarProvider>
-                <AliasGuard />
-                <PendingGate />
-                <Box sx={{ pt: 2 }}>
-                  <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-                    <PendingBanner />
+          <NextIntlClientProvider locale={locale} messages={messages}>
+            <AppRouterCacheProvider>
+              <ThemeRegistry>
+                <SnackbarProvider>
+                  <AliasGuard />
+                  <PendingGate />
+                  <Box sx={{ pt: 2 }}>
+                    <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
+                      <PendingBanner />
+                    </Box>
+                    {children}
                   </Box>
-                  {children}
-                </Box>
-                <KeyboardShortcuts />
-              </SnackbarProvider>
-            </ThemeRegistry>
-          </AppRouterCacheProvider>
+                  <KeyboardShortcuts />
+                </SnackbarProvider>
+              </ThemeRegistry>
+            </AppRouterCacheProvider>
+          </NextIntlClientProvider>
         </SessionProvider>
       </body>
     </html>
