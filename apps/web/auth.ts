@@ -5,10 +5,7 @@ import { prisma } from "@/lib/db";
 import { resolvePermissions } from "@/lib/permissions";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  providers: [
-    Google({ authorization: { params: { prompt: "select_account" } } }),
-    GitHub,
-  ],
+  providers: [Google({ authorization: { params: { prompt: "select_account" } } }), GitHub],
   pages: { signIn: "/auth/signin" },
   session: { strategy: "jwt" },
   callbacks: {
