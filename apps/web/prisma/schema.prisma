@@ -12,10 +12,11 @@ model User {
   id                 String    @id @default(uuid())
   email              String    @unique
   name               String?
+  alias              String?   @unique
   image              String?
   avatarUrl          String?
   bio                String?
-  role               String    @default("user")
+  role               String    @default("pending")
   permissionsVersion Int       @default(0)
   deletedAt          DateTime?
   createdAt          DateTime  @default(now())
