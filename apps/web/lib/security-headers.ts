@@ -2,17 +2,19 @@ import type { NextConfig } from "next";
 
 type Header = { key: string; value: string };
 
+const isDev = process.env.NODE_ENV === "development";
+
 export const securityHeaders: Header[] = [
   {
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      // Next.js requires 'unsafe-eval' in dev; MUI requires 'unsafe-inline' for styles
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+      // 'unsafe-eval' only in dev (Next.js HMR); 'unsafe-inline' required by MUI emotion
+      `script-src 'self'${isDev ? " 'unsafe-eval'" : ""} 'unsafe-inline'`,
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: https:",
-      "font-src 'self' data:",
-      "connect-src 'self' https:",
+      "img-src 'self' data: https://lh3.googleusercontent.com https://avatars.githubusercontent.com",
+      "font-src 'self' data: https://fonts.gstatic.com",
+      "connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com https://github.com https://api.github.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",

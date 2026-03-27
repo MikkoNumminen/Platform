@@ -50,6 +50,26 @@ describe("securityHeaders", () => {
     const csp = securityHeaders.find((h) => h.key === "Content-Security-Policy");
     expect(csp!.value).toContain("style-src 'self' 'unsafe-inline'");
   });
+
+  test("CSP does not include unsafe-eval in test/production", () => {
+    const csp = securityHeaders.find((h) => h.key === "Content-Security-Policy");
+    expect(csp!.value).not.toContain("unsafe-eval");
+  });
+
+  test("CSP restricts connect-src to specific OAuth domains", () => {
+    const csp = securityHeaders.find((h) => h.key === "Content-Security-Policy");
+    expect(csp!.value).toContain("connect-src 'self'");
+    expect(csp!.value).toContain("accounts.google.com");
+    expect(csp!.value).toContain("api.github.com");
+    // Should not allow blanket https: (no space after colon = scheme wildcard)
+    expect(csp!.value).not.toMatch(/connect-src[^;]*\shttps:(?!\/)/);
+  });
+
+  test("CSP restricts img-src to OAuth avatar domains", () => {
+    const csp = securityHeaders.find((h) => h.key === "Content-Security-Policy");
+    expect(csp!.value).toContain("lh3.googleusercontent.com");
+    expect(csp!.value).toContain("avatars.githubusercontent.com");
+  });
 });
 
 describe("withSecurityHeaders", () => {
