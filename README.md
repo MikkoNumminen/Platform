@@ -2,7 +2,9 @@
 
 A Turborepo monorepo for a community platform built with Next.js 15, React 19, and Material UI.
 
-**Live:** [platform-numminenmikkopetteri-6027s-projects.vercel.app](https://platform-numminenmikkopetteri-6027s-projects.vercel.app)
+**Live:** [vuohiliitto.com](https://vuohiliitto.com) (production) | [Vercel deployment](https://platform-numminenmikkopetteri-6027s-projects.vercel.app)
+
+> This platform is in active production use by a real community, with the custom domain vuohiliitto.com configured on Vercel.
 
 ## Structure
 
@@ -21,12 +23,15 @@ packages/config/ — Shared types and config (@platform/config)
 - **Forums** — Discussion forums with topics and threaded replies
 - **Calendar** — Monthly calendar view with event creation, editing, and deletion
 - **User aliases** — Public display names (callsigns) shown instead of real names in all community areas
-- **Themes** — 7 switchable themes (dark, light, cyberpunk, retro, bubblegum, ocean, fantasy)
-- **Community Survey** — Feature prioritization survey with admin results dashboard
+- **Themes** — 8 switchable themes including Epic (WoW-inspired with Cinzel font, textured backgrounds, red beveled buttons, gold ornamental borders)
+- **i18n** — Multilingual support (Finnish, English, Somali, Arabic) via next-intl with cookie-based locale detection, Accept-Language fallback, and RTL support for Arabic
+- **Community Survey** — Feature prioritization survey with admin results dashboard and server-side completion tracking
+- **Pending user gate** — New users are redirected to the survey and cannot access the platform until an admin approves them
 
 ### Security
 - **Authentication** — NextAuth v5 with Google and GitHub OAuth
-- **Role-based permissions** — Superuser, admin, user, and pending roles with granular permission overrides
+- **Role-based permissions** — Superuser, vuohi, admin, user, and pending roles with granular permission overrides
+- **Role hierarchy protection** — Only superusers can modify superuser/vuohi roles
 - **Pending user approval** — New users get zero permissions until approved by an admin
 - **guardedAction** — Server action wrapper enforcing auth, permissions, and rate limiting
 - **Rate limiting** — PostgreSQL-based atomic sliding window (30 req/60s per user)
@@ -41,6 +46,8 @@ packages/config/ — Shared types and config (@platform/config)
 ### UX Polish
 - **Loading skeletons** — Skeleton loading states for all routes
 - **Keyboard shortcuts** — `g+h/b/f/c` for navigation, `?` for help dialog
+- **Welcome page** — Animated landing page with sign-in arrow for unauthenticated users
+- **Goat favicon** — Custom SVG goat head icon matching the community identity
 
 ## Getting started
 
@@ -71,7 +78,7 @@ npx turbo run build --filter=web # Production build
 
 ## Testing
 
-550 tests across 76 test suites with accessibility checks (jest-axe).
+578 tests across 81 test suites with accessibility checks (jest-axe).
 
 ```bash
 npx turbo run test --filter=web           # All tests
@@ -93,8 +100,9 @@ New features are developed in the HRM repo first, then ported to Platform as nee
 
 1. A new user signs in with Google or GitHub OAuth
 2. They choose a public alias (callsign) on first login — shown instead of real name everywhere
-3. They get a `"pending"` role with **zero permissions** — no access to community content
-4. An admin approves them via `/admin/users` and assigns a role (`user`, `admin`, or `superuser`)
+3. They complete a community survey (required before approval)
+4. They get a `"pending"` role with **zero permissions** — redirected to the survey, no access to community content
+5. An admin approves them via `/admin/users` (which shows survey completion status) and assigns a role
 5. The first user to sign up automatically gets `superuser` role (bootstrap admin)
 
 ## Deployment
@@ -109,9 +117,12 @@ Required environment variables:
 - `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` — Google OAuth credentials
 - `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` — GitHub OAuth credentials (optional)
 - `NEXT_PUBLIC_APP_NAME` — App name displayed in UI
+- `NEXT_PUBLIC_BASE_URL` — Production URL for OG meta tags (default: `https://vuohiliitto.com`)
 
 ## CI/CD
 
 GitHub Actions runs lint, format check, tests, and build on every push to master and pull request.
 
-A **pre-push git hook** (via Husky) runs all tests locally before allowing a push — untested code cannot reach the repository.
+Git hooks (via Husky):
+- **Pre-commit** — lint-staged runs Prettier on staged files
+- **Pre-push** — ESLint, Prettier check, and full test suite must pass before code reaches the repository
