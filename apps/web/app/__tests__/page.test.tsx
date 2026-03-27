@@ -60,9 +60,9 @@ describe("Home", () => {
       mockAuth.mockResolvedValue(null);
     });
 
-    test("renders SurveyCTA", async () => {
+    test("does not render SurveyCTA", async () => {
       render(await Home());
-      expect(screen.getByTestId("survey-cta")).toBeInTheDocument();
+      expect(screen.queryByTestId("survey-cta")).not.toBeInTheDocument();
     });
 
     test("does not render Shoutbox", async () => {

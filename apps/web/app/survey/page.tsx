@@ -1,8 +1,15 @@
 import { Box } from "@mui/material";
+import { redirect } from "next/navigation";
 import TopBar from "../components/TopBar";
 import SurveyForm from "../components/survey/SurveyForm";
+import { auth } from "@/auth";
 
-export default function SurveyPage() {
+export default async function SurveyPage() {
+  const session = await auth();
+  if (!session?.user) {
+    redirect("/auth/signin");
+  }
+
   return (
     <>
       <TopBar title="Community Survey" backHref="/" />
