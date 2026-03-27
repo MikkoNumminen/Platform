@@ -71,7 +71,7 @@ npx turbo run build --filter=web # Production build
 
 ## Testing
 
-486 tests across 68 test suites with accessibility checks (jest-axe).
+527 tests across 74 test suites with accessibility checks (jest-axe).
 
 ```bash
 npx turbo run test --filter=web           # All tests
@@ -113,3 +113,5 @@ Required environment variables:
 ## CI/CD
 
 GitHub Actions runs lint, format check, tests, and build on every push to master and pull request.
+
+A **pre-push git hook** (via Husky) runs all tests locally before allowing a push — untested code cannot reach the repository.

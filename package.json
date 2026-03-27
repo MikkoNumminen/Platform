@@ -7,6 +7,10 @@
   ],
   "packageManager": "npm@10.9.4",
   "devDependencies": {
+    "husky": "^9.1.7",
     "turbo": "^2.8.20"
+  },
+  "scripts": {
+    "prepare": "husky"
   }
 }
