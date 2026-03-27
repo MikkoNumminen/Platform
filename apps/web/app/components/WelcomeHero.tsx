@@ -23,30 +23,26 @@ export default function WelcomeHero() {
         transition={{ duration: 0.6 }}
         style={{ position: "relative", maxWidth: 520, width: "100%" }}
       >
-        {/* Arrow + label positioned at top-right of card, pointing up toward Sign In */}
+        {/* Arrow pointing up toward Sign In button */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1, duration: 0.5 }}
           style={{
             position: "absolute",
-            top: -70,
-            right: -30,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            top: -160,
+            right: -60,
           }}
         >
           <motion.svg
-            width="100"
-            height="60"
-            viewBox="0 0 100 60"
+            width="180"
+            height="150"
+            viewBox="0 0 180 150"
             fill="none"
             style={{ overflow: "visible" }}
           >
-            {/* Curving arrow going up and to the right */}
             <motion.path
-              d="M 20 55 Q 30 20 60 10 Q 80 4 90 2"
+              d="M 30 145 Q 50 80 90 50 Q 130 20 165 8"
               stroke="var(--platform-green400)"
               strokeWidth="2.5"
               strokeLinecap="round"
@@ -55,9 +51,8 @@ export default function WelcomeHero() {
               animate={{ pathLength: 1 }}
               transition={{ duration: 1, delay: 1.2, ease: "easeInOut" }}
             />
-            {/* Arrowhead */}
             <motion.path
-              d="M 84 -2 L 92 2 L 86 9"
+              d="M 158 2 L 167 7 L 160 14"
               stroke="var(--platform-green400)"
               strokeWidth="2.5"
               strokeLinecap="round"
@@ -68,17 +63,6 @@ export default function WelcomeHero() {
               transition={{ duration: 0.3, delay: 2.2 }}
             />
           </motion.svg>
-          <motion.div
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 2.5 }}
-          >
-            <Typography
-              variant="caption"
-              sx={{ color: colors.green400, fontWeight: 600, whiteSpace: "nowrap" }}
-            >
-              Click Sign In
-            </Typography>
-          </motion.div>
         </motion.div>
 
         <Card

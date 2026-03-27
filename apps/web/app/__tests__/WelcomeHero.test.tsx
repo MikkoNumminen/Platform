@@ -39,9 +39,9 @@ describe("WelcomeHero", () => {
     expect(screen.getByText(/wait for admin approval/i)).toBeInTheDocument();
   });
 
-  test("renders sign in prompt text", () => {
+  test("does not render 'Click Sign In' text", () => {
     render(<WelcomeHero />);
-    expect(screen.getByText(/click sign in/i)).toBeInTheDocument();
+    expect(screen.queryByText(/click sign in/i)).not.toBeInTheDocument();
   });
 
   test("renders private community description", () => {
