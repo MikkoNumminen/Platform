@@ -50,6 +50,7 @@ export default function UserMenu() {
   const displayName = user.alias ?? user.name;
   const permissions = (user.permissions as Record<string, boolean>) ?? {};
   const canManageUsers = Boolean(permissions["admin:users"]);
+  const canViewSurveyResults = Boolean(permissions["survey:results"]);
 
   return (
     <Box>
@@ -79,6 +80,11 @@ export default function UserMenu() {
         {canManageUsers && (
           <MenuItem component={Link} href="/admin/users">
             Manage Users
+          </MenuItem>
+        )}
+        {canViewSurveyResults && (
+          <MenuItem component={Link} href="/admin/survey-results">
+            Survey Results
           </MenuItem>
         )}
         <MenuItem onClick={() => signOut()}>Sign Out</MenuItem>
