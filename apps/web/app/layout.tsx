@@ -9,9 +9,29 @@ import PendingBanner from "./components/PendingBanner";
 import PendingGate from "./components/PendingGate";
 import AliasGuard from "./components/AliasGuard";
 
+const appName = process.env.NEXT_PUBLIC_APP_NAME || "Platform";
+
 export const metadata: Metadata = {
-  title: "Platform",
-  icons: [],
+  title: {
+    default: appName,
+    template: `%s | ${appName}`,
+  },
+  description: "Community platform for members",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL || "https://vuohiliitto.com",
+  ),
+  openGraph: {
+    title: appName,
+    description: "Community platform for members",
+    siteName: appName,
+    locale: "fi_FI",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: appName,
+    description: "Community platform for members",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

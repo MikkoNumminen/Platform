@@ -10,6 +10,9 @@
 
 - 🟣 **Ongoing:** Monitor CI pipeline and Vercel deployments, fix errors immediately — Claude 1
 
+### Site Icon
+- [ ] 🟣 Create goat head icon for all favicon/icon placements — Claude 2
+
 ### Community Features — Review & Test (hidden from UI)
 > These features are hidden while we evaluate whether they're needed and in what form.
 

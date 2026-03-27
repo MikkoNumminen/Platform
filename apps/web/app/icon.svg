@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="hornGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFD100"/>
+      <stop offset="100%" stop-color="#C9A94E"/>
+    </linearGradient>
+    <linearGradient id="faceGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F2D899"/>
+      <stop offset="100%" stop-color="#C9A94E"/>
+    </linearGradient>
+  </defs>
+  <circle cx="256" cy="256" r="250" fill="#0D0A05"/>
+  <circle cx="256" cy="256" r="242" fill="none" stroke="#C9A94E" stroke-width="3" opacity="0.5"/>
+  <path d="M200 230 C180 180, 120 100, 60 50 C55 46, 52 50, 56 58 C90 120, 140 180, 185 235" fill="url(#hornGrad)" stroke="#8B7340" stroke-width="2"/>
+  <path d="M312 230 C332 180, 392 100, 452 50 C457 46, 460 50, 456 58 C422 120, 372 180, 327 235" fill="url(#hornGrad)" stroke="#8B7340" stroke-width="2"/>
+  <path d="M256 200 C310 200, 340 235, 340 270 C340 310, 320 350, 300 375 C285 395, 270 420, 256 440 C242 420, 227 395, 212 375 C192 350, 172 310, 172 270 C172 235, 202 200, 256 200Z" fill="url(#faceGrad)" stroke="#8B7340" stroke-width="2"/>
+  <path d="M220 225 C240 215, 272 215, 292 225" fill="none" stroke="#8B7340" stroke-width="2" opacity="0.6"/>
+  <ellipse cx="218" cy="280" rx="18" ry="14" fill="#0D0A05" stroke="#8B7340" stroke-width="1.5"/>
+  <ellipse cx="222" cy="278" rx="6" ry="5" fill="#FFD100" opacity="0.9"/>
+  <ellipse cx="294" cy="280" rx="18" ry="14" fill="#0D0A05" stroke="#8B7340" stroke-width="1.5"/>
+  <ellipse cx="290" cy="278" rx="6" ry="5" fill="#FFD100" opacity="0.9"/>
+  <path d="M256 295 L256 355" fill="none" stroke="#8B7340" stroke-width="1.5" opacity="0.5"/>
+  <ellipse cx="242" cy="370" rx="8" ry="6" fill="#0D0A05" opacity="0.7"/>
+  <ellipse cx="270" cy="370" rx="8" ry="6" fill="#0D0A05" opacity="0.7"/>
+  <path d="M232 395 C244 405, 268 405, 280 395" fill="none" stroke="#8B7340" stroke-width="2" opacity="0.6"/>
+  <path d="M256 440 C250 455, 245 470, 248 485 M256 440 C256 460, 256 475, 256 485 M256 440 C262 455, 267 470, 264 485" fill="none" stroke="#C9A94E" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+  <path d="M178 250 C160 235, 140 240, 135 255 C130 270, 145 275, 172 265" fill="url(#faceGrad)" stroke="#8B7340" stroke-width="1.5"/>
+  <path d="M334 250 C352 235, 372 240, 377 255 C382 270, 367 275, 340 265" fill="url(#faceGrad)" stroke="#8B7340" stroke-width="1.5"/>
+</svg>
