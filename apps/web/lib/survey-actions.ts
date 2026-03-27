@@ -30,7 +30,8 @@ export async function submitSurvey(
     });
 
     return { success: true };
-  } catch {
+  } catch (error) {
+    console.error("Survey submission error:", error);
     return { success: false, error: "Something went wrong. Please try again." };
   }
 }

@@ -58,7 +58,7 @@ export const updateEvent = guardedAction(
     }
 
     const session = await auth();
-    if (existing.authorId !== session!.user!.id) {
+    if (!session?.user?.id || existing.authorId !== session.user.id) {
       throw new ActionError("permissionDenied", "You can only edit your own events");
     }
 

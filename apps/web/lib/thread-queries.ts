@@ -45,12 +45,16 @@ function buildTree(flat: FlatThread[]): ThreadData[] {
   }
 
   for (const t of flat) {
-    const node = map.get(t.id)!;
-    if (t.replyToId && map.has(t.replyToId)) {
-      map.get(t.replyToId)!.replies.push(node);
-    } else {
-      roots.push(node);
+    const node = map.get(t.id);
+    if (!node) continue;
+    if (t.replyToId) {
+      const parent = map.get(t.replyToId);
+      if (parent) {
+        parent.replies.push(node);
+        continue;
+      }
     }
+    roots.push(node);
   }
 
   return roots;

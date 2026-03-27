@@ -12,6 +12,9 @@ function validateThreadBody(body: string): string {
   if (trimmed.length === 0) {
     throw new ActionError("threadBodyRequired", "Comment body is required");
   }
+  if (trimmed.length > 5000) {
+    throw new ActionError("threadBodyRequired", "Comment must be 5000 characters or less");
+  }
   return trimmed;
 }
 

@@ -9,8 +9,9 @@ const RETENTION_DAYS = 30;
  * Protected by CRON_SECRET header to prevent unauthorized access.
  */
 export async function GET(request: Request) {
+  const cronSecret = process.env.CRON_SECRET;
   const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

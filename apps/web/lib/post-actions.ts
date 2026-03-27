@@ -33,6 +33,9 @@ function validatePostBody(body: string): string {
   if (trimmed.length === 0) {
     throw new ActionError("postBodyRequired", "Post body is required");
   }
+  if (trimmed.length > 10000) {
+    throw new ActionError("postBodyRequired", "Post body must be 10000 characters or less");
+  }
   return trimmed;
 }
 
@@ -101,7 +104,7 @@ export const updatePost = guardedAction(
     }
 
     const session = await auth();
-    if (post.authorId !== session!.user!.id) {
+    if (!session?.user?.id || post.authorId !== session.user.id) {
       throw new ActionError("permissionDenied", "You can only edit your own posts");
     }
 
