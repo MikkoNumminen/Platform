@@ -19,6 +19,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { colors } from "../../styles";
 import UserRoleSelect from "./UserRoleSelect";
+import ApproveButton from "./ApproveButton";
 
 export default async function AdminUsersPage() {
   const session = await auth();
@@ -29,8 +30,8 @@ export default async function AdminUsersPage() {
   }
 
   const users = await getUsers();
-  const pendingUserIds = users.filter((u) => u.role === "pending").map((u) => u.id);
-  const surveyStatus = await getUserSurveyStatus(pendingUserIds);
+  const allUserIds = users.map((u) => u.id);
+  const surveyStatus = await getUserSurveyStatus(allUserIds);
 
   return (
     <>
@@ -91,30 +92,19 @@ export default async function AdminUsersPage() {
                         isSelf={user.id === session?.user?.id}
                       />
                       {user.role === "pending" && (
-                        <>
-                          <Chip
-                            label="Needs approval"
-                            size="small"
-                            sx={{
-                              backgroundColor: colors.warning,
-                              color: colors.slate700,
-                              fontWeight: 600,
-                              fontSize: "0.7rem",
-                            }}
-                          />
-                          <Chip
-                            label={surveyStatus[user.id] ? "Survey done" : "Survey pending"}
-                            size="small"
-                            sx={{
-                              backgroundColor: surveyStatus[user.id]
-                                ? colors.green400
-                                : colors.slate300,
-                              color: colors.slate700,
-                              fontWeight: 600,
-                              fontSize: "0.7rem",
-                            }}
-                          />
-                        </>
+                        <ApproveButton userId={user.id} />
+                      )}
+                      {!surveyStatus[user.id] && (
+                        <Chip
+                          label="Survey pending"
+                          size="small"
+                          sx={{
+                            backgroundColor: colors.slate300,
+                            color: colors.slate700,
+                            fontWeight: 600,
+                            fontSize: "0.7rem",
+                          }}
+                        />
                       )}
                     </Box>
                   </TableCell>

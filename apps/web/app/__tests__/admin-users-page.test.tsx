@@ -37,6 +37,12 @@ jest.mock("@/app/admin/users/UserRoleSelect", () => {
   };
 });
 
+jest.mock("@/app/admin/users/ApproveButton", () => {
+  return function MockApproveButton({ userId }: { userId: string }) {
+    return <button data-testid={`approve-${userId}`}>Approve</button>;
+  };
+});
+
 const adminSession = {
   user: {
     id: "admin-1",
@@ -58,7 +64,7 @@ describe("AdminUsersPage", () => {
     expect(mockRedirect).toHaveBeenCalledWith("/");
   });
 
-  test("shows 'Survey done' chip for pending user who completed survey", async () => {
+  test("shows approve button for pending users", async () => {
     mockAuth.mockResolvedValue(adminSession);
     mockGetUsers.mockResolvedValue([
       {
@@ -71,39 +77,18 @@ describe("AdminUsersPage", () => {
         createdAt: new Date("2026-01-01"),
       },
     ]);
-    mockGetSurveyStatus.mockResolvedValue({ "user-1": true });
+    mockGetSurveyStatus.mockResolvedValue({ "user-1": false });
 
     const result = await AdminUsersPage();
     render(result);
-    expect(screen.getByText("Survey done")).toBeInTheDocument();
-    expect(screen.getByText("Needs approval")).toBeInTheDocument();
+    expect(screen.getByTestId("approve-user-1")).toBeInTheDocument();
   });
 
-  test("shows 'Survey pending' chip for pending user who has not completed survey", async () => {
+  test("does not show approve button for non-pending users", async () => {
     mockAuth.mockResolvedValue(adminSession);
     mockGetUsers.mockResolvedValue([
       {
-        id: "user-2",
-        email: "waiting@example.com",
-        name: "Waiting User",
-        alias: null,
-        image: null,
-        role: "pending",
-        createdAt: new Date("2026-01-01"),
-      },
-    ]);
-    mockGetSurveyStatus.mockResolvedValue({ "user-2": false });
-
-    const result = await AdminUsersPage();
-    render(result);
-    expect(screen.getByText("Survey pending")).toBeInTheDocument();
-  });
-
-  test("does not show survey chips for non-pending users", async () => {
-    mockAuth.mockResolvedValue(adminSession);
-    mockGetUsers.mockResolvedValue([
-      {
-        id: "user-3",
+        id: "user-1",
         email: "active@example.com",
         name: "Active User",
         alias: "active",
@@ -112,16 +97,75 @@ describe("AdminUsersPage", () => {
         createdAt: new Date("2026-01-01"),
       },
     ]);
-    mockGetSurveyStatus.mockResolvedValue({});
+    mockGetSurveyStatus.mockResolvedValue({ "user-1": true });
 
     const result = await AdminUsersPage();
     render(result);
-    expect(screen.queryByText("Survey done")).not.toBeInTheDocument();
-    expect(screen.queryByText("Survey pending")).not.toBeInTheDocument();
-    expect(screen.queryByText("Needs approval")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("approve-user-1")).not.toBeInTheDocument();
   });
 
-  test("only queries survey status for pending users", async () => {
+  test("shows survey pending chip for any user who has not completed survey", async () => {
+    mockAuth.mockResolvedValue(adminSession);
+    mockGetUsers.mockResolvedValue([
+      {
+        id: "user-1",
+        email: "active@example.com",
+        name: "Active User",
+        alias: "active",
+        image: null,
+        role: "user",
+        createdAt: new Date("2026-01-01"),
+      },
+    ]);
+    mockGetSurveyStatus.mockResolvedValue({ "user-1": false });
+
+    const result = await AdminUsersPage();
+    render(result);
+    expect(screen.getByText("Survey pending")).toBeInTheDocument();
+  });
+
+  test("does not show survey pending chip when survey is completed", async () => {
+    mockAuth.mockResolvedValue(adminSession);
+    mockGetUsers.mockResolvedValue([
+      {
+        id: "user-1",
+        email: "done@example.com",
+        name: "Done User",
+        alias: null,
+        image: null,
+        role: "vuohi",
+        createdAt: new Date("2026-01-01"),
+      },
+    ]);
+    mockGetSurveyStatus.mockResolvedValue({ "user-1": true });
+
+    const result = await AdminUsersPage();
+    render(result);
+    expect(screen.queryByText("Survey pending")).not.toBeInTheDocument();
+  });
+
+  test("shows both approve button and survey pending for pending user without survey", async () => {
+    mockAuth.mockResolvedValue(adminSession);
+    mockGetUsers.mockResolvedValue([
+      {
+        id: "user-1",
+        email: "new@example.com",
+        name: "New User",
+        alias: null,
+        image: null,
+        role: "pending",
+        createdAt: new Date("2026-01-01"),
+      },
+    ]);
+    mockGetSurveyStatus.mockResolvedValue({ "user-1": false });
+
+    const result = await AdminUsersPage();
+    render(result);
+    expect(screen.getByTestId("approve-user-1")).toBeInTheDocument();
+    expect(screen.getByText("Survey pending")).toBeInTheDocument();
+  });
+
+  test("queries survey status for all users", async () => {
     mockAuth.mockResolvedValue(adminSession);
     mockGetUsers.mockResolvedValue([
       {
@@ -143,9 +187,9 @@ describe("AdminUsersPage", () => {
         createdAt: new Date("2026-01-01"),
       },
     ]);
-    mockGetSurveyStatus.mockResolvedValue({ "user-1": false });
+    mockGetSurveyStatus.mockResolvedValue({ "user-1": false, "user-2": true });
 
     await AdminUsersPage();
-    expect(mockGetSurveyStatus).toHaveBeenCalledWith(["user-1"]);
+    expect(mockGetSurveyStatus).toHaveBeenCalledWith(["user-1", "user-2"]);
   });
 });
