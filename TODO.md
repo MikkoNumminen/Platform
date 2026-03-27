@@ -6,6 +6,10 @@
 
 ---
 
+### Ongoing
+
+- 🟣 **Ongoing:** Monitor CI pipeline and Vercel deployments, fix errors immediately — Claude 1
+
 ### Future — Port HRM Features to Platform
 > Develop in HRM repo first, then port to Platform using same patterns, fresh code.
 > HRM and Platform use SEPARATE databases. HRM is a standalone showpiece.

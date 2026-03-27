@@ -1,15 +1,18 @@
 "use client";
 
-import { AppBar, Box, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Link from "next/link";
 import { colors } from "../styles";
 import ThemeSwitcher from "./ThemeSwitcher";
 import UserMenu from "./UserMenu";
 
 interface TopBarProps {
   title: string;
+  backHref?: string;
 }
 
-export default function TopBar({ title }: TopBarProps) {
+export default function TopBar({ title, backHref }: TopBarProps) {
   return (
     <AppBar
       position="static"
@@ -22,6 +25,17 @@ export default function TopBar({ title }: TopBarProps) {
       elevation={0}
     >
       <Toolbar>
+        {backHref && (
+          <IconButton
+            component={Link}
+            href={backHref}
+            aria-label="Go back"
+            sx={{ color: colors.slate100, mr: 1 }}
+            size="small"
+          >
+            <ArrowBackIcon />
+          </IconButton>
+        )}
         <Typography
           variant="h6"
           sx={{

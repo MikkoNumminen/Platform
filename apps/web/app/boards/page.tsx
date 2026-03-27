@@ -11,7 +11,7 @@ export default async function BoardsPage() {
 
   return (
     <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-      <TopBar title="Boards" />
+      <TopBar title="Boards" backHref="/" />
       <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
         <BoardActions />
       </Box>

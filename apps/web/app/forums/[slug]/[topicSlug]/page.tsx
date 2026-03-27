@@ -144,7 +144,7 @@ export default async function TopicPage({ params }: TopicPageProps) {
 
   return (
     <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-      <TopBar title={topic.title} />
+      <TopBar title={topic.title} backHref={`/forums/${slug}`} />
 
       {topic.locked && (
         <Chip

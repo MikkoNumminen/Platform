@@ -156,7 +156,7 @@ export default async function ForumPage({ params }: ForumPageProps) {
 
   return (
     <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-      <TopBar title={forum.name} />
+      <TopBar title={forum.name} backHref="/forums" />
       <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
         {forum.description}
       </Typography>

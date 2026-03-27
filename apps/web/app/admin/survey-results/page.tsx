@@ -11,7 +11,7 @@ export default async function SurveyResultsPage() {
 
   return (
     <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-      <TopBar title="Survey Results" />
+      <TopBar title="Survey Results" backHref="/" />
 
       <Typography variant="h5" gutterBottom>
         Total responses: {results.totalResponses}

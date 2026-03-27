@@ -34,7 +34,7 @@ const forums = [
 export default function ForumsPage() {
   return (
     <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-      <TopBar title="Forums" />
+      <TopBar title="Forums" backHref="/" />
       <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
         Browse community discussions by category.
       </Typography>

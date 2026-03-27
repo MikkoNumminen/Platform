@@ -31,7 +31,7 @@ export default async function AdminUsersPage() {
 
   return (
     <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-      <TopBar title="Manage Users" />
+      <TopBar title="Manage Users" backHref="/" />
       <TableContainer>
         <Table>
           <TableHead>

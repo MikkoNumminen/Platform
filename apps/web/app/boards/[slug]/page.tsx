@@ -23,7 +23,7 @@ export default async function BoardPage({ params }: BoardPageProps) {
 
   return (
     <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-      <TopBar title={board.name} />
+      <TopBar title={board.name} backHref="/boards" />
       <Typography variant="body2" sx={{ color: colors.slate400, mb: 2 }}>
         {board.description}
       </Typography>

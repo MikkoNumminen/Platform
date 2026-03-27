@@ -78,7 +78,7 @@ export default async function CalendarPage() {
 
   return (
     <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-      <TopBar title="Calendar" />
+      <TopBar title="Calendar" backHref="/" />
       <CalendarGrid
         events={events}
         onMonthChange={fetchEvents}
