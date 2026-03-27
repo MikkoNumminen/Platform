@@ -10,9 +10,6 @@
 
 - 🟣 **Ongoing:** Monitor CI pipeline and Vercel deployments, fix errors immediately — Claude 1
 
-### Pending User Survey Gate
-- [ ] 🟣 Pending users can only see survey + status message; admin sees survey completion — Claude 2
-
 ### Community Features — Review & Test (hidden from UI)
 > These features are hidden while we evaluate whether they're needed and in what form.
 

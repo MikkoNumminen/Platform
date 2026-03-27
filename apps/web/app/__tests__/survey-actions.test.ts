@@ -2,6 +2,7 @@ import { submitSurvey } from "@/lib/survey-actions";
 import { CONVERSATION_STYLES, FEATURE_OPTIONS } from "@/lib/survey-config";
 
 const mockCreate = jest.fn();
+const mockAuth = jest.fn();
 
 jest.mock("@/lib/db", () => ({
   prisma: {
@@ -9,6 +10,10 @@ jest.mock("@/lib/db", () => ({
       create: (...args: unknown[]) => mockCreate(...args),
     },
   },
+}));
+
+jest.mock("@/auth", () => ({
+  auth: () => mockAuth(),
 }));
 
 const validData = {
@@ -22,7 +27,9 @@ const validData = {
 describe("submitSurvey", () => {
   beforeEach(() => {
     mockCreate.mockClear();
+    mockAuth.mockClear();
     mockCreate.mockResolvedValue({ id: "test-id" });
+    mockAuth.mockResolvedValue(null);
   });
 
   test("succeeds with valid data", async () => {
@@ -62,6 +69,22 @@ describe("submitSurvey", () => {
     expect(result.success).toBe(false);
     expect(result.error).toBeDefined();
     expect(mockCreate).not.toHaveBeenCalled();
+  });
+
+  test("stores userId when user is logged in", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-123" } });
+    await submitSurvey(validData);
+    expect(mockCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({ userId: "user-123" }),
+    });
+  });
+
+  test("stores null userId when not logged in", async () => {
+    mockAuth.mockResolvedValue(null);
+    await submitSurvey(validData);
+    expect(mockCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({ userId: null }),
+    });
   });
 
   test("returns error when database fails", async () => {

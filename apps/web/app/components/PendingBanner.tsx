@@ -24,8 +24,8 @@ export default function PendingBanner() {
       }}
     >
       <Typography variant="body2" sx={{ fontWeight: 600 }}>
-        Your account is pending approval. An admin needs to approve your account before you can
-        access community content.
+        Welcome! You are signed in. Please complete the survey below — an admin will review your
+        access after you submit it.
       </Typography>
     </Box>
   );

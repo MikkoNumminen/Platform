@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
+import { auth } from "@/auth";
 import { validateSurveyData, type SurveyData } from "@/lib/survey-config";
 
 export async function submitSurvey(
@@ -14,6 +15,9 @@ export async function submitSurvey(
   }
 
   try {
+    const session = await auth();
+    const userId = session?.user?.id ?? null;
+
     await prisma.surveyResponse.create({
       data: {
         conversationStyle: data.conversationStyle,
@@ -21,6 +25,7 @@ export async function submitSurvey(
         mustHave: data.mustHave.trim(),
         dealbreaker: data.dealbreaker?.trim() || null,
         otherFeedback: data.otherFeedback?.trim() || null,
+        userId,
       },
     });
 

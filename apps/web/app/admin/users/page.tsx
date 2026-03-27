@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import TopBar from "../../components/TopBar";
 import { getUsers } from "@/lib/user-queries";
+import { getUserSurveyStatus } from "@/lib/survey-user-queries";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { colors } from "../../styles";
@@ -28,6 +29,8 @@ export default async function AdminUsersPage() {
   }
 
   const users = await getUsers();
+  const pendingUserIds = users.filter((u) => u.role === "pending").map((u) => u.id);
+  const surveyStatus = await getUserSurveyStatus(pendingUserIds);
 
   return (
     <>
@@ -88,16 +91,30 @@ export default async function AdminUsersPage() {
                         isSelf={user.id === session?.user?.id}
                       />
                       {user.role === "pending" && (
-                        <Chip
-                          label="Needs approval"
-                          size="small"
-                          sx={{
-                            backgroundColor: colors.warning,
-                            color: colors.slate700,
-                            fontWeight: 600,
-                            fontSize: "0.7rem",
-                          }}
-                        />
+                        <>
+                          <Chip
+                            label="Needs approval"
+                            size="small"
+                            sx={{
+                              backgroundColor: colors.warning,
+                              color: colors.slate700,
+                              fontWeight: 600,
+                              fontSize: "0.7rem",
+                            }}
+                          />
+                          <Chip
+                            label={surveyStatus[user.id] ? "Survey done" : "Survey pending"}
+                            size="small"
+                            sx={{
+                              backgroundColor: surveyStatus[user.id]
+                                ? colors.green400
+                                : colors.slate300,
+                              color: colors.slate700,
+                              fontWeight: 600,
+                              fontSize: "0.7rem",
+                            }}
+                          />
+                        </>
                       )}
                     </Box>
                   </TableCell>
