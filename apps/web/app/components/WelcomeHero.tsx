@@ -43,7 +43,7 @@ export default function WelcomeHero() {
           >
             {/* Start bottom-left (card corner) → end upper-right (Sign In button) */}
             <motion.path
-              d="M 8 145 C 60 135 150 100 230 65 C 280 42 320 28 338 22"
+              d="M 8 145 C 60 135 150 100 230 65 C 270 47 295 37 310 32"
               stroke="var(--platform-green400)"
               strokeWidth="2.5"
               strokeLinecap="round"
@@ -54,7 +54,7 @@ export default function WelcomeHero() {
             />
             {/* Arrowhead pointing upper-right */}
             <motion.path
-              d="M 330 14 L 340 21 L 332 28"
+              d="M 302 24 L 312 31 L 304 38"
               stroke="var(--platform-green400)"
               strokeWidth="2.5"
               strokeLinecap="round"
