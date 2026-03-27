@@ -23,26 +23,26 @@ export default function WelcomeHero() {
         transition={{ duration: 0.6 }}
         style={{ position: "relative", maxWidth: 520, width: "100%" }}
       >
-        {/* Arrow pointing up toward Sign In button */}
+        {/* Arrow pointing up-right toward Sign In button */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1, duration: 0.5 }}
           style={{
             position: "absolute",
-            top: -160,
-            right: -60,
+            top: -80,
+            right: -200,
           }}
         >
           <motion.svg
-            width="180"
-            height="150"
-            viewBox="0 0 180 150"
+            width="250"
+            height="120"
+            viewBox="0 0 250 120"
             fill="none"
             style={{ overflow: "visible" }}
           >
             <motion.path
-              d="M 30 145 Q 50 80 90 50 Q 130 20 165 8"
+              d="M 10 115 Q 60 100 120 70 Q 180 40 230 15"
               stroke="var(--platform-green400)"
               strokeWidth="2.5"
               strokeLinecap="round"
@@ -52,7 +52,7 @@ export default function WelcomeHero() {
               transition={{ duration: 1, delay: 1.2, ease: "easeInOut" }}
             />
             <motion.path
-              d="M 158 2 L 167 7 L 160 14"
+              d="M 222 8 L 232 14 L 224 22"
               stroke="var(--platform-green400)"
               strokeWidth="2.5"
               strokeLinecap="round"
