@@ -25,6 +25,12 @@ jest.mock("../components/Shoutbox", () => {
   };
 });
 
+jest.mock("../components/WelcomeHero", () => {
+  return function MockWelcomeHero() {
+    return <div data-testid="welcome-hero">Welcome Hero</div>;
+  };
+});
+
 jest.mock("@/lib/shout-queries", () => ({
   getRecentShouts: jest.fn().mockResolvedValue([]),
 }));
@@ -60,14 +66,19 @@ describe("Home", () => {
       mockAuth.mockResolvedValue(null);
     });
 
-    test("does not render SurveyCTA", async () => {
+    test("renders WelcomeHero", async () => {
       render(await Home());
-      expect(screen.queryByTestId("survey-cta")).not.toBeInTheDocument();
+      expect(screen.getByTestId("welcome-hero")).toBeInTheDocument();
     });
 
     test("does not render Shoutbox", async () => {
       render(await Home());
       expect(screen.queryByTestId("shoutbox")).not.toBeInTheDocument();
+    });
+
+    test("does not render SurveyCTA", async () => {
+      render(await Home());
+      expect(screen.queryByTestId("survey-cta")).not.toBeInTheDocument();
     });
   });
 

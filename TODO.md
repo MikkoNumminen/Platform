@@ -10,11 +10,6 @@
 
 - 🟣 **Ongoing:** Monitor CI pipeline and Vercel deployments, fix errors immediately — Claude 1
 
-### Unauthenticated Landing Page
-- [ ] 🔵 Install framer-motion dependency — Claude 1
-- [ ] 🟣 Build welcome infobox with animated arrow pointing to Sign In — Claude 1
-- [ ] 🔵 Add tests for landing page welcome component — Claude 1
-
 ### Vuohi Exclusive Features
 > Features only visible to vuohi and superuser members.
 
