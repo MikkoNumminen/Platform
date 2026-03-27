@@ -53,3 +53,64 @@ export const updateUserRole = guardedAction(
     });
   },
 );
+
+export const updateUserPermissions = guardedAction(
+  "admin:users",
+  "admin:updatePermissions",
+  async (userId: string, overrides: Array<{ key: string; granted: boolean }>) => {
+    validateUUID(userId, "user ID");
+
+    const session = await auth();
+    const actorRole = (session?.user as { role?: string })?.role ?? "pending";
+    const actorRank = roleRank(actorRole);
+
+    const user = await prisma.user.findFirst({
+      where: { id: userId, deletedAt: null },
+    });
+    if (!user) {
+      throw new ActionError("notFound", "User not found");
+    }
+
+    if (roleRank(user.role) <= actorRank) {
+      throw new ActionError("permissionDenied", "Cannot modify a user at the same or higher rank");
+    }
+
+    const validKeys = Object.keys(PERMISSIONS) as PermissionKey[];
+
+    // Ensure all permission keys exist in the Permission table
+    for (const key of validKeys) {
+      await prisma.permission.upsert({
+        where: { key },
+        update: {},
+        create: { key, description: PERMISSIONS[key] },
+      });
+    }
+
+    // Delete all existing overrides for this user
+    await prisma.userPermission.deleteMany({ where: { userId } });
+
+    // Insert new overrides
+    for (const override of overrides) {
+      if (!validKeys.includes(override.key as PermissionKey)) continue;
+
+      const permission = await prisma.permission.findUnique({
+        where: { key: override.key },
+      });
+      if (!permission) continue;
+
+      await prisma.userPermission.create({
+        data: {
+          userId,
+          permissionId: permission.id,
+          granted: override.granted,
+        },
+      });
+    }
+
+    // Bump permissionsVersion so JWT refreshes
+    await prisma.user.update({
+      where: { id: userId },
+      data: { permissionsVersion: { increment: 1 } },
+    });
+  },
+);
