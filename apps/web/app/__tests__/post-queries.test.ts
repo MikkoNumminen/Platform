@@ -24,7 +24,7 @@ describe("getPostsByBoard", () => {
         slug: "first-post",
         pinned: true,
         createdAt: now,
-        author: { name: "Alice" },
+        author: { alias: null, name: "Alice" },
       },
     ]);
 
@@ -41,7 +41,7 @@ describe("getPostsByBoard", () => {
     ]);
   });
 
-  test("uses 'Unknown' for null author name", async () => {
+  test("prefers alias over real name", async () => {
     mockFindMany.mockResolvedValue([
       {
         id: "p1",
@@ -49,7 +49,23 @@ describe("getPostsByBoard", () => {
         slug: "post",
         pinned: false,
         createdAt: new Date(),
-        author: { name: null },
+        author: { alias: "CoolAlias", name: "Alice" },
+      },
+    ]);
+
+    const posts = await getPostsByBoard("board-1");
+    expect(posts[0].authorName).toBe("CoolAlias");
+  });
+
+  test("uses 'Unknown' for null author name and alias", async () => {
+    mockFindMany.mockResolvedValue([
+      {
+        id: "p1",
+        title: "Post",
+        slug: "post",
+        pinned: false,
+        createdAt: new Date(),
+        author: { alias: null, name: null },
       },
     ]);
 
@@ -93,7 +109,7 @@ describe("getPostBySlug", () => {
       pinned: false,
       authorId: "user-1",
       createdAt: now,
-      author: { name: "Bob" },
+      author: { alias: null, name: "Bob" },
     });
 
     const post = await getPostBySlug("board-1", "my-post");

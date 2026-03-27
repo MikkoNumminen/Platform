@@ -20,14 +20,14 @@ describe("getThreadsByParent", () => {
         body: "First comment",
         replyToId: null,
         createdAt: new Date("2026-03-25T10:00:00Z"),
-        author: { name: "Alice" },
+        author: { alias: null, name: "Alice" },
       },
       {
         id: "t2",
         body: "Second comment",
         replyToId: null,
         createdAt: new Date("2026-03-25T11:00:00Z"),
-        author: { name: "Bob" },
+        author: { alias: null, name: "Bob" },
       },
     ]);
 
@@ -46,21 +46,21 @@ describe("getThreadsByParent", () => {
         body: "Root comment",
         replyToId: null,
         createdAt: new Date("2026-03-25T10:00:00Z"),
-        author: { name: "Alice" },
+        author: { alias: null, name: "Alice" },
       },
       {
         id: "t2",
         body: "Reply to root",
         replyToId: "t1",
         createdAt: new Date("2026-03-25T10:05:00Z"),
-        author: { name: "Bob" },
+        author: { alias: null, name: "Bob" },
       },
       {
         id: "t3",
         body: "Nested reply",
         replyToId: "t2",
         createdAt: new Date("2026-03-25T10:10:00Z"),
-        author: { name: "Charlie" },
+        author: { alias: null, name: "Charlie" },
       },
     ]);
 
@@ -85,12 +85,27 @@ describe("getThreadsByParent", () => {
         body: "Anonymous comment",
         replyToId: null,
         createdAt: new Date(),
-        author: { name: null },
+        author: { alias: null, name: null },
       },
     ]);
 
     const threads = await getThreadsByParent("TOPIC", "topic-1");
     expect(threads[0].authorName).toBe("Unknown");
+  });
+
+  test("prefers alias over real name", async () => {
+    mockFindMany.mockResolvedValue([
+      {
+        id: "t1",
+        body: "Comment with alias",
+        replyToId: null,
+        createdAt: new Date(),
+        author: { alias: "CoolUser", name: "Alice" },
+      },
+    ]);
+
+    const threads = await getThreadsByParent("POST", "post-1");
+    expect(threads[0].authorName).toBe("CoolUser");
   });
 
   test("orphaned replies become roots", async () => {
@@ -100,7 +115,7 @@ describe("getThreadsByParent", () => {
         body: "Reply to deleted parent",
         replyToId: "deleted-thread",
         createdAt: new Date(),
-        author: { name: "Alice" },
+        author: { alias: null, name: "Alice" },
       },
     ]);
 
@@ -117,7 +132,7 @@ describe("getThreadsByParent", () => {
         body: "Comment",
         replyToId: null,
         createdAt: date,
-        author: { name: "Alice" },
+        author: { alias: null, name: "Alice" },
       },
     ]);
 
