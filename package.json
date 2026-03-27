@@ -8,9 +8,13 @@
   "packageManager": "npm@10.9.4",
   "devDependencies": {
     "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "turbo": "^2.8.20"
   },
   "scripts": {
     "prepare": "husky"
+  },
+  "lint-staged": {
+    "apps/web/**/*.{ts,tsx,js,jsx,json,css,md}": "prettier --write"
   }
 }

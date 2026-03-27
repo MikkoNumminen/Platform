@@ -1,2 +1,6 @@
+echo "Running lint and format check before push..."
+npx turbo run lint --filter=web
+cd apps/web && npx prettier --check . && cd ../..
+
 echo "Running tests before push..."
 npx turbo run test --filter=web
