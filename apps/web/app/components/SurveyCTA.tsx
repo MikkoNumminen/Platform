@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Box, Button, Card, CardContent, Typography } from "@mui/material";
+import { Button, Card, CardContent, Typography } from "@mui/material";
 import { colors } from "../styles";
 import { LOCALSTORAGE_KEY } from "@/lib/survey-config";
 
@@ -16,21 +16,7 @@ export default function SurveyCTA() {
   if (submitted === null) return null;
 
   if (submitted) {
-    return (
-      <Box sx={{ maxWidth: 600, mx: "auto", mt: 4, textAlign: "center" }}>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-          Thanks for your feedback!
-        </Typography>
-        <Button
-          variant="text"
-          size="small"
-          href="/survey"
-          onClick={() => localStorage.removeItem(LOCALSTORAGE_KEY)}
-        >
-          Redo the survey
-        </Button>
-      </Box>
-    );
+    return null;
   }
 
   return (

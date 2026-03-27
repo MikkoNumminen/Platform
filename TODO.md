@@ -10,6 +10,11 @@
 
 - 🟣 **Ongoing:** Monitor CI pipeline and Vercel deployments, fix errors immediately — Claude 1
 
+### Survey System
+> Support multiple surveys. Admin can view a list of all survey rounds with their results.
+
+- [ ] 🟣 Survey list page — show all survey rounds with completion stats and links to results
+
 ### Vuohi Exclusive Features
 > Features only visible to vuohi and superuser members.
 

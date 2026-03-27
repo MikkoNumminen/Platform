@@ -71,7 +71,7 @@ npx turbo run build --filter=web # Production build
 
 ## Testing
 
-539 tests across 75 test suites with accessibility checks (jest-axe).
+550 tests across 76 test suites with accessibility checks (jest-axe).
 
 ```bash
 npx turbo run test --filter=web           # All tests

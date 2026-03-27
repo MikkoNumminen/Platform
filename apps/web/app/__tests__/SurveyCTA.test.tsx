@@ -34,14 +34,10 @@ describe("SurveyCTA", () => {
     );
   });
 
-  test("shows redo link when already submitted", () => {
+  test("renders nothing when already submitted", () => {
     localStorageMock.setItem("platform_survey_submitted", "true");
-    render(<SurveyCTA />);
-    expect(screen.getByText("Thanks for your feedback!")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /redo the survey/i })).toHaveAttribute(
-      "href",
-      "/survey",
-    );
+    const { container } = render(<SurveyCTA />);
+    expect(container).toBeEmptyDOMElement();
   });
 
   test("has no accessibility violations when not submitted", async () => {

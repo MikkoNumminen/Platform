@@ -14,10 +14,13 @@ import {
   Typography,
 } from "@mui/material";
 import FeedbackIcon from "@mui/icons-material/Feedback";
+import ReplayIcon from "@mui/icons-material/Replay";
 import BugReportIcon from "@mui/icons-material/BugReport";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { colors } from "../styles";
+import { LOCALSTORAGE_KEY } from "@/lib/survey-config";
 
 function getInitials(name?: string | null): string {
   if (!name) return "?";
@@ -32,6 +35,7 @@ function getInitials(name?: string | null): string {
 export default function UserMenu() {
   const { data: session } = useSession();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const router = useRouter();
 
   if (!session?.user) {
     return (
@@ -111,6 +115,18 @@ export default function UserMenu() {
             <FeedbackIcon fontSize="small" />
           </ListItemIcon>
           Feedback & Survey
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            localStorage.removeItem(LOCALSTORAGE_KEY);
+            setAnchorEl(null);
+            router.push("/survey");
+          }}
+        >
+          <ListItemIcon>
+            <ReplayIcon fontSize="small" />
+          </ListItemIcon>
+          Redo Survey
         </MenuItem>
         {isApproved && (
           <MenuItem component={Link} href="/issues">

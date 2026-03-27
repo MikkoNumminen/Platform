@@ -9,16 +9,23 @@ let mockSession: { data: { user: Record<string, unknown> } | null } = {
   data: null,
 };
 
+const mockPush = jest.fn();
+
 jest.mock("next-auth/react", () => ({
   useSession: () => mockSession,
   signIn: (...args: unknown[]) => mockSignIn(...args),
   signOut: (...args: unknown[]) => mockSignOut(...args),
 }));
 
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
+
 describe("UserMenu", () => {
   beforeEach(() => {
     mockSignIn.mockClear();
     mockSignOut.mockClear();
+    mockPush.mockClear();
     mockSession = { data: null };
   });
 
@@ -119,6 +126,23 @@ describe("UserMenu", () => {
       await user.click(screen.getByRole("button"));
       const surveyLink = screen.getByRole("menuitem", { name: /survey results/i });
       expect(surveyLink).toHaveAttribute("href", "/admin/survey-results");
+    });
+
+    test("shows Redo Survey menu item", async () => {
+      const user = userEvent.setup();
+      render(<UserMenu />);
+      await user.click(screen.getByRole("button"));
+      expect(screen.getByRole("menuitem", { name: /redo survey/i })).toBeInTheDocument();
+    });
+
+    test("Redo Survey clears localStorage and navigates to /survey", async () => {
+      localStorage.setItem("platform_survey_submitted", "true");
+      const user = userEvent.setup();
+      render(<UserMenu />);
+      await user.click(screen.getByRole("button"));
+      await user.click(screen.getByRole("menuitem", { name: /redo survey/i }));
+      expect(localStorage.getItem("platform_survey_submitted")).toBeNull();
+      expect(mockPush).toHaveBeenCalledWith("/survey");
     });
 
     test("calls signOut when Sign Out is clicked", async () => {
