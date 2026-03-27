@@ -9,15 +9,26 @@ const mockRedirect = jest.fn();
 const mockNext = jest.fn();
 
 jest.mock("next/server", () => {
+  class MockCookies {
+    private store = new Map<string, string>();
+    set(name: string, value: string) {
+      this.store.set(name, value);
+    }
+    get(name: string) {
+      const value = this.store.get(name);
+      return value != null ? { name, value } : undefined;
+    }
+  }
+
   class MockNextRequest {
     url: string;
     nextUrl: { pathname: string };
-    cookies: Map<string, { value: string }>;
+    cookies: MockCookies;
 
     constructor(url: string) {
       this.url = url;
       this.nextUrl = { pathname: new URL(url).pathname };
-      this.cookies = new Map();
+      this.cookies = new MockCookies();
     }
   }
 
@@ -43,7 +54,7 @@ function makeRequest(path: string, cookies: Record<string, string> = {}) {
   const url = `http://localhost:3100${path}`;
   const req = new NextRequest(url);
   for (const [name, value] of Object.entries(cookies)) {
-    req.cookies.set(name, { value } as { value: string });
+    req.cookies.set(name, value);
   }
   return req;
 }
