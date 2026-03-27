@@ -14,7 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import TopBar from "../../components/TopBar";
-import { getUsers } from "@/lib/user-queries";
+import { getUsers, getUsersWithOverrides } from "@/lib/user-queries";
 import { getUserSurveyStatus } from "@/lib/survey-user-queries";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
@@ -34,6 +34,7 @@ export default async function AdminUsersPage() {
   const users = await getUsers();
   const allUserIds = users.map((u) => u.id);
   const surveyStatus = await getUserSurveyStatus(allUserIds);
+  const usersWithOverrides = await getUsersWithOverrides(allUserIds);
 
   return (
     <>
@@ -101,6 +102,18 @@ export default async function AdminUsersPage() {
                             size="small"
                             sx={{
                               backgroundColor: colors.slate300,
+                              color: colors.slate700,
+                              fontWeight: 600,
+                              fontSize: "0.7rem",
+                            }}
+                          />
+                        )}
+                        {usersWithOverrides.has(user.id) && (
+                          <Chip
+                            label="Custom permissions"
+                            size="small"
+                            sx={{
+                              backgroundColor: colors.warning,
                               color: colors.slate700,
                               fontWeight: 600,
                               fontSize: "0.7rem",

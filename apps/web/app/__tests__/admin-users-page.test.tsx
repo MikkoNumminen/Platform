@@ -10,8 +10,11 @@ jest.mock("@/auth", () => ({
   auth: () => mockAuth(),
 }));
 
+const mockGetUsersWithOverrides = jest.fn();
+
 jest.mock("@/lib/user-queries", () => ({
   getUsers: () => mockGetUsers(),
+  getUsersWithOverrides: (...args: unknown[]) => mockGetUsersWithOverrides(...args),
 }));
 
 jest.mock("@/lib/survey-user-queries", () => ({
@@ -61,7 +64,9 @@ describe("AdminUsersPage", () => {
     mockAuth.mockClear();
     mockGetUsers.mockClear();
     mockGetSurveyStatus.mockClear();
+    mockGetUsersWithOverrides.mockClear();
     mockRedirect.mockClear();
+    mockGetUsersWithOverrides.mockResolvedValue(new Set());
   });
 
   test("redirects when user lacks admin:users permission", async () => {
@@ -197,5 +202,47 @@ describe("AdminUsersPage", () => {
 
     await AdminUsersPage();
     expect(mockGetSurveyStatus).toHaveBeenCalledWith(["user-1", "user-2"]);
+  });
+
+  test("shows 'Custom permissions' chip when user has overrides", async () => {
+    mockAuth.mockResolvedValue(adminSession);
+    mockGetUsers.mockResolvedValue([
+      {
+        id: "user-1",
+        email: "a@example.com",
+        name: "A",
+        alias: "a",
+        image: null,
+        role: "vuohi",
+        createdAt: new Date("2026-01-01"),
+      },
+    ]);
+    mockGetSurveyStatus.mockResolvedValue({ "user-1": true });
+    mockGetUsersWithOverrides.mockResolvedValue(new Set(["user-1"]));
+
+    const result = await AdminUsersPage();
+    render(result);
+    expect(screen.getByText("Custom permissions")).toBeInTheDocument();
+  });
+
+  test("does not show 'Custom permissions' chip when user has no overrides", async () => {
+    mockAuth.mockResolvedValue(adminSession);
+    mockGetUsers.mockResolvedValue([
+      {
+        id: "user-1",
+        email: "a@example.com",
+        name: "A",
+        alias: "a",
+        image: null,
+        role: "user",
+        createdAt: new Date("2026-01-01"),
+      },
+    ]);
+    mockGetSurveyStatus.mockResolvedValue({ "user-1": true });
+    mockGetUsersWithOverrides.mockResolvedValue(new Set());
+
+    const result = await AdminUsersPage();
+    render(result);
+    expect(screen.queryByText("Custom permissions")).not.toBeInTheDocument();
   });
 });

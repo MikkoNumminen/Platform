@@ -26,6 +26,18 @@ export async function getUserPermissionOverrides(
   return overrides.map((o) => ({ key: o.permission.key, granted: o.granted }));
 }
 
+export async function getUsersWithOverrides(userIds: string[]): Promise<Set<string>> {
+  if (userIds.length === 0) return new Set();
+
+  const overrides = await prisma.userPermission.findMany({
+    where: { userId: { in: userIds } },
+    select: { userId: true },
+    distinct: ["userId"],
+  });
+
+  return new Set(overrides.map((o) => o.userId));
+}
+
 export async function getUserById(id: string) {
   return prisma.user.findFirst({
     where: { id, deletedAt: null },
