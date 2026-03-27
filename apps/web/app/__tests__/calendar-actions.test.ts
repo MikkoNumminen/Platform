@@ -148,11 +148,11 @@ describe("updateEvent", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockRateLimit.mockResolvedValue(undefined);
-    mockFindFirst.mockResolvedValue({ id: eventId });
+    mockFindFirst.mockResolvedValue({ id: eventId, authorId: "user-1" });
     mockUpdate.mockResolvedValue({ id: eventId });
   });
 
-  test("updates event when it exists", async () => {
+  test("updates event when user is the author", async () => {
     mockAuth.mockResolvedValue(authenticatedSession());
     const result = await updateEvent({ ...validInput, id: eventId });
     expect(result).toBeUndefined();
@@ -185,6 +185,17 @@ describe("updateEvent", () => {
       error: "Missing permission: event:edit",
       code: "permissionDenied",
     });
+  });
+
+  test("returns error when user is not the author", async () => {
+    mockAuth.mockResolvedValue(authenticatedSession());
+    mockFindFirst.mockResolvedValue({ id: eventId, authorId: "other-user" });
+    const result = await updateEvent({ ...validInput, id: eventId });
+    expect(result).toEqual({
+      error: "You can only edit your own events",
+      code: "permissionDenied",
+    });
+    expect(mockUpdate).not.toHaveBeenCalled();
   });
 });
 

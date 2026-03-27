@@ -57,6 +57,11 @@ export const updateEvent = guardedAction(
       throw new ActionError("eventNotFound", "Event not found");
     }
 
+    const session = await auth();
+    if (existing.authorId !== session!.user!.id) {
+      throw new ActionError("permissionDenied", "You can only edit your own events");
+    }
+
     await prisma.calendarEvent.update({
       where: { id: input.id },
       data,

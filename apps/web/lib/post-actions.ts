@@ -100,6 +100,11 @@ export const updatePost = guardedAction(
       throw new ActionError("postNotFound", "Post not found");
     }
 
+    const session = await auth();
+    if (post.authorId !== session!.user!.id) {
+      throw new ActionError("permissionDenied", "You can only edit your own posts");
+    }
+
     const baseSlug = slugify(validTitle);
     if (!baseSlug) {
       throw new ActionError("invalidPostTitle", "Post title produces an invalid URL slug");

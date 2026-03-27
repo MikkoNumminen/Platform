@@ -109,7 +109,12 @@ describe("updatePost", () => {
     mockAuth.mockResolvedValue(authedSession());
     mockRateLimit.mockResolvedValue(undefined);
     mockPostFindFirst
-      .mockResolvedValueOnce({ id: postId, boardId, board: { slug: "general" } })
+      .mockResolvedValueOnce({
+        id: postId,
+        boardId,
+        authorId: "user-1",
+        board: { slug: "general" },
+      })
       .mockResolvedValue(null); // no slug conflict
     mockPostUpdate.mockResolvedValue({});
   });
@@ -132,6 +137,22 @@ describe("updatePost", () => {
     mockPostFindFirst.mockReset().mockResolvedValue(null);
     const result = await updatePost(postId, "Title", "Body");
     expect(result).toEqual({ error: "Post not found", code: "postNotFound" });
+  });
+
+  test("returns error when user is not the author", async () => {
+    mockPostFindFirst.mockReset();
+    mockPostFindFirst.mockResolvedValueOnce({
+      id: postId,
+      boardId,
+      authorId: "other-user",
+      board: { slug: "general" },
+    });
+    const result = await updatePost(postId, "Title", "Body");
+    expect(result).toEqual({
+      error: "You can only edit your own posts",
+      code: "permissionDenied",
+    });
+    expect(mockPostUpdate).not.toHaveBeenCalled();
   });
 });
 
