@@ -27,6 +27,7 @@ model User {
   threads        Thread[]
   calendarEvents CalendarEvent[]
   permissions    UserPermission[]
+  shouts         Shout[]
 
   @@index([deletedAt])
   @@index([email])
@@ -187,6 +188,20 @@ model CalendarEvent {
   @@index([deletedAt])
   @@index([authorId])
   @@index([startTime, endTime])
+}
+
+// ─── Shoutbox ───────────────────────────────────────────────────────────────
+
+model Shout {
+  id        String   @id @default(uuid())
+  message   String
+  authorId  String
+  createdAt DateTime @default(now())
+
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([authorId])
 }
 
 // ─── Rate Limiting ──────────────────────────────────────────────────────────
