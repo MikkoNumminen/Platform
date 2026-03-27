@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import BugReportIcon from "@mui/icons-material/BugReport";
+import ListAltIcon from "@mui/icons-material/ListAlt";
 import Link from "next/link";
 import { colors } from "../styles";
 
@@ -54,6 +55,7 @@ export default function UserMenu() {
   const permissions = (user.permissions as Record<string, boolean>) ?? {};
   const canManageUsers = Boolean(permissions["admin:users"]);
   const canViewSurveyResults = Boolean(permissions["survey:results"]);
+  const isApproved = user.role !== "pending";
 
   return (
     <Box>
@@ -97,6 +99,14 @@ export default function UserMenu() {
           </ListItemIcon>
           Feedback & Survey
         </MenuItem>
+        {isApproved && (
+          <MenuItem component={Link} href="/issues">
+            <ListItemIcon>
+              <ListAltIcon fontSize="small" />
+            </ListItemIcon>
+            Issue Tracker
+          </MenuItem>
+        )}
         <MenuItem component={Link} href="/report-issue">
           <ListItemIcon>
             <BugReportIcon fontSize="small" />

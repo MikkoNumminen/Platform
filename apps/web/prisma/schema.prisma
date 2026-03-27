@@ -28,7 +28,8 @@ model User {
   calendarEvents CalendarEvent[]
   permissions    UserPermission[]
   shouts         Shout[]
-  issueReports   IssueReport[]
+  issueReports    IssueReport[]
+  surveyResponses SurveyResponse[]
 
   @@index([deletedAt])
   @@index([email])
@@ -208,17 +209,19 @@ model Shout {
 // ─── Issue Reports ──────────────────────────────────────────────────────────
 
 model IssueReport {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   title       String
   description String
   url         String?
   authorId    String
-  createdAt   DateTime @default(now())
+  resolvedAt  DateTime?
+  createdAt   DateTime  @default(now())
 
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([createdAt])
   @@index([authorId])
+  @@index([resolvedAt])
 }
 
 // ─── Rate Limiting ──────────────────────────────────────────────────────────
@@ -243,7 +246,11 @@ model SurveyResponse {
   mustHave          String
   dealbreaker       String?
   otherFeedback     String?
+  userId            String?
   submittedAt       DateTime @default(now())
 
+  author User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
   @@index([submittedAt])
+  @@index([userId])
 }

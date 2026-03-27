@@ -3,8 +3,9 @@
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { ActionError } from "@/lib/actionErrors";
-import { safe, type ActionResult } from "@/lib/actionUtils";
+import { safe, validateUUID, type ActionResult } from "@/lib/actionUtils";
 import { rateLimit } from "@/lib/rateLimit";
+import { revalidatePath } from "next/cache";
 
 export async function createIssueReport(
   title: string,
@@ -38,5 +39,34 @@ export async function createIssueReport(
         authorId: session.user.id,
       },
     });
+
+    revalidatePath("/issues");
+  });
+}
+
+export async function resolveIssue(issueId: string): Promise<ActionResult> {
+  return safe(async () => {
+    const session = await auth();
+    if (!session?.user?.id) {
+      throw new ActionError("permissionDenied", "Not authenticated");
+    }
+
+    if (session.user.role !== "superuser") {
+      throw new ActionError("permissionDenied", "Only superusers can resolve issues");
+    }
+
+    validateUUID(issueId, "issue ID");
+
+    const issue = await prisma.issueReport.findUnique({ where: { id: issueId } });
+    if (!issue) {
+      throw new ActionError("notFound", "Issue not found");
+    }
+
+    await prisma.issueReport.update({
+      where: { id: issueId },
+      data: { resolvedAt: issue.resolvedAt ? null : new Date() },
+    });
+
+    revalidatePath("/issues");
   });
 }

@@ -1,5 +1,7 @@
 const mockAuth = jest.fn();
 const mockCreate = jest.fn();
+const mockFindUnique = jest.fn();
+const mockUpdate = jest.fn();
 const mockRateLimit = jest.fn();
 
 jest.mock("@/auth", () => ({
@@ -10,6 +12,8 @@ jest.mock("@/lib/db", () => ({
   prisma: {
     issueReport: {
       create: (...args: unknown[]) => mockCreate(...args),
+      findUnique: (...args: unknown[]) => mockFindUnique(...args),
+      update: (...args: unknown[]) => mockUpdate(...args),
     },
   },
 }));
@@ -18,10 +22,16 @@ jest.mock("@/lib/rateLimit", () => ({
   rateLimit: (...args: unknown[]) => mockRateLimit(...args),
 }));
 
-import { createIssueReport } from "@/lib/issue-actions";
+jest.mock("next/cache", () => ({
+  revalidatePath: jest.fn(),
+}));
 
-function authenticatedSession(id = "user-1") {
-  return { user: { id } };
+import { createIssueReport, resolveIssue } from "@/lib/issue-actions";
+
+const VALID_UUID = "550e8400-e29b-41d4-a716-446655440000";
+
+function authenticatedSession(id = "user-1", role = "user") {
+  return { user: { id, role } };
 }
 
 describe("createIssueReport", () => {
@@ -78,5 +88,62 @@ describe("createIssueReport", () => {
     mockAuth.mockResolvedValue(authenticatedSession());
     await createIssueReport("Bug", "Description");
     expect(mockRateLimit).toHaveBeenCalledWith("issue:create");
+  });
+});
+
+describe("resolveIssue", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockFindUnique.mockResolvedValue({ id: VALID_UUID, resolvedAt: null });
+    mockUpdate.mockResolvedValue({ id: VALID_UUID });
+  });
+
+  test("resolves an open issue as superuser", async () => {
+    mockAuth.mockResolvedValue(authenticatedSession("user-1", "superuser"));
+    const result = await resolveIssue(VALID_UUID);
+    expect(result).toBeUndefined();
+    expect(mockUpdate).toHaveBeenCalledWith({
+      where: { id: VALID_UUID },
+      data: { resolvedAt: expect.any(Date) },
+    });
+  });
+
+  test("reopens a resolved issue as superuser", async () => {
+    mockAuth.mockResolvedValue(authenticatedSession("user-1", "superuser"));
+    mockFindUnique.mockResolvedValue({ id: VALID_UUID, resolvedAt: new Date() });
+    const result = await resolveIssue(VALID_UUID);
+    expect(result).toBeUndefined();
+    expect(mockUpdate).toHaveBeenCalledWith({
+      where: { id: VALID_UUID },
+      data: { resolvedAt: null },
+    });
+  });
+
+  test("returns error for non-superuser", async () => {
+    mockAuth.mockResolvedValue(authenticatedSession("user-1", "admin"));
+    const result = await resolveIssue(VALID_UUID);
+    expect(result).toEqual({
+      error: "Only superusers can resolve issues",
+      code: "permissionDenied",
+    });
+  });
+
+  test("returns error when not authenticated", async () => {
+    mockAuth.mockResolvedValue(null);
+    const result = await resolveIssue(VALID_UUID);
+    expect(result).toEqual({ error: "Not authenticated", code: "permissionDenied" });
+  });
+
+  test("returns error for invalid UUID", async () => {
+    mockAuth.mockResolvedValue(authenticatedSession("user-1", "superuser"));
+    const result = await resolveIssue("bad-id");
+    expect(result).toEqual({ error: "Invalid issue ID: not a valid UUID", code: "invalidId" });
+  });
+
+  test("returns error when issue not found", async () => {
+    mockAuth.mockResolvedValue(authenticatedSession("user-1", "superuser"));
+    mockFindUnique.mockResolvedValue(null);
+    const result = await resolveIssue(VALID_UUID);
+    expect(result).toEqual({ error: "Issue not found", code: "notFound" });
   });
 });
