@@ -6,6 +6,7 @@ dist
 .env.local
 .claude/
 CLAUDE.md
+TODO.md
 *.tsbuildinfo
 next-env.d.ts
 .vercel
