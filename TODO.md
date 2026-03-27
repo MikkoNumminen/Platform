@@ -10,6 +10,19 @@
 
 - 🟣 **Ongoing:** Monitor CI pipeline and Vercel deployments, fix errors immediately — Claude 1
 
+### Security Fixes
+> Found during security scan. Priority ordered.
+
+- [ ] 🔵 Add permission check to survey results page (`/admin/survey-results`) — missing `survey:results` permission guard
+- [ ] 🟣 Add ownership verification to edit/delete actions — `post-actions.ts`, `thread-actions.ts`, `calendar-actions.ts` allow any permitted user to modify any user's content
+- [ ] 🔵 Middleware: check user role on `/admin/*` routes, not just session token existence
+- [ ] 🔵 CSP: remove `unsafe-eval` from production `script-src`, consider nonce-based approach for `unsafe-inline`
+- [ ] 🔵 CSP: restrict `connect-src` to specific domains instead of blanket `https:`
+- [ ] 🔵 Enable TypeScript strict mode and fix resulting type errors
+
+### GitHub & Branding
+- [ ] 🔵 Add repo icon/social preview image and fix GitHub OAuth app visibility (logo, description)
+
 ### Survey System
 > Support multiple surveys. Admin can view a list of all survey rounds with their results.
 
