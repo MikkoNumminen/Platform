@@ -24,7 +24,7 @@ function CornerOrnament({ rotate = 0 }: { rotate?: number }) {
 export default function OrnamentFrame({ children }: OrnamentFrameProps) {
   const { currentTheme } = useTheme();
 
-  if (currentTheme !== "warcraft") {
+  if (currentTheme !== "epic") {
     return <>{children}</>;
   }
 

@@ -6,12 +6,12 @@ export const THEME_NAMES = [
   "bubblegum",
   "ocean",
   "fantasy",
-  "warcraft",
+  "epic",
 ] as const;
 export type ThemeName = (typeof THEME_NAMES)[number];
 
 export const THEME_STORAGE_KEY = "platform-theme";
-export const DEFAULT_THEME: ThemeName = "fantasy";
+export const DEFAULT_THEME: ThemeName = "epic";
 
 export interface ThemeColors {
   slate100: string;
@@ -38,7 +38,7 @@ export const THEME_LABELS: Record<ThemeName, string> = {
   bubblegum: "Bubblegum",
   ocean: "Ocean",
   fantasy: "Fantasy",
-  warcraft: "Warcraft",
+  epic: "Epic",
 };
 
 export const THEME_PALETTES: Record<ThemeName, ThemeColors> = {
@@ -154,7 +154,7 @@ export const THEME_PALETTES: Record<ThemeName, ThemeColors> = {
     info: "#0070DD",
     success: "#1EFF00",
   },
-  warcraft: {
+  epic: {
     slate100: "#E8D5A3",
     slate300: "#8B7355",
     slate400: "#6B5B45",

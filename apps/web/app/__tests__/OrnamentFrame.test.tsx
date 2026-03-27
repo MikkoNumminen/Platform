@@ -20,7 +20,7 @@ describe("OrnamentFrame", () => {
   });
 
   test("renders corner ornaments for warcraft theme", () => {
-    mockUseTheme.mockReturnValue({ currentTheme: "warcraft" });
+    mockUseTheme.mockReturnValue({ currentTheme: "epic" });
     render(
       <OrnamentFrame>
         <div data-testid="child">Hello</div>

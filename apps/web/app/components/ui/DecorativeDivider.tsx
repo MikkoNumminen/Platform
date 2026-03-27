@@ -6,7 +6,7 @@ import { useTheme } from "../ThemeRegistry";
 export default function DecorativeDivider() {
   const { currentTheme } = useTheme();
 
-  if (currentTheme !== "warcraft") {
+  if (currentTheme !== "epic") {
     return <Box sx={{ my: 2, borderTop: "1px solid var(--platform-slate300)" }} />;
   }
 

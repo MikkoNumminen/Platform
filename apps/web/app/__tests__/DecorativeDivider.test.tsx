@@ -15,7 +15,7 @@ describe("DecorativeDivider", () => {
   });
 
   test("renders decorative SVG divider for warcraft theme", () => {
-    mockUseTheme.mockReturnValue({ currentTheme: "warcraft" });
+    mockUseTheme.mockReturnValue({ currentTheme: "epic" });
     render(<DecorativeDivider />);
     expect(screen.getByTestId("decorative-diamond")).toBeInTheDocument();
   });

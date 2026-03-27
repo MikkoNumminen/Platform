@@ -94,7 +94,7 @@ export default function ThemeRegistry({ children }: { children: React.ReactNode 
     });
   }, [currentTheme]);
 
-  const isWarcraft = currentTheme === "warcraft";
+  const isWarcraft = currentTheme === "epic";
 
   const globalStyles = useMemo(
     () => ({

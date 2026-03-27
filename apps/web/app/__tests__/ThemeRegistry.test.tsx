@@ -22,6 +22,6 @@ describe("ThemeRegistry", () => {
         <ThemeConsumer />
       </ThemeRegistry>,
     );
-    expect(screen.getByTestId("theme")).toHaveTextContent("fantasy");
+    expect(screen.getByTestId("theme")).toHaveTextContent("epic");
   });
 });
