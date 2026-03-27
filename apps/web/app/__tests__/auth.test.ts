@@ -13,7 +13,7 @@ jest.mock("@/lib/permissions", () => ({
 
 jest.mock("next-auth/providers/google", () => ({
   __esModule: true,
-  default: { id: "google", name: "Google", type: "oidc" },
+  default: jest.fn(() => ({ id: "google", name: "Google", type: "oidc" })),
 }));
 
 jest.mock("next-auth/providers/github", () => ({
