@@ -29,7 +29,8 @@ describe("LanguageSwitcher", () => {
     const user = userEvent.setup();
     render(<LanguageSwitcher />);
     await user.click(screen.getByLabelText("Change language"));
-    const finnishItem = screen.getByText("Suomi").closest("li");
+    const menuItems = screen.getAllByRole("menuitem");
+    const finnishItem = menuItems.find((item) => item.textContent === "Suomi");
     expect(finnishItem).toHaveClass("Mui-selected");
   });
 });
