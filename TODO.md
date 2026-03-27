@@ -6,14 +6,6 @@
 
 ---
 
-### Phase 6: Admin & User Management
-> Platform-native admin UI. New users get "pending" role until approved by admin.
-
-- [ ] 🟣 Add "pending" role — new users have zero permissions until approved — Claude 3
-- [ ] 🟣 Build /admin/users page (list users, change roles, toggle permissions) — Claude 3
-- [ ] 🔵 Add "pending approval" message for unapproved users — Claude 3
-- [ ] 🔵 Add admin user management test suite — Claude 3
-
 ### Future — Port HRM Features to Platform
 > Develop in HRM repo first, then port to Platform using same patterns, fresh code.
 > HRM and Platform use SEPARATE databases. HRM is a standalone showpiece.

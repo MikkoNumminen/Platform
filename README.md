@@ -19,6 +19,7 @@ packages/config/ — Shared types and config (@platform/config)
 - **Boards** — Categorized discussion boards with full CRUD, pinned posts, and threaded comments
 - **Forums** — Discussion forums with topics and threaded replies
 - **Calendar** — Monthly calendar view with event creation, editing, and deletion
+- **User aliases** — Public display names (callsigns) shown instead of real names in all community areas
 - **Themes** — 7 switchable themes (dark, light, cyberpunk, retro, bubblegum, ocean, fantasy)
 - **Community Survey** — Feature prioritization survey with admin results dashboard
 
@@ -69,7 +70,7 @@ npx turbo run build --filter=web # Production build
 
 ## Testing
 
-428 tests across 60 test suites with accessibility checks (jest-axe).
+464 tests across 65 test suites with accessibility checks (jest-axe).
 
 ```bash
 npx turbo run test --filter=web           # All tests
@@ -89,10 +90,11 @@ New features are developed in the HRM repo first, then ported to Platform as nee
 
 ### User access model
 
-1. A new user signs in with Google OAuth
-2. They get a `"pending"` role with **zero permissions** — no access to community content
-3. An admin approves them via `/admin/users` and assigns a role (`user`, `admin`, or `superuser`)
-4. The first user to sign up automatically gets `superuser` role (bootstrap admin)
+1. A new user signs in with Google or GitHub OAuth
+2. They choose a public alias (callsign) on first login — shown instead of real name everywhere
+3. They get a `"pending"` role with **zero permissions** — no access to community content
+4. An admin approves them via `/admin/users` and assigns a role (`user`, `admin`, or `superuser`)
+5. The first user to sign up automatically gets `superuser` role (bootstrap admin)
 
 ## Deployment
 
