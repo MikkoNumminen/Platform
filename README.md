@@ -16,6 +16,7 @@ packages/config/ — Shared types and config (@platform/config)
 ## Features
 
 ### Community
+- **Shoutbox** — IRC-style live chat on the landing page with `<alias> message` format and optimistic updates
 - **Boards** — Categorized discussion boards with full CRUD, pinned posts, and threaded comments
 - **Forums** — Discussion forums with topics and threaded replies
 - **Calendar** — Monthly calendar view with event creation, editing, and deletion
@@ -70,7 +71,7 @@ npx turbo run build --filter=web # Production build
 
 ## Testing
 
-464 tests across 65 test suites with accessibility checks (jest-axe).
+486 tests across 68 test suites with accessibility checks (jest-axe).
 
 ```bash
 npx turbo run test --filter=web           # All tests
