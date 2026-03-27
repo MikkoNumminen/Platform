@@ -31,11 +31,18 @@ packages/config/ — Shared types and config (@platform/config)
 ### Security
 - **Authentication** — NextAuth v5 with Google and GitHub OAuth
 - **Role-based permissions** — Superuser, vuohi, admin, user, and pending roles with granular permission overrides
-- **Role hierarchy protection** — Only superusers can modify superuser/vuohi roles
+- **Role hierarchy enforcement** — Users can only modify lower-ranked users and assign lower-ranked roles
+- **Content ownership** — Edit actions verify the user is the author; admin routes check role in middleware
 - **Pending user approval** — New users get zero permissions until approved by an admin
 - **guardedAction** — Server action wrapper enforcing auth, permissions, and rate limiting
 - **Rate limiting** — PostgreSQL-based atomic sliding window (30 req/60s per user)
 - **Security headers** — CSP, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy
+
+### GDPR Compliance
+- **Account deletion** — Users can delete their account from `/account`, scrubbing all PII and anonymizing authored content
+- **Data export** — Users can download all their data as JSON from `/account`
+- **Privacy policy** — Full policy at `/privacy` covering data collection, cookies, retention, and user rights
+- **Soft-delete cleanup** — Weekly cron job purges records deleted more than 30 days ago
 
 ### Shared Components
 - **DataTable** — Generic sortable, paginated, searchable table with column configuration
@@ -78,7 +85,7 @@ npx turbo run build --filter=web # Production build
 
 ## Testing
 
-578 tests across 81 test suites with accessibility checks (jest-axe).
+602 tests across 85 test suites with accessibility checks (jest-axe).
 
 ```bash
 npx turbo run test --filter=web           # All tests
@@ -118,6 +125,7 @@ Required environment variables:
 - `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` — GitHub OAuth credentials (optional)
 - `NEXT_PUBLIC_APP_NAME` — App name displayed in UI
 - `NEXT_PUBLIC_BASE_URL` — Production URL for OG meta tags (default: `https://vuohiliitto.com`)
+- `CRON_SECRET` — Secret for authenticating cron job requests (soft-delete cleanup)
 
 ## CI/CD
 
