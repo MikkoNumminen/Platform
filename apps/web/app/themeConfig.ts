@@ -6,6 +6,7 @@ export const THEME_NAMES = [
   "bubblegum",
   "ocean",
   "fantasy",
+  "warcraft",
 ] as const;
 export type ThemeName = (typeof THEME_NAMES)[number];
 
@@ -37,6 +38,7 @@ export const THEME_LABELS: Record<ThemeName, string> = {
   bubblegum: "Bubblegum",
   ocean: "Ocean",
   fantasy: "Fantasy",
+  warcraft: "Warcraft",
 };
 
 export const THEME_PALETTES: Record<ThemeName, ThemeColors> = {
@@ -150,6 +152,22 @@ export const THEME_PALETTES: Record<ThemeName, ThemeColors> = {
     errorBg: "rgba(196, 30, 58, 0.12)",
     warning: "#FF8C00",
     info: "#0070DD",
+    success: "#1EFF00",
+  },
+  warcraft: {
+    slate100: "#E8D5A3",
+    slate300: "#8B7355",
+    slate400: "#6B5B45",
+    slate600: "#1A1410",
+    slate700: "#0C0A08",
+    green400: "#D4A843",
+    green900: "#2A1F0A",
+    rowHover: "#1F1812",
+    hoverOverlay: "rgba(212, 168, 67, 0.10)",
+    error: "#C41E3A",
+    errorBg: "rgba(196, 30, 58, 0.15)",
+    warning: "#FF8C00",
+    info: "#4FC3F7",
     success: "#1EFF00",
   },
 };

@@ -7,8 +7,8 @@ import {
 } from "../themeConfig";
 
 describe("themeConfig", () => {
-  test("has 7 themes", () => {
-    expect(THEME_NAMES).toHaveLength(7);
+  test("has 8 themes", () => {
+    expect(THEME_NAMES).toHaveLength(8);
   });
 
   test("default theme is fantasy", () => {

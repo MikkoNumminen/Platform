@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Cinzel } from "next/font/google";
 import { Box } from "@mui/material";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import ThemeRegistry from "./components/ThemeRegistry";
@@ -8,6 +9,13 @@ import KeyboardShortcuts from "./components/KeyboardShortcuts";
 import PendingBanner from "./components/PendingBanner";
 import PendingGate from "./components/PendingGate";
 import AliasGuard from "./components/AliasGuard";
+
+const cinzel = Cinzel({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  display: "swap",
+  variable: "--font-cinzel",
+});
 
 const appName = process.env.NEXT_PUBLIC_APP_NAME || "Platform";
 
@@ -34,7 +42,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fi">
+    <html lang="fi" className={cinzel.variable}>
       <body>
         <SessionProvider>
           <AppRouterCacheProvider>
