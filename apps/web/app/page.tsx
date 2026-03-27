@@ -15,7 +15,8 @@ export default async function Home() {
     <>
       <TopBar title="Platform" />
       <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-        {session?.user ? <Shoutbox initialShouts={shouts} /> : <SurveyCTA />}
+        {session?.user && <Shoutbox initialShouts={shouts} />}
+        <SurveyCTA />
       </Box>
     </>
   );

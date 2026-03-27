@@ -28,6 +28,7 @@ model User {
   calendarEvents CalendarEvent[]
   permissions    UserPermission[]
   shouts         Shout[]
+  issueReports   IssueReport[]
 
   @@index([deletedAt])
   @@index([email])
@@ -197,6 +198,22 @@ model Shout {
   message   String
   authorId  String
   createdAt DateTime @default(now())
+
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([authorId])
+}
+
+// ─── Issue Reports ──────────────────────────────────────────────────────────
+
+model IssueReport {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  url         String?
+  authorId    String
+  createdAt   DateTime @default(now())
 
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
 

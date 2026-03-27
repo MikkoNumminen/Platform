@@ -8,10 +8,13 @@ import {
   Button,
   Divider,
   IconButton,
+  ListItemIcon,
   Menu,
   MenuItem,
   Typography,
 } from "@mui/material";
+import FeedbackIcon from "@mui/icons-material/Feedback";
+import BugReportIcon from "@mui/icons-material/BugReport";
 import Link from "next/link";
 import { colors } from "../styles";
 
@@ -87,6 +90,20 @@ export default function UserMenu() {
             Survey Results
           </MenuItem>
         )}
+        <Divider />
+        <MenuItem component={Link} href="/survey">
+          <ListItemIcon>
+            <FeedbackIcon fontSize="small" />
+          </ListItemIcon>
+          Feedback & Survey
+        </MenuItem>
+        <MenuItem component={Link} href="/report-issue">
+          <ListItemIcon>
+            <BugReportIcon fontSize="small" />
+          </ListItemIcon>
+          Report Issue
+        </MenuItem>
+        <Divider />
         <MenuItem onClick={() => signOut()}>Sign Out</MenuItem>
       </Menu>
     </Box>

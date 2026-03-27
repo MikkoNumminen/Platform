@@ -49,9 +49,9 @@ describe("Home", () => {
       expect(screen.getByTestId("shoutbox")).toBeInTheDocument();
     });
 
-    test("does not render SurveyCTA", async () => {
+    test("renders SurveyCTA", async () => {
       render(await Home());
-      expect(screen.queryByTestId("survey-cta")).not.toBeInTheDocument();
+      expect(screen.getByTestId("survey-cta")).toBeInTheDocument();
     });
   });
 
