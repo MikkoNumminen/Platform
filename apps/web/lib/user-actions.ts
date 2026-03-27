@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import { guardedAction } from "@/lib/guardedAction";
 import { ActionError } from "@/lib/actionErrors";
 import { validateUUID } from "@/lib/actionUtils";
-import { ROLES } from "@/lib/permissions";
+import { ROLES, PERMISSIONS, type PermissionKey } from "@/lib/permissions";
 
 // ROLES is ordered highest → lowest: superuser, vuohi, admin, user, pending
 function roleRank(role: string): number {
