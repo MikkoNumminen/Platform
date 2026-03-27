@@ -4,49 +4,6 @@ import { Box, Card, CardContent, Typography } from "@mui/material";
 import { motion } from "framer-motion";
 import { colors } from "../styles";
 
-function AnimatedArrow() {
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "flex-end",
-        pr: { xs: 2, sm: 4 },
-        mt: 2,
-      }}
-    >
-      <motion.svg
-        width="120"
-        height="60"
-        viewBox="0 0 120 60"
-        fill="none"
-        style={{ overflow: "visible" }}
-      >
-        <motion.path
-          d="M 10 50 Q 60 50 80 30 Q 100 10 110 10"
-          stroke={`var(--platform-green400)`}
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          fill="none"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: 1 }}
-          transition={{ duration: 1.2, delay: 0.8, ease: "easeInOut" }}
-        />
-        <motion.path
-          d="M 104 4 L 112 10 L 104 16"
-          stroke={`var(--platform-green400)`}
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3, delay: 2 }}
-        />
-      </motion.svg>
-    </Box>
-  );
-}
-
 export default function WelcomeHero() {
   return (
     <Box
@@ -55,19 +12,77 @@ export default function WelcomeHero() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        minHeight: "60vh",
+        minHeight: "65vh",
         px: 2,
+        position: "relative",
       }}
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
+        style={{ position: "relative", maxWidth: 520, width: "100%" }}
       >
+        {/* Arrow + label positioned at top-right of card, pointing up toward Sign In */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 0.5 }}
+          style={{
+            position: "absolute",
+            top: -70,
+            right: -30,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <motion.svg
+            width="100"
+            height="60"
+            viewBox="0 0 100 60"
+            fill="none"
+            style={{ overflow: "visible" }}
+          >
+            {/* Curving arrow going up and to the right */}
+            <motion.path
+              d="M 20 55 Q 30 20 60 10 Q 80 4 90 2"
+              stroke="var(--platform-green400)"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              fill="none"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 1, delay: 1.2, ease: "easeInOut" }}
+            />
+            {/* Arrowhead */}
+            <motion.path
+              d="M 84 -2 L 92 2 L 86 9"
+              stroke="var(--platform-green400)"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 2.2 }}
+            />
+          </motion.svg>
+          <motion.div
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 2.5 }}
+          >
+            <Typography
+              variant="caption"
+              sx={{ color: colors.green400, fontWeight: 600, whiteSpace: "nowrap" }}
+            >
+              Click Sign In
+            </Typography>
+          </motion.div>
+        </motion.div>
+
         <Card
           sx={{
-            maxWidth: 520,
-            width: "100%",
             border: `1px solid ${colors.green400}`,
             backgroundColor: colors.slate600,
           }}
@@ -144,31 +159,6 @@ export default function WelcomeHero() {
             </motion.div>
           </CardContent>
         </Card>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8, duration: 0.5 }}
-      >
-        <AnimatedArrow />
-        <motion.div
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <Typography
-            variant="caption"
-            sx={{
-              color: colors.green400,
-              textAlign: "right",
-              display: "block",
-              pr: { xs: 1, sm: 3 },
-              fontWeight: 600,
-            }}
-          >
-            Click Sign In above
-          </Typography>
-        </motion.div>
       </motion.div>
     </Box>
   );

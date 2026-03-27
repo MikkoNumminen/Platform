@@ -41,7 +41,7 @@ describe("WelcomeHero", () => {
 
   test("renders sign in prompt text", () => {
     render(<WelcomeHero />);
-    expect(screen.getByText(/click sign in above/i)).toBeInTheDocument();
+    expect(screen.getByText(/click sign in/i)).toBeInTheDocument();
   });
 
   test("renders private community description", () => {

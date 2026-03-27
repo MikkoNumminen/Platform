@@ -40,9 +40,22 @@ export default function UserMenu() {
         size="small"
         onClick={() => signIn()}
         sx={{
-          color: colors.slate100,
-          borderColor: colors.slate300,
-          "&:hover": { borderColor: colors.slate100 },
+          color: colors.green400,
+          borderColor: colors.green400,
+          fontWeight: 600,
+          animation: "signInPulse 2s ease-in-out infinite",
+          "@keyframes signInPulse": {
+            "0%, 100%": {
+              boxShadow: `0 0 4px var(--platform-green400)`,
+            },
+            "50%": {
+              boxShadow: `0 0 16px var(--platform-green400), 0 0 32px var(--platform-green400)`,
+            },
+          },
+          "&:hover": {
+            borderColor: colors.green400,
+            backgroundColor: "rgba(var(--platform-green400-rgb, 74, 222, 128), 0.1)",
+          },
         }}
       >
         Sign In
