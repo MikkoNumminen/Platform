@@ -1,0 +1,206 @@
+"use client";
+
+import { useState } from "react";
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  TextField,
+  Alert,
+} from "@mui/material";
+import TopBar from "../components/TopBar";
+import { deleteMyAccount, exportMyData } from "@/lib/gdpr-actions";
+import { colors } from "../styles";
+
+export default function AccountPage() {
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [confirmText, setConfirmText] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  if (!session?.user) {
+    router.replace("/auth/signin");
+    return null;
+  }
+
+  const user = session.user;
+
+  const handleExport = async () => {
+    setExporting(true);
+    setError(null);
+    try {
+      const result = await exportMyData();
+      if ("error" in result) {
+        setError(result.error);
+      } else {
+        const blob = new Blob([result.data], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `my-data-${new Date().toISOString().split("T")[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        setSuccess("Data exported successfully.");
+      }
+    } catch {
+      setError("An unexpected error occurred.");
+    }
+    setExporting(false);
+  };
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    setError(null);
+    try {
+      const result = await deleteMyAccount();
+      if (result?.error) {
+        setError(result.error);
+        setDeleting(false);
+        return;
+      }
+      await signOut({ callbackUrl: "/" });
+    } catch {
+      setError("An unexpected error occurred.");
+      setDeleting(false);
+    }
+  };
+
+  return (
+    <>
+      <TopBar title="Account Settings" backHref="/" />
+      <Box sx={{ maxWidth: 600, mx: "auto", px: { xs: 2, sm: 3 }, py: 2 }}>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+        {success && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {success}
+          </Alert>
+        )}
+
+        <Card sx={{ mb: 3 }}>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Profile
+            </Typography>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+              <ProfileField label="Email" value={user.email ?? "—"} />
+              <ProfileField label="Name" value={user.name ?? "—"} />
+              <ProfileField label="Alias" value={(user as { alias?: string }).alias ?? "—"} />
+              <ProfileField label="Role" value={(user as { role?: string }).role ?? "—"} />
+            </Box>
+          </CardContent>
+        </Card>
+
+        <Card sx={{ mb: 3 }}>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Your Data
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Download a copy of all your data including your profile, posts, comments, events, and
+              survey responses.
+            </Typography>
+            <Button variant="outlined" onClick={handleExport} disabled={exporting}>
+              {exporting ? "Exporting..." : "Download My Data"}
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Divider sx={{ my: 3 }} />
+
+        <Card sx={{ border: `1px solid ${colors.error}` }}>
+          <CardContent>
+            <Typography variant="h6" color="error" gutterBottom>
+              Delete Account
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Permanently delete your account and all associated personal data. Your authored
+              content will be anonymized. This action cannot be undone.
+            </Typography>
+            <Button variant="outlined" color="error" onClick={() => setDeleteOpen(true)}>
+              Delete My Account
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Box sx={{ mt: 3, textAlign: "center" }}>
+          <Typography variant="body2" color="text.secondary">
+            Read our{" "}
+            <Typography
+              component="a"
+              href="/privacy"
+              variant="body2"
+              sx={{ color: colors.green400 }}
+            >
+              Privacy Policy
+            </Typography>
+          </Typography>
+        </Box>
+      </Box>
+
+      <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)}>
+        <DialogTitle>Delete Account</DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ mb: 2 }}>
+            This will permanently delete your personal data and anonymize all your content. You will
+            be signed out immediately. This cannot be undone.
+          </DialogContentText>
+          <DialogContentText sx={{ mb: 2 }}>
+            Type <strong>DELETE</strong> to confirm.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            fullWidth
+            value={confirmText}
+            onChange={(e) => setConfirmText(e.target.value)}
+            placeholder="DELETE"
+            size="small"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteOpen(false)} disabled={deleting}>
+            Cancel
+          </Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={handleDelete}
+            disabled={confirmText !== "DELETE" || deleting}
+          >
+            {deleting ? "Deleting..." : "Delete Account"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+}
+
+function ProfileField({ label, value }: { label: string; value: string }) {
+  return (
+    <Box sx={{ display: "flex", gap: 2 }}>
+      <Typography variant="body2" sx={{ color: colors.slate400, minWidth: 60 }}>
+        {label}
+      </Typography>
+      <Typography variant="body2" sx={{ color: colors.slate100 }}>
+        {value}
+      </Typography>
+    </Box>
+  );
+}
