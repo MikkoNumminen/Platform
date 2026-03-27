@@ -58,10 +58,31 @@ jest.mock("@/lib/guardedAction", () => {
 
 import { updateUserRole } from "@/lib/user-actions";
 
+function superuserSession() {
+  return {
+    user: {
+      id: "superuser-1",
+      role: "superuser",
+      permissions: { "admin:users": true },
+    },
+  };
+}
+
+function vuohiSession() {
+  return {
+    user: {
+      id: "vuohi-1",
+      role: "vuohi",
+      permissions: { "admin:users": true },
+    },
+  };
+}
+
 function adminSession() {
   return {
     user: {
       id: "admin-1",
+      role: "admin",
       permissions: { "admin:users": true },
     },
   };
@@ -119,5 +140,108 @@ describe("updateUserRole", () => {
     mockFindFirst.mockResolvedValue(null);
     const result = await updateUserRole("550e8400-e29b-41d4-a716-446655440000", "admin");
     expect(result).toEqual({ error: "User not found", code: "notFound" });
+  });
+
+  // --- Role hierarchy enforcement (superuser > vuohi > admin > user > pending) ---
+
+  test("vuohi cannot modify another vuohi member", async () => {
+    mockAuth.mockResolvedValue(vuohiSession());
+    mockFindFirst.mockResolvedValue({ id: "user-2", role: "vuohi" });
+    const result = await updateUserRole("550e8400-e29b-41d4-a716-446655440000", "user");
+    expect(result).toEqual({
+      error: "Cannot modify a user at the same or higher rank",
+      code: "permissionDenied",
+    });
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+
+  test("vuohi cannot modify a superuser", async () => {
+    mockAuth.mockResolvedValue(vuohiSession());
+    mockFindFirst.mockResolvedValue({ id: "user-2", role: "superuser" });
+    const result = await updateUserRole("550e8400-e29b-41d4-a716-446655440000", "user");
+    expect(result).toEqual({
+      error: "Cannot modify a user at the same or higher rank",
+      code: "permissionDenied",
+    });
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+
+  test("vuohi cannot promote a user to vuohi", async () => {
+    mockAuth.mockResolvedValue(vuohiSession());
+    mockFindFirst.mockResolvedValue({ id: "user-2", role: "user" });
+    const result = await updateUserRole("550e8400-e29b-41d4-a716-446655440000", "vuohi");
+    expect(result).toEqual({
+      error: "Cannot assign a role at the same or higher rank",
+      code: "permissionDenied",
+    });
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+
+  test("vuohi cannot promote a user to superuser", async () => {
+    mockAuth.mockResolvedValue(vuohiSession());
+    mockFindFirst.mockResolvedValue({ id: "user-2", role: "user" });
+    const result = await updateUserRole("550e8400-e29b-41d4-a716-446655440000", "superuser");
+    expect(result).toEqual({
+      error: "Cannot assign a role at the same or higher rank",
+      code: "permissionDenied",
+    });
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+
+  test("vuohi can change a lower-ranked user's role", async () => {
+    mockAuth.mockResolvedValue(vuohiSession());
+    mockFindFirst.mockResolvedValue({ id: "user-2", role: "user" });
+    const result = await updateUserRole("550e8400-e29b-41d4-a716-446655440000", "admin");
+    expect(result).toBeUndefined();
+    expect(mockUpdate).toHaveBeenCalledTimes(1);
+  });
+
+  test("admin cannot modify another admin", async () => {
+    mockAuth.mockResolvedValue(adminSession());
+    mockFindFirst.mockResolvedValue({ id: "user-2", role: "admin" });
+    const result = await updateUserRole("550e8400-e29b-41d4-a716-446655440000", "user");
+    expect(result).toEqual({
+      error: "Cannot modify a user at the same or higher rank",
+      code: "permissionDenied",
+    });
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+
+  test("admin cannot modify a vuohi member", async () => {
+    mockAuth.mockResolvedValue(adminSession());
+    mockFindFirst.mockResolvedValue({ id: "user-2", role: "vuohi" });
+    const result = await updateUserRole("550e8400-e29b-41d4-a716-446655440000", "user");
+    expect(result).toEqual({
+      error: "Cannot modify a user at the same or higher rank",
+      code: "permissionDenied",
+    });
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+
+  test("admin cannot promote a user to admin", async () => {
+    mockAuth.mockResolvedValue(adminSession());
+    mockFindFirst.mockResolvedValue({ id: "user-2", role: "pending" });
+    const result = await updateUserRole("550e8400-e29b-41d4-a716-446655440000", "admin");
+    expect(result).toEqual({
+      error: "Cannot assign a role at the same or higher rank",
+      code: "permissionDenied",
+    });
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+
+  test("superuser can modify a vuohi member", async () => {
+    mockAuth.mockResolvedValue(superuserSession());
+    mockFindFirst.mockResolvedValue({ id: "user-2", role: "vuohi" });
+    const result = await updateUserRole("550e8400-e29b-41d4-a716-446655440000", "user");
+    expect(result).toBeUndefined();
+    expect(mockUpdate).toHaveBeenCalledTimes(1);
+  });
+
+  test("superuser can promote a user to vuohi", async () => {
+    mockAuth.mockResolvedValue(superuserSession());
+    mockFindFirst.mockResolvedValue({ id: "user-2", role: "user" });
+    const result = await updateUserRole("550e8400-e29b-41d4-a716-446655440000", "vuohi");
+    expect(result).toBeUndefined();
+    expect(mockUpdate).toHaveBeenCalledTimes(1);
   });
 });

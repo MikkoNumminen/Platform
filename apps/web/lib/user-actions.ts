@@ -7,7 +7,11 @@ import { ActionError } from "@/lib/actionErrors";
 import { validateUUID } from "@/lib/actionUtils";
 import { ROLES } from "@/lib/permissions";
 
-const PROTECTED_ROLES = ["superuser", "vuohi"] as const;
+// ROLES is ordered highest → lowest: superuser, vuohi, admin, user, pending
+function roleRank(role: string): number {
+  const index = ROLES.indexOf(role as (typeof ROLES)[number]);
+  return index === -1 ? ROLES.length : index;
+}
 
 export const updateUserRole = guardedAction(
   "admin:users",
@@ -20,7 +24,8 @@ export const updateUserRole = guardedAction(
     }
 
     const session = await auth();
-    const actorRole = (session?.user as { role?: string })?.role;
+    const actorRole = (session?.user as { role?: string })?.role ?? "pending";
+    const actorRank = roleRank(actorRole);
 
     const user = await prisma.user.findFirst({
       where: { id: userId, deletedAt: null },
@@ -29,16 +34,14 @@ export const updateUserRole = guardedAction(
       throw new ActionError("notFound", "User not found");
     }
 
-    // Only superusers can modify superuser or vuohi members
-    if (
-      actorRole !== "superuser" &&
-      (PROTECTED_ROLES.includes(user.role as (typeof PROTECTED_ROLES)[number]) ||
-        PROTECTED_ROLES.includes(role as (typeof PROTECTED_ROLES)[number]))
-    ) {
-      throw new ActionError(
-        "permissionDenied",
-        "Only superusers can modify or assign protected roles",
-      );
+    // Cannot modify users at same or higher rank
+    if (roleRank(user.role) <= actorRank) {
+      throw new ActionError("permissionDenied", "Cannot modify a user at the same or higher rank");
+    }
+
+    // Cannot assign a role at same or higher rank than your own
+    if (roleRank(role) <= actorRank) {
+      throw new ActionError("permissionDenied", "Cannot assign a role at the same or higher rank");
     }
 
     await prisma.user.update({
