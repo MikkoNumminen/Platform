@@ -30,20 +30,21 @@ export default function WelcomeHero() {
           transition={{ delay: 1, duration: 0.5 }}
           style={{
             position: "absolute",
-            top: -155,
-            right: -360,
+            top: -140,
+            right: -340,
+            pointerEvents: "none",
           }}
         >
           <motion.svg
-            width="350"
-            height="150"
-            viewBox="0 0 350 150"
+            width="330"
+            height="135"
+            viewBox="0 0 330 135"
             fill="none"
             style={{ overflow: "visible" }}
           >
-            {/* Start bottom-left (card corner) → end upper-right (Sign In button) */}
+            {/* Start bottom-left (card corner) → end upper-right (below Sign In button) */}
             <motion.path
-              d="M 8 145 C 60 135 150 100 230 65 C 270 47 295 37 310 32"
+              d="M 8 130 C 60 120 140 90 210 60 C 255 42 280 32 295 25"
               stroke="var(--platform-green400)"
               strokeWidth="2.5"
               strokeLinecap="round"
@@ -54,7 +55,7 @@ export default function WelcomeHero() {
             />
             {/* Arrowhead pointing upper-right */}
             <motion.path
-              d="M 302 24 L 312 31 L 304 38"
+              d="M 287 18 L 297 24 L 289 32"
               stroke="var(--platform-green400)"
               strokeWidth="2.5"
               strokeLinecap="round"
