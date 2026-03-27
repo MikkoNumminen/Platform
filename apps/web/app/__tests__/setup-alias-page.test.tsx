@@ -53,7 +53,7 @@ describe("SetupAliasPage", () => {
     render(<SetupAliasPage />);
     const input = screen.getByLabelText(/alias/i);
     fireEvent.change(input, { target: { value: "myalias" } });
-    fireEvent.submit(input.closest("form")!);
+    fireEvent.click(screen.getByRole("button", { name: /set alias/i }));
 
     await waitFor(() => {
       expect(mockSetAlias).toHaveBeenCalledWith("myalias");
@@ -70,7 +70,7 @@ describe("SetupAliasPage", () => {
     render(<SetupAliasPage />);
     const input = screen.getByLabelText(/alias/i);
     fireEvent.change(input, { target: { value: "taken" } });
-    fireEvent.submit(input.closest("form")!);
+    fireEvent.click(screen.getByRole("button", { name: /set alias/i }));
 
     await waitFor(() => {
       expect(screen.getByText("This alias is already taken")).toBeInTheDocument();
