@@ -16,6 +16,16 @@ export async function getUsers() {
   });
 }
 
+export async function getUserPermissionOverrides(
+  userId: string,
+): Promise<Array<{ key: string; granted: boolean }>> {
+  const overrides = await prisma.userPermission.findMany({
+    where: { userId },
+    include: { permission: true },
+  });
+  return overrides.map((o) => ({ key: o.permission.key, granted: o.granted }));
+}
+
 export async function getUserById(id: string) {
   return prisma.user.findFirst({
     where: { id, deletedAt: null },

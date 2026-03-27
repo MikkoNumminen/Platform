@@ -43,6 +43,12 @@ jest.mock("@/app/admin/users/ApproveButton", () => {
   };
 });
 
+jest.mock("@/app/admin/users/UserPermissionEditor", () => {
+  return function MockUserPermissionEditor({ userId }: { userId: string }) {
+    return <div data-testid={`permissions-${userId}`}>Permissions</div>;
+  };
+});
+
 const adminSession = {
   user: {
     id: "admin-1",

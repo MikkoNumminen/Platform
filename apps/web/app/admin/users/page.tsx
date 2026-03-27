@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import React from "react";
 import {
   Avatar,
   Box,
@@ -20,6 +21,7 @@ import { redirect } from "next/navigation";
 import { colors } from "../../styles";
 import UserRoleSelect from "./UserRoleSelect";
 import ApproveButton from "./ApproveButton";
+import UserPermissionEditor from "./UserPermissionEditor";
 
 export default async function AdminUsersPage() {
   const session = await auth();
@@ -57,61 +59,72 @@ export default async function AdminUsersPage() {
             </TableHead>
             <TableBody>
               {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell sx={{ borderColor: colors.slate300 }}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                      <Avatar
-                        src={user.image ?? undefined}
-                        alt={user.alias ?? user.name ?? "User"}
-                        sx={{ width: 32, height: 32, fontSize: "0.8rem" }}
-                      >
-                        {(user.alias ?? user.name)?.[0]?.toUpperCase() ?? "?"}
-                      </Avatar>
-                      <Box>
-                        <Typography variant="body2" sx={{ color: colors.slate100 }}>
-                          {user.alias ?? user.name ?? "—"}
-                        </Typography>
-                        {user.alias && user.name && (
-                          <Typography variant="caption" sx={{ color: colors.slate400 }}>
-                            {user.name}
+                <React.Fragment key={user.id}>
+                  <TableRow>
+                    <TableCell sx={{ borderColor: colors.slate300 }}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                        <Avatar
+                          src={user.image ?? undefined}
+                          alt={user.alias ?? user.name ?? "User"}
+                          sx={{ width: 32, height: 32, fontSize: "0.8rem" }}
+                        >
+                          {(user.alias ?? user.name)?.[0]?.toUpperCase() ?? "?"}
+                        </Avatar>
+                        <Box>
+                          <Typography variant="body2" sx={{ color: colors.slate100 }}>
+                            {user.alias ?? user.name ?? "—"}
                           </Typography>
+                          {user.alias && user.name && (
+                            <Typography variant="caption" sx={{ color: colors.slate400 }}>
+                              {user.name}
+                            </Typography>
+                          )}
+                        </Box>
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ borderColor: colors.slate300 }}>
+                      <Typography variant="body2" sx={{ color: colors.slate400 }}>
+                        {user.email}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={{ borderColor: colors.slate300 }}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <UserRoleSelect
+                          userId={user.id}
+                          currentRole={user.role}
+                          isSelf={user.id === session?.user?.id}
+                        />
+                        {user.role === "pending" && <ApproveButton userId={user.id} />}
+                        {!surveyStatus[user.id] && (
+                          <Chip
+                            label="Survey pending"
+                            size="small"
+                            sx={{
+                              backgroundColor: colors.slate300,
+                              color: colors.slate700,
+                              fontWeight: 600,
+                              fontSize: "0.7rem",
+                            }}
+                          />
                         )}
                       </Box>
-                    </Box>
-                  </TableCell>
-                  <TableCell sx={{ borderColor: colors.slate300 }}>
-                    <Typography variant="body2" sx={{ color: colors.slate400 }}>
-                      {user.email}
-                    </Typography>
-                  </TableCell>
-                  <TableCell sx={{ borderColor: colors.slate300 }}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <UserRoleSelect
+                    </TableCell>
+                    <TableCell sx={{ borderColor: colors.slate300 }}>
+                      <Typography variant="body2" sx={{ color: colors.slate400 }}>
+                        {user.createdAt.toLocaleDateString()}
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell colSpan={4} sx={{ borderColor: colors.slate300, py: 0, px: 2 }}>
+                      <UserPermissionEditor
                         userId={user.id}
-                        currentRole={user.role}
+                        userRole={user.role}
                         isSelf={user.id === session?.user?.id}
                       />
-                      {user.role === "pending" && <ApproveButton userId={user.id} />}
-                      {!surveyStatus[user.id] && (
-                        <Chip
-                          label="Survey pending"
-                          size="small"
-                          sx={{
-                            backgroundColor: colors.slate300,
-                            color: colors.slate700,
-                            fontWeight: 600,
-                            fontSize: "0.7rem",
-                          }}
-                        />
-                      )}
-                    </Box>
-                  </TableCell>
-                  <TableCell sx={{ borderColor: colors.slate300 }}>
-                    <Typography variant="body2" sx={{ color: colors.slate400 }}>
-                      {user.createdAt.toLocaleDateString()}
-                    </Typography>
-                  </TableCell>
-                </TableRow>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
               ))}
             </TableBody>
           </Table>
