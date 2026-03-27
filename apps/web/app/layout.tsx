@@ -6,6 +6,7 @@ import SessionProvider from "./components/SessionProvider";
 import SnackbarProvider from "./components/SnackbarProvider";
 import KeyboardShortcuts from "./components/KeyboardShortcuts";
 import PendingBanner from "./components/PendingBanner";
+import AliasGuard from "./components/AliasGuard";
 
 export const metadata: Metadata = {
   title: "Platform",
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <AppRouterCacheProvider>
             <ThemeRegistry>
               <SnackbarProvider>
+                <AliasGuard />
                 <Box sx={{ pt: 2 }}>
                   <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
                     <PendingBanner />
