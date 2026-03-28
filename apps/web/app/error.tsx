@@ -3,7 +3,6 @@
 import { colors } from "./styles";
 
 export default function Error({
-  _error,
   reset,
 }: {
   error: Error & { digest?: string };

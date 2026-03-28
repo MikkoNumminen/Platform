@@ -158,7 +158,7 @@ export default function PromotionCelebration({ onComplete }: { onComplete?: () =
               animate={{
                 backgroundColor: FLASH_COLORS,
               }}
-              transition={{ duration: 0.3, repeat: Infinity, ease: "steps(1)" }}
+              transition={{ duration: 0.3, repeat: Infinity, ease: "linear" }}
             />
 
             {/* Spinning goat */}
@@ -227,7 +227,7 @@ export default function PromotionCelebration({ onComplete }: { onComplete?: () =
 
             {/* Emoji particles */}
             {EMOJI_PARTICLES.map((emoji, i) => (
-              <EmojiParticle key={`emoji-${i}`} emoji={emoji} index={i} />
+              <EmojiParticle key={`emoji-${i}`} emoji={emoji} />
             ))}
 
             {/* Marquee */}
