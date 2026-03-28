@@ -59,6 +59,9 @@ describe("getUsers", () => {
         alias: true,
         image: true,
         role: true,
+        wantsToDevelop: true,
+        developerTag: true,
+        developmentSkills: true,
         createdAt: true,
       },
     });
@@ -97,6 +100,9 @@ describe("getUserById", () => {
         alias: true,
         image: true,
         role: true,
+        wantsToDevelop: true,
+        developerTag: true,
+        developmentSkills: true,
         createdAt: true,
       },
     });
