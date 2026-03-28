@@ -100,7 +100,7 @@ describe("deleteMyAccount", () => {
 
   test("scrubs user PII and marks as deleted", async () => {
     mocks.auth.mockResolvedValue(authedSession());
-    const result = await deleteMyAccount();
+    const result = await deleteMyAccount("DELETE");
     expect(result).toBeUndefined();
     expect(mocks.tx.userUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -121,7 +121,7 @@ describe("deleteMyAccount", () => {
 
   test("deletes permission overrides", async () => {
     mocks.auth.mockResolvedValue(authedSession());
-    await deleteMyAccount();
+    await deleteMyAccount("DELETE");
     expect(mocks.tx.permissionDeleteMany).toHaveBeenCalledWith({
       where: { userId: "user-1" },
     });
@@ -129,7 +129,7 @@ describe("deleteMyAccount", () => {
 
   test("nulls out survey response user links", async () => {
     mocks.auth.mockResolvedValue(authedSession());
-    await deleteMyAccount();
+    await deleteMyAccount("DELETE");
     expect(mocks.tx.surveyUpdateMany).toHaveBeenCalledWith({
       where: { userId: "user-1" },
       data: { userId: null },
@@ -138,7 +138,7 @@ describe("deleteMyAccount", () => {
 
   test("nulls out calendar event author links", async () => {
     mocks.auth.mockResolvedValue(authedSession());
-    await deleteMyAccount();
+    await deleteMyAccount("DELETE");
     expect(mocks.tx.calendarUpdateMany).toHaveBeenCalledWith({
       where: { authorId: "user-1" },
       data: { authorId: null },
@@ -147,7 +147,7 @@ describe("deleteMyAccount", () => {
 
   test("soft-deletes posts, topics, and threads", async () => {
     mocks.auth.mockResolvedValue(authedSession());
-    await deleteMyAccount();
+    await deleteMyAccount("DELETE");
     expect(mocks.tx.postUpdateMany).toHaveBeenCalled();
     expect(mocks.tx.topicUpdateMany).toHaveBeenCalled();
     expect(mocks.tx.threadUpdateMany).toHaveBeenCalled();
@@ -155,7 +155,7 @@ describe("deleteMyAccount", () => {
 
   test("hard-deletes shouts and issue reports", async () => {
     mocks.auth.mockResolvedValue(authedSession());
-    await deleteMyAccount();
+    await deleteMyAccount("DELETE");
     expect(mocks.tx.shoutDeleteMany).toHaveBeenCalledWith({
       where: { authorId: "user-1" },
     });
@@ -166,13 +166,32 @@ describe("deleteMyAccount", () => {
 
   test("returns error when not authenticated", async () => {
     mocks.auth.mockResolvedValue(null);
-    const result = await deleteMyAccount();
+    const result = await deleteMyAccount("DELETE");
     expect(result).toEqual({ error: "Not authenticated", code: "permissionDenied" });
+  });
+
+  test("returns error when confirmation is wrong", async () => {
+    mocks.auth.mockResolvedValue(authedSession());
+    const result = await deleteMyAccount("delete");
+    expect(result).toEqual({
+      error: "You must type DELETE to confirm account deletion",
+      code: "invalidInput",
+    });
+    expect(mocks.tx.userUpdate).not.toHaveBeenCalled();
+  });
+
+  test("returns error when confirmation is empty", async () => {
+    mocks.auth.mockResolvedValue(authedSession());
+    const result = await deleteMyAccount("");
+    expect(result).toEqual({
+      error: "You must type DELETE to confirm account deletion",
+      code: "invalidInput",
+    });
   });
 
   test("calls rate limit", async () => {
     mocks.auth.mockResolvedValue(authedSession());
-    await deleteMyAccount();
+    await deleteMyAccount("DELETE");
     expect(mocks.rateLimit).toHaveBeenCalledWith("gdpr:deleteAccount");
   });
 });

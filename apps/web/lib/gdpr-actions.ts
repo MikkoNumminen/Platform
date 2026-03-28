@@ -14,8 +14,12 @@ import { logger } from "@/lib/logger";
  * but the author's identity is scrubbed. CalendarEvent and SurveyResponse
  * already use onDelete: SetNull in the schema.
  */
-export async function deleteMyAccount(): Promise<ActionResult> {
+export async function deleteMyAccount(confirmation: string): Promise<ActionResult> {
   return safe(async () => {
+    if (confirmation !== "DELETE") {
+      throw new ActionError("invalidInput", "You must type DELETE to confirm account deletion");
+    }
+
     const session = await auth();
     if (!session?.user?.id) {
       throw new ActionError("permissionDenied", "Not authenticated");

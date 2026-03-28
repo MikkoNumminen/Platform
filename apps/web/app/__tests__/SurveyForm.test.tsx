@@ -8,7 +8,7 @@ jest.mock("@/app/components/TutorialProvider", () => ({
 }));
 
 jest.mock("@/lib/survey-actions", () => ({
-  submitSurvey: jest.fn().mockResolvedValue({ success: true }),
+  submitSurvey: jest.fn().mockResolvedValue(undefined),
 }));
 
 const localStorageMock = (() => {

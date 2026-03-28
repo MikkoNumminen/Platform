@@ -16,6 +16,10 @@ jest.mock("@/auth", () => ({
   auth: () => mockAuth(),
 }));
 
+jest.mock("@/lib/gamification/trigger", () => ({
+  triggerGamification: jest.fn().mockResolvedValue(undefined),
+}));
+
 const validData = {
   conversationStyle: CONVERSATION_STYLES[0],
   features: [FEATURE_OPTIONS[0]],
@@ -34,7 +38,7 @@ describe("submitSurvey", () => {
 
   test("succeeds with valid data", async () => {
     const result = await submitSurvey(validData);
-    expect(result.success).toBe(true);
+    expect(result).toBeUndefined();
     expect(mockCreate).toHaveBeenCalledTimes(1);
   });
 
@@ -66,8 +70,8 @@ describe("submitSurvey", () => {
 
   test("fails with validation error for missing required fields", async () => {
     const result = await submitSurvey({ ...validData, conversationStyle: "" });
-    expect(result.success).toBe(false);
-    expect(result.error).toBeDefined();
+    expect(result).toEqual(expect.objectContaining({ code: "invalidInput" }));
+    expect(result?.error).toBeDefined();
     expect(mockCreate).not.toHaveBeenCalled();
   });
 
@@ -88,9 +92,13 @@ describe("submitSurvey", () => {
   });
 
   test("returns error when database fails", async () => {
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation();
     mockCreate.mockRejectedValue(new Error("DB error"));
     const result = await submitSurvey(validData);
-    expect(result.success).toBe(false);
-    expect(result.error).toBe("Something went wrong. Please try again.");
+    expect(result).toEqual({
+      error: "An unexpected error occurred",
+      code: "unexpectedError",
+    });
+    consoleSpy.mockRestore();
   });
 });

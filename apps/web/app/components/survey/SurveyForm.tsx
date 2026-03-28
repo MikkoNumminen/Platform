@@ -105,12 +105,12 @@ export default function SurveyForm() {
 
     const result = await submitSurvey(data);
 
-    if (result.success) {
+    if (!result?.error) {
       emitTutorialEvent("complete_survey");
       localStorage.setItem(LOCALSTORAGE_KEY, "true");
       setSubmitted(true);
     } else {
-      setServerError(result.error || "Something went wrong");
+      setServerError(result.error);
     }
 
     setSubmitting(false);

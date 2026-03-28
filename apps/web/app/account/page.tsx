@@ -79,7 +79,7 @@ export default function AccountPage() {
     setDeleting(true);
     setError(null);
     try {
-      const result = await deleteMyAccount();
+      const result = await deleteMyAccount(confirmText);
       if (result?.error) {
         setError(result.error);
         setDeleting(false);

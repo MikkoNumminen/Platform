@@ -2,21 +2,19 @@
 
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
+import { ActionError } from "@/lib/actionErrors";
+import { safe, type ActionResult } from "@/lib/actionUtils";
 import { validateSurveyData, type SurveyData } from "@/lib/survey-config";
 import { triggerGamification } from "@/lib/gamification/trigger";
-import { logger } from "@/lib/logger";
 
-export async function submitSurvey(
-  data: SurveyData,
-): Promise<{ success: boolean; error?: string }> {
-  const { valid, errors } = validateSurveyData(data);
+export async function submitSurvey(data: SurveyData): Promise<ActionResult> {
+  return safe(async () => {
+    const { valid, errors } = validateSurveyData(data);
+    if (!valid) {
+      const firstError = Object.values(errors)[0];
+      throw new ActionError("invalidInput", firstError ?? "Invalid survey data");
+    }
 
-  if (!valid) {
-    const firstError = Object.values(errors)[0];
-    return { success: false, error: firstError };
-  }
-
-  try {
     const session = await auth();
     const userId = session?.user?.id ?? null;
 
@@ -34,10 +32,5 @@ export async function submitSurvey(
     if (userId) {
       await triggerGamification(userId, "survey:complete");
     }
-
-    return { success: true };
-  } catch (error) {
-    logger.error("Survey submission error", error, "survey");
-    return { success: false, error: "Something went wrong. Please try again." };
-  }
+  });
 }
