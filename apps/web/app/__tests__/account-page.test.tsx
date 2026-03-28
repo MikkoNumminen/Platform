@@ -20,6 +20,8 @@ jest.mock("@/lib/gdpr-actions", () => ({
 
 jest.mock("@/lib/alias-actions", () => ({
   setAlias: jest.fn(),
+  toggleWantsToDevelop: jest.fn(),
+  getMyDeveloperInfo: jest.fn().mockResolvedValue({ wantsToDevelop: false, developerTag: null }),
 }));
 
 jest.mock("@/lib/gamification/xp-actions", () => ({

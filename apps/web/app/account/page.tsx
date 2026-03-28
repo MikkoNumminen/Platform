@@ -17,10 +17,13 @@ import {
   DialogActions,
   TextField,
   Alert,
+  Chip,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 import TopBar from "../components/TopBar";
 import { deleteMyAccount, exportMyData } from "@/lib/gdpr-actions";
-import { setAlias } from "@/lib/alias-actions";
+import { setAlias, toggleWantsToDevelop, getMyDeveloperInfo } from "@/lib/alias-actions";
 import { colors } from "../styles";
 import { getMyGamificationProfile } from "@/lib/gamification/xp-actions";
 
@@ -36,6 +39,8 @@ export default function AccountPage() {
   const [editingAlias, setEditingAlias] = useState(false);
   const [aliasValue, setAliasValue] = useState("");
   const [aliasSaving, setAliasSaving] = useState(false);
+  const [wantsToDevelop, setWantsToDevelop] = useState(false);
+  const [developerTag, setDeveloperTag] = useState<string | null>(null);
   const [gamProfile, setGamProfile] = useState<{
     totalXp: number;
     level: number;
@@ -46,6 +51,12 @@ export default function AccountPage() {
   useEffect(() => {
     getMyGamificationProfile().then((p) => {
       if (p) setGamProfile(p);
+    });
+    getMyDeveloperInfo().then((info) => {
+      if (info) {
+        setWantsToDevelop(info.wantsToDevelop);
+        setDeveloperTag(info.developerTag);
+      }
     });
   }, []);
 
@@ -74,6 +85,15 @@ export default function AccountPage() {
       setEditingAlias(false);
     }
     setAliasSaving(false);
+  };
+
+  const handleDevToggle = async (checked: boolean) => {
+    setWantsToDevelop(checked);
+    const result = await toggleWantsToDevelop(checked);
+    if (result?.error) {
+      setWantsToDevelop(!checked);
+      setError(result.error);
+    }
   };
 
   const handleExport = async () => {
@@ -182,7 +202,50 @@ export default function AccountPage() {
                 </Box>
               )}
               <ProfileField label="Role" value={(user as { role?: string }).role ?? "—"} />
+              {developerTag && (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                  <Typography variant="body2" sx={{ color: colors.slate400, minWidth: 60 }}>
+                    Tag
+                  </Typography>
+                  <Chip
+                    label={developerTag === "lead" ? "Developer Lead" : "Developer"}
+                    size="small"
+                    sx={{
+                      backgroundColor: "rgba(74,222,128,0.15)",
+                      color: colors.green400,
+                      fontWeight: 600,
+                    }}
+                  />
+                </Box>
+              )}
             </Box>
+          </CardContent>
+        </Card>
+
+        <Card sx={{ mb: 3 }}>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Development
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              Interested in helping build this platform? Toggle this to let us know you want to
+              contribute — coding, design, testing, or ideas.
+            </Typography>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={wantsToDevelop}
+                  onChange={(e) => handleDevToggle(e.target.checked)}
+                  sx={{
+                    "& .MuiSwitch-switchBase.Mui-checked": { color: colors.green400 },
+                    "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                      backgroundColor: colors.green400,
+                    },
+                  }}
+                />
+              }
+              label="I want to help develop this site"
+            />
           </CardContent>
         </Card>
 

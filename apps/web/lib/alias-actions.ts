@@ -54,3 +54,32 @@ export async function setAlias(alias: string): Promise<ActionResult> {
     await triggerGamification(session.user.id, "alias:set");
   });
 }
+
+export async function toggleWantsToDevelop(value: boolean): Promise<ActionResult> {
+  return safe(async () => {
+    const session = await auth();
+    if (!session?.user?.id) {
+      throw new ActionError("permissionDenied", "Not authenticated");
+    }
+
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { wantsToDevelop: value },
+    });
+  });
+}
+
+export async function getMyDeveloperInfo(): Promise<{
+  wantsToDevelop: boolean;
+  developerTag: string | null;
+} | null> {
+  const session = await auth();
+  if (!session?.user?.id) return null;
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { wantsToDevelop: true, developerTag: true },
+  });
+
+  return user ? { wantsToDevelop: user.wantsToDevelop, developerTag: user.developerTag } : null;
+}
