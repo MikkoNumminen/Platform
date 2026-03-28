@@ -7,10 +7,13 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { useTranslations } from "next-intl";
 
 export default function SignInPage() {
   const t = useTranslations("auth");
+  const td = useTranslations("demo");
+  const showDemo = process.env.NEXT_PUBLIC_DEMO_LOGIN !== "false";
   return (
     <Box
       sx={{
@@ -45,6 +48,27 @@ export default function SignInPage() {
               {t("signInGithub")}
             </Button>
           </Box>
+          {showDemo && (
+            <>
+              <Divider sx={{ my: 3 }} />
+              <Button
+                variant="contained"
+                fullWidth
+                startIcon={<PlayArrowIcon />}
+                onClick={() => signIn("demo", { callbackUrl: "/" })}
+                sx={{
+                  backgroundColor: "#4ade80",
+                  color: "#000",
+                  fontWeight: 600,
+                  "&:hover": {
+                    backgroundColor: "#22c55e",
+                  },
+                }}
+              >
+                {td("tryDemo")}
+              </Button>
+            </>
+          )}
         </CardContent>
       </Card>
     </Box>

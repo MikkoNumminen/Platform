@@ -13,6 +13,7 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
+import Chip from "@mui/material/Chip";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import ReplayIcon from "@mui/icons-material/Replay";
 import BugReportIcon from "@mui/icons-material/BugReport";
@@ -20,6 +21,7 @@ import ListAltIcon from "@mui/icons-material/ListAlt";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import LogoutIcon from "@mui/icons-material/Logout";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -42,6 +44,7 @@ export default function UserMenu() {
   const router = useRouter();
   const t = useTranslations("common");
   const tm = useTranslations("userMenu");
+  const td = useTranslations("demo");
 
   if (!session?.user) {
     return (
@@ -80,9 +83,22 @@ export default function UserMenu() {
   const canViewSurveyResults = Boolean(permissions["survey:results"]);
   const isVuohiOrSuperuser = user.role === "superuser" || user.role === "vuohi";
   const isApproved = user.role !== "pending";
+  const isDemoUser = Boolean(user.demoSessionId);
 
   return (
-    <Box>
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      {isDemoUser && (
+        <Chip
+          label={td("modeIndicator")}
+          size="small"
+          sx={{
+            backgroundColor: "#4ade80",
+            color: "#000",
+            fontWeight: 700,
+            fontSize: "0.7rem",
+          }}
+        />
+      )}
       <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small">
         <Avatar
           src={user.image ?? undefined}
@@ -99,6 +115,30 @@ export default function UserMenu() {
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
+        {isDemoUser && (
+          <Box sx={{ px: 2, py: 1 }}>
+            <Button
+              variant="contained"
+              fullWidth
+              startIcon={<LogoutIcon />}
+              onClick={() => {
+                localStorage.removeItem(LOCALSTORAGE_KEY);
+                localStorage.removeItem("tutorial-progress");
+                signOut();
+              }}
+              sx={{
+                backgroundColor: "#4ade80",
+                color: "#000",
+                fontWeight: 600,
+                "&:hover": {
+                  backgroundColor: "#22c55e",
+                },
+              }}
+            >
+              {td("exitDemo")}
+            </Button>
+          </Box>
+        )}
         <MenuItem component={Link} href="/account" onClick={() => setAnchorEl(null)}>
           <Box sx={{ py: 0.25 }}>
             <Typography variant="subtitle2">{displayName}</Typography>

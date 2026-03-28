@@ -80,6 +80,12 @@
       "noResponses": "No responses"
     }
   },
+  "demo": {
+    "tryDemo": "Try Demo — No Account Needed",
+    "exitDemo": "Exit Demo",
+    "bannerMessage": "You are in demo mode. All data is isolated and temporary.",
+    "modeIndicator": "DEMO"
+  },
   "auth": {
     "signInTitle": "Sign In",
     "signInGoogle": "Sign in with Google",

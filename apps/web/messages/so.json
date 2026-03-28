@@ -80,6 +80,12 @@
       "noResponses": "Jawaab ma jirto"
     }
   },
+  "demo": {
+    "tryDemo": "Tijaabi Demo — Akoon looma baahna",
+    "exitDemo": "Ka bax Demo",
+    "bannerMessage": "Waxaad ku jirtaa habka demo. Dhammaan xogta way go'an tahay waana ku meel gaar ah.",
+    "modeIndicator": "DEMO"
+  },
   "auth": {
     "signInTitle": "Soo gal",
     "signInGoogle": "Ku soo gal Google",
