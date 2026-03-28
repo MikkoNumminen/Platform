@@ -11,6 +11,7 @@ import KeyboardShortcuts from "./components/KeyboardShortcuts";
 import PendingBanner from "./components/PendingBanner";
 import PendingGate from "./components/PendingGate";
 import AliasGuard from "./components/AliasGuard";
+import PromotionGate from "./components/PromotionGate";
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -56,6 +57,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <SnackbarProvider>
                   <AliasGuard />
                   <PendingGate />
+                  <PromotionGate />
                   <Box sx={{ pt: 2 }}>
                     <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
                       <PendingBanner />
