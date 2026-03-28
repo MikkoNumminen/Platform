@@ -1,0 +1,205 @@
+"use server";
+
+import { prisma } from "./db";
+import { guardedAction } from "./guardedAction";
+import { ActionError } from "./actionErrors";
+import { validateUUID, createStringValidator } from "./actionUtils";
+import { revalidatePath } from "next/cache";
+import { awardCustomXp } from "./gamification/xp-service";
+
+const VALID_STATUSES = ["open", "in_progress", "completed"] as const;
+const VALID_PRIORITIES = ["low", "normal", "high", "urgent"] as const;
+
+const validateTitle = createStringValidator(
+  "Quest title",
+  200,
+  "questTitleRequired",
+  "questTitleTooLong",
+);
+const validateDescription = createStringValidator(
+  "Quest description",
+  2000,
+  "questDescriptionRequired",
+  "questDescriptionRequired",
+);
+
+export const createCustomQuest = guardedAction(
+  "quest:manage",
+  "quest:create",
+  async (
+    session,
+    title: string,
+    description: string,
+    assigneeId: string,
+    xpReward: number,
+    priority?: string,
+    deadline?: string | null,
+  ) => {
+    const validTitle = validateTitle(title);
+    const validDescription = validateDescription(description);
+    validateUUID(assigneeId, "assigneeId");
+
+    if (xpReward < 0 || xpReward > 10000) {
+      throw new ActionError("invalidInput", "XP reward must be between 0 and 10,000");
+    }
+
+    if (priority && !VALID_PRIORITIES.includes(priority as (typeof VALID_PRIORITIES)[number])) {
+      throw new ActionError("invalidInput", `Invalid priority: ${priority}`);
+    }
+
+    const assignee = await prisma.user.findFirst({
+      where: { id: assigneeId, deletedAt: null },
+    });
+    if (!assignee) {
+      throw new ActionError("notFound", "Assignee not found");
+    }
+
+    await prisma.customQuest.create({
+      data: {
+        title: validTitle,
+        description: validDescription,
+        xpReward: Math.round(xpReward),
+        priority: priority ?? "normal",
+        assigneeId,
+        creatorId: session.user.id,
+        deadline: deadline ? new Date(deadline) : null,
+      },
+    });
+
+    revalidatePath("/admin/quests");
+    revalidatePath("/my-quests");
+  },
+);
+
+export const updateCustomQuest = guardedAction(
+  "quest:manage",
+  "quest:update",
+  async (
+    _session,
+    questId: string,
+    data: {
+      title?: string;
+      description?: string;
+      xpReward?: number;
+      priority?: string;
+      status?: string;
+      assigneeId?: string;
+      deadline?: string | null;
+    },
+  ) => {
+    validateUUID(questId, "questId");
+
+    const quest = await prisma.customQuest.findFirst({
+      where: { id: questId, deletedAt: null },
+    });
+    if (!quest) {
+      throw new ActionError("questNotFound", "Quest not found");
+    }
+
+    if (quest.status === "completed") {
+      throw new ActionError("questAlreadyCompleted", "Cannot edit a completed quest");
+    }
+
+    const updateData: Record<string, unknown> = {};
+
+    if (data.title !== undefined) {
+      updateData.title = validateTitle(data.title);
+    }
+    if (data.description !== undefined) {
+      updateData.description = validateDescription(data.description);
+    }
+    if (data.xpReward !== undefined) {
+      if (data.xpReward < 0 || data.xpReward > 10000) {
+        throw new ActionError("invalidInput", "XP reward must be between 0 and 10,000");
+      }
+      updateData.xpReward = Math.round(data.xpReward);
+    }
+    if (data.priority !== undefined) {
+      if (!VALID_PRIORITIES.includes(data.priority as (typeof VALID_PRIORITIES)[number])) {
+        throw new ActionError("invalidInput", `Invalid priority: ${data.priority}`);
+      }
+      updateData.priority = data.priority;
+    }
+    if (data.status !== undefined) {
+      if (!VALID_STATUSES.includes(data.status as (typeof VALID_STATUSES)[number])) {
+        throw new ActionError("invalidQuestStatus", `Invalid status: ${data.status}`);
+      }
+      updateData.status = data.status;
+    }
+    if (data.assigneeId !== undefined) {
+      validateUUID(data.assigneeId, "assigneeId");
+      const assignee = await prisma.user.findFirst({
+        where: { id: data.assigneeId, deletedAt: null },
+      });
+      if (!assignee) {
+        throw new ActionError("notFound", "Assignee not found");
+      }
+      updateData.assigneeId = data.assigneeId;
+    }
+    if (data.deadline !== undefined) {
+      updateData.deadline = data.deadline ? new Date(data.deadline) : null;
+    }
+
+    await prisma.customQuest.update({
+      where: { id: questId },
+      data: updateData,
+    });
+
+    revalidatePath("/admin/quests");
+    revalidatePath("/my-quests");
+  },
+);
+
+export const completeCustomQuest = guardedAction(
+  "quest:manage",
+  "quest:complete",
+  async (_session, questId: string) => {
+    validateUUID(questId, "questId");
+
+    const quest = await prisma.customQuest.findFirst({
+      where: { id: questId, deletedAt: null },
+    });
+    if (!quest) {
+      throw new ActionError("questNotFound", "Quest not found");
+    }
+    if (quest.status === "completed") {
+      throw new ActionError("questAlreadyCompleted", "Quest is already completed");
+    }
+
+    await prisma.customQuest.update({
+      where: { id: questId },
+      data: { status: "completed", completedAt: new Date() },
+    });
+
+    // Award custom XP to the assignee
+    if (quest.xpReward > 0) {
+      await awardCustomXp(quest.assigneeId, quest.xpReward, "custom_quest:complete", quest.id);
+    }
+
+    revalidatePath("/admin/quests");
+    revalidatePath("/my-quests");
+  },
+);
+
+export const deleteCustomQuest = guardedAction(
+  "quest:manage",
+  "quest:delete",
+  async (_session, questId: string) => {
+    validateUUID(questId, "questId");
+
+    const quest = await prisma.customQuest.findFirst({
+      where: { id: questId, deletedAt: null },
+    });
+    if (!quest) {
+      throw new ActionError("questNotFound", "Quest not found");
+    }
+
+    await prisma.customQuest.update({
+      where: { id: questId },
+      data: { deletedAt: new Date() },
+    });
+
+    revalidatePath("/admin/quests");
+    revalidatePath("/my-quests");
+  },
+);

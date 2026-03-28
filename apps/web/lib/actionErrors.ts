@@ -28,6 +28,13 @@ export type ErrorCode =
   | "eventTitleTooLong"
   | "eventNotFound"
   | "eventEndBeforeStart"
+  // Custom Quest
+  | "questNotFound"
+  | "questTitleRequired"
+  | "questTitleTooLong"
+  | "questDescriptionRequired"
+  | "questAlreadyCompleted"
+  | "invalidQuestStatus"
   // Alias
   | "invalidInput"
   | "conflict"

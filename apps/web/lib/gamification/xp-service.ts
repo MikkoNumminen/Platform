@@ -54,6 +54,42 @@ export async function awardXp(
   };
 }
 
+/**
+ * Award a custom XP amount (for custom quests with configurable rewards).
+ */
+export async function awardCustomXp(
+  userId: string,
+  amount: number,
+  source: string,
+  sourceId?: string,
+): Promise<XpAwardResult | null> {
+  if (amount <= 0) return null;
+
+  await prisma.xpTransaction.create({ data: { userId, amount, source, sourceId } });
+
+  const userLevel = await prisma.userLevel.upsert({
+    where: { userId },
+    create: { userId, totalXp: amount, level: getLevelForXp(amount).level },
+    update: { totalXp: { increment: amount } },
+  });
+
+  const newTotalXp = userLevel.totalXp;
+  const previousLevel = userLevel.level;
+  const newLevel = getLevelForXp(newTotalXp).level;
+
+  if (newLevel !== previousLevel) {
+    await prisma.userLevel.update({ where: { userId }, data: { level: newLevel } });
+  }
+
+  return {
+    xpAwarded: amount,
+    totalXp: newTotalXp,
+    level: newLevel,
+    previousLevel,
+    leveledUp: newLevel > previousLevel,
+  };
+}
+
 export async function getUserXpData(userId: string) {
   try {
     const userLevel = await prisma.userLevel.findUnique({ where: { userId } });

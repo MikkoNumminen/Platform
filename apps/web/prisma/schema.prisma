@@ -41,6 +41,8 @@ model User {
   loginStreak        LoginStreak?
   tourProgress       UserTourProgress[]
   demoSessions       DemoSession[]
+  assignedQuests     CustomQuest[]     @relation("CustomQuestAssignee")
+  createdQuests      CustomQuest[]     @relation("CustomQuestCreator")
 
   sessionId      String?
 
@@ -399,6 +401,33 @@ model LoginStreak {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([sessionId])
+}
+
+// ─── Custom Quests (Superuser-Assigned) ──────────────────────────────────
+
+model CustomQuest {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  xpReward    Int       @default(0)
+  status      String    @default("open") // open, in_progress, completed
+  priority    String    @default("normal") // low, normal, high, urgent
+  assigneeId  String
+  creatorId   String
+  deadline    DateTime?
+  completedAt DateTime?
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  assignee User @relation("CustomQuestAssignee", fields: [assigneeId], references: [id], onDelete: Cascade)
+  creator  User @relation("CustomQuestCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@index([assigneeId])
+  @@index([creatorId])
+  @@index([status])
+  @@index([deletedAt])
+  @@index([deadline])
 }
 
 // ─── Demo Mode ────────────────────────────────────────────────────────────

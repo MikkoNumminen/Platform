@@ -31,6 +31,10 @@ export const PERMISSIONS = {
   // Issues
   "issue:resolve": "Resolve or reopen issue reports",
 
+  // Custom Quests
+  "quest:manage": "Create, edit, and complete custom quests",
+  "quest:view": "View global custom quest list",
+
   // Survey
   "survey:results": "View survey results",
 } as const;
@@ -61,6 +65,8 @@ const ROLE_DEFAULTS: Record<Role, PermissionKey[]> = {
     "event:edit",
     "event:delete",
     "issue:resolve",
+    "quest:manage",
+    "quest:view",
     "survey:results",
   ],
   admin: [
@@ -83,6 +89,7 @@ const ROLE_DEFAULTS: Record<Role, PermissionKey[]> = {
     "event:edit",
     "event:delete",
     "issue:resolve",
+    "quest:view",
     "survey:results",
   ],
   user: ["post:create", "topic:create", "thread:create", "event:create"],
