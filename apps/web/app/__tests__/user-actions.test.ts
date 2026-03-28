@@ -120,6 +120,22 @@ describe("updateUserRole", () => {
     expect(updateArgs.data.permissionsVersion).toEqual({ increment: 1 });
   });
 
+  test("sets hasSeenPromotion to false when promoting from pending to vuohi", async () => {
+    mockAuth.mockResolvedValue(superuserSession());
+    mockFindFirst.mockResolvedValue({ id: "user-1", role: "pending" });
+    await updateUserRole("550e8400-e29b-41d4-a716-446655440000", "vuohi");
+    const updateArgs = mockUpdate.mock.calls[0][0];
+    expect(updateArgs.data.hasSeenPromotion).toBe(false);
+  });
+
+  test("does not set hasSeenPromotion when promoting to non-vuohi role", async () => {
+    mockAuth.mockResolvedValue(adminSession());
+    mockFindFirst.mockResolvedValue({ id: "user-1", role: "pending" });
+    await updateUserRole("550e8400-e29b-41d4-a716-446655440000", "user");
+    const updateArgs = mockUpdate.mock.calls[0][0];
+    expect(updateArgs.data.hasSeenPromotion).toBeUndefined();
+  });
+
   test("returns error when not authenticated", async () => {
     mockAuth.mockResolvedValue(null);
     const result = await updateUserRole("550e8400-e29b-41d4-a716-446655440000", "user");

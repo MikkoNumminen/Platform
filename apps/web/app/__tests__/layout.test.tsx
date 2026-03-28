@@ -1,3 +1,13 @@
+jest.mock("@/app/components/PromotionGate", () => {
+  return function MockPromotionGate() {
+    return null;
+  };
+});
+
+jest.mock("@/lib/promotion-actions", () => ({
+  markPromotionSeen: jest.fn(),
+}));
+
 import { metadata } from "../layout";
 
 describe("RootLayout metadata", () => {

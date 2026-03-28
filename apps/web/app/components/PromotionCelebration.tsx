@@ -56,7 +56,7 @@ function ChaosText({ text, index }: { text: string; index: number }) {
   );
 }
 
-function EmojiParticle({ emoji, index }: { emoji: string; index: number }) {
+function EmojiParticle({ emoji }: { emoji: string }) {
   const startX = randomBetween(0, 100);
 
   return (
