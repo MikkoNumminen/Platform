@@ -36,6 +36,7 @@ model User {
   achievements       UserAchievement[]
   questProgress      UserQuestProgress[]
   loginStreak        LoginStreak?
+  tourProgress       UserTourProgress[]
 
   @@index([deletedAt])
   @@index([email])
@@ -359,4 +360,18 @@ model LoginStreak {
   updatedAt     DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Guided Tour ───────────────────────────────────────────────────────────
+
+model UserTourProgress {
+  id          String   @id @default(uuid())
+  userId      String
+  stepId      String
+  completedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, stepId])
+  @@index([userId])
 }

@@ -1,6 +1,5 @@
 "use server";
 
-import { auth } from "@/auth";
 import { prisma } from "./db";
 import { guardedAction } from "./guardedAction";
 import { ActionError } from "./actionErrors";
@@ -8,13 +7,18 @@ import { validateUUID } from "./actionUtils";
 import { revalidatePath } from "next/cache";
 import { triggerGamification } from "./gamification/trigger";
 
+const MAX_THREAD_BODY_LENGTH = 5000;
+
 function validateThreadBody(body: string): string {
   const trimmed = body.trim();
   if (trimmed.length === 0) {
     throw new ActionError("threadBodyRequired", "Comment body is required");
   }
-  if (trimmed.length > 5000) {
-    throw new ActionError("threadBodyRequired", "Comment must be 5000 characters or less");
+  if (trimmed.length > MAX_THREAD_BODY_LENGTH) {
+    throw new ActionError(
+      "threadBodyRequired",
+      `Comment must be ${MAX_THREAD_BODY_LENGTH} characters or less`,
+    );
   }
   return trimmed;
 }
@@ -23,6 +27,7 @@ export const createThread = guardedAction(
   "thread:create",
   "thread:create",
   async (
+    session,
     parentType: "POST" | "TOPIC",
     parentId: string,
     body: string,
@@ -53,8 +58,7 @@ export const createThread = guardedAction(
       }
     }
 
-    const session = await auth();
-    const authorId = session!.user!.id;
+    const authorId = session.user.id;
 
     await prisma.thread.create({
       data: {
@@ -77,7 +81,7 @@ export const createThread = guardedAction(
 export const deleteThread = guardedAction(
   "thread:delete",
   "thread:delete",
-  async (threadId: string, revalidateUrl?: string) => {
+  async (session, threadId: string, revalidateUrl?: string) => {
     validateUUID(threadId, "threadId");
 
     const thread = await prisma.thread.findFirst({
@@ -85,6 +89,13 @@ export const deleteThread = guardedAction(
     });
     if (!thread) {
       throw new ActionError("threadNotFound", "Comment not found");
+    }
+
+    // Only the author or an admin-level user can delete
+    const role = session.user.role ?? "pending";
+    const isAdmin = ["superuser", "vuohi", "admin"].includes(role);
+    if (thread.authorId !== session.user.id && !isAdmin) {
+      throw new ActionError("permissionDenied", "You can only delete your own comments");
     }
 
     await prisma.thread.update({

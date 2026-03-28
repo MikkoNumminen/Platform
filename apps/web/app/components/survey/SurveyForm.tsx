@@ -8,6 +8,7 @@ import MultiSelect from "./MultiSelect";
 import TextQuestion from "./TextQuestion";
 import SurveyThankYou from "./SurveyThankYou";
 import { submitSurvey } from "@/lib/survey-actions";
+import { emitTutorialEvent } from "@/app/components/TutorialProvider";
 import {
   CONVERSATION_STYLES,
   FEATURE_OPTIONS,
@@ -105,6 +106,7 @@ export default function SurveyForm() {
     const result = await submitSurvey(data);
 
     if (result.success) {
+      emitTutorialEvent("complete_survey");
       localStorage.setItem(LOCALSTORAGE_KEY, "true");
       setSubmitted(true);
     } else {

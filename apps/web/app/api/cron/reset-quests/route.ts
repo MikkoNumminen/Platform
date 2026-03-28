@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { resetDailyQuests, resetWeeklyQuests } from "@/lib/gamification";
+import { logger } from "@/lib/logger";
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
@@ -28,7 +29,7 @@ export async function GET(request: Request) {
       timestamp: now.toISOString(),
     });
   } catch (error) {
-    console.error("[cron/reset-quests] Error:", error);
+    logger.error("Quest reset failed", error, "cron/reset-quests");
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

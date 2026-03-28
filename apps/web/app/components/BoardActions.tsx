@@ -17,6 +17,7 @@ export default function BoardActions() {
   return (
     <>
       <Button
+        data-tutorial="create-board-button"
         startIcon={<AddIcon />}
         onClick={() => setShowCreate(true)}
         sx={{

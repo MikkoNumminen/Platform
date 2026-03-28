@@ -90,5 +90,33 @@
     "description": "Tämä näkyy muille yhteisön jäsenille.",
     "placeholder": "Nimimerkkisi",
     "button": "Aseta nimimerkki"
+  },
+  "tutorial": {
+    "checklistTitle": "Opastettu kierros",
+    "progress": "{completed}/{total} valmis",
+    "tierComplete": "Taso suoritettu!",
+    "stepComplete": "Hienosti!",
+    "clickToContinue": "Napsauta jatkaaksesi",
+    "tier1": "Alkuun pääsy",
+    "tier2": "Yhteisön tutkija",
+    "tier3": "Ylläpidon perusteet",
+    "tier4": "Tiiminvetäjä",
+    "step_set_alias": "Aseta nimimerkki",
+    "step_complete_survey": "Täytä kysely",
+    "step_report_issue": "Ilmoita ongelmasta",
+    "step_explore_home": "Tutustu etusivuun",
+    "step_browse_boards": "Selaa keskustelualueita",
+    "step_create_post": "Luo ensimmäinen viestisi",
+    "step_write_comment": "Kirjoita kommentti",
+    "step_check_quests": "Tarkista tehtäväloki",
+    "step_view_achievements": "Katso saavutukset",
+    "step_check_leaderboard": "Katso tulostaulu",
+    "step_create_board": "Luo keskustelualue",
+    "step_view_survey_results": "Katso kyselytulokset",
+    "step_view_gamification_dashboard": "Katso pelillistämistilastot",
+    "step_resolve_issue": "Ratkaise ongelma",
+    "step_manage_users": "Avaa käyttäjähallinta",
+    "step_approve_user": "Hyväksy odottava käyttäjä",
+    "step_edit_permissions": "Muokkaa käyttöoikeuksia"
   }
 }

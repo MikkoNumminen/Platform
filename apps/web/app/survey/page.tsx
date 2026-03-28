@@ -13,7 +13,7 @@ export default async function SurveyPage() {
   return (
     <>
       <TopBar title="Community Survey" backHref="/" />
-      <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
+      <Box data-tutorial="survey-form" sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
         <SurveyForm />
       </Box>
     </>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@mui/material";
 import { updateUserRole } from "@/lib/user-actions";
 import { colors } from "../../styles";
+import { emitTutorialEvent } from "@/app/components/TutorialProvider";
 
 interface ApproveButtonProps {
   userId: string;
@@ -17,6 +18,7 @@ export default function ApproveButton({ userId }: ApproveButtonProps) {
     setSaving(true);
     const result = await updateUserRole(userId, "user");
     if (!result?.error) {
+      emitTutorialEvent("approve_user");
       setApproved(true);
     }
     setSaving(false);
@@ -32,6 +34,7 @@ export default function ApproveButton({ userId }: ApproveButtonProps) {
 
   return (
     <Button
+      data-tutorial="approve-button"
       size="small"
       variant="contained"
       disabled={saving}

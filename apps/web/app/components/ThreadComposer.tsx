@@ -4,6 +4,7 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import { useState, useTransition } from "react";
 import { colors } from "../styles";
 import { createThread } from "@/lib/thread-actions";
+import { emitTutorialEvent } from "@/app/components/TutorialProvider";
 
 interface ThreadComposerProps {
   parentType: "POST" | "TOPIC";
@@ -33,6 +34,7 @@ export default function ThreadComposer({
       if (result?.error) {
         setError(result.error);
       } else {
+        emitTutorialEvent("write_comment");
         setBody("");
         onCancel?.();
       }
@@ -41,6 +43,7 @@ export default function ThreadComposer({
 
   return (
     <Box
+      data-tutorial="thread-composer"
       sx={{
         display: "flex",
         flexDirection: "column",

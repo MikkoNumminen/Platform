@@ -13,6 +13,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { colors } from "../styles";
 import { createPost, updatePost } from "@/lib/post-actions";
+import { emitTutorialEvent } from "@/app/components/TutorialProvider";
 
 interface PostFormDialogProps {
   open: boolean;
@@ -52,6 +53,9 @@ export default function PostFormDialog({
       if (result?.error) {
         setError(result.error);
       } else {
+        if (mode === "create") {
+          emitTutorialEvent("create_post");
+        }
         onClose();
         if (mode === "create") {
           router.refresh();

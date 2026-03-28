@@ -112,7 +112,7 @@ export default function QuestLog({ quests, xpProgress }: QuestLogProps) {
         </Tabs>
 
         {/* Quest List */}
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+        <Box data-tutorial="quest-list" sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
           {filtered.length === 0 && (
             <Typography variant="body2" sx={{ color: colors.slate400, py: 4, textAlign: "center" }}>
               No {currentType} quests available.

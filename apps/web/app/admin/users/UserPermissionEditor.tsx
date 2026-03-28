@@ -16,6 +16,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { PERMISSIONS, resolvePermissions, type PermissionKey } from "@/lib/permissions";
 import { fetchUserPermissionOverrides, updateUserPermissions } from "@/lib/user-actions";
 import { colors } from "../../styles";
+import { emitTutorialEvent } from "@/app/components/TutorialProvider";
 
 interface UserPermissionEditorProps {
   userId: string;
@@ -85,6 +86,7 @@ export default function UserPermissionEditor({
 
     startTransition(async () => {
       await updateUserPermissions(userId, toSave);
+      emitTutorialEvent("edit_permissions");
       setHasOverrides(toSave.length > 0);
     });
   };
@@ -94,7 +96,7 @@ export default function UserPermissionEditor({
   );
 
   return (
-    <Box sx={{ mt: 0.5 }}>
+    <Box data-tutorial="permission-editor" sx={{ mt: 0.5 }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <IconButton
           size="small"

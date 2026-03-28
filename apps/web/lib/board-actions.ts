@@ -7,13 +7,18 @@ import { validateUUID } from "./actionUtils";
 import { revalidatePath } from "next/cache";
 import { slugify } from "./slug-utils";
 
+const MAX_BOARD_NAME_LENGTH = 100;
+
 function validateBoardName(name: string): string {
   const trimmed = name.trim();
   if (trimmed.length === 0) {
     throw new ActionError("invalidBoardName", "Board name is required");
   }
-  if (trimmed.length > 100) {
-    throw new ActionError("boardNameTooLong", "Board name must be 100 characters or less");
+  if (trimmed.length > MAX_BOARD_NAME_LENGTH) {
+    throw new ActionError(
+      "boardNameTooLong",
+      `Board name must be ${MAX_BOARD_NAME_LENGTH} characters or less`,
+    );
   }
   return trimmed;
 }
@@ -21,7 +26,7 @@ function validateBoardName(name: string): string {
 export const createBoard = guardedAction(
   "board:create",
   "board:create",
-  async (name: string, description?: string) => {
+  async (_session, name: string, description?: string) => {
     const validName = validateBoardName(name);
     const slug = slugify(validName);
 
@@ -57,7 +62,7 @@ export const createBoard = guardedAction(
 export const updateBoard = guardedAction(
   "board:edit",
   "board:edit",
-  async (boardId: string, name: string, description?: string) => {
+  async (_session, boardId: string, name: string, description?: string) => {
     validateUUID(boardId, "boardId");
     const validName = validateBoardName(name);
     const slug = slugify(validName);
@@ -96,7 +101,7 @@ export const updateBoard = guardedAction(
 export const deleteBoard = guardedAction(
   "board:delete",
   "board:delete",
-  async (boardId: string) => {
+  async (_session, boardId: string) => {
     validateUUID(boardId, "boardId");
 
     const board = await prisma.board.findFirst({

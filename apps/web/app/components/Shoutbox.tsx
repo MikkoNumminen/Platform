@@ -63,6 +63,7 @@ export default function Shoutbox({ initialShouts }: ShoutboxProps) {
 
   return (
     <Box
+      data-tutorial="shoutbox"
       sx={{
         backgroundColor: "#000",
         border: `1px solid ${colors.slate300}`,

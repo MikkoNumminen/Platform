@@ -3,6 +3,7 @@ import Google from "next-auth/providers/google";
 import GitHub from "next-auth/providers/github";
 import { prisma } from "@/lib/db";
 import { resolvePermissions } from "@/lib/permissions";
+import { logger } from "@/lib/logger";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [Google({ authorization: { params: { prompt: "select_account" } } }), GitHub],
@@ -78,7 +79,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const { recordLogin } = await import("@/lib/gamification/login-streak");
           await recordLogin(dbUser.id);
         } catch (error) {
-          console.error("[gamification] Login streak error:", error);
+          logger.error("Login streak error", error, "gamification");
         }
       } else {
         // Lightweight check: detect permission/role changes

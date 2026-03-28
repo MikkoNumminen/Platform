@@ -125,6 +125,7 @@ export default function AchievementShowcase({
 
         {/* Achievement Grid */}
         <Box
+          data-tutorial="achievement-grid"
           sx={{
             display: "grid",
             gridTemplateColumns: {

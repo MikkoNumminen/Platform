@@ -9,6 +9,9 @@ import { revalidatePath } from "next/cache";
 import { guardedAction } from "@/lib/guardedAction";
 import { triggerGamification } from "@/lib/gamification/trigger";
 
+const MAX_ISSUE_TITLE_LENGTH = 200;
+const MAX_ISSUE_DESCRIPTION_LENGTH = 2000;
+
 export async function createIssueReport(
   title: string,
   description: string,
@@ -23,12 +26,15 @@ export async function createIssueReport(
     const trimmedTitle = title.trim();
     const trimmedDesc = description.trim();
 
-    if (!trimmedTitle || trimmedTitle.length > 200) {
-      throw new ActionError("invalidInput", "Title must be 1-200 characters");
+    if (!trimmedTitle || trimmedTitle.length > MAX_ISSUE_TITLE_LENGTH) {
+      throw new ActionError("invalidInput", `Title must be 1-${MAX_ISSUE_TITLE_LENGTH} characters`);
     }
 
-    if (!trimmedDesc || trimmedDesc.length > 2000) {
-      throw new ActionError("invalidInput", "Description must be 1-2000 characters");
+    if (!trimmedDesc || trimmedDesc.length > MAX_ISSUE_DESCRIPTION_LENGTH) {
+      throw new ActionError(
+        "invalidInput",
+        `Description must be 1-${MAX_ISSUE_DESCRIPTION_LENGTH} characters`,
+      );
     }
 
     await rateLimit("issue:create");
@@ -51,7 +57,7 @@ export async function createIssueReport(
 export const resolveIssue = guardedAction(
   "issue:resolve",
   "issue:resolve",
-  async (issueId: string) => {
+  async (_session, issueId: string) => {
     validateUUID(issueId, "issue ID");
 
     const issue = await prisma.issueReport.findUnique({ where: { id: issueId } });

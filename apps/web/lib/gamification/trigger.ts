@@ -3,6 +3,7 @@
 import { awardXp } from "./xp-service";
 import { updateQuestProgress } from "./quest-service";
 import { checkAchievements } from "./achievement-service";
+import { logger } from "@/lib/logger";
 import type { XpSource } from "./xp-config";
 
 export async function triggerGamification(
@@ -17,6 +18,6 @@ export async function triggerGamification(
       checkAchievements(userId, source),
     ]);
   } catch (error) {
-    console.error("[gamification] Error processing action:", error);
+    logger.error("Error processing action", error, "gamification");
   }
 }

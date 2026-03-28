@@ -12,6 +12,7 @@ import Typography from "@mui/material/Typography";
 import Alert from "@mui/material/Alert";
 import { useTranslations } from "next-intl";
 import { setAlias } from "@/lib/alias-actions";
+import { emitTutorialEvent } from "@/app/components/TutorialProvider";
 
 export default function SetupAliasPage() {
   const { data: session, update } = useSession();
@@ -39,6 +40,7 @@ export default function SetupAliasPage() {
         return;
       }
 
+      emitTutorialEvent("set_alias");
       await update();
       router.replace("/");
     } catch {
@@ -65,7 +67,7 @@ export default function SetupAliasPage() {
             {t("description")}
           </Typography>
 
-          <Box component="form" onSubmit={handleSubmit}>
+          <Box component="form" onSubmit={handleSubmit} data-tutorial="alias-form">
             {error && (
               <Alert severity="error" sx={{ mb: 2 }}>
                 {error}

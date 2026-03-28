@@ -12,6 +12,7 @@ import {
 import { useState, useTransition } from "react";
 import { colors } from "../styles";
 import { createBoard, updateBoard } from "@/lib/board-actions";
+import { emitTutorialEvent } from "@/app/components/TutorialProvider";
 
 interface BoardFormDialogProps {
   open: boolean;
@@ -46,6 +47,9 @@ export default function BoardFormDialog({
       if (result?.error) {
         setError(result.error);
       } else {
+        if (mode === "create") {
+          emitTutorialEvent("create_board");
+        }
         onClose();
       }
     });

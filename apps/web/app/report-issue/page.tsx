@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Box, Button, Card, CardContent, TextField, Typography, Alert } from "@mui/material";
 import TopBar from "../components/TopBar";
 import { createIssueReport } from "@/lib/issue-actions";
+import { emitTutorialEvent } from "@/app/components/TutorialProvider";
 
 export default function ReportIssuePage() {
   const router = useRouter();
@@ -27,6 +28,7 @@ export default function ReportIssuePage() {
       return;
     }
 
+    emitTutorialEvent("report_issue");
     setSuccess(true);
     setSubmitting(false);
   };
@@ -57,7 +59,7 @@ export default function ReportIssuePage() {
               Found a bug or something broken? Let us know and we&apos;ll fix it.
             </Typography>
 
-            <Box component="form" onSubmit={handleSubmit}>
+            <Box component="form" onSubmit={handleSubmit} data-tutorial="report-issue-form">
               {error && (
                 <Alert severity="error" sx={{ mb: 2 }}>
                   {error}

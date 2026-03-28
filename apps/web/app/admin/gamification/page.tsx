@@ -29,7 +29,10 @@ export default async function GamificationDashboardPage() {
   return (
     <>
       <TopBar title="Gamification Dashboard" backHref="/" />
-      <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 }, py: 2 }}>
+      <Box
+        data-tutorial="gamification-dashboard"
+        sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 }, py: 2 }}
+      >
         {/* Manage Link */}
         <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
           <Button

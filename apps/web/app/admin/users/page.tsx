@@ -40,7 +40,7 @@ export default async function AdminUsersPage() {
     <>
       <TopBar title="Manage Users" backHref="/" />
       <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-        <TableContainer>
+        <TableContainer data-tutorial="users-table">
           <Table>
             <TableHead>
               <TableRow>

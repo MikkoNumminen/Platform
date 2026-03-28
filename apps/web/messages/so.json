@@ -90,5 +90,33 @@
     "description": "Tani waxay u muuqan doontaa xubnaha kale ee bulshada.",
     "placeholder": "Magacaaga",
     "button": "Deji magaca"
+  },
+  "tutorial": {
+    "checklistTitle": "Wareegga Hagaha",
+    "progress": "{completed}/{total} dhammaystay",
+    "tierComplete": "Heerka waa dhammaatay!",
+    "stepComplete": "Waa fiican!",
+    "clickToContinue": "Guji si aad u sii waddo",
+    "tier1": "Bilowga",
+    "tier2": "Sahamiye Bulshada",
+    "tier3": "Aasaasiga Maamulka",
+    "tier4": "Hogaamiyaha Kooxda",
+    "step_set_alias": "Dejiso magacaaga",
+    "step_complete_survey": "Buuxi sahanka",
+    "step_report_issue": "Ka warbix cilad",
+    "step_explore_home": "Sahami bogga hore",
+    "step_browse_boards": "Fiiri guddiyada",
+    "step_create_post": "Samee qoraalkaaga koowaad",
+    "step_write_comment": "Qor faallo",
+    "step_check_quests": "Hubi hawlaha",
+    "step_view_achievements": "Fiiri guulaha",
+    "step_check_leaderboard": "Fiiri natiijada",
+    "step_create_board": "Samee guddi",
+    "step_view_survey_results": "Fiiri natiijooyinka sahanka",
+    "step_view_gamification_dashboard": "Fiiri xogta xogaynta",
+    "step_resolve_issue": "Xalli cilad",
+    "step_manage_users": "Fur maamulka isticmaalayaasha",
+    "step_approve_user": "Oggolow isticmaale sugaya",
+    "step_edit_permissions": "Wax ka beddel ogolaanshaha"
   }
 }

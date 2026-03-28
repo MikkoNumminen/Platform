@@ -17,6 +17,7 @@ export default async function BoardsPage() {
           <BoardActions />
         </Box>
         <Box
+          data-tutorial="boards-list"
           sx={{
             display: "grid",
             gridTemplateColumns: {

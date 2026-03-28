@@ -1,6 +1,5 @@
 "use server";
 
-import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { guardedAction } from "@/lib/guardedAction";
 import { ActionError } from "@/lib/actionErrors";
@@ -31,25 +30,24 @@ export async function fetchEvents(year: number, month: number): Promise<Calendar
 export const createEvent = guardedAction(
   "event:create",
   "event:create",
-  async (input: CreateEventInput) => {
-    const session = await auth();
+  async (session, input: CreateEventInput) => {
     const data = validateEventInput(input);
 
     await prisma.calendarEvent.create({
       data: {
         ...data,
-        authorId: session!.user!.id as string,
+        authorId: session.user.id,
       },
     });
 
-    await triggerGamification(session!.user!.id as string, "event:create");
+    await triggerGamification(session.user.id, "event:create");
   },
 );
 
 export const updateEvent = guardedAction(
   "event:edit",
   "event:edit",
-  async (input: UpdateEventInput) => {
+  async (session, input: UpdateEventInput) => {
     validateUUID(input.id, "event ID");
     const data = validateEventInput(input);
 
@@ -60,8 +58,7 @@ export const updateEvent = guardedAction(
       throw new ActionError("eventNotFound", "Event not found");
     }
 
-    const session = await auth();
-    if (!session?.user?.id || existing.authorId !== session.user.id) {
+    if (existing.authorId !== session.user.id) {
       throw new ActionError("permissionDenied", "You can only edit your own events");
     }
 
@@ -72,18 +69,22 @@ export const updateEvent = guardedAction(
   },
 );
 
-export const deleteEvent = guardedAction("event:delete", "event:delete", async (id: string) => {
-  validateUUID(id, "event ID");
+export const deleteEvent = guardedAction(
+  "event:delete",
+  "event:delete",
+  async (_session, id: string) => {
+    validateUUID(id, "event ID");
 
-  const existing = await prisma.calendarEvent.findFirst({
-    where: { id, deletedAt: null },
-  });
-  if (!existing) {
-    throw new ActionError("eventNotFound", "Event not found");
-  }
+    const existing = await prisma.calendarEvent.findFirst({
+      where: { id, deletedAt: null },
+    });
+    if (!existing) {
+      throw new ActionError("eventNotFound", "Event not found");
+    }
 
-  await prisma.calendarEvent.update({
-    where: { id },
-    data: { deletedAt: new Date() },
-  });
-});
+    await prisma.calendarEvent.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
+  },
+);

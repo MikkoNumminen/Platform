@@ -44,6 +44,7 @@ export default function BoardAdminBar({
       <Box sx={{ display: "flex", gap: 1, mb: 2, flexWrap: "wrap" }}>
         {canCreatePost && (
           <Button
+            data-tutorial="create-post-button"
             startIcon={<AddIcon />}
             onClick={() => setShowNewPost(true)}
             variant="outlined"

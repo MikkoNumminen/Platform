@@ -106,23 +106,27 @@ export default function UserMenu() {
         </Box>
         <Divider />
         {canManageUsers && (
-          <MenuItem component={Link} href="/admin/users">
+          <MenuItem data-tutorial="nav-manage-users" component={Link} href="/admin/users">
             {tm("manageUsers")}
           </MenuItem>
         )}
         {canViewSurveyResults && (
-          <MenuItem component={Link} href="/admin/survey-results">
+          <MenuItem
+            data-tutorial="nav-survey-results"
+            component={Link}
+            href="/admin/survey-results"
+          >
             {tm("surveyResults")}
           </MenuItem>
         )}
         {canManageUsers && (
-          <MenuItem component={Link} href="/admin/gamification">
+          <MenuItem data-tutorial="nav-gamification" component={Link} href="/admin/gamification">
             {tm("gamificationDashboard")}
           </MenuItem>
         )}
         {isApproved && <Divider />}
         {isApproved && (
-          <MenuItem component={Link} href="/quests">
+          <MenuItem data-tutorial="nav-quests" component={Link} href="/quests">
             <ListItemIcon>
               <AssignmentIcon fontSize="small" />
             </ListItemIcon>
@@ -130,7 +134,7 @@ export default function UserMenu() {
           </MenuItem>
         )}
         {isApproved && (
-          <MenuItem component={Link} href="/achievements">
+          <MenuItem data-tutorial="nav-achievements" component={Link} href="/achievements">
             <ListItemIcon>
               <EmojiEventsIcon fontSize="small" />
             </ListItemIcon>
@@ -138,7 +142,7 @@ export default function UserMenu() {
           </MenuItem>
         )}
         {isApproved && (
-          <MenuItem component={Link} href="/leaderboard">
+          <MenuItem data-tutorial="nav-leaderboard" component={Link} href="/leaderboard">
             <ListItemIcon>
               <LeaderboardIcon fontSize="small" />
             </ListItemIcon>
@@ -165,14 +169,14 @@ export default function UserMenu() {
           {tm("redoSurvey")}
         </MenuItem>
         {isApproved && (
-          <MenuItem component={Link} href="/issues">
+          <MenuItem data-tutorial="nav-issues" component={Link} href="/issues">
             <ListItemIcon>
               <ListAltIcon fontSize="small" />
             </ListItemIcon>
             {tm("issueTracker")}
           </MenuItem>
         )}
-        <MenuItem component={Link} href="/report-issue">
+        <MenuItem data-tutorial="nav-report-issue" component={Link} href="/report-issue">
           <ListItemIcon>
             <BugReportIcon fontSize="small" />
           </ListItemIcon>

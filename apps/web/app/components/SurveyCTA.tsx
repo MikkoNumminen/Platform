@@ -8,6 +8,7 @@ export default function SurveyCTA() {
   const t = useTranslations("survey.cta");
   return (
     <Card
+      data-tutorial="survey-cta"
       sx={{
         maxWidth: 600,
         mx: "auto",

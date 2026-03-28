@@ -5,6 +5,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import UndoIcon from "@mui/icons-material/Undo";
 import { colors } from "../styles";
 import { resolveIssue } from "@/lib/issue-actions";
+import { emitTutorialEvent } from "@/app/components/TutorialProvider";
 import type { IssueData } from "@/lib/issue-queries";
 
 interface IssueListProps {
@@ -16,6 +17,9 @@ interface IssueListProps {
 function IssueCard({ issue, canResolve }: { issue: IssueData; canResolve: boolean }) {
   const handleResolve = async () => {
     await resolveIssue(issue.id);
+    if (!issue.resolved) {
+      emitTutorialEvent("resolve_issue");
+    }
   };
 
   return (
@@ -72,7 +76,12 @@ function IssueCard({ issue, canResolve }: { issue: IssueData; canResolve: boolea
         </Box>
         {canResolve && (
           <Tooltip title={issue.resolved ? "Reopen" : "Mark resolved"}>
-            <IconButton onClick={handleResolve} size="small" sx={{ color: colors.green400 }}>
+            <IconButton
+              data-tutorial="resolve-issue-button"
+              onClick={handleResolve}
+              size="small"
+              sx={{ color: colors.green400 }}
+            >
               {issue.resolved ? (
                 <UndoIcon fontSize="small" />
               ) : (

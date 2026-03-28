@@ -82,7 +82,10 @@ export default function LeaderboardView({
         </Card>
 
         {/* Leaderboard */}
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+        <Box
+          data-tutorial="leaderboard-list"
+          sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+        >
           {entries.length === 0 && (
             <Typography variant="body2" sx={{ color: colors.slate400, py: 4, textAlign: "center" }}>
               No one on the leaderboard yet. Start earning XP!

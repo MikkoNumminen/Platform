@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { validateSurveyData, type SurveyData } from "@/lib/survey-config";
 import { triggerGamification } from "@/lib/gamification/trigger";
+import { logger } from "@/lib/logger";
 
 export async function submitSurvey(
   data: SurveyData,
@@ -36,7 +37,7 @@ export async function submitSurvey(
 
     return { success: true };
   } catch (error) {
-    console.error("Survey submission error:", error);
+    logger.error("Survey submission error", error, "survey");
     return { success: false, error: "Something went wrong. Please try again." };
   }
 }

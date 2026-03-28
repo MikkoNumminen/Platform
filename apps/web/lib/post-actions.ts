@@ -1,6 +1,5 @@
 "use server";
 
-import { auth } from "@/auth";
 import { prisma } from "./db";
 import { guardedAction } from "./guardedAction";
 import { ActionError } from "./actionErrors";
@@ -9,13 +8,19 @@ import { revalidatePath } from "next/cache";
 import { slugify } from "./slug-utils";
 import { triggerGamification } from "./gamification/trigger";
 
+const MAX_POST_TITLE_LENGTH = 200;
+const MAX_POST_BODY_LENGTH = 10000;
+
 function validatePostTitle(title: string): string {
   const trimmed = title.trim();
   if (trimmed.length === 0) {
     throw new ActionError("invalidPostTitle", "Post title is required");
   }
-  if (trimmed.length > 200) {
-    throw new ActionError("postTitleTooLong", "Post title must be 200 characters or less");
+  if (trimmed.length > MAX_POST_TITLE_LENGTH) {
+    throw new ActionError(
+      "postTitleTooLong",
+      `Post title must be ${MAX_POST_TITLE_LENGTH} characters or less`,
+    );
   }
   return trimmed;
 }
@@ -25,8 +30,11 @@ function validatePostBody(body: string): string {
   if (trimmed.length === 0) {
     throw new ActionError("postBodyRequired", "Post body is required");
   }
-  if (trimmed.length > 10000) {
-    throw new ActionError("postBodyRequired", "Post body must be 10000 characters or less");
+  if (trimmed.length > MAX_POST_BODY_LENGTH) {
+    throw new ActionError(
+      "postBodyRequired",
+      `Post body must be ${MAX_POST_BODY_LENGTH} characters or less`,
+    );
   }
   return trimmed;
 }
@@ -34,7 +42,7 @@ function validatePostBody(body: string): string {
 export const createPost = guardedAction(
   "post:create",
   "post:create",
-  async (boardId: string, title: string, body: string) => {
+  async (session, boardId: string, title: string, body: string) => {
     validateUUID(boardId, "boardId");
     const validTitle = validatePostTitle(title);
     const validBody = validatePostBody(body);
@@ -51,8 +59,7 @@ export const createPost = guardedAction(
       throw new ActionError("boardNotFound", "Board not found");
     }
 
-    const session = await auth();
-    const authorId = session!.user!.id;
+    const authorId = session.user.id;
 
     // Ensure unique slug within board
     let slug = baseSlug;
@@ -84,7 +91,7 @@ export const createPost = guardedAction(
 export const updatePost = guardedAction(
   "post:edit",
   "post:edit",
-  async (postId: string, title: string, body: string) => {
+  async (session, postId: string, title: string, body: string) => {
     validateUUID(postId, "postId");
     const validTitle = validatePostTitle(title);
     const validBody = validatePostBody(body);
@@ -97,8 +104,7 @@ export const updatePost = guardedAction(
       throw new ActionError("postNotFound", "Post not found");
     }
 
-    const session = await auth();
-    if (!session?.user?.id || post.authorId !== session.user.id) {
+    if (post.authorId !== session.user.id) {
       throw new ActionError("permissionDenied", "You can only edit your own posts");
     }
 
@@ -126,40 +132,48 @@ export const updatePost = guardedAction(
   },
 );
 
-export const togglePostPin = guardedAction("post:edit", "post:edit", async (postId: string) => {
-  validateUUID(postId, "postId");
+export const togglePostPin = guardedAction(
+  "post:edit",
+  "post:edit",
+  async (_session, postId: string) => {
+    validateUUID(postId, "postId");
 
-  const post = await prisma.post.findFirst({
-    where: { id: postId, deletedAt: null },
-    include: { board: { select: { slug: true } } },
-  });
-  if (!post) {
-    throw new ActionError("postNotFound", "Post not found");
-  }
+    const post = await prisma.post.findFirst({
+      where: { id: postId, deletedAt: null },
+      include: { board: { select: { slug: true } } },
+    });
+    if (!post) {
+      throw new ActionError("postNotFound", "Post not found");
+    }
 
-  await prisma.post.update({
-    where: { id: postId },
-    data: { pinned: !post.pinned },
-  });
+    await prisma.post.update({
+      where: { id: postId },
+      data: { pinned: !post.pinned },
+    });
 
-  revalidatePath(`/boards/${post.board.slug}`);
-});
+    revalidatePath(`/boards/${post.board.slug}`);
+  },
+);
 
-export const deletePost = guardedAction("post:delete", "post:delete", async (postId: string) => {
-  validateUUID(postId, "postId");
+export const deletePost = guardedAction(
+  "post:delete",
+  "post:delete",
+  async (_session, postId: string) => {
+    validateUUID(postId, "postId");
 
-  const post = await prisma.post.findFirst({
-    where: { id: postId, deletedAt: null },
-    include: { board: { select: { slug: true } } },
-  });
-  if (!post) {
-    throw new ActionError("postNotFound", "Post not found");
-  }
+    const post = await prisma.post.findFirst({
+      where: { id: postId, deletedAt: null },
+      include: { board: { select: { slug: true } } },
+    });
+    if (!post) {
+      throw new ActionError("postNotFound", "Post not found");
+    }
 
-  await prisma.post.update({
-    where: { id: postId },
-    data: { deletedAt: new Date() },
-  });
+    await prisma.post.update({
+      where: { id: postId },
+      data: { deletedAt: new Date() },
+    });
 
-  revalidatePath(`/boards/${post.board.slug}`);
-});
+    revalidatePath(`/boards/${post.board.slug}`);
+  },
+);

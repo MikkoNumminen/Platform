@@ -278,6 +278,30 @@ export const INITIAL_ACHIEVEMENTS = [
     criteria: { type: "count", action: "login:streak", threshold: 365 },
     sortOrder: 73,
   },
+
+  // Tutorial achievements
+  {
+    key: "quick_learner",
+    name: "Quick Learner",
+    description: "Complete all tutorial steps available for your role",
+    icon: "🎓",
+    tier: null,
+    category: "onboarding",
+    xpReward: 100,
+    criteria: { type: "count", action: "tour:step", threshold: 10 },
+    sortOrder: 80,
+  },
+  {
+    key: "tour_guide",
+    name: "Tour Guide",
+    description: "Complete all 17 tutorial steps",
+    icon: "🗺️",
+    tier: "legendary",
+    category: "onboarding",
+    xpReward: 500,
+    criteria: { type: "count", action: "tour:step", threshold: 17 },
+    sortOrder: 81,
+  },
 ];
 
 export const INITIAL_QUESTS = [
@@ -406,5 +430,51 @@ export const INITIAL_QUESTS = [
     criteria: { action: "event:create", count: 1 },
     repeatable: true,
     sortOrder: 22,
+  },
+
+  // Tutorial quests (one-time)
+  {
+    key: "tutorial_tier1",
+    name: "Getting Started",
+    description: "Complete all Tier 1 tutorial steps (set alias, survey, report issue)",
+    icon: "🎓",
+    type: "onboarding",
+    xpReward: 50,
+    criteria: { action: "tour:tier", count: 1 },
+    repeatable: false,
+    sortOrder: 30,
+  },
+  {
+    key: "tutorial_tier2",
+    name: "Community Explorer",
+    description: "Complete all Tier 2 tutorial steps (boards, posts, gamification)",
+    icon: "🧭",
+    type: "onboarding",
+    xpReward: 100,
+    criteria: { action: "tour:tier", count: 1 },
+    repeatable: false,
+    sortOrder: 31,
+  },
+  {
+    key: "tutorial_tier3",
+    name: "Admin Basics",
+    description: "Complete all Tier 3 admin tutorial steps",
+    icon: "⚙️",
+    type: "onboarding",
+    xpReward: 75,
+    criteria: { action: "tour:tier", count: 1 },
+    repeatable: false,
+    sortOrder: 32,
+  },
+  {
+    key: "tutorial_tier4",
+    name: "Team Leader",
+    description: "Complete all Tier 4 management tutorial steps",
+    icon: "👑",
+    type: "onboarding",
+    xpReward: 75,
+    criteria: { action: "tour:tier", count: 1 },
+    repeatable: false,
+    sortOrder: 33,
   },
 ];
