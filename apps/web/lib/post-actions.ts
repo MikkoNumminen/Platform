@@ -3,41 +3,23 @@
 import { prisma } from "./db";
 import { guardedAction } from "./guardedAction";
 import { ActionError } from "./actionErrors";
-import { validateUUID } from "./actionUtils";
+import { validateUUID, createStringValidator } from "./actionUtils";
 import { revalidatePath } from "next/cache";
 import { slugify } from "./slug-utils";
 import { triggerGamification } from "./gamification/trigger";
 
-const MAX_POST_TITLE_LENGTH = 200;
-const MAX_POST_BODY_LENGTH = 10000;
-
-function validatePostTitle(title: string): string {
-  const trimmed = title.trim();
-  if (trimmed.length === 0) {
-    throw new ActionError("invalidPostTitle", "Post title is required");
-  }
-  if (trimmed.length > MAX_POST_TITLE_LENGTH) {
-    throw new ActionError(
-      "postTitleTooLong",
-      `Post title must be ${MAX_POST_TITLE_LENGTH} characters or less`,
-    );
-  }
-  return trimmed;
-}
-
-function validatePostBody(body: string): string {
-  const trimmed = body.trim();
-  if (trimmed.length === 0) {
-    throw new ActionError("postBodyRequired", "Post body is required");
-  }
-  if (trimmed.length > MAX_POST_BODY_LENGTH) {
-    throw new ActionError(
-      "postBodyRequired",
-      `Post body must be ${MAX_POST_BODY_LENGTH} characters or less`,
-    );
-  }
-  return trimmed;
-}
+const validatePostTitle = createStringValidator(
+  "Post title",
+  200,
+  "invalidPostTitle",
+  "postTitleTooLong",
+);
+const validatePostBody = createStringValidator(
+  "Post body",
+  10000,
+  "postBodyRequired",
+  "postBodyRequired",
+);
 
 export const createPost = guardedAction(
   "post:create",

@@ -11,6 +11,27 @@ export function validateUUID(value: string, fieldName: string): void {
   }
 }
 
+/**
+ * Creates a string validator that trims, checks for empty, and enforces max length.
+ */
+export function createStringValidator(
+  fieldName: string,
+  maxLength: number,
+  emptyCode: string,
+  tooLongCode: string,
+): (value: string) => string {
+  return (value: string) => {
+    const trimmed = value.trim();
+    if (trimmed.length === 0) {
+      throw new ActionError(emptyCode, `${fieldName} is required`);
+    }
+    if (trimmed.length > maxLength) {
+      throw new ActionError(tooLongCode, `${fieldName} must be ${maxLength} characters or less`);
+    }
+    return trimmed;
+  };
+}
+
 export async function safe(fn: () => Promise<void>): Promise<ActionResult> {
   try {
     await fn();

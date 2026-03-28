@@ -3,25 +3,16 @@
 import { prisma } from "./db";
 import { guardedAction } from "./guardedAction";
 import { ActionError } from "./actionErrors";
-import { validateUUID } from "./actionUtils";
+import { validateUUID, createStringValidator } from "./actionUtils";
 import { revalidatePath } from "next/cache";
 import { triggerGamification } from "./gamification/trigger";
 
-const MAX_THREAD_BODY_LENGTH = 5000;
-
-function validateThreadBody(body: string): string {
-  const trimmed = body.trim();
-  if (trimmed.length === 0) {
-    throw new ActionError("threadBodyRequired", "Comment body is required");
-  }
-  if (trimmed.length > MAX_THREAD_BODY_LENGTH) {
-    throw new ActionError(
-      "threadBodyRequired",
-      `Comment must be ${MAX_THREAD_BODY_LENGTH} characters or less`,
-    );
-  }
-  return trimmed;
-}
+const validateThreadBody = createStringValidator(
+  "Comment",
+  5000,
+  "threadBodyRequired",
+  "threadBodyRequired",
+);
 
 export const createThread = guardedAction(
   "thread:create",

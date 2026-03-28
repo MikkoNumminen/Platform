@@ -1,4 +1,4 @@
-import { safe, validateUUID } from "@/lib/actionUtils";
+import { safe, validateUUID, createStringValidator } from "@/lib/actionUtils";
 import { ActionError, RateLimitError } from "@/lib/actionErrors";
 
 describe("validateUUID", () => {
@@ -122,5 +122,47 @@ describe("safe", () => {
       code: "unexpectedError",
     });
     consoleSpy.mockRestore();
+  });
+});
+
+describe("createStringValidator", () => {
+  const validate = createStringValidator("Title", 100, "emptyTitle", "titleTooLong");
+
+  test("returns trimmed string for valid input", () => {
+    expect(validate("  hello world  ")).toBe("hello world");
+  });
+
+  test("throws for empty string", () => {
+    expect(() => validate("")).toThrow(ActionError);
+    expect(() => validate("")).toThrow("Title is required");
+  });
+
+  test("throws for whitespace-only string", () => {
+    expect(() => validate("   ")).toThrow("Title is required");
+  });
+
+  test("throws with correct code for empty", () => {
+    try {
+      validate("");
+    } catch (e) {
+      expect((e as ActionError).code).toBe("emptyTitle");
+    }
+  });
+
+  test("throws for string exceeding max length", () => {
+    const longString = "a".repeat(101);
+    expect(() => validate(longString)).toThrow("Title must be 100 characters or less");
+  });
+
+  test("throws with correct code for too long", () => {
+    try {
+      validate("a".repeat(101));
+    } catch (e) {
+      expect((e as ActionError).code).toBe("titleTooLong");
+    }
+  });
+
+  test("accepts string at exact max length", () => {
+    expect(validate("a".repeat(100))).toBe("a".repeat(100));
   });
 });

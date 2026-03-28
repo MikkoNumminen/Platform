@@ -3,25 +3,16 @@
 import { prisma } from "./db";
 import { guardedAction } from "./guardedAction";
 import { ActionError } from "./actionErrors";
-import { validateUUID } from "./actionUtils";
+import { validateUUID, createStringValidator } from "./actionUtils";
 import { revalidatePath } from "next/cache";
 import { slugify } from "./slug-utils";
 
-const MAX_BOARD_NAME_LENGTH = 100;
-
-function validateBoardName(name: string): string {
-  const trimmed = name.trim();
-  if (trimmed.length === 0) {
-    throw new ActionError("invalidBoardName", "Board name is required");
-  }
-  if (trimmed.length > MAX_BOARD_NAME_LENGTH) {
-    throw new ActionError(
-      "boardNameTooLong",
-      `Board name must be ${MAX_BOARD_NAME_LENGTH} characters or less`,
-    );
-  }
-  return trimmed;
-}
+const validateBoardName = createStringValidator(
+  "Board name",
+  100,
+  "invalidBoardName",
+  "boardNameTooLong",
+);
 
 export const createBoard = guardedAction(
   "board:create",

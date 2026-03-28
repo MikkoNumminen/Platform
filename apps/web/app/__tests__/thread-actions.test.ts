@@ -89,7 +89,7 @@ describe("createThread", () => {
   test("returns error for empty body", async () => {
     const result = await createThread("POST", parentId, "  ");
     expect(result).toEqual({
-      error: "Comment body is required",
+      error: "Comment is required",
       code: "threadBodyRequired",
     });
   });
