@@ -94,6 +94,7 @@ export default async function AdminUsersPage() {
                           userId={user.id}
                           currentRole={user.role}
                           isSelf={user.id === session?.user?.id}
+                          actorRole={(session?.user as { role?: string })?.role ?? "pending"}
                         />
                         {user.role === "pending" && <ApproveButton userId={user.id} />}
                         {!surveyStatus[user.id] && (

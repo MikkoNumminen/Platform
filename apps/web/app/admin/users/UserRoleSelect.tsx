@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Select, MenuItem, type SelectChangeEvent } from "@mui/material";
+import { Select, MenuItem, Typography, type SelectChangeEvent } from "@mui/material";
 import { updateUserRole } from "@/lib/user-actions";
 import { ROLES } from "@/lib/permissions";
 import { colors } from "../../styles";
@@ -10,11 +10,29 @@ interface UserRoleSelectProps {
   userId: string;
   currentRole: string;
   isSelf: boolean;
+  actorRole: string;
 }
 
-export default function UserRoleSelect({ userId, currentRole, isSelf }: UserRoleSelectProps) {
+function roleRank(role: string): number {
+  const index = ROLES.indexOf(role as (typeof ROLES)[number]);
+  return index === -1 ? ROLES.length : index;
+}
+
+export default function UserRoleSelect({
+  userId,
+  currentRole,
+  isSelf,
+  actorRole,
+}: UserRoleSelectProps) {
   const [role, setRole] = useState(currentRole);
   const [saving, setSaving] = useState(false);
+
+  const actorRank = roleRank(actorRole);
+  const targetRank = roleRank(currentRole);
+  const canModify = !isSelf && targetRank > actorRank;
+
+  // Only show roles with rank strictly lower than actor's rank
+  const assignableRoles = ROLES.filter((r) => roleRank(r) > actorRank);
 
   const handleChange = async (e: SelectChangeEvent) => {
     const newRole = e.target.value;
@@ -27,12 +45,20 @@ export default function UserRoleSelect({ userId, currentRole, isSelf }: UserRole
     setSaving(false);
   };
 
+  if (!canModify) {
+    return (
+      <Typography variant="body2" sx={{ color: colors.slate400, minWidth: 120, py: 0.75 }}>
+        {currentRole}
+      </Typography>
+    );
+  }
+
   return (
     <Select
       value={role}
       onChange={handleChange}
       size="small"
-      disabled={saving || isSelf}
+      disabled={saving}
       sx={{
         minWidth: 120,
         color: colors.slate100,
@@ -41,7 +67,7 @@ export default function UserRoleSelect({ userId, currentRole, isSelf }: UserRole
         ".MuiSvgIcon-root": { color: colors.slate400 },
       }}
     >
-      {ROLES.map((r) => (
+      {assignableRoles.map((r) => (
         <MenuItem key={r} value={r}>
           {r}
         </MenuItem>
