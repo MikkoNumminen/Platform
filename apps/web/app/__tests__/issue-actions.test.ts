@@ -1,6 +1,6 @@
 const mockAuth = jest.fn();
 const mockCreate = jest.fn();
-const mockFindUnique = jest.fn();
+const mockFindFirst = jest.fn();
 const mockUpdate = jest.fn();
 const mockRateLimit = jest.fn();
 
@@ -12,7 +12,7 @@ jest.mock("@/lib/db", () => ({
   prisma: {
     issueReport: {
       create: (...args: unknown[]) => mockCreate(...args),
-      findUnique: (...args: unknown[]) => mockFindUnique(...args),
+      findFirst: (...args: unknown[]) => mockFindFirst(...args),
       update: (...args: unknown[]) => mockUpdate(...args),
     },
   },
@@ -59,6 +59,7 @@ describe("createIssueReport", () => {
         description: "It broke",
         url: "/boards",
         authorId: "user-1",
+        sessionId: null,
       },
     });
   });
@@ -102,7 +103,7 @@ describe("createIssueReport", () => {
 describe("resolveIssue", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockFindUnique.mockResolvedValue({ id: VALID_UUID, resolvedAt: null });
+    mockFindFirst.mockResolvedValue({ id: VALID_UUID, resolvedAt: null });
     mockUpdate.mockResolvedValue({ id: VALID_UUID });
   });
 
@@ -122,7 +123,7 @@ describe("resolveIssue", () => {
     mockAuth.mockResolvedValue(
       authenticatedSession("user-1", "superuser", { "issue:resolve": true }),
     );
-    mockFindUnique.mockResolvedValue({ id: VALID_UUID, resolvedAt: new Date() });
+    mockFindFirst.mockResolvedValue({ id: VALID_UUID, resolvedAt: new Date() });
     const result = await resolveIssue(VALID_UUID);
     expect(result).toBeUndefined();
     expect(mockUpdate).toHaveBeenCalledWith({
@@ -158,7 +159,7 @@ describe("resolveIssue", () => {
     mockAuth.mockResolvedValue(
       authenticatedSession("user-1", "superuser", { "issue:resolve": true }),
     );
-    mockFindUnique.mockResolvedValue(null);
+    mockFindFirst.mockResolvedValue(null);
     const result = await resolveIssue(VALID_UUID);
     expect(result).toEqual({ error: "Issue not found", code: "notFound" });
   });
