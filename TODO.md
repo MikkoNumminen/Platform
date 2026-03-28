@@ -82,6 +82,33 @@
 #### Phase 4 — Tests ✅
 > Completed by Claude 1. 40 tests (config, service, UI components).
 
+### Custom Quest System — Superuser-Assigned Quests
+> Superuser creates custom quests and assigns them to specific users.
+> Quests are configurable (title, description, XP reward, deadline, assignee).
+> Only superuser can create/edit/complete quests. Vuohi and admins can view the global quest list.
+> Users see their assigned quests in a personal quest list.
+> Completing a quest awards XP and can trigger achievements.
+> Example: "Check if platform GDPR compliance is up to date" assigned to a specific user.
+
+#### Phase 1 — Schema & Backend
+- [ ] 🟣 Design CustomQuest model (title, description, xpReward, assigneeId, creatorId, status, deadline, completedAt)
+- [ ] 🟣 Server actions: createCustomQuest, updateCustomQuest, completeCustomQuest, deleteCustomQuest
+- [ ] 🟣 Permission: only superuser can create/edit/complete; vuohi+admin can view; assignee can view own
+
+#### Phase 2 — Admin UI (Global Quest List)
+- [ ] 🟣 `/admin/quests` page — global list of all custom quests with filters (status, assignee)
+- [ ] 🟣 Quest creation form (title, description, XP, assignee picker, optional deadline)
+- [ ] 🟣 Quest detail/edit view with status management (open → in progress → completed)
+
+#### Phase 3 — User UI (My Quests)
+- [ ] 🟣 User quest list in profile/dashboard — shows assigned quests with status and XP rewards
+- [ ] 🟣 Quest detail view for assignee (read-only, shows requirements and status)
+
+#### Phase 4 — Gamification Integration
+- [ ] 🟣 Award XP on quest completion (configurable per quest)
+- [ ] 🟣 Achievements for completing custom quests (e.g. "First Assignment", "Quest Master")
+- [ ] 🟣 Tests for all custom quest actions, permissions, and UI components
+
 ### Developer Onboarding
 - [ ] 🟣 Contributor request page — public view where people can apply for repo edit rights to help develop the site
 
