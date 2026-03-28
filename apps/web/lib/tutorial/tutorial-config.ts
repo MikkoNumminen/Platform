@@ -82,7 +82,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     ],
   },
 
-  // ── Tier 2: User (6 steps) ─────────────────────────────────────────────
+  // ── Tier 2: User (5 steps) ─────────────────────────────────────────────
   {
     id: "explore_home",
     route: "/",
@@ -90,21 +90,6 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     autoCompleteOnRoute: true,
     tier: 2,
     xpReward: 10,
-  },
-  {
-    id: "create_post",
-    route: /^\/boards\/[^/]+$/,
-    targetSelector: '[data-tutorial="create-post-button"]',
-    event: "tutorial:post_created",
-    tier: 2,
-    xpReward: 10,
-    navigationHints: [
-      {
-        fromRoute: "/boards",
-        targetSelector: '[data-tutorial="board-card"]',
-        hintKey: "nav_click_board",
-      },
-    ],
   },
   {
     id: "write_comment",

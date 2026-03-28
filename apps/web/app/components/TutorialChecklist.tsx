@@ -16,7 +16,6 @@ const STEP_LABELS: Record<string, string> = {
   complete_survey: "Complete the survey",
   report_issue: "Report an issue",
   explore_home: "Explore the homepage",
-  create_post: "Create your first post",
   write_comment: "Write a comment",
   check_quests: "Check your quest log",
   view_achievements: "View achievements",
