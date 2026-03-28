@@ -125,7 +125,7 @@ export default async function GamificationDashboardPage() {
                         />
                       ) : (
                         <RadioButtonUncheckedIcon
-                          sx={{ fontSize: 18, color: colors.slate500, flexShrink: 0 }}
+                          sx={{ fontSize: 18, color: colors.slate400, flexShrink: 0 }}
                         />
                       )}
                       <Typography variant="body2" sx={{ minWidth: 140, color: colors.slate300 }}>
