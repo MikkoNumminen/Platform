@@ -9,8 +9,8 @@ export const securityHeaders: Header[] = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      // 'unsafe-eval' only in dev (Next.js HMR); 'unsafe-inline' needed in dev for Next.js inline scripts
-      `script-src 'self'${isDev ? " 'unsafe-eval' 'unsafe-inline'" : ""}`,
+      // 'unsafe-eval' only in dev (Next.js HMR); 'unsafe-inline' required by Next.js for inline hydration scripts
+      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
       // 'unsafe-inline' required by MUI emotion CSS-in-JS style injection
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https://lh3.googleusercontent.com https://avatars.githubusercontent.com",

@@ -56,11 +56,11 @@ describe("securityHeaders", () => {
     expect(csp!.value).not.toContain("unsafe-eval");
   });
 
-  test("CSP script-src does not include unsafe-inline in production", () => {
+  test("CSP script-src includes unsafe-inline for Next.js hydration", () => {
     const csp = securityHeaders.find((h) => h.key === "Content-Security-Policy");
     const scriptSrc = csp!.value.split(";").find((d) => d.trim().startsWith("script-src"));
     expect(scriptSrc).toBeDefined();
-    expect(scriptSrc).not.toContain("unsafe-inline");
+    expect(scriptSrc).toContain("'unsafe-inline'");
   });
 
   test("CSP restricts connect-src to specific OAuth domains", () => {
