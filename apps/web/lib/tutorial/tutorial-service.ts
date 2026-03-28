@@ -122,7 +122,83 @@ export async function getMyTourProgress(): Promise<{
 } | null> {
   const session = await auth();
   if (!session?.user?.id) return null;
-  const completedSteps = await getTourProgress(session.user.id);
   const role = (session.user as { role?: string }).role ?? "pending";
+
+  // Sync progress with actual user data (backfill steps done before tutorial existed)
+  await syncTourProgress(session.user.id);
+
+  const completedSteps = await getTourProgress(session.user.id);
   return { completedSteps, role };
+}
+
+/**
+ * Checks user's actual data and auto-completes tutorial steps they've already done.
+ * This handles the case where users completed actions before the tutorial system existed.
+ */
+async function syncTourProgress(userId: string): Promise<void> {
+  const existing = await prisma.userTourProgress.findMany({
+    where: { userId },
+    select: { stepId: true },
+  });
+  const completedIds = new Set(existing.map((p) => p.stepId));
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { alias: true },
+  });
+
+  const stepChecks: Array<{ stepId: string; check: () => Promise<boolean> }> = [
+    {
+      stepId: "set_alias",
+      check: async () => !!user?.alias,
+    },
+    {
+      stepId: "complete_survey",
+      check: async () => {
+        const count = await prisma.surveyResponse.count({ where: { userId } });
+        return count > 0;
+      },
+    },
+    {
+      stepId: "report_issue",
+      check: async () => {
+        const count = await prisma.issueReport.count({ where: { authorId: userId } });
+        return count > 0;
+      },
+    },
+    {
+      stepId: "create_post",
+      check: async () => {
+        const count = await prisma.post.count({ where: { authorId: userId } });
+        return count > 0;
+      },
+    },
+    {
+      stepId: "write_comment",
+      check: async () => {
+        const count = await prisma.thread.count({ where: { authorId: userId } });
+        return count > 0;
+      },
+    },
+  ];
+
+  const toComplete: string[] = [];
+
+  for (const { stepId, check } of stepChecks) {
+    if (completedIds.has(stepId)) continue;
+    try {
+      if (await check()) {
+        toComplete.push(stepId);
+      }
+    } catch {
+      // Table may not exist yet — skip silently
+    }
+  }
+
+  if (toComplete.length > 0) {
+    await prisma.userTourProgress.createMany({
+      data: toComplete.map((stepId) => ({ userId, stepId })),
+      skipDuplicates: true,
+    });
+  }
 }

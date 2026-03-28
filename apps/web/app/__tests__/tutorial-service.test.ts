@@ -4,9 +4,15 @@
 const mockUserTourProgressFindUnique = jest.fn();
 const mockUserTourProgressFindMany = jest.fn();
 const mockUserTourProgressCreate = jest.fn();
+const mockUserTourProgressCreateMany = jest.fn();
 const mockUserTourProgressDeleteMany = jest.fn();
 const mockXpTransactionCreate = jest.fn();
 const mockUserLevelUpsert = jest.fn();
+const mockUserFindUnique = jest.fn();
+const mockSurveyResponseCount = jest.fn();
+const mockIssueReportCount = jest.fn();
+const mockPostCount = jest.fn();
+const mockThreadCount = jest.fn();
 
 jest.mock("@/lib/db", () => ({
   prisma: {
@@ -14,6 +20,7 @@ jest.mock("@/lib/db", () => ({
       findUnique: (...a: any[]) => mockUserTourProgressFindUnique(...a),
       findMany: (...a: any[]) => mockUserTourProgressFindMany(...a),
       create: (...a: any[]) => mockUserTourProgressCreate(...a),
+      createMany: (...a: any[]) => mockUserTourProgressCreateMany(...a),
       deleteMany: (...a: any[]) => mockUserTourProgressDeleteMany(...a),
     },
     xpTransaction: {
@@ -21,6 +28,21 @@ jest.mock("@/lib/db", () => ({
     },
     userLevel: {
       upsert: (...a: any[]) => mockUserLevelUpsert(...a),
+    },
+    user: {
+      findUnique: (...a: any[]) => mockUserFindUnique(...a),
+    },
+    surveyResponse: {
+      count: (...a: any[]) => mockSurveyResponseCount(...a),
+    },
+    issueReport: {
+      count: (...a: any[]) => mockIssueReportCount(...a),
+    },
+    post: {
+      count: (...a: any[]) => mockPostCount(...a),
+    },
+    thread: {
+      count: (...a: any[]) => mockThreadCount(...a),
     },
   },
 }));
@@ -178,11 +200,30 @@ describe("tutorial-service", () => {
   });
 
   describe("getMyTourProgress", () => {
+    function setupSyncMocks(overrides?: {
+      alias?: string | null;
+      surveyCount?: number;
+      issueCount?: number;
+      postCount?: number;
+      threadCount?: number;
+    }) {
+      mockUserFindUnique.mockResolvedValue({ alias: overrides?.alias ?? null });
+      mockSurveyResponseCount.mockResolvedValue(overrides?.surveyCount ?? 0);
+      mockIssueReportCount.mockResolvedValue(overrides?.issueCount ?? 0);
+      mockPostCount.mockResolvedValue(overrides?.postCount ?? 0);
+      mockThreadCount.mockResolvedValue(overrides?.threadCount ?? 0);
+      mockUserTourProgressCreateMany.mockResolvedValue({ count: 0 });
+    }
+
     test("returns steps and role for authenticated user", async () => {
       mockAuth.mockResolvedValue({
         user: { id: "u1", role: "user" },
       } as any);
-      mockUserTourProgressFindMany.mockResolvedValue([{ stepId: "set_alias" }]);
+      // First findMany call is for sync, second is for getTourProgress
+      mockUserTourProgressFindMany
+        .mockResolvedValueOnce([{ stepId: "set_alias" }]) // sync check
+        .mockResolvedValueOnce([{ stepId: "set_alias" }]); // getTourProgress
+      setupSyncMocks();
 
       const result = await getMyTourProgress();
       expect(result).toEqual({
@@ -196,6 +237,43 @@ describe("tutorial-service", () => {
 
       const result = await getMyTourProgress();
       expect(result).toBeNull();
+    });
+
+    test("syncs already-completed steps on load", async () => {
+      mockAuth.mockResolvedValue({
+        user: { id: "u1", role: "user" },
+      } as any);
+      // No existing progress
+      mockUserTourProgressFindMany
+        .mockResolvedValueOnce([]) // sync check — nothing recorded yet
+        .mockResolvedValueOnce([{ stepId: "set_alias" }, { stepId: "complete_survey" }]); // after sync
+      setupSyncMocks({ alias: "TestUser", surveyCount: 1 });
+
+      const result = await getMyTourProgress();
+      expect(mockUserTourProgressCreateMany).toHaveBeenCalledWith({
+        data: expect.arrayContaining([
+          { userId: "u1", stepId: "set_alias" },
+          { userId: "u1", stepId: "complete_survey" },
+        ]),
+        skipDuplicates: true,
+      });
+      expect(result?.completedSteps).toContain("set_alias");
+      expect(result?.completedSteps).toContain("complete_survey");
+    });
+
+    test("does not sync steps that are already recorded", async () => {
+      mockAuth.mockResolvedValue({
+        user: { id: "u1", role: "user" },
+      } as any);
+      // Alias step already recorded
+      mockUserTourProgressFindMany
+        .mockResolvedValueOnce([{ stepId: "set_alias" }]) // sync check
+        .mockResolvedValueOnce([{ stepId: "set_alias" }]); // getTourProgress
+      setupSyncMocks({ alias: "TestUser" });
+
+      await getMyTourProgress();
+      // Should not try to create "set_alias" again since it's already recorded
+      expect(mockUserTourProgressCreateMany).not.toHaveBeenCalled();
     });
   });
 });
