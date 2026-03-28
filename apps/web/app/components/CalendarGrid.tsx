@@ -274,7 +274,7 @@ export default function CalendarGrid({
 
           return (
             <Box
-              key={idx}
+              key={date.toISOString().slice(0, 10)}
               sx={{
                 minHeight: { xs: 56, sm: 90 },
                 p: 0.5,

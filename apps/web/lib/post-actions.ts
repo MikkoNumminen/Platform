@@ -6,16 +6,7 @@ import { guardedAction } from "./guardedAction";
 import { ActionError } from "./actionErrors";
 import { validateUUID } from "./actionUtils";
 import { revalidatePath } from "next/cache";
-
-function slugify(title: string): string {
-  return title
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/[\s_]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-}
+import { slugify } from "./slug-utils";
 
 function validatePostTitle(title: string): string {
   const trimmed = title.trim();

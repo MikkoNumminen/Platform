@@ -6,6 +6,7 @@ import { ActionError } from "@/lib/actionErrors";
 import { safe, validateUUID, type ActionResult } from "@/lib/actionUtils";
 import { rateLimit } from "@/lib/rateLimit";
 import { revalidatePath } from "next/cache";
+import { guardedAction } from "@/lib/guardedAction";
 
 export async function createIssueReport(
   title: string,
@@ -44,17 +45,10 @@ export async function createIssueReport(
   });
 }
 
-export async function resolveIssue(issueId: string): Promise<ActionResult> {
-  return safe(async () => {
-    const session = await auth();
-    if (!session?.user?.id) {
-      throw new ActionError("permissionDenied", "Not authenticated");
-    }
-
-    if (session.user.role !== "superuser") {
-      throw new ActionError("permissionDenied", "Only superusers can resolve issues");
-    }
-
+export const resolveIssue = guardedAction(
+  "issue:resolve",
+  "issue:resolve",
+  async (issueId: string) => {
     validateUUID(issueId, "issue ID");
 
     const issue = await prisma.issueReport.findUnique({ where: { id: issueId } });
@@ -68,5 +62,5 @@ export async function resolveIssue(issueId: string): Promise<ActionResult> {
     });
 
     revalidatePath("/issues");
-  });
-}
+  },
+);

@@ -28,6 +28,9 @@ export const PERMISSIONS = {
   "event:edit": "Edit any event",
   "event:delete": "Delete any event",
 
+  // Issues
+  "issue:resolve": "Resolve or reopen issue reports",
+
   // Survey
   "survey:results": "View survey results",
 } as const;
@@ -57,6 +60,7 @@ const ROLE_DEFAULTS: Record<Role, PermissionKey[]> = {
     "event:create",
     "event:edit",
     "event:delete",
+    "issue:resolve",
     "survey:results",
   ],
   admin: [
@@ -78,6 +82,7 @@ const ROLE_DEFAULTS: Record<Role, PermissionKey[]> = {
     "event:create",
     "event:edit",
     "event:delete",
+    "issue:resolve",
     "survey:results",
   ],
   user: ["post:create", "topic:create", "thread:create", "event:create"],

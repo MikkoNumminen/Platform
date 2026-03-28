@@ -112,6 +112,7 @@ describe("deleteMyAccount", () => {
           image: null,
           avatarUrl: null,
           bio: null,
+          role: "pending",
           deletedAt: expect.any(Date),
         }),
       }),

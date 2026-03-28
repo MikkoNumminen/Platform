@@ -5,16 +5,7 @@ import { guardedAction } from "./guardedAction";
 import { ActionError } from "./actionErrors";
 import { validateUUID } from "./actionUtils";
 import { revalidatePath } from "next/cache";
-
-function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/[\s_]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-}
+import { slugify } from "./slug-utils";
 
 function validateBoardName(name: string): string {
   const trimmed = name.trim();

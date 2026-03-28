@@ -30,8 +30,12 @@ import { createIssueReport, resolveIssue } from "@/lib/issue-actions";
 
 const VALID_UUID = "550e8400-e29b-41d4-a716-446655440000";
 
-function authenticatedSession(id = "user-1", role = "user") {
-  return { user: { id, role } };
+function authenticatedSession(
+  id = "user-1",
+  role = "user",
+  permissions: Record<string, boolean> = {},
+) {
+  return { user: { id, role, permissions } };
 }
 
 describe("createIssueReport", () => {
@@ -98,8 +102,10 @@ describe("resolveIssue", () => {
     mockUpdate.mockResolvedValue({ id: VALID_UUID });
   });
 
-  test("resolves an open issue as superuser", async () => {
-    mockAuth.mockResolvedValue(authenticatedSession("user-1", "superuser"));
+  test("resolves an open issue with issue:resolve permission", async () => {
+    mockAuth.mockResolvedValue(
+      authenticatedSession("user-1", "superuser", { "issue:resolve": true }),
+    );
     const result = await resolveIssue(VALID_UUID);
     expect(result).toBeUndefined();
     expect(mockUpdate).toHaveBeenCalledWith({
@@ -108,8 +114,10 @@ describe("resolveIssue", () => {
     });
   });
 
-  test("reopens a resolved issue as superuser", async () => {
-    mockAuth.mockResolvedValue(authenticatedSession("user-1", "superuser"));
+  test("reopens a resolved issue with issue:resolve permission", async () => {
+    mockAuth.mockResolvedValue(
+      authenticatedSession("user-1", "superuser", { "issue:resolve": true }),
+    );
     mockFindUnique.mockResolvedValue({ id: VALID_UUID, resolvedAt: new Date() });
     const result = await resolveIssue(VALID_UUID);
     expect(result).toBeUndefined();
@@ -119,11 +127,11 @@ describe("resolveIssue", () => {
     });
   });
 
-  test("returns error for non-superuser", async () => {
-    mockAuth.mockResolvedValue(authenticatedSession("user-1", "admin"));
+  test("returns error when missing issue:resolve permission", async () => {
+    mockAuth.mockResolvedValue(authenticatedSession("user-1", "user", {}));
     const result = await resolveIssue(VALID_UUID);
     expect(result).toEqual({
-      error: "Only superusers can resolve issues",
+      error: "Missing permission: issue:resolve",
       code: "permissionDenied",
     });
   });
@@ -135,13 +143,17 @@ describe("resolveIssue", () => {
   });
 
   test("returns error for invalid UUID", async () => {
-    mockAuth.mockResolvedValue(authenticatedSession("user-1", "superuser"));
+    mockAuth.mockResolvedValue(
+      authenticatedSession("user-1", "superuser", { "issue:resolve": true }),
+    );
     const result = await resolveIssue("bad-id");
     expect(result).toEqual({ error: "Invalid issue ID: not a valid UUID", code: "invalidId" });
   });
 
   test("returns error when issue not found", async () => {
-    mockAuth.mockResolvedValue(authenticatedSession("user-1", "superuser"));
+    mockAuth.mockResolvedValue(
+      authenticatedSession("user-1", "superuser", { "issue:resolve": true }),
+    );
     mockFindUnique.mockResolvedValue(null);
     const result = await resolveIssue(VALID_UUID);
     expect(result).toEqual({ error: "Issue not found", code: "notFound" });
