@@ -82,7 +82,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     ],
   },
 
-  // ── Tier 2: User (7 steps) ─────────────────────────────────────────────
+  // ── Tier 2: User (6 steps) ─────────────────────────────────────────────
   {
     id: "explore_home",
     route: "/",
@@ -90,21 +90,6 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     autoCompleteOnRoute: true,
     tier: 2,
     xpReward: 10,
-  },
-  {
-    id: "browse_boards",
-    route: "/boards",
-    targetSelector: '[data-tutorial="boards-list"]',
-    autoCompleteOnRoute: true,
-    tier: 2,
-    xpReward: 10,
-    navigationHints: [
-      {
-        fromRoute: /^\/$/,
-        targetSelector: '[data-tutorial="nav-boards"]',
-        hintKey: "nav_click_boards",
-      },
-    ],
   },
   {
     id: "create_post",
@@ -182,22 +167,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     ],
   },
 
-  // ── Tier 3: Admin (4 steps) ─────────────────────────────────────────────
-  {
-    id: "create_board",
-    route: "/boards",
-    targetSelector: '[data-tutorial="create-board-button"]',
-    event: "tutorial:board_created",
-    tier: 3,
-    xpReward: 10,
-    navigationHints: [
-      {
-        fromRoute: /.*/,
-        targetSelector: '[data-tutorial="nav-boards"]',
-        hintKey: "nav_click_boards",
-      },
-    ],
-  },
+  // ── Tier 3: Admin (2 steps) ─────────────────────────────────────────────
   {
     id: "view_survey_results",
     route: "/admin/survey-results",
@@ -225,21 +195,6 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
         fromRoute: /.*/,
         targetSelector: '[data-tutorial="nav-gamification"]',
         hintKey: "nav_click_gamification",
-      },
-    ],
-  },
-  {
-    id: "resolve_issue",
-    route: "/issues",
-    targetSelector: '[data-tutorial="resolve-issue-button"]',
-    event: "tutorial:issue_resolved",
-    tier: 3,
-    xpReward: 10,
-    navigationHints: [
-      {
-        fromRoute: /.*/,
-        targetSelector: '[data-tutorial="nav-issues"]',
-        hintKey: "nav_click_issues",
       },
     ],
   },

@@ -15,26 +15,26 @@ describe("tutorial-config", () => {
       expect(steps.every((s) => s.tier === 1)).toBe(true);
     });
 
-    test('returns 10 steps for "user" (tier 1+2)', () => {
+    test('returns 9 steps for "user" (tier 1+2)', () => {
       const steps = getStepsForRole("user");
-      expect(steps).toHaveLength(10);
+      expect(steps).toHaveLength(9);
       expect(steps.every((s) => s.tier <= 2)).toBe(true);
     });
 
-    test('returns 14 steps for "admin" (tier 1+2+3)', () => {
+    test('returns 11 steps for "admin" (tier 1+2+3)', () => {
       const steps = getStepsForRole("admin");
-      expect(steps).toHaveLength(14);
+      expect(steps).toHaveLength(11);
       expect(steps.every((s) => s.tier <= 3)).toBe(true);
     });
 
-    test('returns 17 steps for "vuohi" (all tiers)', () => {
+    test('returns 14 steps for "vuohi" (all tiers)', () => {
       const steps = getStepsForRole("vuohi");
-      expect(steps).toHaveLength(17);
+      expect(steps).toHaveLength(14);
     });
 
-    test('returns 17 steps for "superuser" (all tiers)', () => {
+    test('returns 14 steps for "superuser" (all tiers)', () => {
       const steps = getStepsForRole("superuser");
-      expect(steps).toHaveLength(17);
+      expect(steps).toHaveLength(14);
     });
 
     test("returns 3 steps for unknown role (defaults to tier 1)", () => {
