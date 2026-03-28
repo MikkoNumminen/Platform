@@ -8,6 +8,7 @@ import { colors } from "../styles";
 import { createShout } from "@/lib/shout-actions";
 import type { ShoutData } from "@/lib/shout-queries";
 import { useXpToast } from "./XpToastProvider";
+import { emitTutorialEvent } from "./TutorialProvider";
 
 function formatTime(iso: string): string {
   return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -57,6 +58,7 @@ export default function Shoutbox({ initialShouts }: ShoutboxProps) {
       setShouts((prev) => prev.filter((s) => s.id !== optimistic.id));
     } else {
       onAction();
+      emitTutorialEvent("send_shoutbox");
     }
     setSending(false);
   };
@@ -65,7 +67,7 @@ export default function Shoutbox({ initialShouts }: ShoutboxProps) {
     <Box
       data-tutorial="shoutbox"
       sx={{
-        backgroundColor: "#000",
+        backgroundColor: colors.slate700,
         border: `1px solid ${colors.slate300}`,
         borderRadius: "4px",
         fontFamily: "'Courier New', Courier, monospace",
@@ -166,6 +168,7 @@ export default function Shoutbox({ initialShouts }: ShoutboxProps) {
           }}
         >
           <TextField
+            data-tutorial="shoutbox-input"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder={t("placeholder")}
@@ -177,7 +180,7 @@ export default function Shoutbox({ initialShouts }: ShoutboxProps) {
               "& .MuiInputBase-root": {
                 fontFamily: "'Courier New', Courier, monospace",
                 fontSize: "0.85rem",
-                backgroundColor: "#000",
+                backgroundColor: colors.slate700,
                 color: colors.slate100,
               },
               "& .MuiOutlinedInput-notchedOutline": {
