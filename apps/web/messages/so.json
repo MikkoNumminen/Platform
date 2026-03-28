@@ -48,13 +48,15 @@
   },
   "userMenu": {
     "manageUsers": "Maamul isticmaalayaasha",
+    "questBoard": "Liiska hawlgallada",
     "surveyResults": "Natiijooyinka xog-uruurinta",
     "feedback": "Jawaab celin",
     "issues": "Dhibaatooyinka",
     "vuohiliittoDashboard": "Vuohiliitto Dashboard",
     "quests": "Hawlgallada",
     "achievements": "Guulaha",
-    "leaderboard": "Miisaanka Hogaamiyaha"
+    "leaderboard": "Miisaanka Hogaamiyaha",
+    "myQuests": "Hawlgallahayga"
   },
   "admin": {
     "users": {

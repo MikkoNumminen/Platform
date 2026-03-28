@@ -48,13 +48,15 @@
   },
   "userMenu": {
     "manageUsers": "Manage Users",
+    "questBoard": "Quest Board",
     "surveyResults": "Survey Results",
     "feedback": "Feedback",
     "issues": "Issues",
     "vuohiliittoDashboard": "Vuohiliitto Dashboard",
     "quests": "Quests",
     "achievements": "Achievements",
-    "leaderboard": "Leaderboard"
+    "leaderboard": "Leaderboard",
+    "myQuests": "My Quests"
   },
   "admin": {
     "users": {

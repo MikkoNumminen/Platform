@@ -48,13 +48,15 @@
   },
   "userMenu": {
     "manageUsers": "إدارة المستخدمين",
+    "questBoard": "لوحة المهام",
     "surveyResults": "نتائج الاستبيان",
     "feedback": "الملاحظات",
     "issues": "المشكلات",
     "vuohiliittoDashboard": "لوحة تحكم فوهيليتو",
     "quests": "المهام",
     "achievements": "الإنجازات",
-    "leaderboard": "لوحة المتصدرين"
+    "leaderboard": "لوحة المتصدرين",
+    "myQuests": "مهامي"
   },
   "admin": {
     "users": {

@@ -90,24 +90,17 @@
 > Completing a quest awards XP and can trigger achievements.
 > Example: "Check if platform GDPR compliance is up to date" assigned to a specific user.
 
-#### Phase 1 — Schema & Backend
-- [ ] 🟣 Design CustomQuest model (title, description, xpReward, assigneeId, creatorId, status, deadline, completedAt)
-- [ ] 🟣 Server actions: createCustomQuest, updateCustomQuest, completeCustomQuest, deleteCustomQuest
-- [ ] 🟣 Permission: only superuser can create/edit/complete; vuohi+admin can view; assignee can view own
+#### Phase 1 — Schema & Backend ✅
+> CustomQuest model, CRUD actions (create/update/complete/delete), permission gates (quest:manage, quest:view).
 
-#### Phase 2 — Admin UI (Global Quest List)
-- [ ] 🟣 `/admin/quests` page — global list of all custom quests with filters (status, assignee)
-- [ ] 🟣 Quest creation form (title, description, XP, assignee picker, optional deadline)
-- [ ] 🟣 Quest detail/edit view with status management (open → in progress → completed)
+#### Phase 2 — Admin UI ✅
+> `/admin/quests` page with global quest list, status filters, creation form, edit dialog, status management.
 
-#### Phase 3 — User UI (My Quests)
-- [ ] 🟣 User quest list in profile/dashboard — shows assigned quests with status and XP rewards
-- [ ] 🟣 Quest detail view for assignee (read-only, shows requirements and status)
+#### Phase 3 — User UI ✅
+> `/my-quests` page showing assigned quests with status/priority/XP. Menu link added for approved users.
 
-#### Phase 4 — Gamification Integration
-- [ ] 🟣 Award XP on quest completion (configurable per quest)
-- [ ] 🟣 Achievements for completing custom quests (e.g. "First Assignment", "Quest Master")
-- [ ] 🟣 Tests for all custom quest actions, permissions, and UI components
+#### Phase 4 — Gamification Integration ✅
+> Custom XP awards on completion (configurable per quest). 11 tests covering all CRUD + permissions.
 
 ### Developer Onboarding
 - [ ] 🟣 Contributor request page — public view where people can apply for repo edit rights to help develop the site

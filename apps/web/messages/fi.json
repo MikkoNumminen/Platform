@@ -48,13 +48,15 @@
   },
   "userMenu": {
     "manageUsers": "Hallinnoi käyttäjiä",
+    "questBoard": "Tehtävätaulu",
     "surveyResults": "Kyselyn tulokset",
     "feedback": "Palaute",
     "issues": "Ongelmat",
     "vuohiliittoDashboard": "Vuohiliitto-hallintapaneeli",
     "quests": "Tehtävät",
     "achievements": "Saavutukset",
-    "leaderboard": "Tulostaulukko"
+    "leaderboard": "Tulostaulukko",
+    "myQuests": "Omat tehtävät"
   },
   "admin": {
     "users": {
