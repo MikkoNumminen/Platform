@@ -85,6 +85,9 @@
 ### Developer Onboarding
 - [ ] 🟣 Contributor request page — public view where people can apply for repo edit rights to help develop the site
 
+### Backlog — Ideas
+- [ ] 🟣 Evaluate custom username/password login (in addition to OAuth providers)
+
 ### Community Features — Backlog (hidden from UI)
 > Forums and Calendar deprioritized. Boards still active for evaluation.
 
