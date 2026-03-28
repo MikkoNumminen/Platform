@@ -44,7 +44,7 @@ describe("createShout", () => {
     const result = await createShout("Hello world!");
     expect(result).toBeUndefined();
     expect(mockCreate).toHaveBeenCalledWith({
-      data: { message: "Hello world!", authorId: "user-1" },
+      data: { message: "Hello world!", authorId: "user-1", sessionId: null },
     });
   });
 
@@ -52,7 +52,7 @@ describe("createShout", () => {
     mockAuth.mockResolvedValue(authenticatedSession());
     await createShout("  trimmed  ");
     expect(mockCreate).toHaveBeenCalledWith({
-      data: { message: "trimmed", authorId: "user-1" },
+      data: { message: "trimmed", authorId: "user-1", sessionId: null },
     });
   });
 

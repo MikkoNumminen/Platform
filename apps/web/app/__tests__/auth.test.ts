@@ -22,6 +22,11 @@ jest.mock("next-auth/providers/github", () => ({
   default: { id: "github", name: "GitHub", type: "oauth" },
 }));
 
+jest.mock("next-auth/providers/credentials", () => ({
+  __esModule: true,
+  default: jest.fn(() => ({ id: "demo", name: "Demo", type: "credentials" })),
+}));
+
 jest.mock("@/lib/demo-session", () => ({
   getDemoSessionId: jest.fn().mockResolvedValue(null),
 }));
