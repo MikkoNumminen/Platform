@@ -76,7 +76,7 @@ describe("IssuesPage", () => {
     mockGetIssueReports.mockResolvedValue([]);
     const page = await IssuesPage();
     render(page);
-    expect(screen.getByText("Issue Reports")).toBeInTheDocument();
+    expect(screen.getByText("Issues")).toBeInTheDocument();
   });
 
   test("renders issue list with open and resolved counts", async () => {

@@ -49,10 +49,8 @@
   "userMenu": {
     "manageUsers": "Hallinnoi käyttäjiä",
     "surveyResults": "Kyselyn tulokset",
-    "feedbackSurvey": "Palaute ja kysely",
-    "redoSurvey": "Vastaa uudelleen",
-    "issueTracker": "Ongelmaseuranta",
-    "reportIssue": "Ilmoita ongelma",
+    "feedback": "Palaute",
+    "issues": "Ongelmat",
     "vuohiliittoDashboard": "Vuohiliitto-hallintapaneeli",
     "quests": "Tehtävät",
     "achievements": "Saavutukset",

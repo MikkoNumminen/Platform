@@ -14,17 +14,13 @@ import {
   Typography,
 } from "@mui/material";
 import FeedbackIcon from "@mui/icons-material/Feedback";
-import ReplayIcon from "@mui/icons-material/Replay";
 import BugReportIcon from "@mui/icons-material/BugReport";
-import ListAltIcon from "@mui/icons-material/ListAlt";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { colors } from "../styles";
-import { LOCALSTORAGE_KEY } from "@/lib/survey-config";
 
 function getInitials(name?: string | null): string {
   if (!name) return "?";
@@ -39,7 +35,6 @@ function getInitials(name?: string | null): string {
 export default function UserMenu() {
   const { data: session } = useSession();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const router = useRouter();
   const t = useTranslations("common");
   const tm = useTranslations("userMenu");
 
@@ -157,33 +152,13 @@ export default function UserMenu() {
           <ListItemIcon>
             <FeedbackIcon fontSize="small" />
           </ListItemIcon>
-          {tm("feedbackSurvey")}
+          {tm("feedback")}
         </MenuItem>
-        <MenuItem
-          onClick={() => {
-            localStorage.removeItem(LOCALSTORAGE_KEY);
-            setAnchorEl(null);
-            router.push("/survey");
-          }}
-        >
-          <ListItemIcon>
-            <ReplayIcon fontSize="small" />
-          </ListItemIcon>
-          {tm("redoSurvey")}
-        </MenuItem>
-        {isApproved && (
-          <MenuItem data-tutorial="nav-issues" component={Link} href="/issues">
-            <ListItemIcon>
-              <ListAltIcon fontSize="small" />
-            </ListItemIcon>
-            {tm("issueTracker")}
-          </MenuItem>
-        )}
-        <MenuItem data-tutorial="nav-report-issue" component={Link} href="/report-issue">
+        <MenuItem data-tutorial="nav-issues" component={Link} href="/issues">
           <ListItemIcon>
             <BugReportIcon fontSize="small" />
           </ListItemIcon>
-          {tm("reportIssue")}
+          {tm("issues")}
         </MenuItem>
         <Divider />
         <MenuItem onClick={() => signOut()}>{t("signOut")}</MenuItem>

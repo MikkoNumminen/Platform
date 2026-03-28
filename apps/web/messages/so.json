@@ -49,10 +49,8 @@
   "userMenu": {
     "manageUsers": "Maamul isticmaalayaasha",
     "surveyResults": "Natiijooyinka xog-uruurinta",
-    "feedbackSurvey": "Jawaab celin & xog-ururin",
-    "redoSurvey": "Dib u buuxi",
-    "issueTracker": "Raadraaca dhibaatooyinka",
-    "reportIssue": "Soo sheeg dhibaato",
+    "feedback": "Jawaab celin",
+    "issues": "Dhibaatooyinka",
     "vuohiliittoDashboard": "Vuohiliitto Dashboard",
     "quests": "Hawlgallada",
     "achievements": "Guulaha",

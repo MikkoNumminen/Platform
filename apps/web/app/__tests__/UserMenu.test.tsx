@@ -136,23 +136,6 @@ describe("UserMenu", () => {
       expect(surveyLink).toHaveAttribute("href", "/admin/survey-results");
     });
 
-    test("shows Redo Survey menu item", async () => {
-      const user = userEvent.setup();
-      render(<UserMenu />);
-      await user.click(screen.getByRole("button"));
-      expect(screen.getByRole("menuitem", { name: /redo survey/i })).toBeInTheDocument();
-    });
-
-    test("Redo Survey clears localStorage and navigates to /survey", async () => {
-      localStorage.setItem("platform_survey_submitted", "true");
-      const user = userEvent.setup();
-      render(<UserMenu />);
-      await user.click(screen.getByRole("button"));
-      await user.click(screen.getByRole("menuitem", { name: /redo survey/i }));
-      expect(localStorage.getItem("platform_survey_submitted")).toBeNull();
-      expect(mockPush).toHaveBeenCalledWith("/survey");
-    });
-
     test("calls signOut when Sign Out is clicked", async () => {
       const user = userEvent.setup();
       render(<UserMenu />);

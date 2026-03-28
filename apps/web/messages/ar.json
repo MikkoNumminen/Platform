@@ -49,10 +49,8 @@
   "userMenu": {
     "manageUsers": "إدارة المستخدمين",
     "surveyResults": "نتائج الاستبيان",
-    "feedbackSurvey": "الملاحظات والاستبيان",
-    "redoSurvey": "إعادة الاستبيان",
-    "issueTracker": "تتبع المشكلات",
-    "reportIssue": "الإبلاغ عن مشكلة",
+    "feedback": "الملاحظات",
+    "issues": "المشكلات",
     "vuohiliittoDashboard": "لوحة تحكم فوهيليتو",
     "quests": "المهام",
     "achievements": "الإنجازات",

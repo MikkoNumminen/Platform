@@ -49,10 +49,8 @@
   "userMenu": {
     "manageUsers": "Manage Users",
     "surveyResults": "Survey Results",
-    "feedbackSurvey": "Feedback & Survey",
-    "redoSurvey": "Redo Survey",
-    "issueTracker": "Issue Tracker",
-    "reportIssue": "Report Issue",
+    "feedback": "Feedback",
+    "issues": "Issues",
     "vuohiliittoDashboard": "Vuohiliitto Dashboard",
     "quests": "Quests",
     "achievements": "Achievements",
