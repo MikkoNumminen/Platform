@@ -44,8 +44,8 @@ describe("ManageGamificationPage", () => {
     jest.clearAllMocks();
   });
 
-  test("redirects when user lacks admin:users permission", async () => {
-    mockAuth.mockResolvedValue({ user: { permissions: {} } });
+  test("redirects when user is admin (not vuohi/superuser)", async () => {
+    mockAuth.mockResolvedValue({ user: { role: "admin", permissions: { "admin:users": true } } });
     await expect(ManageGamificationPage()).rejects.toThrow("REDIRECT:/");
   });
 
@@ -54,8 +54,15 @@ describe("ManageGamificationPage", () => {
     await expect(ManageGamificationPage()).rejects.toThrow("REDIRECT:/");
   });
 
-  test("renders ManageGamification with data", async () => {
-    mockAuth.mockResolvedValue({ user: { permissions: { "admin:users": true } } });
+  test("redirects when user is regular user", async () => {
+    mockAuth.mockResolvedValue({ user: { role: "user", permissions: {} } });
+    await expect(ManageGamificationPage()).rejects.toThrow("REDIRECT:/");
+  });
+
+  test("renders ManageGamification with data for superuser", async () => {
+    mockAuth.mockResolvedValue({
+      user: { role: "superuser", permissions: { "admin:users": true } },
+    });
     mockAchievementFindMany.mockResolvedValue([
       { id: "a1", key: "first-post", criteria: { action: "post:create" } },
       { id: "a2", key: "explorer", criteria: { action: "login" } },
@@ -69,8 +76,8 @@ describe("ManageGamificationPage", () => {
     expect(screen.getByText(/quests:1/)).toBeInTheDocument();
   });
 
-  test("renders empty state when no data", async () => {
-    mockAuth.mockResolvedValue({ user: { permissions: { "admin:users": true } } });
+  test("renders ManageGamification for vuohi", async () => {
+    mockAuth.mockResolvedValue({ user: { role: "vuohi", permissions: { "admin:users": true } } });
     mockAchievementFindMany.mockResolvedValue([]);
     mockQuestFindMany.mockResolvedValue([]);
     const page = await ManageGamificationPage();

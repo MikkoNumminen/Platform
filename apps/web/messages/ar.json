@@ -51,7 +51,7 @@
     "redoSurvey": "إعادة الاستبيان",
     "issueTracker": "تتبع المشكلات",
     "reportIssue": "الإبلاغ عن مشكلة",
-    "gamificationDashboard": "إحصائيات التلعيب",
+    "vuohiliittoDashboard": "لوحة تحكم فوهيليتو",
     "quests": "المهام",
     "achievements": "الإنجازات",
     "leaderboard": "لوحة المتصدرين"
@@ -113,7 +113,7 @@
     "step_check_leaderboard": "تحقق من لوحة المتصدرين",
     "step_create_board": "أنشئ منتدى",
     "step_view_survey_results": "عرض نتائج الاستبيان",
-    "step_view_gamification_dashboard": "عرض إحصائيات التلعيب",
+    "step_view_gamification_dashboard": "عرض لوحة تحكم فوهيليتو",
     "step_resolve_issue": "حل مشكلة",
     "step_manage_users": "افتح إدارة المستخدمين",
     "step_approve_user": "وافق على مستخدم معلق",

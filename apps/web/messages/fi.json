@@ -51,7 +51,7 @@
     "redoSurvey": "Vastaa uudelleen",
     "issueTracker": "Ongelmaseuranta",
     "reportIssue": "Ilmoita ongelma",
-    "gamificationDashboard": "Pelillistämistilastot",
+    "vuohiliittoDashboard": "Vuohiliitto-hallintapaneeli",
     "quests": "Tehtävät",
     "achievements": "Saavutukset",
     "leaderboard": "Tulostaulukko"
@@ -113,7 +113,7 @@
     "step_check_leaderboard": "Katso tulostaulu",
     "step_create_board": "Luo keskustelualue",
     "step_view_survey_results": "Katso kyselytulokset",
-    "step_view_gamification_dashboard": "Katso pelillistämistilastot",
+    "step_view_gamification_dashboard": "Avaa Vuohiliitto-hallintapaneeli",
     "step_resolve_issue": "Ratkaise ongelma",
     "step_manage_users": "Avaa käyttäjähallinta",
     "step_approve_user": "Hyväksy odottava käyttäjä",

@@ -51,7 +51,7 @@
     "redoSurvey": "Redo Survey",
     "issueTracker": "Issue Tracker",
     "reportIssue": "Report Issue",
-    "gamificationDashboard": "Gamification Stats",
+    "vuohiliittoDashboard": "Vuohiliitto Dashboard",
     "quests": "Quests",
     "achievements": "Achievements",
     "leaderboard": "Leaderboard"
@@ -113,7 +113,7 @@
     "step_check_leaderboard": "Check the leaderboard",
     "step_create_board": "Create a board",
     "step_view_survey_results": "View survey results",
-    "step_view_gamification_dashboard": "View gamification stats",
+    "step_view_gamification_dashboard": "View Vuohiliitto dashboard",
     "step_resolve_issue": "Resolve an issue",
     "step_manage_users": "Open user management",
     "step_approve_user": "Approve a pending user",

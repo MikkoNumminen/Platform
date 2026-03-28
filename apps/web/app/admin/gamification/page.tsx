@@ -17,10 +17,12 @@ import { colors } from "../../styles";
 
 export const dynamic = "force-dynamic";
 
+const ALLOWED_ROLES = ["superuser", "vuohi"];
+
 export default async function GamificationDashboardPage() {
   const session = await auth();
-  const permissions = (session?.user?.permissions as Record<string, boolean>) ?? {};
-  if (!permissions["admin:users"]) {
+  const role = (session?.user as { role?: string })?.role;
+  if (!role || !ALLOWED_ROLES.includes(role)) {
     redirect("/");
   }
 
@@ -28,7 +30,7 @@ export default async function GamificationDashboardPage() {
 
   return (
     <>
-      <TopBar title="Gamification Dashboard" backHref="/" />
+      <TopBar title="Vuohiliitto Dashboard" backHref="/" />
       <Box
         data-tutorial="gamification-dashboard"
         sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 }, py: 2 }}

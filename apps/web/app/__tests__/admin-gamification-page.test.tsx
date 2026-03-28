@@ -59,23 +59,45 @@ describe("GamificationDashboardPage", () => {
     jest.clearAllMocks();
   });
 
-  test("redirects when user lacks admin:users permission", async () => {
-    mockAuth.mockResolvedValue({ user: { permissions: {} } });
+  test("redirects when user lacks required role", async () => {
+    mockAuth.mockResolvedValue({ user: { role: "admin", permissions: { "admin:users": true } } });
     await expect(GamificationDashboardPage()).rejects.toThrow("REDIRECT:/");
   });
 
-  test("renders dashboard with stats", async () => {
-    mockAuth.mockResolvedValue({ user: { permissions: { "admin:users": true } } });
+  test("redirects when user is a regular user", async () => {
+    mockAuth.mockResolvedValue({ user: { role: "user", permissions: {} } });
+    await expect(GamificationDashboardPage()).rejects.toThrow("REDIRECT:/");
+  });
+
+  test("redirects when no session", async () => {
+    mockAuth.mockResolvedValue(null);
+    await expect(GamificationDashboardPage()).rejects.toThrow("REDIRECT:/");
+  });
+
+  test("renders dashboard for superuser", async () => {
+    mockAuth.mockResolvedValue({
+      user: { role: "superuser", permissions: { "admin:users": true } },
+    });
     mockGetGamificationStats.mockResolvedValue(mockStats);
     const page = await GamificationDashboardPage();
     render(page);
-    expect(screen.getByTestId("topbar")).toHaveTextContent("Gamification Dashboard");
+    expect(screen.getByTestId("topbar")).toHaveTextContent("Vuohiliitto Dashboard");
     expect(screen.getByText("10")).toBeInTheDocument(); // Active Players
     expect(screen.getByText("5,000")).toBeInTheDocument(); // Total XP
   });
 
+  test("renders dashboard for vuohi", async () => {
+    mockAuth.mockResolvedValue({ user: { role: "vuohi", permissions: { "admin:users": true } } });
+    mockGetGamificationStats.mockResolvedValue(mockStats);
+    const page = await GamificationDashboardPage();
+    render(page);
+    expect(screen.getByTestId("topbar")).toHaveTextContent("Vuohiliitto Dashboard");
+  });
+
   test("renders manage link", async () => {
-    mockAuth.mockResolvedValue({ user: { permissions: { "admin:users": true } } });
+    mockAuth.mockResolvedValue({
+      user: { role: "superuser", permissions: { "admin:users": true } },
+    });
     mockGetGamificationStats.mockResolvedValue(mockStats);
     const page = await GamificationDashboardPage();
     render(page);
@@ -83,7 +105,9 @@ describe("GamificationDashboardPage", () => {
   });
 
   test("renders level distribution", async () => {
-    mockAuth.mockResolvedValue({ user: { permissions: { "admin:users": true } } });
+    mockAuth.mockResolvedValue({
+      user: { role: "superuser", permissions: { "admin:users": true } },
+    });
     mockGetGamificationStats.mockResolvedValue(mockStats);
     const page = await GamificationDashboardPage();
     render(page);
@@ -92,7 +116,9 @@ describe("GamificationDashboardPage", () => {
   });
 
   test("renders top achievements", async () => {
-    mockAuth.mockResolvedValue({ user: { permissions: { "admin:users": true } } });
+    mockAuth.mockResolvedValue({
+      user: { role: "superuser", permissions: { "admin:users": true } },
+    });
     mockGetGamificationStats.mockResolvedValue(mockStats);
     const page = await GamificationDashboardPage();
     render(page);
@@ -101,7 +127,9 @@ describe("GamificationDashboardPage", () => {
   });
 
   test("renders recent activity", async () => {
-    mockAuth.mockResolvedValue({ user: { permissions: { "admin:users": true } } });
+    mockAuth.mockResolvedValue({
+      user: { role: "superuser", permissions: { "admin:users": true } },
+    });
     mockGetGamificationStats.mockResolvedValue(mockStats);
     const page = await GamificationDashboardPage();
     render(page);

@@ -51,7 +51,7 @@
     "redoSurvey": "Dib u buuxi",
     "issueTracker": "Raadraaca dhibaatooyinka",
     "reportIssue": "Soo sheeg dhibaato",
-    "gamificationDashboard": "Xogaynta Tirakoobka",
+    "vuohiliittoDashboard": "Vuohiliitto Dashboard",
     "quests": "Hawlgallada",
     "achievements": "Guulaha",
     "leaderboard": "Miisaanka Hogaamiyaha"
@@ -113,7 +113,7 @@
     "step_check_leaderboard": "Fiiri natiijada",
     "step_create_board": "Samee guddi",
     "step_view_survey_results": "Fiiri natiijooyinka sahanka",
-    "step_view_gamification_dashboard": "Fiiri xogta xogaynta",
+    "step_view_gamification_dashboard": "Fiiri Vuohiliitto dashboard-ka",
     "step_resolve_issue": "Xalli cilad",
     "step_manage_users": "Fur maamulka isticmaalayaasha",
     "step_approve_user": "Oggolow isticmaale sugaya",

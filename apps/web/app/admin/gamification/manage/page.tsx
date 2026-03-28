@@ -6,10 +6,12 @@ import ManageGamification from "./ManageGamification";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Manage Achievements & Quests" };
 
+const ALLOWED_ROLES = ["superuser", "vuohi"];
+
 export default async function ManageGamificationPage() {
   const session = await auth();
-  const permissions = (session?.user?.permissions as Record<string, boolean>) ?? {};
-  if (!permissions["admin:users"]) {
+  const role = (session?.user as { role?: string })?.role;
+  if (!role || !ALLOWED_ROLES.includes(role)) {
     redirect("/");
   }
 

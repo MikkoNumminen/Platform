@@ -78,6 +78,7 @@ export default function UserMenu() {
   const permissions = (user.permissions as Record<string, boolean>) ?? {};
   const canManageUsers = Boolean(permissions["admin:users"]);
   const canViewSurveyResults = Boolean(permissions["survey:results"]);
+  const isVuohiOrSuperuser = user.role === "superuser" || user.role === "vuohi";
   const isApproved = user.role !== "pending";
 
   return (
@@ -119,9 +120,9 @@ export default function UserMenu() {
             {tm("surveyResults")}
           </MenuItem>
         )}
-        {canManageUsers && (
+        {isVuohiOrSuperuser && (
           <MenuItem data-tutorial="nav-gamification" component={Link} href="/admin/gamification">
-            {tm("gamificationDashboard")}
+            {tm("vuohiliittoDashboard")}
           </MenuItem>
         )}
         {isApproved && <Divider />}
