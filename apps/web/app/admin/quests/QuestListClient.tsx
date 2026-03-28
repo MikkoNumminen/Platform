@@ -25,6 +25,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { colors } from "../../styles";
+import { DEVELOPMENT_SKILL_OPTIONS } from "@/lib/survey-config";
 import {
   createCustomQuest,
   updateCustomQuest,
@@ -45,6 +46,7 @@ interface SerializedQuest {
   xpReward: number;
   status: string;
   priority: string;
+  targetSkill: string | null;
   deadline: string | null;
   completedAt: string | null;
   createdAt: string;
@@ -250,6 +252,21 @@ function QuestCard({
                   }}
                 />
               )}
+              {quest.targetSkill && (
+                <Tooltip title="Skill match = 2x XP">
+                  <Chip
+                    label={quest.targetSkill}
+                    size="small"
+                    sx={{
+                      height: 20,
+                      fontSize: "0.6rem",
+                      backgroundColor: "rgba(34,211,238,0.12)",
+                      color: colors.info,
+                      border: `1px solid ${colors.info}`,
+                    }}
+                  />
+                </Tooltip>
+              )}
             </Box>
             <Typography variant="body2" sx={{ color: colors.slate400, mb: 0.5 }}>
               {quest.description}
@@ -338,6 +355,7 @@ function QuestFormDialog({
   const [assigneeId, setAssigneeId] = useState(quest?.assignee.id ?? "");
   const [priority, setPriority] = useState(quest?.priority ?? "normal");
   const [status, setStatus] = useState(quest?.status ?? "open");
+  const [targetSkill, setTargetSkill] = useState(quest?.targetSkill ?? "");
   const [deadline, setDeadline] = useState(quest?.deadline ? quest.deadline.split("T")[0] : "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -355,6 +373,7 @@ function QuestFormDialog({
         xpReward,
         priority,
         deadline || null,
+        targetSkill || null,
       );
     } else if (quest) {
       result = await updateCustomQuest(quest.id, {
@@ -365,6 +384,7 @@ function QuestFormDialog({
         priority,
         status,
         deadline: deadline || null,
+        targetSkill: targetSkill || null,
       });
     }
 
@@ -436,6 +456,21 @@ function QuestFormDialog({
               </Select>
             </FormControl>
           </Box>
+          <FormControl fullWidth>
+            <InputLabel>Target Skill (2x XP if assignee matches)</InputLabel>
+            <Select
+              value={targetSkill}
+              onChange={(e) => setTargetSkill(e.target.value)}
+              label="Target Skill (2x XP if assignee matches)"
+            >
+              <MenuItem value="">None</MenuItem>
+              {DEVELOPMENT_SKILL_OPTIONS.map((skill) => (
+                <MenuItem key={skill} value={skill}>
+                  {skill}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           {mode === "edit" && (
             <FormControl fullWidth>
               <InputLabel>Status</InputLabel>
