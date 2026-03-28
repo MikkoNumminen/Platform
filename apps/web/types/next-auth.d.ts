@@ -7,6 +7,7 @@ declare module "next-auth" {
     role?: string;
     hasSeenPromotion?: boolean;
     permissions?: Record<string, boolean>;
+    demoSessionId?: string;
   }
 
   interface Session {
@@ -19,6 +20,7 @@ declare module "next-auth" {
       role?: string;
       hasSeenPromotion?: boolean;
       permissions?: Record<string, boolean>;
+      demoSessionId?: string;
     };
   }
 }
@@ -31,5 +33,6 @@ declare module "next-auth/jwt" {
     hasSeenPromotion?: boolean;
     permissionsVersion?: number;
     permissions?: Record<string, boolean>;
+    demoSessionId?: string;
   }
 }
