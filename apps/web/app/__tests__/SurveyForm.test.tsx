@@ -39,7 +39,7 @@ describe("SurveyForm", () => {
 
   test("renders progress indicator", () => {
     render(<SurveyForm />);
-    expect(screen.getByText("Question 1 of 5")).toBeInTheDocument();
+    expect(screen.getByText("Question 1 of 6")).toBeInTheDocument();
   });
 
   test("shows Back and Next buttons", () => {
@@ -65,7 +65,7 @@ describe("SurveyForm", () => {
     render(<SurveyForm />);
     await user.click(screen.getByLabelText("Real-time threads (Slack/Discord style)"));
     await user.click(screen.getByRole("button", { name: /next/i }));
-    expect(screen.getByText("Question 2 of 5")).toBeInTheDocument();
+    expect(screen.getByText("Question 2 of 6")).toBeInTheDocument();
   });
 
   test("can navigate back to previous step", async () => {
@@ -74,7 +74,7 @@ describe("SurveyForm", () => {
     await user.click(screen.getByLabelText("Real-time threads (Slack/Discord style)"));
     await user.click(screen.getByRole("button", { name: /next/i }));
     await user.click(screen.getByRole("button", { name: /back/i }));
-    expect(screen.getByText("Question 1 of 5")).toBeInTheDocument();
+    expect(screen.getByText("Question 1 of 6")).toBeInTheDocument();
   });
 
   test("shows thank-you screen when already submitted", () => {

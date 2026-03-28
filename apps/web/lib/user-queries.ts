@@ -51,6 +51,9 @@ export async function getUserById(id: string) {
       alias: true,
       image: true,
       role: true,
+      wantsToDevelop: true,
+      developerTag: true,
+      developmentSkills: true,
       createdAt: true,
     },
   });

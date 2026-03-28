@@ -46,6 +46,12 @@ jest.mock("@/app/admin/users/ApproveButton", () => {
   };
 });
 
+jest.mock("@/app/admin/users/DeveloperTagSelect", () => {
+  return function MockDeveloperTagSelect() {
+    return <span data-testid="dev-tag-select" />;
+  };
+});
+
 jest.mock("@/app/admin/users/UserPermissionEditor", () => {
   return function MockUserPermissionEditor({
     userId,

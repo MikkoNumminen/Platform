@@ -40,9 +40,13 @@ model User {
   questProgress      UserQuestProgress[]
   loginStreak        LoginStreak?
   tourProgress       UserTourProgress[]
+  demoSessions       DemoSession[]
+
+  sessionId      String?
 
   @@index([deletedAt])
   @@index([email])
+  @@index([sessionId])
 }
 
 // ─── Permissions ──────────────────────────────────────────────────────────────
@@ -76,6 +80,7 @@ model Board {
   slug        String    @unique
   description String?
   sortOrder   Int       @default(0)
+  sessionId   String?
   deletedAt   DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -84,6 +89,7 @@ model Board {
 
   @@index([deletedAt])
   @@index([sortOrder])
+  @@index([sessionId])
 }
 
 model Post {
@@ -94,6 +100,7 @@ model Post {
   pinned    Boolean   @default(false)
   authorId  String
   boardId   String
+  sessionId String?
   deletedAt DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -107,6 +114,7 @@ model Post {
   @@index([boardId])
   @@index([pinned])
   @@index([createdAt])
+  @@index([sessionId])
 }
 
 // ─── Forum System ────────────────────────────────────────────────────────────
@@ -117,6 +125,7 @@ model Forum {
   slug        String    @unique
   description String?
   sortOrder   Int       @default(0)
+  sessionId   String?
   deletedAt   DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -125,6 +134,7 @@ model Forum {
 
   @@index([deletedAt])
   @@index([sortOrder])
+  @@index([sessionId])
 }
 
 model Topic {
@@ -136,6 +146,7 @@ model Topic {
   locked    Boolean   @default(false)
   authorId  String
   forumId   String
+  sessionId String?
   deletedAt DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -149,6 +160,7 @@ model Topic {
   @@index([forumId])
   @@index([pinned])
   @@index([createdAt])
+  @@index([sessionId])
 }
 
 // ─── Unified Thread/Reply System ─────────────────────────────────────────────
@@ -165,6 +177,7 @@ model Thread {
   parentId   String
   authorId   String
   replyToId  String?
+  sessionId  String?
   deletedAt  DateTime?
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
@@ -178,6 +191,7 @@ model Thread {
   @@index([authorId])
   @@index([replyToId])
   @@index([createdAt])
+  @@index([sessionId])
 }
 
 // ─── Calendar System ─────────────────────────────────────────────────────────
@@ -191,6 +205,7 @@ model CalendarEvent {
   endTime     DateTime
   allDay      Boolean   @default(false)
   authorId    String?
+  sessionId   String?
   deletedAt   DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -200,6 +215,7 @@ model CalendarEvent {
   @@index([deletedAt])
   @@index([authorId])
   @@index([startTime, endTime])
+  @@index([sessionId])
 }
 
 // ─── Shoutbox ───────────────────────────────────────────────────────────────
@@ -208,12 +224,14 @@ model Shout {
   id        String   @id @default(uuid())
   message   String
   authorId  String
+  sessionId String?
   createdAt DateTime @default(now())
 
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([createdAt])
   @@index([authorId])
+  @@index([sessionId])
 }
 
 // ─── Issue Reports ──────────────────────────────────────────────────────────
@@ -224,6 +242,7 @@ model IssueReport {
   description String
   url         String?
   authorId    String
+  sessionId   String?
   resolvedAt  DateTime?
   createdAt   DateTime  @default(now())
 
@@ -232,6 +251,7 @@ model IssueReport {
   @@index([createdAt])
   @@index([authorId])
   @@index([resolvedAt])
+  @@index([sessionId])
 }
 
 // ─── Rate Limiting ──────────────────────────────────────────────────────────
@@ -259,12 +279,14 @@ model SurveyResponse {
   wantsToDevelop    Boolean   @default(false)
   developmentSkills String[]  @default([])
   userId            String?
+  sessionId         String?
   submittedAt       DateTime @default(now())
 
   author User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([submittedAt])
   @@index([userId])
+  @@index([sessionId])
 }
 
 // ─── Gamification ──────────────────────────────────────────────────────────
@@ -275,6 +297,7 @@ model XpTransaction {
   amount    Int
   source    String
   sourceId  String?
+  sessionId String?
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -282,6 +305,7 @@ model XpTransaction {
   @@index([userId])
   @@index([createdAt])
   @@index([source])
+  @@index([sessionId])
 }
 
 model UserLevel {
@@ -289,9 +313,12 @@ model UserLevel {
   userId    String   @unique
   totalXp   Int      @default(0)
   level     Int      @default(1)
+  sessionId String?
   updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
 }
 
 model Achievement {
@@ -314,6 +341,7 @@ model UserAchievement {
   id            String   @id @default(uuid())
   userId        String
   achievementId String
+  sessionId     String?
   unlockedAt    DateTime @default(now())
 
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -321,6 +349,7 @@ model UserAchievement {
 
   @@unique([userId, achievementId])
   @@index([userId])
+  @@index([sessionId])
 }
 
 model Quest {
@@ -347,6 +376,7 @@ model UserQuestProgress {
   completed   Boolean   @default(false)
   completedAt DateTime?
   resetAt     DateTime?
+  sessionId   String?
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   quest Quest @relation(fields: [questId], references: [id], onDelete: Cascade)
@@ -354,6 +384,7 @@ model UserQuestProgress {
   @@unique([userId, questId])
   @@index([userId])
   @@index([completed])
+  @@index([sessionId])
 }
 
 model LoginStreak {
@@ -362,9 +393,25 @@ model LoginStreak {
   currentStreak Int      @default(0)
   longestStreak Int      @default(0)
   lastLoginDate DateTime
+  sessionId     String?
   updatedAt     DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+}
+
+// ─── Demo Mode ────────────────────────────────────────────────────────────
+
+model DemoSession {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  lastActiveAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([lastActiveAt])
 }
 
 // ─── Guided Tour ───────────────────────────────────────────────────────────
@@ -373,10 +420,12 @@ model UserTourProgress {
   id          String   @id @default(uuid())
   userId      String
   stepId      String
+  sessionId   String?
   completedAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, stepId])
   @@index([userId])
+  @@index([sessionId])
 }
