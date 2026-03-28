@@ -41,7 +41,7 @@
   },
   "shoutbox": {
     "title": "Shoutbox",
-    "placeholder": "Type a message...",
+    "placeholder": "Write a comment...",
     "empty": "No messages yet. Be the first!"
   },
   "userMenu": {

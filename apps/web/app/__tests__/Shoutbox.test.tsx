@@ -53,18 +53,18 @@ describe("Shoutbox", () => {
 
   test("renders input field for authenticated users", () => {
     render(<Shoutbox initialShouts={[]} />);
-    expect(screen.getByPlaceholderText("Type a message...")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Write a comment...")).toBeInTheDocument();
   });
 
   test("does not render input for unauthenticated users", () => {
     mockUseSession.mockReturnValue({ data: null, status: "unauthenticated" });
     render(<Shoutbox initialShouts={[]} />);
-    expect(screen.queryByPlaceholderText("Type a message...")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Write a comment...")).not.toBeInTheDocument();
   });
 
   test("submits a message", async () => {
     render(<Shoutbox initialShouts={[]} />);
-    const input = screen.getByPlaceholderText("Type a message...");
+    const input = screen.getByPlaceholderText("Write a comment...");
     fireEvent.change(input, { target: { value: "Test shout" } });
     fireEvent.submit(input);
 
@@ -75,7 +75,7 @@ describe("Shoutbox", () => {
 
   test("shows optimistic message immediately", async () => {
     render(<Shoutbox initialShouts={[]} />);
-    const input = screen.getByPlaceholderText("Type a message...");
+    const input = screen.getByPlaceholderText("Write a comment...");
     fireEvent.change(input, { target: { value: "Optimistic!" } });
     fireEvent.submit(input);
 

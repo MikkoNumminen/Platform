@@ -108,18 +108,11 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
   },
   {
     id: "write_comment",
-    route: /^\/boards\/[^/]+\/[^/]+$/,
-    targetSelector: '[data-tutorial="thread-composer"]',
-    event: "tutorial:comment_created",
+    route: "/",
+    targetSelector: '[data-tutorial="shoutbox-input"]',
+    event: "tutorial:write_comment",
     tier: 2,
     xpReward: 10,
-    navigationHints: [
-      {
-        fromRoute: /^\/boards\/[^/]+$/,
-        targetSelector: '[data-tutorial="post-link"]',
-        hintKey: "nav_click_post",
-      },
-    ],
   },
   {
     id: "check_quests",

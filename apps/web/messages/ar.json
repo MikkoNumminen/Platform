@@ -41,7 +41,7 @@
   },
   "shoutbox": {
     "title": "Shoutbox",
-    "placeholder": "اكتب رسالة...",
+    "placeholder": "اكتب تعليقاً...",
     "empty": "لا توجد رسائل بعد. كن الأول!"
   },
   "userMenu": {

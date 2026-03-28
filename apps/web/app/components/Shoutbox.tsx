@@ -58,7 +58,7 @@ export default function Shoutbox({ initialShouts }: ShoutboxProps) {
       setShouts((prev) => prev.filter((s) => s.id !== optimistic.id));
     } else {
       onAction();
-      emitTutorialEvent("send_shoutbox");
+      emitTutorialEvent("write_comment");
     }
     setSending(false);
   };

@@ -41,7 +41,7 @@
   },
   "shoutbox": {
     "title": "Shoutbox",
-    "placeholder": "Kirjoita viesti...",
+    "placeholder": "Kirjoita kommentti...",
     "empty": "Ei viestejä vielä. Ole ensimmäinen!"
   },
   "userMenu": {
