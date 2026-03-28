@@ -17,12 +17,23 @@ export const FEATURE_OPTIONS = [
   "Subgroups / topic channels",
 ] as const;
 
+export const DEVELOPMENT_SKILL_OPTIONS = [
+  "Coding (frontend)",
+  "Coding (backend)",
+  "UI/UX design",
+  "Graphic art / illustrations",
+  "Testing / QA",
+  "Writing / documentation",
+  "Ideas / product feedback",
+] as const;
+
 export interface SurveyData {
   conversationStyle: string;
   features: string[];
   mustHave: string;
   dealbreaker: string;
   otherFeedback: string;
+  developmentSkills: string[];
 }
 
 export interface ValidationErrors {

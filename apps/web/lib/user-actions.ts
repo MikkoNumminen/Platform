@@ -56,6 +56,30 @@ export const updateUserRole = guardedAction(
   },
 );
 
+export const setDeveloperTag = guardedAction(
+  "admin:users",
+  "admin:setDeveloperTag",
+  async (_session, userId: string, tag: string | null) => {
+    validateUUID(userId, "user ID");
+
+    if (tag !== null && !["developer", "lead"].includes(tag)) {
+      throw new ActionError("invalidInput", `Invalid developer tag: ${tag}`);
+    }
+
+    const user = await prisma.user.findFirst({
+      where: { id: userId, deletedAt: null },
+    });
+    if (!user) {
+      throw new ActionError("notFound", "User not found");
+    }
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { developerTag: tag },
+    });
+  },
+);
+
 export async function fetchUserPermissionOverrides(
   userId: string,
 ): Promise<Array<{ key: string; granted: boolean }>> {

@@ -22,6 +22,7 @@ import { colors } from "../../styles";
 import UserRoleSelect from "./UserRoleSelect";
 import ApproveButton from "./ApproveButton";
 import UserPermissionEditor from "./UserPermissionEditor";
+import DeveloperTagSelect from "./DeveloperTagSelect";
 
 export default async function AdminUsersPage() {
   const session = await auth();
@@ -52,6 +53,9 @@ export default async function AdminUsersPage() {
                 </TableCell>
                 <TableCell sx={{ color: colors.slate400, borderColor: colors.slate300 }}>
                   Role
+                </TableCell>
+                <TableCell sx={{ color: colors.slate400, borderColor: colors.slate300 }}>
+                  Dev
                 </TableCell>
                 <TableCell sx={{ color: colors.slate400, borderColor: colors.slate300 }}>
                   Joined
@@ -112,13 +116,21 @@ export default async function AdminUsersPage() {
                       </Box>
                     </TableCell>
                     <TableCell sx={{ borderColor: colors.slate300 }}>
+                      <DeveloperTagSelect
+                        userId={user.id}
+                        currentTag={user.developerTag}
+                        skills={user.developmentSkills}
+                        wantsToDevelop={user.wantsToDevelop}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ borderColor: colors.slate300 }}>
                       <Typography variant="body2" sx={{ color: colors.slate400 }}>
                         {user.createdAt.toLocaleDateString()}
                       </Typography>
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell colSpan={4} sx={{ borderColor: colors.slate300, py: 0, px: 2 }}>
+                    <TableCell colSpan={5} sx={{ borderColor: colors.slate300, py: 0, px: 2 }}>
                       <UserPermissionEditor
                         userId={user.id}
                         userRole={user.role}

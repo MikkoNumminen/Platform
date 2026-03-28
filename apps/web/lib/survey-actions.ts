@@ -25,11 +25,22 @@ export async function submitSurvey(data: SurveyData): Promise<ActionResult> {
         mustHave: data.mustHave.trim(),
         dealbreaker: data.dealbreaker?.trim() || null,
         otherFeedback: data.otherFeedback?.trim() || null,
+        wantsToDevelop: (data.developmentSkills ?? []).length > 0,
+        developmentSkills: data.developmentSkills ?? [],
         userId,
       },
     });
 
+    // Also save skills to user profile if authenticated
     if (userId) {
+      const skills = data.developmentSkills ?? [];
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          wantsToDevelop: skills.length > 0,
+          developmentSkills: skills,
+        },
+      });
       await triggerGamification(userId, "survey:complete");
     }
   });

@@ -12,13 +12,14 @@ import { emitTutorialEvent } from "@/app/components/TutorialProvider";
 import {
   CONVERSATION_STYLES,
   FEATURE_OPTIONS,
+  DEVELOPMENT_SKILL_OPTIONS,
   LOCALSTORAGE_KEY,
   validateSurveyData,
   type SurveyData,
   type ValidationErrors,
 } from "@/lib/survey-config";
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 export default function SurveyForm() {
   const [step, setStep] = useState(0);
@@ -32,6 +33,7 @@ export default function SurveyForm() {
     mustHave: "",
     dealbreaker: "",
     otherFeedback: "",
+    developmentSkills: [],
   });
 
   useEffect(() => {
@@ -72,6 +74,7 @@ export default function SurveyForm() {
           newErrors.otherFeedback = "Maximum 500 characters";
         }
         break;
+      // Step 5 (development skills) is optional — no validation needed
     }
 
     setErrors(newErrors);
@@ -178,6 +181,15 @@ export default function SurveyForm() {
             onChange={(v) => setData({ ...data, otherFeedback: v })}
             error={errors.otherFeedback}
             maxLength={500}
+          />
+        )}
+
+        {step === 5 && (
+          <MultiSelect
+            label="Want to help build this site? Pick your skills (optional)"
+            options={DEVELOPMENT_SKILL_OPTIONS}
+            value={data.developmentSkills}
+            onChange={(v) => setData({ ...data, developmentSkills: v })}
           />
         )}
       </Box>
