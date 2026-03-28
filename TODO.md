@@ -20,14 +20,12 @@
 
 #### 🟢 Improvement (backlog)
 - [ ] 🔵 [TESTING] test-animation page — low priority demo page
-- [ ] 🟣 [TESTING] Add integration tests for multi-step workflows (signup → approval, board → post → thread)
-- [ ] 🟣 [TESTING] Set up Playwright E2E testing for critical user journeys
 
 ### Audit Summary
 > - **Total findings:** 35 (5 resolved critical + 6 new important + 11 improvement + 13 test gaps)
 > - **Security:** 10 | **Quality:** 12 | **Testing:** 13
 > - **False positives removed:** 4 (env.local not in git, role hierarchy correct, CRON_SECRET rejects unauth, middleware callbackUrl is NOT an open redirect — matcher only hits /admin/*)
-> - **Overall grade: A-** — All critical/important fixes done. 936 tests across 122 suites. CSP hardened (unsafe-inline removed from production script-src). Remaining: backlog-grade only.
+> - **Overall grade: A-** — All critical/important fixes done. 969 tests across 124 suites. CSP hardened (unsafe-inline removed from production script-src). Playwright E2E framework ready. Remaining: backlog-grade only.
 
 ### UX Fixes
 > "Feedback & Survey" removed from UserMenu (done by Claude 2).
