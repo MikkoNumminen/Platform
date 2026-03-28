@@ -82,6 +82,23 @@
       "noResponses": "No responses"
     }
   },
+  "feedback": {
+    "createRound": "Create New Round",
+    "closeRound": "Close Round",
+    "takeSurvey": "Take Survey",
+    "initialSurvey": "Initial Survey",
+    "responses": "{count} responses",
+    "xpReward": "{xp} XP",
+    "roundNumber": "Round {number}",
+    "noRounds": "No survey rounds yet.",
+    "active": "Active",
+    "closed": "Closed",
+    "roundTitle": "Round title",
+    "roundDescription": "Description (optional)",
+    "assignAsQuest": "Assign as quest with XP",
+    "createRoundButton": "Create Round",
+    "closeConfirm": "Are you sure you want to close this round?"
+  },
   "auth": {
     "signInTitle": "Sign In",
     "signInGoogle": "Sign in with Google",

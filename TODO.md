@@ -102,6 +102,17 @@
 #### Phase 4 — Gamification Integration ✅
 > Custom XP awards on completion (configurable per quest). 11 tests covering all CRUD + permissions.
 
+### Skill-Targeted Quests — Double XP for Matching Skills
+> Custom quests can target a development skill (coder, artist, etc.).
+> When a quest is assigned to a user whose profile matches that skill, they earn double XP on completion.
+> The quest creation form in /admin/quests gets a skill selector dropdown.
+
+- [ ] 🟣 Add skill field to CustomQuest model + migration — Claude 1
+- [ ] 🟣 Update quest creation/edit form with skill selector (from DEVELOPMENT_SKILL_OPTIONS) — Claude 1
+- [ ] 🟣 Double XP logic: on quest completion, check if user's developmentSkills includes the quest's skill — Claude 1
+- [ ] 🟣 Show skill badge on quest cards in /admin/quests and /my-quests — Claude 1
+- [ ] 🔵 Tests for skill-targeted quest flow — Claude 1
+
 ### Developer Onboarding
 - [ ] 🟣 Contributor request page — public view where people can apply for repo edit rights to help develop the site
 

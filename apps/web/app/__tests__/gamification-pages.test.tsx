@@ -10,6 +10,10 @@ jest.mock("@/auth", () => ({
   auth: () => mockAuth(),
 }));
 
+jest.mock("@/lib/custom-quest-queries", () => ({
+  getMyCustomQuests: jest.fn().mockResolvedValue([]),
+}));
+
 jest.mock("next/navigation", () => ({
   redirect: jest.fn((url: string) => {
     throw new Error(`REDIRECT:${url}`);

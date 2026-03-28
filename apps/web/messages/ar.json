@@ -82,6 +82,23 @@
       "noResponses": "لا توجد ردود"
     }
   },
+  "feedback": {
+    "createRound": "إنشاء جولة جديدة",
+    "closeRound": "إغلاق الجولة",
+    "takeSurvey": "أجب على الاستبيان",
+    "initialSurvey": "الاستبيان الأولي",
+    "responses": "{count} إجابات",
+    "xpReward": "{xp} XP",
+    "roundNumber": "الجولة {number}",
+    "noRounds": "لا توجد جولات استبيان بعد.",
+    "active": "نشطة",
+    "closed": "مغلقة",
+    "roundTitle": "عنوان الجولة",
+    "roundDescription": "الوصف (اختياري)",
+    "assignAsQuest": "تعيين كمهمة مع XP",
+    "createRoundButton": "إنشاء جولة",
+    "closeConfirm": "هل أنت متأكد أنك تريد إغلاق هذه الجولة؟"
+  },
   "auth": {
     "signInTitle": "تسجيل الدخول",
     "signInGoogle": "تسجيل الدخول بواسطة Google",

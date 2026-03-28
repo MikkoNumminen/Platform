@@ -82,6 +82,23 @@
       "noResponses": "Ei vastauksia"
     }
   },
+  "feedback": {
+    "createRound": "Luo uusi kierros",
+    "closeRound": "Sulje kierros",
+    "takeSurvey": "Vastaa kyselyyn",
+    "initialSurvey": "Alkukysely",
+    "responses": "{count} vastausta",
+    "xpReward": "{xp} XP",
+    "roundNumber": "Kierros {number}",
+    "noRounds": "Ei kyselykierroksia vielä.",
+    "active": "Aktiivinen",
+    "closed": "Suljettu",
+    "roundTitle": "Kierroksen otsikko",
+    "roundDescription": "Kuvaus (valinnainen)",
+    "assignAsQuest": "Aseta tehtäväksi XP-palkkiolla",
+    "createRoundButton": "Luo kierros",
+    "closeConfirm": "Haluatko varmasti sulkea tämän kierroksen?"
+  },
   "auth": {
     "signInTitle": "Kirjaudu sisään",
     "signInGoogle": "Kirjaudu Googlella",

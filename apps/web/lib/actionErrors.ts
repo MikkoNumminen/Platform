@@ -35,6 +35,11 @@ export type ErrorCode =
   | "questDescriptionRequired"
   | "questAlreadyCompleted"
   | "invalidQuestStatus"
+  // Survey Round
+  | "roundTitleRequired"
+  | "roundTitleTooLong"
+  | "roundAlreadyActive"
+  | "roundNotFound"
   // Alias
   | "invalidInput"
   | "conflict"

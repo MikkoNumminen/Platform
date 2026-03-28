@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { getDemoSessionId } from "./demo-session";
 
 export interface SurveyResultsData {
   totalResponses: number;
@@ -9,8 +10,14 @@ export interface SurveyResultsData {
   otherFeedbackResponses: Array<{ text: string; submittedAt: Date }>;
 }
 
-export async function getSurveyResults(): Promise<SurveyResultsData> {
+export async function getSurveyResults(roundId?: string | null): Promise<SurveyResultsData> {
+  const sessionId = await getDemoSessionId();
+  const where: Record<string, unknown> = { sessionId };
+  if (roundId !== undefined) {
+    where.roundId = roundId;
+  }
   const responses = await prisma.surveyResponse.findMany({
+    where,
     orderBy: { submittedAt: "desc" },
   });
 

@@ -82,6 +82,23 @@
       "noResponses": "Jawaab ma jirto"
     }
   },
+  "feedback": {
+    "createRound": "Samee wareeg cusub",
+    "closeRound": "Xir wareegga",
+    "takeSurvey": "Buuxi xog-uruurinta",
+    "initialSurvey": "Xog-uruurinta hore",
+    "responses": "{count} jawaabood",
+    "xpReward": "{xp} XP",
+    "roundNumber": "Wareeg {number}",
+    "noRounds": "Wali wareeg xog-ururin ma jiro.",
+    "active": "Firfircoon",
+    "closed": "La xiray",
+    "roundTitle": "Cinwaanka wareegga",
+    "roundDescription": "Sharaxaad (ikhtiyaari)",
+    "assignAsQuest": "U dhig hawlgal XP leh",
+    "createRoundButton": "Samee wareeg",
+    "closeConfirm": "Ma hubtaa inaad rabto inaad xirato wareeggan?"
+  },
   "auth": {
     "signInTitle": "Soo gal",
     "signInGoogle": "Ku soo gal Google",
