@@ -101,6 +101,16 @@ describe("createPost", () => {
     await createPost(boardId, "Title", "Body");
     expect(mockRevalidatePath).toHaveBeenCalledWith("/boards/general");
   });
+
+  test("accepts title at exactly 200 characters", async () => {
+    const result = await createPost(boardId, "a".repeat(200), "Body");
+    expect(result).toBeUndefined();
+  });
+
+  test("accepts body at exactly 10000 characters", async () => {
+    const result = await createPost(boardId, "Title", "a".repeat(10000));
+    expect(result).toBeUndefined();
+  });
 });
 
 describe("updatePost", () => {

@@ -155,6 +155,11 @@ describe("createThread", () => {
     await createThread("POST", parentId, "Hello");
     expect(mockRevalidatePath).not.toHaveBeenCalled();
   });
+
+  test("accepts body at exactly 5000 characters", async () => {
+    const result = await createThread("POST", parentId, "a".repeat(5000));
+    expect(result).toBeUndefined();
+  });
 });
 
 describe("deleteThread", () => {

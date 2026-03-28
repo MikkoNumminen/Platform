@@ -116,6 +116,11 @@ describe("createBoard", () => {
       }),
     );
   });
+
+  test("accepts name at exactly 100 characters", async () => {
+    const result = await createBoard("a".repeat(100));
+    expect(result).toBeUndefined();
+  });
 });
 
 describe("updateBoard", () => {

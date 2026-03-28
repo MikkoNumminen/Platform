@@ -215,6 +215,92 @@ describe("exportMyData", () => {
     }
   });
 
+  test("export includes all data categories", async () => {
+    mocks.auth.mockResolvedValue(authedSession());
+    mocks.postFindMany.mockResolvedValue([
+      {
+        id: "p1",
+        title: "Post",
+        body: "body",
+        pinned: false,
+        createdAt: new Date(),
+        deletedAt: null,
+      },
+    ]);
+    mocks.topicFindMany.mockResolvedValue([
+      {
+        id: "t1",
+        title: "Topic",
+        body: "body",
+        pinned: false,
+        locked: false,
+        createdAt: new Date(),
+        deletedAt: null,
+      },
+    ]);
+    mocks.threadFindMany.mockResolvedValue([
+      {
+        id: "th1",
+        body: "thread",
+        parentType: "POST",
+        parentId: "p1",
+        createdAt: new Date(),
+        deletedAt: null,
+      },
+    ]);
+    mocks.calendarFindMany.mockResolvedValue([
+      {
+        id: "e1",
+        title: "Event",
+        startTime: new Date(),
+        endTime: new Date(),
+        allDay: false,
+        createdAt: new Date(),
+      },
+    ]);
+    mocks.shoutFindMany.mockResolvedValue([{ id: "s1", message: "hello", createdAt: new Date() }]);
+    mocks.issueFindMany.mockResolvedValue([
+      { id: "i1", title: "Bug", description: "desc", url: null, createdAt: new Date() },
+    ]);
+    mocks.surveyFindMany.mockResolvedValue([
+      {
+        id: "sr1",
+        conversationStyle: "chat",
+        features: [],
+        mustHave: null,
+        dealbreaker: null,
+        otherFeedback: null,
+        submittedAt: new Date(),
+      },
+    ]);
+    mocks.permissionFindMany.mockResolvedValue([
+      { permission: { key: "post:create", description: "Create posts" }, granted: true },
+    ]);
+
+    const result = await exportMyData();
+    expect("data" in result).toBe(true);
+    if ("data" in result) {
+      const parsed = JSON.parse(result.data);
+      expect(parsed).toHaveProperty("profile");
+      expect(parsed).toHaveProperty("permissions");
+      expect(parsed).toHaveProperty("posts");
+      expect(parsed).toHaveProperty("topics");
+      expect(parsed).toHaveProperty("threads");
+      expect(parsed).toHaveProperty("calendarEvents");
+      expect(parsed).toHaveProperty("shoutboxMessages");
+      expect(parsed).toHaveProperty("issueReports");
+      expect(parsed).toHaveProperty("surveyResponses");
+      expect(parsed.posts).toHaveLength(1);
+      expect(parsed.topics).toHaveLength(1);
+      expect(parsed.threads).toHaveLength(1);
+      expect(parsed.calendarEvents).toHaveLength(1);
+      expect(parsed.shoutboxMessages).toHaveLength(1);
+      expect(parsed.issueReports).toHaveLength(1);
+      expect(parsed.surveyResponses).toHaveLength(1);
+      expect(parsed.permissions).toHaveLength(1);
+    }
+  });
+
   test("returns error when not authenticated", async () => {
     mocks.auth.mockResolvedValue(null);
     const result = await exportMyData();

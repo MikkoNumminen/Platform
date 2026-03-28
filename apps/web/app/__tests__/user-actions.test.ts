@@ -275,6 +275,17 @@ describe("updateUserRole", () => {
     expect(mockUpdate).toHaveBeenCalledTimes(1);
   });
 
+  test("cannot modify own role", async () => {
+    mockAuth.mockResolvedValue(adminSession());
+    mockFindFirst.mockResolvedValue({ id: "admin-1", role: "admin" });
+    const result = await updateUserRole("550e8400-e29b-41d4-a716-446655440000", "user");
+    expect(result).toEqual({
+      error: "Cannot modify a user at the same or higher rank",
+      code: "permissionDenied",
+    });
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+
   test("superuser can promote a user to vuohi", async () => {
     mockAuth.mockResolvedValue(superuserSession());
     mockFindFirst.mockResolvedValue({ id: "user-2", role: "user" });
