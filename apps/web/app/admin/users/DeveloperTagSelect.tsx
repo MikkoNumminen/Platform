@@ -12,11 +12,14 @@ interface DeveloperTagSelectProps {
   skills: string[];
   wantsToDevelop: boolean;
   isSuperuser: boolean;
+  targetRole: string;
 }
 
 const TAG_OPTIONS = [
   { value: "", label: "—" },
-  ...Object.entries(DEVELOPER_TAG_LABELS).map(([value, label]) => ({ value, label })),
+  ...Object.entries(DEVELOPER_TAG_LABELS)
+    .filter(([value]) => value !== "master")
+    .map(([value, label]) => ({ value, label })),
 ];
 
 export default function DeveloperTagSelect({
@@ -25,6 +28,7 @@ export default function DeveloperTagSelect({
   skills,
   wantsToDevelop,
   isSuperuser,
+  targetRole,
 }: DeveloperTagSelectProps) {
   const [tag, setTag] = useState(currentTag ?? "");
   const [saving, setSaving] = useState(false);
@@ -47,7 +51,7 @@ export default function DeveloperTagSelect({
             label={skills.length > 0 ? `${skills.length} skills` : "Interested"}
             size="small"
             sx={{
-              backgroundColor: "rgba(74,222,128,0.15)",
+              backgroundColor: colors.accentBgSubtle,
               color: colors.green400,
               fontSize: "0.7rem",
               cursor: "help",
@@ -55,7 +59,18 @@ export default function DeveloperTagSelect({
           />
         </Tooltip>
       )}
-      {isSuperuser ? (
+      {targetRole === "superuser" ? (
+        <Chip
+          label="Master"
+          size="small"
+          sx={{
+            backgroundColor: colors.accentBgSubtle,
+            color: colors.green400,
+            fontWeight: 600,
+            fontSize: "0.7rem",
+          }}
+        />
+      ) : isSuperuser ? (
         <Select
           value={tag}
           onChange={handleChange}
@@ -81,7 +96,7 @@ export default function DeveloperTagSelect({
             label={tagLabel}
             size="small"
             sx={{
-              backgroundColor: "rgba(74,222,128,0.15)",
+              backgroundColor: colors.accentBgSubtle,
               color: colors.green400,
               fontWeight: 600,
               fontSize: "0.7rem",

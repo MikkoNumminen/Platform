@@ -122,6 +122,7 @@ export default async function AdminUsersPage() {
                         skills={user.developmentSkills}
                         wantsToDevelop={user.wantsToDevelop}
                         isSuperuser={(session?.user as { role?: string })?.role === "superuser"}
+                        targetRole={user.role}
                       />
                     </TableCell>
                     <TableCell sx={{ borderColor: colors.slate300 }}>

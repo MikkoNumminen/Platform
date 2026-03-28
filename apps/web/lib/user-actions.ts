@@ -73,11 +73,13 @@ export const setDeveloperTag = guardedAction(
     }
 
     if (tag === "master") {
-      const existingMaster = await prisma.user.findFirst({
-        where: { developerTag: "master", id: { not: userId }, deletedAt: null },
+      // Master tag is reserved for superuser only
+      const targetUser = await prisma.user.findFirst({
+        where: { id: userId, deletedAt: null },
+        select: { role: true },
       });
-      if (existingMaster) {
-        throw new ActionError("conflict", "There can only be one Master");
+      if (targetUser?.role !== "superuser") {
+        throw new ActionError("permissionDenied", "Master tag is reserved for the superuser");
       }
     }
 
