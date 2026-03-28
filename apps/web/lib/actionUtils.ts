@@ -1,4 +1,4 @@
-import { ActionError, RateLimitError } from "./actionErrors";
+import { ActionError, RateLimitError, type ErrorCode } from "./actionErrors";
 import { logger } from "./logger";
 
 export type ActionResult = { error: string; code: string } | undefined;
@@ -17,8 +17,8 @@ export function validateUUID(value: string, fieldName: string): void {
 export function createStringValidator(
   fieldName: string,
   maxLength: number,
-  emptyCode: string,
-  tooLongCode: string,
+  emptyCode: ErrorCode,
+  tooLongCode: ErrorCode,
 ): (value: string) => string {
   return (value: string) => {
     const trimmed = value.trim();
