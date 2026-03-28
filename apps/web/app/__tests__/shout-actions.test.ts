@@ -22,6 +22,10 @@ jest.mock("next/cache", () => ({
   revalidatePath: jest.fn(),
 }));
 
+jest.mock("@/lib/demo-session", () => ({
+  getDemoSessionId: jest.fn().mockResolvedValue(null),
+}));
+
 import { createShout } from "@/lib/shout-actions";
 
 function authenticatedSession(id = "user-1") {

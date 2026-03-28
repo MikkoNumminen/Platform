@@ -8,6 +8,10 @@ jest.mock("@/lib/db", () => ({
   },
 }));
 
+jest.mock("@/lib/demo-session", () => ({
+  getDemoSessionId: jest.fn().mockResolvedValue(null),
+}));
+
 import { getRecentShouts } from "@/lib/shout-queries";
 
 describe("getRecentShouts", () => {

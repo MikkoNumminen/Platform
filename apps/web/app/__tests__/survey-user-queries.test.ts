@@ -10,6 +10,10 @@ jest.mock("@/lib/db", () => ({
   },
 }));
 
+jest.mock("@/lib/demo-session", () => ({
+  getDemoSessionId: jest.fn().mockResolvedValue(null),
+}));
+
 describe("getUserSurveyStatus", () => {
   beforeEach(() => {
     mockFindMany.mockClear();

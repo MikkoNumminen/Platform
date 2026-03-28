@@ -3,6 +3,7 @@ import { handlers, auth } from "@/auth";
 jest.mock("@/lib/db", () => ({
   prisma: {
     user: { findUnique: jest.fn(), count: jest.fn(), upsert: jest.fn() },
+    demoSession: { create: jest.fn() },
     $transaction: jest.fn(),
   },
 }));
@@ -19,6 +20,10 @@ jest.mock("next-auth/providers/google", () => ({
 jest.mock("next-auth/providers/github", () => ({
   __esModule: true,
   default: { id: "github", name: "GitHub", type: "oauth" },
+}));
+
+jest.mock("@/lib/demo-session", () => ({
+  getDemoSessionId: jest.fn().mockResolvedValue(null),
 }));
 
 jest.mock("next-auth", () => {
