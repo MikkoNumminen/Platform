@@ -47,8 +47,18 @@ jest.mock("@/app/admin/users/ApproveButton", () => {
 });
 
 jest.mock("@/app/admin/users/UserPermissionEditor", () => {
-  return function MockUserPermissionEditor({ userId }: { userId: string }) {
-    return <div data-testid={`permissions-${userId}`}>Permissions</div>;
+  return function MockUserPermissionEditor({
+    userId,
+    initialHasOverrides,
+  }: {
+    userId: string;
+    initialHasOverrides: boolean;
+  }) {
+    return (
+      <div data-testid={`permissions-${userId}`}>
+        {initialHasOverrides && <span>Custom permissions</span>}
+      </div>
+    );
   };
 });
 
