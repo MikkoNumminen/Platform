@@ -116,8 +116,8 @@ describe("GamificationDashboardPage", () => {
     expect(screen.getByText(/Explorer/)).toBeInTheDocument();
     // Level 1 has 5 users (completed) — shows CheckCircleIcon
     // Level 2 has 3 users (completed) — shows CheckCircleIcon
-    const checkIcons = document.querySelectorAll("[data-testid='CheckCircleIcon']");
-    expect(checkIcons.length).toBe(2);
+    const checkIcons = screen.getAllByTestId("CheckCircleIcon");
+    expect(checkIcons).toHaveLength(2);
   });
 
   test("renders unchecked icon for levels with no users", async () => {
@@ -135,10 +135,10 @@ describe("GamificationDashboardPage", () => {
     const page = await GamificationDashboardPage();
     render(page);
     // Level 1 has users — CheckCircle, Level 2 has 0 — RadioButtonUnchecked
-    const checkIcons = document.querySelectorAll("[data-testid='CheckCircleIcon']");
-    const uncheckedIcons = document.querySelectorAll("[data-testid='RadioButtonUncheckedIcon']");
-    expect(checkIcons.length).toBe(1);
-    expect(uncheckedIcons.length).toBe(1);
+    const checkIcons = screen.getAllByTestId("CheckCircleIcon");
+    const uncheckedIcons = screen.getAllByTestId("RadioButtonUncheckedIcon");
+    expect(checkIcons).toHaveLength(1);
+    expect(uncheckedIcons).toHaveLength(1);
   });
 
   test("renders top achievements", async () => {
