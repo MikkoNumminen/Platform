@@ -19,7 +19,6 @@
 > Previous 5 critical items resolved. New findings from deep audit below.
 
 #### 🟢 Improvement (backlog)
-- [ ] 🔵 [QUALITY] Replace native `confirm()` dialogs with MUI Dialog for accessibility (CalendarGrid event deletion)
 - [ ] 🔵 [TESTING] test-animation page — low priority demo page
 - [ ] 🟣 [TESTING] Add integration tests for multi-step workflows (signup → approval, board → post → thread)
 - [ ] 🟣 [TESTING] Set up Playwright E2E testing for critical user journeys
