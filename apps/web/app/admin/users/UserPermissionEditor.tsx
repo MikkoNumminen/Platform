@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   Checkbox,
+  Chip,
   Collapse,
   FormControlLabel,
   IconButton,
@@ -20,6 +21,7 @@ interface UserPermissionEditorProps {
   userId: string;
   userRole: string;
   isSelf: boolean;
+  initialHasOverrides: boolean;
 }
 
 const PERMISSION_GROUPS: Record<string, PermissionKey[]> = {
@@ -37,11 +39,13 @@ export default function UserPermissionEditor({
   userId,
   userRole,
   isSelf,
+  initialHasOverrides,
 }: UserPermissionEditorProps) {
   const [open, setOpen] = useState(false);
   const [overrides, setOverrides] = useState<Record<string, boolean | null>>({});
   const [loaded, setLoaded] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [hasOverrides, setHasOverrides] = useState(initialHasOverrides);
 
   const roleDefaults = resolvePermissions(userRole);
 
@@ -81,6 +85,7 @@ export default function UserPermissionEditor({
 
     startTransition(async () => {
       await updateUserPermissions(userId, toSave);
+      setHasOverrides(toSave.length > 0);
     });
   };
 
@@ -90,15 +95,29 @@ export default function UserPermissionEditor({
 
   return (
     <Box sx={{ mt: 0.5 }}>
-      <IconButton
-        size="small"
-        onClick={() => setOpen(!open)}
-        disabled={isSelf}
-        sx={{ color: colors.slate400 }}
-        aria-label="Toggle permissions"
-      >
-        {open ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
-      </IconButton>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <IconButton
+          size="small"
+          onClick={() => setOpen(!open)}
+          disabled={isSelf}
+          sx={{ color: colors.slate400 }}
+          aria-label="Toggle permissions"
+        >
+          {open ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
+        </IconButton>
+        {hasOverrides && (
+          <Chip
+            label="Custom permissions"
+            size="small"
+            sx={{
+              backgroundColor: colors.warning,
+              color: colors.slate700,
+              fontWeight: 600,
+              fontSize: "0.7rem",
+            }}
+          />
+        )}
+      </Box>
       <Collapse in={open}>
         <Box
           sx={{

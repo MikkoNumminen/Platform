@@ -108,18 +108,6 @@ export default async function AdminUsersPage() {
                             }}
                           />
                         )}
-                        {usersWithOverrides.has(user.id) && (
-                          <Chip
-                            label="Custom permissions"
-                            size="small"
-                            sx={{
-                              backgroundColor: colors.warning,
-                              color: colors.slate700,
-                              fontWeight: 600,
-                              fontSize: "0.7rem",
-                            }}
-                          />
-                        )}
                       </Box>
                     </TableCell>
                     <TableCell sx={{ borderColor: colors.slate300 }}>
@@ -134,6 +122,7 @@ export default async function AdminUsersPage() {
                         userId={user.id}
                         userRole={user.role}
                         isSelf={user.id === session?.user?.id}
+                        initialHasOverrides={usersWithOverrides.has(user.id)}
                       />
                     </TableCell>
                   </TableRow>
