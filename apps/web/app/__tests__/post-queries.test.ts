@@ -94,7 +94,7 @@ describe("getPostsByBoard", () => {
 
     expect(mockFindMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { boardId: "board-123", deletedAt: null },
+        where: { boardId: "board-123", deletedAt: null, sessionId: null },
       }),
     );
   });

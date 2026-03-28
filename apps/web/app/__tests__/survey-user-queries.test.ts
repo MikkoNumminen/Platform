@@ -41,7 +41,7 @@ describe("getUserSurveyStatus", () => {
     mockFindMany.mockResolvedValue([]);
     await getUserSurveyStatus(["user-1", "user-2"]);
     expect(mockFindMany).toHaveBeenCalledWith({
-      where: { userId: { in: ["user-1", "user-2"] } },
+      where: { userId: { in: ["user-1", "user-2"] }, sessionId: null },
       select: { userId: true },
       distinct: ["userId"],
     });
