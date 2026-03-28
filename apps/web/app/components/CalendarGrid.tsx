@@ -9,6 +9,7 @@ import { colors } from "../styles";
 import type { CalendarEvent } from "../types/calendar";
 import { EventChip, EventDetailDialog } from "./EventCard";
 import EventFormDialog, { type EventFormData } from "./EventFormDialog";
+import ConfirmDeleteDialog from "./ConfirmDeleteDialog";
 
 /* ------------------------------------------------------------------ */
 /*  Date helpers                                                       */
@@ -92,6 +93,7 @@ export default function CalendarGrid({
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null);
+  const [pendingDeleteEvent, setPendingDeleteEvent] = useState<CalendarEvent | null>(null);
 
   const dates = useMemo(() => buildGridDates(year, month), [year, month]);
 
@@ -171,10 +173,14 @@ export default function CalendarGrid({
     await refreshEvents(year, month);
   };
 
-  const handleDelete = async (event: CalendarEvent) => {
-    if (!onDeleteEvent) return;
-    if (!confirm("Are you sure you want to delete this event?")) return;
-    await onDeleteEvent(event.id);
+  const handleDeleteRequest = (event: CalendarEvent) => {
+    setPendingDeleteEvent(event);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!onDeleteEvent || !pendingDeleteEvent) return;
+    await onDeleteEvent(pendingDeleteEvent.id);
+    setPendingDeleteEvent(null);
     await refreshEvents(year, month);
   };
 
@@ -326,7 +332,7 @@ export default function CalendarGrid({
           setEditingEvent(evt);
           setFormOpen(true);
         }}
-        onDelete={handleDelete}
+        onDelete={handleDeleteRequest}
         canEdit={canEdit}
         canDelete={canDelete}
       />
@@ -343,6 +349,15 @@ export default function CalendarGrid({
           event={editingEvent}
         />
       )}
+
+      {/* ---- Delete confirmation dialog ---- */}
+      <ConfirmDeleteDialog
+        open={pendingDeleteEvent !== null}
+        onClose={() => setPendingDeleteEvent(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Event"
+        message={`Are you sure you want to delete "${pendingDeleteEvent?.title ?? ""}"? This action cannot be undone.`}
+      />
     </>
   );
 }
