@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { colors } from "../styles";
 import { createShout } from "@/lib/shout-actions";
 import type { ShoutData } from "@/lib/shout-queries";
+import { useXpToast } from "./XpToastProvider";
 
 function formatTime(iso: string): string {
   return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -18,6 +19,7 @@ interface ShoutboxProps {
 
 export default function Shoutbox({ initialShouts }: ShoutboxProps) {
   const { data: session } = useSession();
+  const { onAction } = useXpToast();
   const t = useTranslations("shoutbox");
   const [shouts, setShouts] = useState(initialShouts);
   const [message, setMessage] = useState("");
@@ -53,6 +55,8 @@ export default function Shoutbox({ initialShouts }: ShoutboxProps) {
     const result = await createShout(message);
     if (result?.error) {
       setShouts((prev) => prev.filter((s) => s.id !== optimistic.id));
+    } else {
+      onAction();
     }
     setSending(false);
   };

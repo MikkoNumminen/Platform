@@ -73,6 +73,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           granted: up.granted,
         }));
         token.permissions = resolvePermissions(dbUser.role, overrides);
+
+        try {
+          const { recordLogin } = await import("@/lib/gamification/login-streak");
+          await recordLogin(dbUser.id);
+        } catch (error) {
+          console.error("[gamification] Login streak error:", error);
+        }
       } else {
         // Lightweight check: detect permission/role changes
         const dbUser = await prisma.user.findUnique({

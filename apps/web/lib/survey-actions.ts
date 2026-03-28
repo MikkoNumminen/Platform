@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { validateSurveyData, type SurveyData } from "@/lib/survey-config";
+import { triggerGamification } from "@/lib/gamification/trigger";
 
 export async function submitSurvey(
   data: SurveyData,
@@ -28,6 +29,10 @@ export async function submitSurvey(
         userId,
       },
     });
+
+    if (userId) {
+      await triggerGamification(userId, "survey:complete");
+    }
 
     return { success: true };
   } catch (error) {

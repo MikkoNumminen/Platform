@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { ActionError } from "@/lib/actionErrors";
 import { safe, type ActionResult } from "@/lib/actionUtils";
+import { triggerGamification } from "./gamification/trigger";
 
 const ALIAS_MIN_LENGTH = 2;
 const ALIAS_MAX_LENGTH = 30;
@@ -49,5 +50,7 @@ export async function setAlias(alias: string): Promise<ActionResult> {
       where: { id: session.user.id },
       data: { alias: trimmed },
     });
+
+    await triggerGamification(session.user.id, "alias:set");
   });
 }

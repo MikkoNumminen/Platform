@@ -50,7 +50,11 @@
     "feedbackSurvey": "Feedback & Survey",
     "redoSurvey": "Redo Survey",
     "issueTracker": "Issue Tracker",
-    "reportIssue": "Report Issue"
+    "reportIssue": "Report Issue",
+    "gamificationDashboard": "Gamification Stats",
+    "quests": "Quests",
+    "achievements": "Achievements",
+    "leaderboard": "Leaderboard"
   },
   "admin": {
     "users": {

@@ -7,6 +7,7 @@ import { safe, validateUUID, type ActionResult } from "@/lib/actionUtils";
 import { rateLimit } from "@/lib/rateLimit";
 import { revalidatePath } from "next/cache";
 import { guardedAction } from "@/lib/guardedAction";
+import { triggerGamification } from "@/lib/gamification/trigger";
 
 export async function createIssueReport(
   title: string,
@@ -40,6 +41,8 @@ export async function createIssueReport(
         authorId: session.user.id,
       },
     });
+
+    await triggerGamification(session.user.id, "issue:create");
 
     revalidatePath("/issues");
   });

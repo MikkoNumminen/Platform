@@ -4,6 +4,12 @@ jest.mock("@/app/components/PromotionGate", () => {
   };
 });
 
+jest.mock("@/app/components/XpToastProvider", () => {
+  return function MockXpToastProvider({ children }: { children: React.ReactNode }) {
+    return <>{children}</>;
+  };
+});
+
 jest.mock("@/lib/promotion-actions", () => ({
   markPromotionSeen: jest.fn(),
 }));

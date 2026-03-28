@@ -12,6 +12,7 @@ import {
   type CreateEventInput,
   type UpdateEventInput,
 } from "./calendar-schemas";
+import { triggerGamification } from "@/lib/gamification/trigger";
 
 export async function fetchEvents(year: number, month: number): Promise<CalendarEvent[]> {
   const dbEvents = await getEvents(year, month);
@@ -40,6 +41,8 @@ export const createEvent = guardedAction(
         authorId: session!.user!.id as string,
       },
     });
+
+    await triggerGamification(session!.user!.id as string, "event:create");
   },
 );
 

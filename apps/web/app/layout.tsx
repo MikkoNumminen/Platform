@@ -12,6 +12,7 @@ import PendingBanner from "./components/PendingBanner";
 import PendingGate from "./components/PendingGate";
 import AliasGuard from "./components/AliasGuard";
 import PromotionGate from "./components/PromotionGate";
+import XpToastProvider from "./components/XpToastProvider";
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -55,16 +56,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <AppRouterCacheProvider>
               <ThemeRegistry>
                 <SnackbarProvider>
-                  <AliasGuard />
-                  <PendingGate />
-                  <PromotionGate />
-                  <Box sx={{ pt: 2 }}>
-                    <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-                      <PendingBanner />
+                  <XpToastProvider>
+                    <AliasGuard />
+                    <PendingGate />
+                    <PromotionGate />
+                    <Box sx={{ pt: 2 }}>
+                      <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
+                        <PendingBanner />
+                      </Box>
+                      {children}
                     </Box>
-                    {children}
-                  </Box>
-                  <KeyboardShortcuts />
+                    <KeyboardShortcuts />
+                  </XpToastProvider>
                 </SnackbarProvider>
               </ThemeRegistry>
             </AppRouterCacheProvider>

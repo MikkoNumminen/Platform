@@ -7,6 +7,7 @@ import { ActionError } from "./actionErrors";
 import { validateUUID } from "./actionUtils";
 import { revalidatePath } from "next/cache";
 import { slugify } from "./slug-utils";
+import { triggerGamification } from "./gamification/trigger";
 
 function validatePostTitle(title: string): string {
   const trimmed = title.trim();
@@ -73,6 +74,8 @@ export const createPost = guardedAction(
         boardId,
       },
     });
+
+    await triggerGamification(authorId, "post:create");
 
     revalidatePath(`/boards/${board.slug}`);
   },
