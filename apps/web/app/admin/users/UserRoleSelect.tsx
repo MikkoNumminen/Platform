@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Select, MenuItem, Typography, type SelectChangeEvent } from "@mui/material";
 import { updateUserRole } from "@/lib/user-actions";
 import { ROLES } from "@/lib/permissions";
+import { emitTutorialEvent } from "@/app/components/TutorialProvider";
 import { colors } from "../../styles";
 
 interface UserRoleSelectProps {
@@ -30,9 +31,10 @@ export default function UserRoleSelect({
   const actorRank = roleRank(actorRole);
   const targetRank = roleRank(currentRole);
   const canModify = !isSelf && targetRank > actorRank;
+  const isPending = currentRole === "pending";
 
-  // Only show roles with rank strictly lower than actor's rank
-  const assignableRoles = ROLES.filter((r) => roleRank(r) > actorRank);
+  // Only show roles with rank strictly lower than actor's rank, exclude "pending"
+  const assignableRoles = ROLES.filter((r) => r !== "pending" && roleRank(r) > actorRank);
 
   const handleChange = async (e: SelectChangeEvent) => {
     const newRole = e.target.value;
@@ -41,6 +43,8 @@ export default function UserRoleSelect({
     const result = await updateUserRole(userId, newRole);
     if (result?.error) {
       setRole(currentRole);
+    } else if (isPending) {
+      emitTutorialEvent("approve_user");
     }
     setSaving(false);
   };
@@ -55,18 +59,30 @@ export default function UserRoleSelect({
 
   return (
     <Select
-      value={role}
+      data-tutorial={isPending ? "approve-button" : undefined}
+      value={isPending ? "" : role}
       onChange={handleChange}
       size="small"
       disabled={saving}
+      displayEmpty
       sx={{
         minWidth: 120,
-        color: colors.slate100,
-        ".MuiOutlinedInput-notchedOutline": { borderColor: colors.slate300 },
-        "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: colors.slate400 },
-        ".MuiSvgIcon-root": { color: colors.slate400 },
+        color: isPending ? colors.warning : colors.slate100,
+        fontWeight: isPending ? 700 : 400,
+        ".MuiOutlinedInput-notchedOutline": {
+          borderColor: isPending ? colors.warning : colors.slate300,
+        },
+        "&:hover .MuiOutlinedInput-notchedOutline": {
+          borderColor: isPending ? colors.warning : colors.slate400,
+        },
+        ".MuiSvgIcon-root": { color: isPending ? colors.warning : colors.slate400 },
       }}
     >
+      {isPending && (
+        <MenuItem value="" disabled>
+          Approve →
+        </MenuItem>
+      )}
       {assignableRoles.map((r) => (
         <MenuItem key={r} value={r}>
           {r}

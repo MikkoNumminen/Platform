@@ -40,12 +40,6 @@ jest.mock("@/app/admin/users/UserRoleSelect", () => {
   };
 });
 
-jest.mock("@/app/admin/users/ApproveButton", () => {
-  return function MockApproveButton({ userId }: { userId: string }) {
-    return <button data-testid={`approve-${userId}`}>Approve</button>;
-  };
-});
-
 jest.mock("@/app/admin/users/DeveloperTagSelect", () => {
   return function MockDeveloperTagSelect() {
     return <span data-testid="dev-tag-select" />;
@@ -91,7 +85,7 @@ describe("AdminUsersPage", () => {
     expect(mockRedirect).toHaveBeenCalledWith("/");
   });
 
-  test("shows approve button for pending users", async () => {
+  test("renders role select for pending users", async () => {
     mockAuth.mockResolvedValue(adminSession);
     mockGetUsers.mockResolvedValue([
       {
@@ -108,27 +102,7 @@ describe("AdminUsersPage", () => {
 
     const result = await AdminUsersPage();
     render(result);
-    expect(screen.getByTestId("approve-user-1")).toBeInTheDocument();
-  });
-
-  test("does not show approve button for non-pending users", async () => {
-    mockAuth.mockResolvedValue(adminSession);
-    mockGetUsers.mockResolvedValue([
-      {
-        id: "user-1",
-        email: "active@example.com",
-        name: "Active User",
-        alias: "active",
-        image: null,
-        role: "user",
-        createdAt: new Date("2026-01-01"),
-      },
-    ]);
-    mockGetSurveyStatus.mockResolvedValue({ "user-1": true });
-
-    const result = await AdminUsersPage();
-    render(result);
-    expect(screen.queryByTestId("approve-user-1")).not.toBeInTheDocument();
+    expect(screen.getByTestId("role-select")).toBeInTheDocument();
   });
 
   test("shows survey pending chip for any user who has not completed survey", async () => {
@@ -171,7 +145,7 @@ describe("AdminUsersPage", () => {
     expect(screen.queryByText("Survey pending")).not.toBeInTheDocument();
   });
 
-  test("shows both approve button and survey pending for pending user without survey", async () => {
+  test("shows role select and survey pending for pending user without survey", async () => {
     mockAuth.mockResolvedValue(adminSession);
     mockGetUsers.mockResolvedValue([
       {
@@ -188,7 +162,7 @@ describe("AdminUsersPage", () => {
 
     const result = await AdminUsersPage();
     render(result);
-    expect(screen.getByTestId("approve-user-1")).toBeInTheDocument();
+    expect(screen.getByTestId("role-select")).toBeInTheDocument();
     expect(screen.getByText("Survey pending")).toBeInTheDocument();
   });
 

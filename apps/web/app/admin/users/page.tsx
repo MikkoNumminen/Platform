@@ -20,7 +20,6 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { colors } from "../../styles";
 import UserRoleSelect from "./UserRoleSelect";
-import ApproveButton from "./ApproveButton";
 import UserPermissionEditor from "./UserPermissionEditor";
 import DeveloperTagSelect from "./DeveloperTagSelect";
 
@@ -100,7 +99,6 @@ export default async function AdminUsersPage() {
                           isSelf={user.id === session?.user?.id}
                           actorRole={(session?.user as { role?: string })?.role ?? "pending"}
                         />
-                        {user.role === "pending" && <ApproveButton userId={user.id} />}
                         {!surveyStatus[user.id] && (
                           <Chip
                             label="Survey pending"

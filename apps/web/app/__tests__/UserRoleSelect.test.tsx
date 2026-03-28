@@ -7,6 +7,10 @@ jest.mock("@/lib/user-actions", () => ({
   updateUserRole: (...args: unknown[]) => mockUpdateUserRole(...args),
 }));
 
+jest.mock("@/app/components/TutorialProvider", () => ({
+  emitTutorialEvent: jest.fn(),
+}));
+
 import UserRoleSelect from "../admin/users/UserRoleSelect";
 
 describe("UserRoleSelect", () => {
