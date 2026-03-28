@@ -208,7 +208,7 @@ export default function AccountPage() {
                     Tag
                   </Typography>
                   <Chip
-                    label={developerTag === "lead" ? "Developer Lead" : "Developer"}
+                    label={developerTag.charAt(0).toUpperCase() + developerTag.slice(1)}
                     size="small"
                     sx={{
                       backgroundColor: "rgba(74,222,128,0.15)",

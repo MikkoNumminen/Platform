@@ -6,6 +6,7 @@ import { guardedAction } from "@/lib/guardedAction";
 import { ActionError } from "@/lib/actionErrors";
 import { validateUUID } from "@/lib/actionUtils";
 import { ROLES, PERMISSIONS, type PermissionKey } from "@/lib/permissions";
+import { DEVELOPER_TAGS, type DeveloperTag } from "@/lib/developer-config";
 
 // ROLES is ordered highest → lowest: superuser, vuohi, admin, user, pending
 function roleRank(role: string): number {
@@ -59,11 +60,25 @@ export const updateUserRole = guardedAction(
 export const setDeveloperTag = guardedAction(
   "admin:users",
   "admin:setDeveloperTag",
-  async (_session, userId: string, tag: string | null) => {
+  async (session, userId: string, tag: string | null) => {
     validateUUID(userId, "user ID");
 
-    if (tag !== null && !["developer", "lead"].includes(tag)) {
+    const actorRole = session.user.role ?? "pending";
+    if (actorRole !== "superuser") {
+      throw new ActionError("permissionDenied", "Only superuser can assign developer tags");
+    }
+
+    if (tag !== null && !DEVELOPER_TAGS.includes(tag as DeveloperTag)) {
       throw new ActionError("invalidInput", `Invalid developer tag: ${tag}`);
+    }
+
+    if (tag === "master") {
+      const existingMaster = await prisma.user.findFirst({
+        where: { developerTag: "master", id: { not: userId }, deletedAt: null },
+      });
+      if (existingMaster) {
+        throw new ActionError("conflict", "There can only be one Master");
+      }
     }
 
     const user = await prisma.user.findFirst({

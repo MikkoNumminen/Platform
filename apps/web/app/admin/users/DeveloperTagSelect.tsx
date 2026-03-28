@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Box, Chip, Select, MenuItem, Tooltip, type SelectChangeEvent } from "@mui/material";
 import { setDeveloperTag } from "@/lib/user-actions";
+import { DEVELOPER_TAG_LABELS } from "@/lib/developer-config";
 import { colors } from "../../styles";
 
 interface DeveloperTagSelectProps {
@@ -10,12 +11,12 @@ interface DeveloperTagSelectProps {
   currentTag: string | null;
   skills: string[];
   wantsToDevelop: boolean;
+  isSuperuser: boolean;
 }
 
 const TAG_OPTIONS = [
-  { value: "", label: "None" },
-  { value: "developer", label: "Developer" },
-  { value: "lead", label: "Lead" },
+  { value: "", label: "—" },
+  ...Object.entries(DEVELOPER_TAG_LABELS).map(([value, label]) => ({ value, label })),
 ];
 
 export default function DeveloperTagSelect({
@@ -23,6 +24,7 @@ export default function DeveloperTagSelect({
   currentTag,
   skills,
   wantsToDevelop,
+  isSuperuser,
 }: DeveloperTagSelectProps) {
   const [tag, setTag] = useState(currentTag ?? "");
   const [saving, setSaving] = useState(false);
@@ -34,6 +36,8 @@ export default function DeveloperTagSelect({
     await setDeveloperTag(userId, newTag);
     setSaving(false);
   };
+
+  const tagLabel = currentTag ? (DEVELOPER_TAG_LABELS[currentTag] ?? currentTag) : null;
 
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexWrap: "wrap" }}>
@@ -51,25 +55,40 @@ export default function DeveloperTagSelect({
           />
         </Tooltip>
       )}
-      <Select
-        value={tag}
-        onChange={handleChange}
-        size="small"
-        disabled={saving}
-        displayEmpty
-        sx={{
-          minWidth: 90,
-          fontSize: "0.75rem",
-          height: 28,
-          "& .MuiSelect-select": { py: 0.25 },
-        }}
-      >
-        {TAG_OPTIONS.map((opt) => (
-          <MenuItem key={opt.value} value={opt.value} sx={{ fontSize: "0.8rem" }}>
-            {opt.label}
-          </MenuItem>
-        ))}
-      </Select>
+      {isSuperuser ? (
+        <Select
+          value={tag}
+          onChange={handleChange}
+          size="small"
+          disabled={saving}
+          displayEmpty
+          sx={{
+            minWidth: 100,
+            fontSize: "0.75rem",
+            height: 28,
+            "& .MuiSelect-select": { py: 0.25 },
+          }}
+        >
+          {TAG_OPTIONS.map((opt) => (
+            <MenuItem key={opt.value} value={opt.value} sx={{ fontSize: "0.8rem" }}>
+              {opt.label}
+            </MenuItem>
+          ))}
+        </Select>
+      ) : (
+        tagLabel && (
+          <Chip
+            label={tagLabel}
+            size="small"
+            sx={{
+              backgroundColor: "rgba(74,222,128,0.15)",
+              color: colors.green400,
+              fontWeight: 600,
+              fontSize: "0.7rem",
+            }}
+          />
+        )
+      )}
     </Box>
   );
 }
