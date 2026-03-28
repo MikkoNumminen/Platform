@@ -76,6 +76,14 @@ describe("UserMenu", () => {
       expect(screen.getByText("test@example.com")).toBeInTheDocument();
     });
 
+    test("user name links to account page", async () => {
+      const user = userEvent.setup();
+      render(<UserMenu />);
+      await user.click(screen.getByRole("button"));
+      const accountLink = screen.getByRole("menuitem", { name: /test user/i });
+      expect(accountLink).toHaveAttribute("href", "/account");
+    });
+
     test("hides Manage Users when user lacks admin:users permission", async () => {
       const user = userEvent.setup();
       render(<UserMenu />);

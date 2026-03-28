@@ -99,12 +99,14 @@ export default function UserMenu() {
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <Box sx={{ px: 2, py: 1 }}>
-          <Typography variant="subtitle2">{displayName}</Typography>
-          <Typography variant="caption" color="text.secondary">
-            {user.email}
-          </Typography>
-        </Box>
+        <MenuItem component={Link} href="/account" onClick={() => setAnchorEl(null)}>
+          <Box sx={{ py: 0.25 }}>
+            <Typography variant="subtitle2">{displayName}</Typography>
+            <Typography variant="caption" color="text.secondary">
+              {user.email}
+            </Typography>
+          </Box>
+        </MenuItem>
         <Divider />
         {canManageUsers && (
           <MenuItem data-tutorial="nav-manage-users" component={Link} href="/admin/users">
