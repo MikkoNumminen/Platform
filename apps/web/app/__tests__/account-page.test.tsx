@@ -18,6 +18,11 @@ jest.mock("@/lib/gdpr-actions", () => ({
   exportMyData: jest.fn(),
 }));
 
+jest.mock("@/lib/gamification/xp-actions", () => ({
+  getLatestXpGains: jest.fn().mockResolvedValue([]),
+  getMyGamificationProfile: jest.fn().mockResolvedValue(null),
+}));
+
 jest.mock("@/app/components/TopBar", () => {
   return function MockTopBar({ title }: { title: string }) {
     return <div data-testid="topbar">{title}</div>;

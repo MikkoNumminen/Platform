@@ -31,6 +31,11 @@ model User {
   shouts         Shout[]
   issueReports    IssueReport[]
   surveyResponses SurveyResponse[]
+  xpTransactions     XpTransaction[]
+  userLevel          UserLevel?
+  achievements       UserAchievement[]
+  questProgress      UserQuestProgress[]
+  loginStreak        LoginStreak?
 
   @@index([deletedAt])
   @@index([email])
@@ -254,4 +259,104 @@ model SurveyResponse {
 
   @@index([submittedAt])
   @@index([userId])
+}
+
+// ─── Gamification ──────────────────────────────────────────────────────────
+
+model XpTransaction {
+  id        String   @id @default(uuid())
+  userId    String
+  amount    Int
+  source    String
+  sourceId  String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([source])
+}
+
+model UserLevel {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  totalXp   Int      @default(0)
+  level     Int      @default(1)
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Achievement {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  name        String
+  description String
+  icon        String
+  tier        String?
+  category    String
+  xpReward    Int      @default(0)
+  criteria    Json
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(uuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+}
+
+model Quest {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  name        String
+  description String
+  icon        String
+  type        String
+  xpReward    Int
+  criteria    Json
+  repeatable  Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  userProgress UserQuestProgress[]
+}
+
+model UserQuestProgress {
+  id          String    @id @default(uuid())
+  userId      String
+  questId     String
+  progress    Int       @default(0)
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  resetAt     DateTime?
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quest Quest @relation(fields: [questId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questId])
+  @@index([userId])
+  @@index([completed])
+}
+
+model LoginStreak {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  currentStreak Int      @default(0)
+  longestStreak Int      @default(0)
+  lastLoginDate DateTime
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

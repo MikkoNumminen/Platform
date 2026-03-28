@@ -50,7 +50,11 @@
     "feedbackSurvey": "Jawaab celin & xog-ururin",
     "redoSurvey": "Dib u buuxi",
     "issueTracker": "Raadraaca dhibaatooyinka",
-    "reportIssue": "Soo sheeg dhibaato"
+    "reportIssue": "Soo sheeg dhibaato",
+    "gamificationDashboard": "Xogaynta Tirakoobka",
+    "quests": "Hawlgallada",
+    "achievements": "Guulaha",
+    "leaderboard": "Miisaanka Hogaamiyaha"
   },
   "admin": {
     "users": {

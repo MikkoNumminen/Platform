@@ -6,6 +6,7 @@ import { guardedAction } from "./guardedAction";
 import { ActionError } from "./actionErrors";
 import { validateUUID } from "./actionUtils";
 import { revalidatePath } from "next/cache";
+import { triggerGamification } from "./gamification/trigger";
 
 function validateThreadBody(body: string): string {
   const trimmed = body.trim();
@@ -64,6 +65,8 @@ export const createThread = guardedAction(
         replyToId: replyToId ?? null,
       },
     });
+
+    await triggerGamification(authorId, "thread:create");
 
     if (revalidateUrl) {
       revalidatePath(revalidateUrl);

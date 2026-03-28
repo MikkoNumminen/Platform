@@ -12,6 +12,10 @@ jest.mock("@/lib/shout-actions", () => ({
   createShout: (...args: unknown[]) => mockCreateShout(...args),
 }));
 
+jest.mock("@/app/components/XpToastProvider", () => ({
+  useXpToast: () => ({ onAction: jest.fn() }),
+}));
+
 import Shoutbox from "@/app/components/Shoutbox";
 import type { ShoutData } from "@/lib/shout-queries";
 

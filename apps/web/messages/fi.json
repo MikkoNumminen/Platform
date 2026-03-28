@@ -50,7 +50,11 @@
     "feedbackSurvey": "Palaute ja kysely",
     "redoSurvey": "Vastaa uudelleen",
     "issueTracker": "Ongelmaseuranta",
-    "reportIssue": "Ilmoita ongelma"
+    "reportIssue": "Ilmoita ongelma",
+    "gamificationDashboard": "Pelillistämistilastot",
+    "quests": "Tehtävät",
+    "achievements": "Saavutukset",
+    "leaderboard": "Tulostaulukko"
   },
   "admin": {
     "users": {

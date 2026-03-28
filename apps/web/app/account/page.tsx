@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
@@ -21,6 +21,7 @@ import {
 import TopBar from "../components/TopBar";
 import { deleteMyAccount, exportMyData } from "@/lib/gdpr-actions";
 import { colors } from "../styles";
+import { getMyGamificationProfile } from "@/lib/gamification/xp-actions";
 
 export default function AccountPage() {
   const { data: session } = useSession();
@@ -31,6 +32,18 @@ export default function AccountPage() {
   const [exporting, setExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [gamProfile, setGamProfile] = useState<{
+    totalXp: number;
+    level: number;
+    currentStreak: number;
+    longestStreak: number;
+  } | null>(null);
+
+  useEffect(() => {
+    getMyGamificationProfile().then((p) => {
+      if (p) setGamProfile(p);
+    });
+  }, []);
 
   if (!session?.user) {
     router.replace("/auth/signin");
@@ -107,6 +120,22 @@ export default function AccountPage() {
             </Box>
           </CardContent>
         </Card>
+
+        {gamProfile && (
+          <Card sx={{ mb: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Gamification
+              </Typography>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                <ProfileField label="Level" value={String(gamProfile.level)} />
+                <ProfileField label="XP" value={String(gamProfile.totalXp)} />
+                <ProfileField label="Streak" value={`${gamProfile.currentStreak} days`} />
+                <ProfileField label="Best" value={`${gamProfile.longestStreak} days`} />
+              </Box>
+            </CardContent>
+          </Card>
+        )}
 
         <Card sx={{ mb: 3 }}>
           <CardContent>

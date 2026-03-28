@@ -6,6 +6,7 @@ import { ActionError } from "@/lib/actionErrors";
 import { safe, type ActionResult } from "@/lib/actionUtils";
 import { rateLimit } from "@/lib/rateLimit";
 import { revalidatePath } from "next/cache";
+import { triggerGamification } from "./gamification/trigger";
 
 const MAX_SHOUT_LENGTH = 280;
 
@@ -29,6 +30,8 @@ export async function createShout(message: string): Promise<ActionResult> {
         authorId: session.user.id,
       },
     });
+
+    await triggerGamification(session.user.id, "shout:create");
 
     revalidatePath("/");
   });

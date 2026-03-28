@@ -10,6 +10,7 @@ jest.mock("framer-motion", () => ({
     div: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
       <div {...filterProps(props)}>{children}</div>
     ),
+    // eslint-disable-next-line @next/next/no-img-element
     img: (props: Record<string, unknown>) => <img {...filterProps(props)} />,
     p: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
       <p {...filterProps(props)}>{children}</p>

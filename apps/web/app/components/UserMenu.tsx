@@ -17,6 +17,9 @@ import FeedbackIcon from "@mui/icons-material/Feedback";
 import ReplayIcon from "@mui/icons-material/Replay";
 import BugReportIcon from "@mui/icons-material/BugReport";
 import ListAltIcon from "@mui/icons-material/ListAlt";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import LeaderboardIcon from "@mui/icons-material/Leaderboard";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -110,6 +113,36 @@ export default function UserMenu() {
         {canViewSurveyResults && (
           <MenuItem component={Link} href="/admin/survey-results">
             {tm("surveyResults")}
+          </MenuItem>
+        )}
+        {canManageUsers && (
+          <MenuItem component={Link} href="/admin/gamification">
+            {tm("gamificationDashboard")}
+          </MenuItem>
+        )}
+        {isApproved && <Divider />}
+        {isApproved && (
+          <MenuItem component={Link} href="/quests">
+            <ListItemIcon>
+              <AssignmentIcon fontSize="small" />
+            </ListItemIcon>
+            {tm("quests")}
+          </MenuItem>
+        )}
+        {isApproved && (
+          <MenuItem component={Link} href="/achievements">
+            <ListItemIcon>
+              <EmojiEventsIcon fontSize="small" />
+            </ListItemIcon>
+            {tm("achievements")}
+          </MenuItem>
+        )}
+        {isApproved && (
+          <MenuItem component={Link} href="/leaderboard">
+            <ListItemIcon>
+              <LeaderboardIcon fontSize="small" />
+            </ListItemIcon>
+            {tm("leaderboard")}
           </MenuItem>
         )}
         <Divider />
