@@ -14,6 +14,7 @@ const mockBoardDeleteMany = jest.fn();
 const mockForumDeleteMany = jest.fn();
 const mockUserDeleteMany = jest.fn();
 const mockEventDeleteMany = jest.fn();
+const mockRateLimitDeleteMany = jest.fn();
 
 jest.mock("@/lib/db", () => ({
   prisma: {
@@ -24,6 +25,7 @@ jest.mock("@/lib/db", () => ({
     forum: { deleteMany: (...a: unknown[]) => mockForumDeleteMany(...a) },
     user: { deleteMany: (...a: unknown[]) => mockUserDeleteMany(...a) },
     calendarEvent: { deleteMany: (...a: unknown[]) => mockEventDeleteMany(...a) },
+    rateLimit: { deleteMany: (...a: unknown[]) => mockRateLimitDeleteMany(...a) },
   },
 }));
 
@@ -51,6 +53,7 @@ describe("purge-deleted cron", () => {
     mockForumDeleteMany.mockResolvedValue(result);
     mockUserDeleteMany.mockResolvedValue(result);
     mockEventDeleteMany.mockResolvedValue(result);
+    mockRateLimitDeleteMany.mockResolvedValue(result);
   });
 
   test("returns 401 without valid CRON_SECRET", async () => {
@@ -95,5 +98,27 @@ describe("purge-deleted cron", () => {
     const cutoff = new Date(call.where.deletedAt.lt);
     const daysAgo = (Date.now() - cutoff.getTime()) / (1000 * 60 * 60 * 24);
     expect(daysAgo).toBeCloseTo(30, 0);
+  });
+
+  test("cleans up expired rate limit entries", async () => {
+    mockRateLimitDeleteMany.mockResolvedValue({ count: 5 });
+    const res = await GET(makeRequest("test-secret"));
+    const body = await res.json();
+
+    expect(mockRateLimitDeleteMany).toHaveBeenCalledTimes(1);
+    expect(body.deleted.rateLimitEntries).toBe(5);
+
+    const call = mockRateLimitDeleteMany.mock.calls[0][0];
+    const cutoff = new Date(call.where.windowStart.lt);
+    const hoursAgo = (Date.now() - cutoff.getTime()) / (1000 * 60 * 60);
+    expect(hoursAgo).toBeCloseTo(24, 0);
+  });
+
+  test("returns 500 on database error", async () => {
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation();
+    mockPostDeleteMany.mockRejectedValue(new Error("DB connection failed"));
+    const res = await GET(makeRequest("test-secret"));
+    expect(res.status).toBe(500);
+    consoleSpy.mockRestore();
   });
 });

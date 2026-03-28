@@ -16,15 +16,14 @@ function roleRank(role: string): number {
 export const updateUserRole = guardedAction(
   "admin:users",
   "admin:updateRole",
-  async (userId: string, role: string) => {
+  async (session, userId: string, role: string) => {
     validateUUID(userId, "user ID");
 
     if (!ROLES.includes(role as (typeof ROLES)[number])) {
       throw new ActionError("invalidId", `Invalid role: ${role}`);
     }
 
-    const session = await auth();
-    const actorRole = (session?.user as { role?: string })?.role ?? "pending";
+    const actorRole = session.user.role ?? "pending";
     const actorRank = roleRank(actorRole);
 
     const user = await prisma.user.findFirst({
@@ -74,11 +73,10 @@ export async function fetchUserPermissionOverrides(
 export const updateUserPermissions = guardedAction(
   "admin:users",
   "admin:updatePermissions",
-  async (userId: string, overrides: Array<{ key: string; granted: boolean }>) => {
+  async (session, userId: string, overrides: Array<{ key: string; granted: boolean }>) => {
     validateUUID(userId, "user ID");
 
-    const session = await auth();
-    const actorRole = (session?.user as { role?: string })?.role ?? "pending";
+    const actorRole = session.user.role ?? "pending";
     const actorRank = roleRank(actorRole);
 
     const user = await prisma.user.findFirst({

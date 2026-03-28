@@ -78,7 +78,10 @@ describe("safe", () => {
       error: "An unexpected error occurred",
       code: "unexpectedError",
     });
-    expect(consoleSpy).toHaveBeenCalledWith("Unexpected action error:", expect.any(Error));
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining("Unexpected action error"),
+      expect.stringContaining("database exploded"),
+    );
     consoleSpy.mockRestore();
   });
 

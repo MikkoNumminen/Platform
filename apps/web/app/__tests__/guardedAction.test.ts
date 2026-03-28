@@ -33,7 +33,11 @@ describe("guardedAction", () => {
 
     const result = await action("arg1", "arg2");
     expect(result).toBeUndefined();
-    expect(fn).toHaveBeenCalledWith("arg1", "arg2");
+    expect(fn).toHaveBeenCalledWith(
+      expect.objectContaining({ user: expect.objectContaining({ id: "user-1" }) }),
+      "arg1",
+      "arg2",
+    );
   });
 
   test("returns error when not authenticated (null session)", async () => {
@@ -164,6 +168,11 @@ describe("guardedAction", () => {
     const action = guardedAction("topic:create", "create-topic", fn);
 
     await action("a", 42, { nested: true });
-    expect(fn).toHaveBeenCalledWith("a", 42, { nested: true });
+    expect(fn).toHaveBeenCalledWith(
+      expect.objectContaining({ user: expect.objectContaining({ id: "user-1" }) }),
+      "a",
+      42,
+      { nested: true },
+    );
   });
 });

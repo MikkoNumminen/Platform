@@ -49,7 +49,7 @@ jest.mock("@/lib/guardedAction", () => {
   function guardedAction<TArgs extends unknown[]>(
     permission: string,
     rateLimitKey: string,
-    fn: (...args: TArgs) => Promise<void>,
+    fn: (session: unknown, ...args: TArgs) => Promise<void>,
   ) {
     return async (...args: TArgs) => {
       return safe(async () => {
@@ -62,7 +62,7 @@ jest.mock("@/lib/guardedAction", () => {
           throw new ActionError("permissionDenied", `Missing permission: ${permission}`);
         }
         await rateLimit(rateLimitKey);
-        await fn(...args);
+        await fn(session, ...args);
       });
     };
   }

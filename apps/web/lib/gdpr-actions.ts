@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { ActionError } from "@/lib/actionErrors";
 import { safe, type ActionResult } from "@/lib/actionUtils";
 import { rateLimit } from "@/lib/rateLimit";
+import { logger } from "@/lib/logger";
 
 /**
  * GDPR Right to Erasure — anonymize user PII and mark as deleted.
@@ -218,7 +219,7 @@ export async function exportMyData(): Promise<{ error: string; code: string } | 
 
     return { data: JSON.stringify(exportData, null, 2) };
   } catch (error) {
-    console.error("Data export error:", error);
+    logger.error("Data export error", error, "gdpr");
     return { error: "An unexpected error occurred", code: "unexpectedError" };
   }
 }

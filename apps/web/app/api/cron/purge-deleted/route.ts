@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 const RETENTION_DAYS = 30;
+const RATE_LIMIT_MAX_AGE_HOURS = 24;
 
 /**
  * Purge soft-deleted records older than the retention period.
+ * Also cleans up expired rate limit entries.
  * Intended to be called by a cron job (e.g. Vercel Cron).
  * Protected by CRON_SECRET header to prevent unauthorized access.
  */
@@ -15,31 +18,41 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - RETENTION_DAYS);
+  try {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - RETENTION_DAYS);
 
-  const [posts, topics, threads, boards, forums, users, events] = await Promise.all([
-    prisma.post.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
-    prisma.topic.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
-    prisma.thread.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
-    prisma.board.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
-    prisma.forum.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
-    prisma.user.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
-    prisma.calendarEvent.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
-  ]);
+    const rateLimitCutoff = new Date();
+    rateLimitCutoff.setHours(rateLimitCutoff.getHours() - RATE_LIMIT_MAX_AGE_HOURS);
 
-  const summary = {
-    purgedBefore: cutoff.toISOString(),
-    deleted: {
-      posts: posts.count,
-      topics: topics.count,
-      threads: threads.count,
-      boards: boards.count,
-      forums: forums.count,
-      users: users.count,
-      calendarEvents: events.count,
-    },
-  };
+    const [posts, topics, threads, boards, forums, users, events, rateLimits] = await Promise.all([
+      prisma.post.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
+      prisma.topic.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
+      prisma.thread.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
+      prisma.board.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
+      prisma.forum.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
+      prisma.user.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
+      prisma.calendarEvent.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
+      prisma.rateLimit.deleteMany({ where: { windowStart: { lt: rateLimitCutoff } } }),
+    ]);
 
-  return NextResponse.json(summary);
+    const summary = {
+      purgedBefore: cutoff.toISOString(),
+      deleted: {
+        posts: posts.count,
+        topics: topics.count,
+        threads: threads.count,
+        boards: boards.count,
+        forums: forums.count,
+        users: users.count,
+        calendarEvents: events.count,
+        rateLimitEntries: rateLimits.count,
+      },
+    };
+
+    return NextResponse.json(summary);
+  } catch (error) {
+    logger.error("Purge cron failed", error, "cron/purge-deleted");
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }

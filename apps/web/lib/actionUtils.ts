@@ -1,4 +1,5 @@
 import { ActionError, RateLimitError } from "./actionErrors";
+import { logger } from "./logger";
 
 export type ActionResult = { error: string; code: string } | undefined;
 
@@ -37,7 +38,7 @@ export async function safe(fn: () => Promise<void>): Promise<ActionResult> {
     }
 
     // Unknown error — log but don't expose details
-    console.error("Unexpected action error:", error);
+    logger.error("Unexpected action error", error, "actions");
     return { error: "An unexpected error occurred", code: "unexpectedError" };
   }
 }
