@@ -82,6 +82,7 @@
   },
   "demo": {
     "tryDemo": "Tijaabi Demo — Akoon looma baahna",
+    "tryDemoShort": "Tijaabi Demo",
     "exitDemo": "Ka bax Demo",
     "bannerMessage": "Waxaad ku jirtaa habka demo. Dhammaan xogta way go'an tahay waana ku meel gaar ah.",
     "modeIndicator": "DEMO"

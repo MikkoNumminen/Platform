@@ -22,6 +22,7 @@ import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import LogoutIcon from "@mui/icons-material/Logout";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -46,33 +47,54 @@ export default function UserMenu() {
   const tm = useTranslations("userMenu");
   const td = useTranslations("demo");
 
+  const showDemo = process.env.NEXT_PUBLIC_DEMO_LOGIN !== "false";
+
   if (!session?.user) {
     return (
-      <Button
-        variant="outlined"
-        size="small"
-        onClick={() => signIn()}
-        sx={{
-          color: colors.green400,
-          borderColor: colors.green400,
-          fontWeight: 600,
-          animation: "signInPulse 2s ease-in-out infinite",
-          "@keyframes signInPulse": {
-            "0%, 100%": {
-              boxShadow: `0 0 4px var(--platform-green400)`,
-            },
-            "50%": {
-              boxShadow: `0 0 16px var(--platform-green400), 0 0 32px var(--platform-green400)`,
-            },
-          },
-          "&:hover": {
+      <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+        {showDemo && (
+          <Button
+            variant="contained"
+            size="small"
+            startIcon={<PlayArrowIcon />}
+            onClick={() => signIn("demo", { callbackUrl: "/" })}
+            sx={{
+              backgroundColor: "#4ade80",
+              color: "#000",
+              fontWeight: 600,
+              fontSize: "0.75rem",
+              "&:hover": { backgroundColor: "#22c55e" },
+            }}
+          >
+            {td("tryDemoShort")}
+          </Button>
+        )}
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => signIn()}
+          sx={{
+            color: colors.green400,
             borderColor: colors.green400,
-            backgroundColor: "rgba(var(--platform-green400-rgb, 74, 222, 128), 0.1)",
-          },
-        }}
-      >
-        {t("signIn")}
-      </Button>
+            fontWeight: 600,
+            animation: "signInPulse 2s ease-in-out infinite",
+            "@keyframes signInPulse": {
+              "0%, 100%": {
+                boxShadow: `0 0 4px var(--platform-green400)`,
+              },
+              "50%": {
+                boxShadow: `0 0 16px var(--platform-green400), 0 0 32px var(--platform-green400)`,
+              },
+            },
+            "&:hover": {
+              borderColor: colors.green400,
+              backgroundColor: "rgba(var(--platform-green400-rgb, 74, 222, 128), 0.1)",
+            },
+          }}
+        >
+          {t("signIn")}
+        </Button>
+      </Box>
     );
   }
 

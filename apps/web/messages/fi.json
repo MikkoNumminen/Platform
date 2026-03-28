@@ -82,6 +82,7 @@
   },
   "demo": {
     "tryDemo": "Kokeile demoa — ei tiliä tarvita",
+    "tryDemoShort": "Kokeile demoa",
     "exitDemo": "Poistu demosta",
     "bannerMessage": "Olet demotilassa. Kaikki tiedot ovat eristettyjä ja väliaikaisia.",
     "modeIndicator": "DEMO"

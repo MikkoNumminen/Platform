@@ -82,6 +82,7 @@
   },
   "demo": {
     "tryDemo": "Try Demo — No Account Needed",
+    "tryDemoShort": "Try Demo",
     "exitDemo": "Exit Demo",
     "bannerMessage": "You are in demo mode. All data is isolated and temporary.",
     "modeIndicator": "DEMO"
