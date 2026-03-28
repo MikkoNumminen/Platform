@@ -67,12 +67,18 @@ export default function TutorialProvider({ children }: { children: ReactNode }) 
   // Load progress on mount
   useEffect(() => {
     if (!session?.user) return;
-    getMyTourProgress().then((result) => {
-      if (result) {
-        setCompletedSteps(new Set(result.completedSteps));
-      }
-      setLoaded(true);
-    });
+    getMyTourProgress()
+      .then((result) => {
+        if (result) {
+          setCompletedSteps(new Set(result.completedSteps));
+        }
+      })
+      .catch((error) => {
+        console.error("[tutorial] Failed to load progress:", error);
+      })
+      .finally(() => {
+        setLoaded(true);
+      });
   }, [session?.user]);
 
   const currentStep = useMemo(() => {

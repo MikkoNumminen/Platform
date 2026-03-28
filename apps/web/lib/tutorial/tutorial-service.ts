@@ -125,7 +125,11 @@ export async function getMyTourProgress(): Promise<{
   const role = (session.user as { role?: string }).role ?? "pending";
 
   // Sync progress with actual user data (backfill steps done before tutorial existed)
-  await syncTourProgress(session.user.id);
+  try {
+    await syncTourProgress(session.user.id);
+  } catch (error) {
+    console.error("[tutorial] Sync progress error:", error);
+  }
 
   const completedSteps = await getTourProgress(session.user.id);
   return { completedSteps, role };
