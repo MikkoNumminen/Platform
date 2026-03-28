@@ -4,6 +4,25 @@ import { prisma } from "@/lib/db";
 import { LEVEL_THRESHOLDS } from "./xp-config";
 
 export async function getGamificationStats() {
+  try {
+    return await fetchGamificationStats();
+  } catch (error) {
+    console.error("[gamification] Stats query failed (tables may not exist yet):", error);
+    return {
+      summary: { totalUsersWithXp: 0, totalXpAwarded: 0, averageXp: 0, highestXp: 0 },
+      levelDistribution: LEVEL_THRESHOLDS.map((lt) => ({
+        level: lt.level,
+        title: lt.title,
+        count: 0,
+      })),
+      topAchievements: [],
+      questCompletionRates: [],
+      recentActivity: [],
+    };
+  }
+}
+
+async function fetchGamificationStats() {
   const [
     totalUsersWithXp,
     xpAggregates,

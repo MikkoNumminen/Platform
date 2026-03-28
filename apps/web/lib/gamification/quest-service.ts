@@ -64,30 +64,36 @@ export async function updateQuestProgress(userId: string, action: string) {
 }
 
 export async function getActiveQuests(userId: string) {
-  const quests = await prisma.quest.findMany({ orderBy: [{ type: "asc" }, { sortOrder: "asc" }] });
-  const progress = await prisma.userQuestProgress.findMany({ where: { userId } });
-  const progressMap = new Map(progress.map((p) => [p.questId, p]));
-  return quests.map((quest) => {
-    const p = progressMap.get(quest.id);
-    const criteria = quest.criteria as { action: string; count: number };
-    let isComplete = p?.completed ?? false;
-    if (quest.repeatable && p?.resetAt && p?.completedAt && p.completedAt < p.resetAt)
-      isComplete = false;
-    return {
-      id: quest.id,
-      key: quest.key,
-      name: quest.name,
-      description: quest.description,
-      icon: quest.icon,
-      type: quest.type,
-      xpReward: quest.xpReward,
-      repeatable: quest.repeatable,
-      progress: isComplete ? criteria.count : (p?.progress ?? 0),
-      target: criteria.count,
-      completed: isComplete,
-      completedAt: isComplete ? p?.completedAt : null,
-    };
-  });
+  try {
+    const quests = await prisma.quest.findMany({
+      orderBy: [{ type: "asc" }, { sortOrder: "asc" }],
+    });
+    const progress = await prisma.userQuestProgress.findMany({ where: { userId } });
+    const progressMap = new Map(progress.map((p) => [p.questId, p]));
+    return quests.map((quest) => {
+      const p = progressMap.get(quest.id);
+      const criteria = quest.criteria as { action: string; count: number };
+      let isComplete = p?.completed ?? false;
+      if (quest.repeatable && p?.resetAt && p?.completedAt && p.completedAt < p.resetAt)
+        isComplete = false;
+      return {
+        id: quest.id,
+        key: quest.key,
+        name: quest.name,
+        description: quest.description,
+        icon: quest.icon,
+        type: quest.type,
+        xpReward: quest.xpReward,
+        repeatable: quest.repeatable,
+        progress: isComplete ? criteria.count : (p?.progress ?? 0),
+        target: criteria.count,
+        completed: isComplete,
+        completedAt: isComplete ? p?.completedAt : null,
+      };
+    });
+  } catch {
+    return [];
+  }
 }
 
 export async function resetDailyQuests() {

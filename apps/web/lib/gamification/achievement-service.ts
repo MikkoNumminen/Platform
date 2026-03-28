@@ -82,17 +82,21 @@ export async function getUserAchievements(userId: string) {
 }
 
 export async function getAllAchievementsWithStatus(userId: string) {
-  const achievements = await prisma.achievement.findMany({
-    orderBy: [{ category: "asc" }, { sortOrder: "asc" }],
-  });
-  const userAchievements = await prisma.userAchievement.findMany({
-    where: { userId },
-    select: { achievementId: true, unlockedAt: true },
-  });
-  const unlockedMap = new Map(userAchievements.map((ua) => [ua.achievementId, ua.unlockedAt]));
-  return achievements.map((a) => ({
-    ...a,
-    unlocked: unlockedMap.has(a.id),
-    unlockedAt: unlockedMap.get(a.id) ?? null,
-  }));
+  try {
+    const achievements = await prisma.achievement.findMany({
+      orderBy: [{ category: "asc" }, { sortOrder: "asc" }],
+    });
+    const userAchievements = await prisma.userAchievement.findMany({
+      where: { userId },
+      select: { achievementId: true, unlockedAt: true },
+    });
+    const unlockedMap = new Map(userAchievements.map((ua) => [ua.achievementId, ua.unlockedAt]));
+    return achievements.map((a) => ({
+      ...a,
+      unlocked: unlockedMap.has(a.id),
+      unlockedAt: unlockedMap.get(a.id) ?? null,
+    }));
+  } catch {
+    return [];
+  }
 }

@@ -55,31 +55,39 @@ export async function awardXp(
 }
 
 export async function getUserXpData(userId: string) {
-  const userLevel = await prisma.userLevel.findUnique({ where: { userId } });
-  return { totalXp: userLevel?.totalXp ?? 0, level: userLevel?.level ?? 1 };
+  try {
+    const userLevel = await prisma.userLevel.findUnique({ where: { userId } });
+    return { totalXp: userLevel?.totalXp ?? 0, level: userLevel?.level ?? 1 };
+  } catch {
+    return { totalXp: 0, level: 1 };
+  }
 }
 
 export async function getLeaderboard(limit = 20) {
-  const entries = await prisma.userLevel.findMany({
-    where: { user: { deletedAt: null } },
-    orderBy: { totalXp: "desc" },
-    take: limit,
-    include: {
-      user: {
-        select: { id: true, alias: true, name: true, image: true, avatarUrl: true, role: true },
+  try {
+    const entries = await prisma.userLevel.findMany({
+      where: { user: { deletedAt: null } },
+      orderBy: { totalXp: "desc" },
+      take: limit,
+      include: {
+        user: {
+          select: { id: true, alias: true, name: true, image: true, avatarUrl: true, role: true },
+        },
       },
-    },
-  });
-  return entries.map((e, index) => ({
-    rank: index + 1,
-    userId: e.userId,
-    alias: e.user.alias,
-    name: e.user.name,
-    image: e.user.avatarUrl ?? e.user.image,
-    role: e.user.role,
-    totalXp: e.totalXp,
-    level: e.level,
-  }));
+    });
+    return entries.map((e, index) => ({
+      rank: index + 1,
+      userId: e.userId,
+      alias: e.user.alias,
+      name: e.user.name,
+      image: e.user.avatarUrl ?? e.user.image,
+      role: e.user.role,
+      totalXp: e.totalXp,
+      level: e.level,
+    }));
+  } catch {
+    return [];
+  }
 }
 
 export async function getRecentXpTransactions(userId: string, limit = 20) {
