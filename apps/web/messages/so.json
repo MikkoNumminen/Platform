@@ -36,7 +36,9 @@
     "thankYou": {
       "title": "Mahadsanid!",
       "message": "Ra'yigaagu wuxuu naga caawimayaa inaan dhisno wax wanaagsan.",
-      "backHome": "Ku noqo bogga hore"
+      "backHome": "Ku noqo bogga hore",
+      "pendingTitle": "Sugitaanka ansixinta",
+      "pendingMessage": "Maamulaha ayaa dib u eegis ku samayn doona gelitaankaaga dhawaan. Waxaad helaysaa gelitaan buuxa markii la ansixiyo."
     }
   },
   "shoutbox": {

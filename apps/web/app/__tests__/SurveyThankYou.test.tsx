@@ -2,7 +2,17 @@ import { render, screen } from "@testing-library/react";
 import { axe } from "jest-axe";
 import SurveyThankYou from "../components/survey/SurveyThankYou";
 
+const mockUseSession = jest.fn();
+
+jest.mock("next-auth/react", () => ({
+  useSession: () => mockUseSession(),
+}));
+
 describe("SurveyThankYou", () => {
+  beforeEach(() => {
+    mockUseSession.mockReturnValue({ data: { user: { role: "user" } } });
+  });
+
   test("renders thank you message", () => {
     render(<SurveyThankYou />);
     expect(screen.getByText("Thank you!")).toBeInTheDocument();
@@ -15,10 +25,17 @@ describe("SurveyThankYou", () => {
     ).toBeInTheDocument();
   });
 
-  test("renders back to home link", () => {
+  test("renders back to home link for approved users", () => {
     render(<SurveyThankYou />);
     const link = screen.getByRole("link", { name: /back to home/i });
     expect(link).toHaveAttribute("href", "/");
+  });
+
+  test("shows pending approval message for pending users", () => {
+    mockUseSession.mockReturnValue({ data: { user: { role: "pending" } } });
+    render(<SurveyThankYou />);
+    expect(screen.getByText("Waiting for approval")).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /back to home/i })).not.toBeInTheDocument();
   });
 
   test("has no accessibility violations", async () => {

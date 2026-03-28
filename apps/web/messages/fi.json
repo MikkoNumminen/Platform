@@ -36,7 +36,9 @@
     "thankYou": {
       "title": "Kiitos!",
       "message": "Palautteesi auttaa meitä rakentamaan jotain hienoa.",
-      "backHome": "Takaisin etusivulle"
+      "backHome": "Takaisin etusivulle",
+      "pendingTitle": "Odottaa hyväksyntää",
+      "pendingMessage": "Ylläpitäjä tarkistaa pääsysi pian. Saat täydet oikeudet hyväksynnän jälkeen."
     }
   },
   "shoutbox": {

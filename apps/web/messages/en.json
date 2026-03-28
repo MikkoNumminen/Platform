@@ -36,7 +36,9 @@
     "thankYou": {
       "title": "Thank you!",
       "message": "Your feedback will help us build something great.",
-      "backHome": "Back to home"
+      "backHome": "Back to home",
+      "pendingTitle": "Waiting for approval",
+      "pendingMessage": "An admin will review your access shortly. You'll get full access once approved."
     }
   },
   "shoutbox": {
