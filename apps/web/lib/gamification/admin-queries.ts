@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
+import { getDemoSessionId } from "@/lib/demo-session";
 import { LEVEL_THRESHOLDS } from "./xp-config";
 
 export async function getGamificationStats() {
@@ -23,6 +24,7 @@ export async function getGamificationStats() {
 }
 
 async function fetchGamificationStats() {
+  const sessionId = await getDemoSessionId();
   const [
     totalUsersWithXp,
     xpAggregates,
@@ -31,9 +33,12 @@ async function fetchGamificationStats() {
     questsWithCounts,
     recentActivity,
   ] = await Promise.all([
-    prisma.userLevel.count(),
+    prisma.userLevel.count({
+      where: { sessionId },
+    }),
 
     prisma.userLevel.aggregate({
+      where: { sessionId },
       _sum: { totalXp: true },
       _avg: { totalXp: true },
       _max: { totalXp: true },
@@ -41,6 +46,7 @@ async function fetchGamificationStats() {
 
     prisma.userLevel.groupBy({
       by: ["level"],
+      where: { sessionId },
       _count: { level: true },
       orderBy: { level: "asc" },
     }),
@@ -66,6 +72,7 @@ async function fetchGamificationStats() {
     }),
 
     prisma.xpTransaction.findMany({
+      where: { sessionId },
       orderBy: { createdAt: "desc" },
       take: 20,
       include: {

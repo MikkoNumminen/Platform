@@ -6,6 +6,7 @@ import { ActionError } from "@/lib/actionErrors";
 import { safe, type ActionResult } from "@/lib/actionUtils";
 import { validateSurveyData, type SurveyData } from "@/lib/survey-config";
 import { triggerGamification } from "@/lib/gamification/trigger";
+import { getDemoSessionId } from "@/lib/demo-session";
 
 export async function submitSurvey(data: SurveyData): Promise<ActionResult> {
   return safe(async () => {
@@ -17,6 +18,7 @@ export async function submitSurvey(data: SurveyData): Promise<ActionResult> {
 
     const session = await auth();
     const userId = session?.user?.id ?? null;
+    const sessionId = await getDemoSessionId();
 
     await prisma.surveyResponse.create({
       data: {
@@ -28,6 +30,7 @@ export async function submitSurvey(data: SurveyData): Promise<ActionResult> {
         wantsToDevelop: (data.developmentSkills ?? []).length > 0,
         developmentSkills: data.developmentSkills ?? [],
         userId,
+        sessionId,
       },
     });
 

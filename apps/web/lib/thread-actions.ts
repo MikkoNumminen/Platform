@@ -6,6 +6,7 @@ import { ActionError } from "./actionErrors";
 import { validateUUID, createStringValidator } from "./actionUtils";
 import { revalidatePath } from "next/cache";
 import { triggerGamification } from "./gamification/trigger";
+import { getDemoSessionId } from "@/lib/demo-session";
 
 const validateThreadBody = createStringValidator(
   "Comment",
@@ -28,11 +29,12 @@ export const createThread = guardedAction(
     validateUUID(parentId, "parentId");
     if (replyToId) validateUUID(replyToId, "replyToId");
     const validBody = validateThreadBody(body);
+    const sessionId = await getDemoSessionId();
 
     // Verify parent exists
     if (parentType === "POST") {
       const post = await prisma.post.findFirst({
-        where: { id: parentId, deletedAt: null },
+        where: { id: parentId, deletedAt: null, sessionId },
       });
       if (!post) {
         throw new ActionError("postNotFound", "Post not found");
@@ -42,7 +44,7 @@ export const createThread = guardedAction(
     // Verify reply target exists
     if (replyToId) {
       const replyTarget = await prisma.thread.findFirst({
-        where: { id: replyToId, deletedAt: null },
+        where: { id: replyToId, deletedAt: null, sessionId },
       });
       if (!replyTarget) {
         throw new ActionError("threadNotFound", "Reply target not found");
@@ -58,6 +60,7 @@ export const createThread = guardedAction(
         parentId,
         authorId,
         replyToId: replyToId ?? null,
+        sessionId,
       },
     });
 
@@ -74,9 +77,10 @@ export const deleteThread = guardedAction(
   "thread:delete",
   async (session, threadId: string, revalidateUrl?: string) => {
     validateUUID(threadId, "threadId");
+    const sessionId = await getDemoSessionId();
 
     const thread = await prisma.thread.findFirst({
-      where: { id: threadId, deletedAt: null },
+      where: { id: threadId, deletedAt: null, sessionId },
     });
     if (!thread) {
       throw new ActionError("threadNotFound", "Comment not found");

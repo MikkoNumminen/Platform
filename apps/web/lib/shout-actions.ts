@@ -7,6 +7,7 @@ import { safe, type ActionResult } from "@/lib/actionUtils";
 import { rateLimit } from "@/lib/rateLimit";
 import { revalidatePath } from "next/cache";
 import { triggerGamification } from "./gamification/trigger";
+import { getDemoSessionId } from "@/lib/demo-session";
 
 const MAX_SHOUT_LENGTH = 280;
 
@@ -24,10 +25,13 @@ export async function createShout(message: string): Promise<ActionResult> {
 
     await rateLimit("shout:create");
 
+    const sessionId = await getDemoSessionId();
+
     await prisma.shout.create({
       data: {
         message: trimmed,
         authorId: session.user.id,
+        sessionId,
       },
     });
 

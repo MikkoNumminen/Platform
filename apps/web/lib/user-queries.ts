@@ -1,8 +1,10 @@
 import { prisma } from "@/lib/db";
+import { getDemoSessionId } from "@/lib/demo-session";
 
 export async function getUsers() {
+  const sessionId = await getDemoSessionId();
   return prisma.user.findMany({
-    where: { deletedAt: null },
+    where: { deletedAt: null, sessionId },
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
@@ -42,8 +44,9 @@ export async function getUsersWithOverrides(userIds: string[]): Promise<Set<stri
 }
 
 export async function getUserById(id: string) {
+  const sessionId = await getDemoSessionId();
   return prisma.user.findFirst({
-    where: { id, deletedAt: null },
+    where: { id, deletedAt: null, sessionId },
     select: {
       id: true,
       email: true,

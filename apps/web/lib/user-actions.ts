@@ -6,6 +6,7 @@ import { guardedAction } from "@/lib/guardedAction";
 import { ActionError } from "@/lib/actionErrors";
 import { validateUUID } from "@/lib/actionUtils";
 import { ROLES, PERMISSIONS, type PermissionKey } from "@/lib/permissions";
+import { getDemoSessionId } from "@/lib/demo-session";
 
 // ROLES is ordered highest → lowest: superuser, vuohi, admin, user, pending
 function roleRank(role: string): number {
@@ -25,9 +26,10 @@ export const updateUserRole = guardedAction(
 
     const actorRole = session.user.role ?? "pending";
     const actorRank = roleRank(actorRole);
+    const sessionId = await getDemoSessionId();
 
     const user = await prisma.user.findFirst({
-      where: { id: userId, deletedAt: null },
+      where: { id: userId, deletedAt: null, sessionId },
     });
     if (!user) {
       throw new ActionError("notFound", "User not found");
@@ -66,8 +68,10 @@ export const setDeveloperTag = guardedAction(
       throw new ActionError("invalidInput", `Invalid developer tag: ${tag}`);
     }
 
+    const sessionId = await getDemoSessionId();
+
     const user = await prisma.user.findFirst({
-      where: { id: userId, deletedAt: null },
+      where: { id: userId, deletedAt: null, sessionId },
     });
     if (!user) {
       throw new ActionError("notFound", "User not found");
@@ -102,9 +106,10 @@ export const updateUserPermissions = guardedAction(
 
     const actorRole = session.user.role ?? "pending";
     const actorRank = roleRank(actorRole);
+    const sessionId = await getDemoSessionId();
 
     const user = await prisma.user.findFirst({
-      where: { id: userId, deletedAt: null },
+      where: { id: userId, deletedAt: null, sessionId },
     });
     if (!user) {
       throw new ActionError("notFound", "User not found");

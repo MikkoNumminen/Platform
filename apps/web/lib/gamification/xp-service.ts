@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
+import { getDemoSessionId } from "@/lib/demo-session";
 import { getLevelForXp, type XpSource, XP_AMOUNTS, DAILY_SHOUT_XP_CAP } from "./xp-config";
 
 export interface XpAwardResult {
@@ -65,8 +66,9 @@ export async function getUserXpData(userId: string) {
 
 export async function getLeaderboard(limit = 20) {
   try {
+    const sessionId = await getDemoSessionId();
     const entries = await prisma.userLevel.findMany({
-      where: { user: { deletedAt: null } },
+      where: { user: { deletedAt: null, sessionId } },
       orderBy: { totalXp: "desc" },
       take: limit,
       include: {
