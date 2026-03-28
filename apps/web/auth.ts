@@ -66,6 +66,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.userId = dbUser.id;
         token.alias = dbUser.alias;
         token.role = dbUser.role;
+        token.hasSeenPromotion = dbUser.hasSeenPromotion;
         token.permissionsVersion = dbUser.permissionsVersion;
         const overrides = dbUser.permissions.map((up) => ({
           key: up.permission.key,
@@ -76,7 +77,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // Lightweight check: detect permission/role changes
         const dbUser = await prisma.user.findUnique({
           where: { email: token.email },
-          select: { id: true, alias: true, role: true, permissionsVersion: true },
+          select: {
+            id: true,
+            alias: true,
+            role: true,
+            hasSeenPromotion: true,
+            permissionsVersion: true,
+          },
         });
 
         if (!dbUser) {
@@ -87,6 +94,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         token.alias = dbUser.alias;
+        token.hasSeenPromotion = dbUser.hasSeenPromotion;
 
         if (dbUser.permissionsVersion !== token.permissionsVersion || dbUser.role !== token.role) {
           const fullUser = await prisma.user.findUnique({
@@ -101,6 +109,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           if (fullUser) {
             token.alias = fullUser.alias;
             token.role = fullUser.role;
+            token.hasSeenPromotion = fullUser.hasSeenPromotion;
             token.permissionsVersion = fullUser.permissionsVersion;
             const overrides = fullUser.permissions.map((up) => ({
               key: up.permission.key,
@@ -115,11 +124,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
 
     async session({ session, token }) {
-      if (token.userId) session.user.id = token.userId as string;
-      session.user.alias = (token.alias as string) ?? null;
-      if (token.role) session.user.role = token.role as string;
-      if (token.permissions)
-        session.user.permissions = token.permissions as Record<string, boolean>;
+      if (token.userId) session.user.id = token.userId;
+      session.user.alias = token.alias ?? null;
+      if (token.role) session.user.role = token.role;
+      session.user.hasSeenPromotion = token.hasSeenPromotion ?? true;
+      if (token.permissions) session.user.permissions = token.permissions;
       return session;
     },
   },

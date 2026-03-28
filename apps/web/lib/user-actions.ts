@@ -44,11 +44,14 @@ export const updateUserRole = guardedAction(
       throw new ActionError("permissionDenied", "Cannot assign a role at the same or higher rank");
     }
 
+    const isPendingToVuohi = user.role === "pending" && role === "vuohi";
+
     await prisma.user.update({
       where: { id: userId },
       data: {
         role,
         permissionsVersion: { increment: 1 },
+        ...(isPendingToVuohi && { hasSeenPromotion: false }),
       },
     });
   },

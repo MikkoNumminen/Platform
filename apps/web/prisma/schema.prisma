@@ -17,6 +17,7 @@ model User {
   avatarUrl          String?
   bio                String?
   role               String    @default("pending")
+  hasSeenPromotion   Boolean   @default(true)
   permissionsVersion Int       @default(0)
   deletedAt          DateTime?
   createdAt          DateTime  @default(now())
