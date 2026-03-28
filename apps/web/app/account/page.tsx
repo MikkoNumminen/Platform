@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 import TopBar from "../components/TopBar";
 import { deleteMyAccount, exportMyData } from "@/lib/gdpr-actions";
+import { setAlias } from "@/lib/alias-actions";
 import { colors } from "../styles";
 import { getMyGamificationProfile } from "@/lib/gamification/xp-actions";
 
@@ -32,6 +33,9 @@ export default function AccountPage() {
   const [exporting, setExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [editingAlias, setEditingAlias] = useState(false);
+  const [aliasValue, setAliasValue] = useState("");
+  const [aliasSaving, setAliasSaving] = useState(false);
   const [gamProfile, setGamProfile] = useState<{
     totalXp: number;
     level: number;
@@ -51,6 +55,26 @@ export default function AccountPage() {
   }
 
   const user = session.user;
+  const currentAlias = (user as { alias?: string }).alias ?? "";
+
+  const handleAliasEdit = () => {
+    setAliasValue(currentAlias);
+    setEditingAlias(true);
+    setError(null);
+  };
+
+  const handleAliasSave = async () => {
+    setAliasSaving(true);
+    setError(null);
+    const result = await setAlias(aliasValue);
+    if (result?.error) {
+      setError(result.error);
+    } else {
+      setSuccess("Alias updated successfully.");
+      setEditingAlias(false);
+    }
+    setAliasSaving(false);
+  };
 
   const handleExport = async () => {
     setExporting(true);
@@ -115,7 +139,48 @@ export default function AccountPage() {
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
               <ProfileField label="Email" value={user.email ?? "—"} />
               <ProfileField label="Name" value={user.name ?? "—"} />
-              <ProfileField label="Alias" value={(user as { alias?: string }).alias ?? "—"} />
+              {editingAlias ? (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Typography variant="body2" sx={{ color: colors.slate400, minWidth: 60 }}>
+                    Alias
+                  </Typography>
+                  <TextField
+                    size="small"
+                    value={aliasValue}
+                    onChange={(e) => setAliasValue(e.target.value)}
+                    inputProps={{ maxLength: 30, minLength: 2 }}
+                    sx={{ flex: 1 }}
+                  />
+                  <Button
+                    size="small"
+                    variant="contained"
+                    onClick={handleAliasSave}
+                    disabled={aliasSaving || aliasValue.trim().length < 2}
+                    sx={{ minWidth: "auto" }}
+                  >
+                    {aliasSaving ? "..." : "Save"}
+                  </Button>
+                  <Button
+                    size="small"
+                    onClick={() => setEditingAlias(false)}
+                    disabled={aliasSaving}
+                    sx={{ minWidth: "auto" }}
+                  >
+                    Cancel
+                  </Button>
+                </Box>
+              ) : (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <ProfileField label="Alias" value={currentAlias || "—"} />
+                  <Button
+                    size="small"
+                    onClick={handleAliasEdit}
+                    sx={{ color: colors.green400, minWidth: "auto", textTransform: "none" }}
+                  >
+                    Change
+                  </Button>
+                </Box>
+              )}
               <ProfileField label="Role" value={(user as { role?: string }).role ?? "—"} />
             </Box>
           </CardContent>

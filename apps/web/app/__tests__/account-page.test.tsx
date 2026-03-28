@@ -18,6 +18,10 @@ jest.mock("@/lib/gdpr-actions", () => ({
   exportMyData: jest.fn(),
 }));
 
+jest.mock("@/lib/alias-actions", () => ({
+  setAlias: jest.fn(),
+}));
+
 jest.mock("@/lib/gamification/xp-actions", () => ({
   getLatestXpGains: jest.fn().mockResolvedValue([]),
   getMyGamificationProfile: jest.fn().mockResolvedValue(null),
@@ -80,5 +84,15 @@ describe("AccountPage", () => {
     });
     render(<AccountPage />);
     expect(screen.getByText("Privacy Policy")).toBeInTheDocument();
+  });
+
+  test("renders change alias button", () => {
+    mockSession.mockReturnValue({
+      data: {
+        user: { id: "u1", email: "a@b.com", name: "A", alias: "myalias" },
+      },
+    });
+    render(<AccountPage />);
+    expect(screen.getByRole("button", { name: /change/i })).toBeInTheDocument();
   });
 });
