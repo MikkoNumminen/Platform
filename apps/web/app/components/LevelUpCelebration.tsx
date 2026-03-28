@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { colors } from "../styles";
 
 interface LevelUpCelebrationProps {
   level: number;
@@ -39,7 +40,7 @@ export default function LevelUpCelebration({ level, title, onComplete }: LevelUp
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "rgba(0, 0, 0, 0.85)",
+          backgroundColor: colors.backdrop,
           pointerEvents: "all",
         }}
         onClick={() => {
@@ -84,9 +85,9 @@ export default function LevelUpCelebration({ level, title, onComplete }: LevelUp
           <motion.div
             animate={{
               textShadow: [
-                "0 0 20px #4ade80, 0 0 40px #4ade80",
-                "0 0 30px #22d3ee, 0 0 60px #22d3ee",
-                "0 0 20px #4ade80, 0 0 40px #4ade80",
+                `0 0 20px ${colors.green400}, 0 0 40px ${colors.green400}`,
+                `0 0 30px ${colors.cyan400}, 0 0 60px ${colors.cyan400}`,
+                `0 0 20px ${colors.green400}, 0 0 40px ${colors.green400}`,
               ],
             }}
             transition={{ duration: 1.5, repeat: Infinity }}
@@ -99,7 +100,7 @@ export default function LevelUpCelebration({ level, title, onComplete }: LevelUp
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
             style={{
-              color: "#4ade80",
+              color: colors.green400,
               fontSize: "14px",
               fontWeight: 600,
               letterSpacing: "0.2em",
@@ -114,11 +115,11 @@ export default function LevelUpCelebration({ level, title, onComplete }: LevelUp
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
             style={{
-              color: "#ffffff",
+              color: colors.slate100,
               fontSize: "48px",
               fontWeight: 700,
               margin: "8px 0 4px",
-              textShadow: "0 0 20px rgba(74, 222, 128, 0.5)",
+              textShadow: `0 0 20px ${colors.accentGlow}`,
             }}
           >
             Level {level}
@@ -128,7 +129,7 @@ export default function LevelUpCelebration({ level, title, onComplete }: LevelUp
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9 }}
             style={{
-              color: "#94a3b8",
+              color: colors.slate400,
               fontSize: "20px",
               fontWeight: 300,
               letterSpacing: "0.05em",
@@ -142,7 +143,7 @@ export default function LevelUpCelebration({ level, title, onComplete }: LevelUp
             animate={{ opacity: 0.5 }}
             transition={{ delay: 2 }}
             style={{
-              color: "#64748b",
+              color: colors.slate500,
               fontSize: "12px",
               marginTop: "24px",
             }}

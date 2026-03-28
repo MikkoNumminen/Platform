@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from "react";
 import { Snackbar, Box, Typography } from "@mui/material";
+import { colors } from "../styles";
 import { getLatestXpGains } from "@/lib/gamification/xp-actions";
 import { getLevelForXp } from "@/lib/gamification/xp-config";
 import LevelUpCelebration from "./LevelUpCelebration";
@@ -112,15 +113,17 @@ export default function XpToastProvider({ children }: { children: ReactNode }) {
               px: 2,
               py: 1,
               borderRadius: 2,
-              backgroundColor: "rgba(0, 0, 0, 0.9)",
-              border: "1px solid rgba(74, 222, 128, 0.3)",
-              boxShadow: "0 0 16px rgba(74, 222, 128, 0.2)",
+              backgroundColor: colors.backdrop,
+              border: `1px solid ${colors.accentBorder}`,
+              boxShadow: `0 0 16px ${colors.accentGlow}`,
             }}
           >
-            <Typography sx={{ color: "#4ade80", fontWeight: 700, fontSize: "0.95rem" }}>
+            <Typography sx={{ color: colors.green400, fontWeight: 700, fontSize: "0.95rem" }}>
               +{toast.amount} XP
             </Typography>
-            <Typography sx={{ color: "#94a3b8", fontSize: "0.8rem" }}>{toast.label}</Typography>
+            <Typography sx={{ color: colors.slate400, fontSize: "0.8rem" }}>
+              {toast.label}
+            </Typography>
           </Box>
         </Snackbar>
       ))}

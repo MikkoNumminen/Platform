@@ -90,8 +90,8 @@ export default async function GamificationDashboardPage() {
                       tooltip: {
                         sx: {
                           maxWidth: 360,
-                          backgroundColor: "rgba(30, 30, 30, 0.97)",
-                          border: "1px solid rgba(74, 222, 128, 0.2)",
+                          backgroundColor: colors.backdrop,
+                          border: `1px solid ${colors.accentBorder}`,
                           p: 1.5,
                         },
                       },
@@ -116,7 +116,7 @@ export default async function GamificationDashboardPage() {
                         px: 1,
                         py: 0.5,
                         transition: "background-color 0.15s",
-                        "&:hover": { backgroundColor: "rgba(255,255,255,0.04)" },
+                        "&:hover": { backgroundColor: colors.hoverOverlay },
                       }}
                     >
                       {hasUsers ? (
@@ -142,12 +142,12 @@ export default async function GamificationDashboardPage() {
                           sx={{
                             height: 20,
                             borderRadius: 2,
-                            backgroundColor: "rgba(255,255,255,0.05)",
+                            backgroundColor: colors.surfaceOverlay,
                             "& .MuiLinearProgress-bar": {
                               borderRadius: 2,
                               background: hasUsers
-                                ? "linear-gradient(90deg, #4ade80, #22d3ee)"
-                                : "rgba(255,255,255,0.1)",
+                                ? colors.progressGradient
+                                : colors.surfaceOverlay,
                             },
                           }}
                         />
@@ -203,7 +203,7 @@ export default async function GamificationDashboardPage() {
                       <Chip
                         label={`${ta.count} users`}
                         size="small"
-                        sx={{ backgroundColor: "rgba(74,222,128,0.15)", color: colors.green400 }}
+                        sx={{ backgroundColor: colors.accentBgSubtle, color: colors.green400 }}
                       />
                     </Box>
                   ))}
@@ -237,7 +237,7 @@ export default async function GamificationDashboardPage() {
                         sx={{
                           height: 4,
                           borderRadius: 2,
-                          backgroundColor: "rgba(255,255,255,0.05)",
+                          backgroundColor: colors.surfaceOverlay,
                           "& .MuiLinearProgress-bar": {
                             borderRadius: 2,
                             backgroundColor: colors.green400,
@@ -267,7 +267,7 @@ export default async function GamificationDashboardPage() {
                     label={`+${activity.amount}`}
                     size="small"
                     sx={{
-                      backgroundColor: "rgba(74,222,128,0.15)",
+                      backgroundColor: colors.accentBgSubtle,
                       color: colors.green400,
                       fontWeight: 600,
                       minWidth: 50,
@@ -380,10 +380,10 @@ function StatCard({ label, value }: { label: string; value: string | number }) {
   return (
     <Card>
       <CardContent sx={{ textAlign: "center" }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, color: "#4ade80" }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, color: colors.green400 }}>
           {value}
         </Typography>
-        <Typography variant="body2" sx={{ color: "#94a3b8" }}>
+        <Typography variant="body2" sx={{ color: colors.slate400 }}>
           {label}
         </Typography>
       </CardContent>

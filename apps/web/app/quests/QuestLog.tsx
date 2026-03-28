@@ -72,10 +72,10 @@ export default function QuestLog({ quests, xpProgress }: QuestLogProps) {
               sx={{
                 height: 12,
                 borderRadius: 2,
-                backgroundColor: "rgba(255,255,255,0.05)",
+                backgroundColor: colors.surfaceOverlay,
                 "& .MuiLinearProgress-bar": {
                   borderRadius: 2,
-                  background: "linear-gradient(90deg, #4ade80, #22d3ee)",
+                  background: colors.progressGradient,
                 },
               }}
             />
@@ -88,7 +88,10 @@ export default function QuestLog({ quests, xpProgress }: QuestLogProps) {
               </Typography>
             )}
             {!xpProgress.next && (
-              <Typography variant="caption" sx={{ color: "#4ade80", mt: 0.5, display: "block" }}>
+              <Typography
+                variant="caption"
+                sx={{ color: colors.green400, mt: 0.5, display: "block" }}
+              >
                 Max level reached!
               </Typography>
             )}
@@ -102,8 +105,8 @@ export default function QuestLog({ quests, xpProgress }: QuestLogProps) {
           sx={{
             mb: 2,
             "& .MuiTab-root": { color: colors.slate400 },
-            "& .Mui-selected": { color: "#4ade80" },
-            "& .MuiTabs-indicator": { backgroundColor: "#4ade80" },
+            "& .Mui-selected": { color: colors.green400 },
+            "& .MuiTabs-indicator": { backgroundColor: colors.green400 },
           }}
         >
           {QUEST_TABS.map((t) => (
@@ -123,7 +126,7 @@ export default function QuestLog({ quests, xpProgress }: QuestLogProps) {
               key={quest.id}
               sx={{
                 opacity: quest.completed ? 0.6 : 1,
-                border: quest.completed ? "1px solid rgba(74,222,128,0.3)" : undefined,
+                border: quest.completed ? `1px solid ${colors.accentBorder}` : undefined,
               }}
             >
               <CardContent sx={{ py: 1.5, "&:last-child": { pb: 1.5 } }}>
@@ -138,8 +141,8 @@ export default function QuestLog({ quests, xpProgress }: QuestLogProps) {
                         label={`+${quest.xpReward} XP`}
                         size="small"
                         sx={{
-                          backgroundColor: "rgba(74,222,128,0.15)",
-                          color: "#4ade80",
+                          backgroundColor: colors.accentBgSubtle,
+                          color: colors.green400,
                           fontWeight: 600,
                           height: 22,
                           fontSize: "0.7rem",
@@ -150,8 +153,8 @@ export default function QuestLog({ quests, xpProgress }: QuestLogProps) {
                           label="Complete"
                           size="small"
                           sx={{
-                            backgroundColor: "rgba(74,222,128,0.2)",
-                            color: "#4ade80",
+                            backgroundColor: colors.accentBgSubtle,
+                            color: colors.green400,
                             height: 22,
                             fontSize: "0.7rem",
                           }}
@@ -190,10 +193,10 @@ export default function QuestLog({ quests, xpProgress }: QuestLogProps) {
                           sx={{
                             height: 6,
                             borderRadius: 1,
-                            backgroundColor: "rgba(255,255,255,0.05)",
+                            backgroundColor: colors.surfaceOverlay,
                             "& .MuiLinearProgress-bar": {
                               borderRadius: 1,
-                              backgroundColor: quest.completed ? "#4ade80" : "#22d3ee",
+                              backgroundColor: quest.completed ? colors.green400 : colors.cyan400,
                             },
                           }}
                         />

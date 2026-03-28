@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { markPromotionSeen } from "@/lib/promotion-actions";
+import { colors } from "../styles";
 
 const CHAOS_TEXTS = [
   "TERVETULOA",
@@ -95,9 +96,9 @@ function MarqueeText() {
         whiteSpace: "nowrap",
         fontSize: "18px",
         fontFamily: "'Comic Sans MS', cursive",
-        color: "#ffff00",
+        color: colors.warning,
         zIndex: 25,
-        textShadow: "2px 2px 0 #000",
+        textShadow: `2px 2px 0 ${colors.slate700}`,
         pointerEvents: "none",
       }}
       animate={{ x: ["100vw", "-200vw"] }}
@@ -241,7 +242,7 @@ export default function PromotionCelebration({ onComplete }: { onComplete?: () =
             style={{
               position: "absolute",
               inset: 0,
-              backgroundColor: "#000",
+              backgroundColor: colors.slate700,
               zIndex: 1,
             }}
           />
@@ -253,7 +254,7 @@ export default function PromotionCelebration({ onComplete }: { onComplete?: () =
             style={{
               position: "absolute",
               inset: 0,
-              backgroundColor: "#000",
+              backgroundColor: colors.slate700,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -265,7 +266,7 @@ export default function PromotionCelebration({ onComplete }: { onComplete?: () =
               animate={{ opacity: 1 }}
               transition={{ duration: 1 }}
               style={{
-                color: "#ffffff",
+                color: colors.slate100,
                 fontSize: "28px",
                 fontWeight: 300,
                 letterSpacing: "0.05em",

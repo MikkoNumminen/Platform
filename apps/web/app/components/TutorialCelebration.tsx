@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTutorialMaybe } from "./TutorialProvider";
+import { colors as themeColors } from "../styles";
 
 export default function TutorialCelebration() {
   const ctx = useTutorialMaybe();
@@ -82,13 +83,20 @@ export default function TutorialCelebration() {
             style={{
               padding: "12px 24px",
               borderRadius: 12,
-              backgroundColor: "rgba(0, 0, 0, 0.9)",
-              border: "1px solid rgba(74, 222, 128, 0.4)",
-              boxShadow: "0 0 24px rgba(74, 222, 128, 0.2)",
+              backgroundColor: themeColors.backdrop,
+              border: `1px solid ${themeColors.accentBorder}`,
+              boxShadow: `0 0 24px ${themeColors.accentBorder}`,
               textAlign: "center",
             }}
           >
-            <p style={{ margin: 0, color: "#4ade80", fontWeight: 700, fontSize: "0.9rem" }}>
+            <p
+              style={{
+                margin: 0,
+                color: themeColors.green400,
+                fontWeight: 700,
+                fontSize: "0.9rem",
+              }}
+            >
               Nice work! +10 XP
             </p>
           </div>
@@ -114,7 +122,7 @@ export default function TutorialCelebration() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: "rgba(0, 0, 0, 0.85)",
+            backgroundColor: themeColors.backdrop,
             cursor: "pointer",
           }}
           onClick={() => ctx.dismissCelebration()}
@@ -128,9 +136,9 @@ export default function TutorialCelebration() {
             <motion.div
               animate={{
                 textShadow: [
-                  "0 0 20px #4ade80, 0 0 40px #4ade80",
-                  "0 0 30px #22d3ee, 0 0 60px #22d3ee",
-                  "0 0 20px #4ade80, 0 0 40px #4ade80",
+                  `0 0 20px ${themeColors.green400}, 0 0 40px ${themeColors.green400}`,
+                  `0 0 30px ${themeColors.cyan400}, 0 0 60px ${themeColors.cyan400}`,
+                  `0 0 20px ${themeColors.green400}, 0 0 40px ${themeColors.green400}`,
                 ],
               }}
               transition={{ duration: 1.5, repeat: Infinity }}
@@ -143,7 +151,7 @@ export default function TutorialCelebration() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
               style={{
-                color: "#4ade80",
+                color: themeColors.green400,
                 fontSize: 14,
                 fontWeight: 600,
                 letterSpacing: "0.2em",
@@ -158,11 +166,11 @@ export default function TutorialCelebration() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
               style={{
-                color: "#ffffff",
+                color: themeColors.slate100,
                 fontSize: 36,
                 fontWeight: 700,
                 margin: "8px 0 4px",
-                textShadow: "0 0 20px rgba(74, 222, 128, 0.5)",
+                textShadow: `0 0 20px ${themeColors.accentGlow}`,
               }}
             >
               {ctx.celebratingTier.name}
@@ -173,7 +181,7 @@ export default function TutorialCelebration() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9 }}
                 style={{
-                  color: "#4ade80",
+                  color: themeColors.green400,
                   fontSize: 20,
                   fontWeight: 600,
                   margin: 0,
@@ -186,7 +194,7 @@ export default function TutorialCelebration() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.5 }}
               transition={{ delay: 2 }}
-              style={{ color: "#64748b", fontSize: 12, marginTop: 24 }}
+              style={{ color: themeColors.slate500, fontSize: 12, marginTop: 24 }}
             >
               Click anywhere to continue
             </motion.p>

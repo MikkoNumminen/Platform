@@ -67,10 +67,10 @@ interface QuestData {
 }
 
 const TIER_COLORS: Record<string, string> = {
-  bronze: "#cd7f32",
-  silver: "#c0c0c0",
-  gold: "#ffd700",
-  legendary: "#ff6600",
+  bronze: colors.tierBronze,
+  silver: colors.tierSilver,
+  gold: colors.tierGold,
+  legendary: colors.tierLegendary,
 };
 
 const ACHIEVEMENT_CATEGORIES = ["onboarding", "content", "social", "moderation", "special"];
@@ -319,7 +319,10 @@ export default function ManageGamification({
                 variant="contained"
                 startIcon={<AddIcon />}
                 onClick={openNewAchievement}
-                sx={{ backgroundColor: colors.green400, "&:hover": { backgroundColor: "#22c55e" } }}
+                sx={{
+                  backgroundColor: colors.green400,
+                  "&:hover": { backgroundColor: colors.success },
+                }}
               >
                 New Achievement
               </Button>
@@ -406,7 +409,10 @@ export default function ManageGamification({
                 variant="contained"
                 startIcon={<AddIcon />}
                 onClick={openNewQuest}
-                sx={{ backgroundColor: colors.green400, "&:hover": { backgroundColor: "#22c55e" } }}
+                sx={{
+                  backgroundColor: colors.green400,
+                  "&:hover": { backgroundColor: colors.success },
+                }}
               >
                 New Quest
               </Button>
@@ -612,7 +618,10 @@ export default function ManageGamification({
             variant="contained"
             onClick={handleSaveAchievement}
             disabled={saving}
-            sx={{ backgroundColor: colors.green400, "&:hover": { backgroundColor: "#22c55e" } }}
+            sx={{
+              backgroundColor: colors.green400,
+              "&:hover": { backgroundColor: colors.success },
+            }}
           >
             {saving ? "Saving..." : editingAchievement ? "Update" : "Create"}
           </Button>
@@ -736,7 +745,10 @@ export default function ManageGamification({
             variant="contained"
             onClick={handleSaveQuest}
             disabled={saving}
-            sx={{ backgroundColor: colors.green400, "&:hover": { backgroundColor: "#22c55e" } }}
+            sx={{
+              backgroundColor: colors.green400,
+              "&:hover": { backgroundColor: colors.success },
+            }}
           >
             {saving ? "Saving..." : editingQuest ? "Update" : "Create"}
           </Button>

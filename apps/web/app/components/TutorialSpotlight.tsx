@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Box, Chip, Paper, Popper, Typography } from "@mui/material";
 import { useTutorialMaybe } from "./TutorialProvider";
 import { matchRoute } from "@/lib/tutorial/tutorial-config";
+import { colors } from "../styles";
 
 const SPOTLIGHT_CLASS = "tutorial-spotlight-target";
 
@@ -79,18 +80,18 @@ export default function TutorialSpotlight() {
         @keyframes tutorialPulse {
           0%,
           100% {
-            box-shadow: 0 0 4px rgba(74, 222, 128, 0.4);
+            box-shadow: 0 0 4px ${colors.accentBorder};
           }
           50% {
             box-shadow:
-              0 0 16px rgba(74, 222, 128, 0.7),
-              0 0 32px rgba(74, 222, 128, 0.3);
+              0 0 16px ${colors.accentGlow},
+              0 0 32px ${colors.accentBorder};
           }
         }
         @media (prefers-reduced-motion: reduce) {
           .${SPOTLIGHT_CLASS} {
             animation: none;
-            box-shadow: 0 0 8px rgba(74, 222, 128, 0.5);
+            box-shadow: 0 0 8px ${colors.accentGlow};
           }
         }
       `}</style>
@@ -110,8 +111,8 @@ export default function TutorialSpotlight() {
           sx={{
             p: 2,
             maxWidth: 320,
-            border: "1px solid rgba(74, 222, 128, 0.4)",
-            backgroundColor: "rgba(0, 0, 0, 0.95)",
+            border: `1px solid ${colors.accentBorder}`,
+            backgroundColor: colors.backdrop,
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
@@ -119,18 +120,18 @@ export default function TutorialSpotlight() {
               label={`${ctx.completedCount + 1}/${ctx.totalSteps}`}
               size="small"
               sx={{
-                backgroundColor: "rgba(74, 222, 128, 0.2)",
-                color: "#4ade80",
+                backgroundColor: colors.accentBorder,
+                color: colors.green400,
                 fontWeight: 700,
                 fontSize: "0.75rem",
                 height: 22,
               }}
             />
-            <Typography variant="subtitle2" sx={{ color: "#fff", fontWeight: 600 }}>
+            <Typography variant="subtitle2" sx={{ color: colors.slate100, fontWeight: 600 }}>
               {getStepTitle(step.id)}
             </Typography>
           </Box>
-          <Typography variant="body2" sx={{ color: "#94a3b8", fontSize: "0.8rem" }}>
+          <Typography variant="body2" sx={{ color: colors.slate400, fontSize: "0.8rem" }}>
             {getHintText(hintKey ?? `hint_${step.id}`)}
           </Typography>
         </Paper>

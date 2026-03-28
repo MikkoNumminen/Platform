@@ -43,10 +43,10 @@ interface AchievementShowcaseProps {
 }
 
 const TIER_COLORS: Record<string, string> = {
-  bronze: "#cd7f32",
-  silver: "#c0c0c0",
-  gold: "#ffd700",
-  legendary: "#ff6600",
+  bronze: colors.tierBronze,
+  silver: colors.tierSilver,
+  gold: colors.tierGold,
+  legendary: colors.tierLegendary,
 };
 
 const CATEGORY_TABS = ["all", "onboarding", "content", "social", "moderation", "special"] as const;
@@ -95,10 +95,10 @@ export default function AchievementShowcase({
               sx={{
                 height: 12,
                 borderRadius: 2,
-                backgroundColor: "rgba(255,255,255,0.05)",
+                backgroundColor: colors.surfaceOverlay,
                 "& .MuiLinearProgress-bar": {
                   borderRadius: 2,
-                  background: "linear-gradient(90deg, #4ade80, #22d3ee)",
+                  background: colors.progressGradient,
                 },
               }}
             />
@@ -114,8 +114,8 @@ export default function AchievementShowcase({
           sx={{
             mb: 2,
             "& .MuiTab-root": { color: colors.slate400 },
-            "& .Mui-selected": { color: "#4ade80" },
-            "& .MuiTabs-indicator": { backgroundColor: "#4ade80" },
+            "& .Mui-selected": { color: colors.green400 },
+            "& .MuiTabs-indicator": { backgroundColor: colors.green400 },
           }}
         >
           {CATEGORY_TABS.map((c) => (
@@ -150,7 +150,7 @@ export default function AchievementShowcase({
                     </Typography>
                     <Typography variant="caption">{achievement.description}</Typography>
                     {achievement.xpReward > 0 && (
-                      <Typography variant="caption" display="block" sx={{ color: "#4ade80" }}>
+                      <Typography variant="caption" display="block" sx={{ color: colors.green400 }}>
                         +{achievement.xpReward} XP
                       </Typography>
                     )}

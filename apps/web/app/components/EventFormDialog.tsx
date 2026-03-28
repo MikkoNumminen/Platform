@@ -208,7 +208,7 @@ export default function EventFormDialog({
           </Box>
         )}
 
-        {error && <Box sx={{ color: "#ef4444", fontSize: "0.875rem" }}>{error}</Box>}
+        {error && <Box sx={{ color: colors.error, fontSize: "0.875rem" }}>{error}</Box>}
       </DialogContent>
 
       <DialogActions sx={{ px: 3, pb: 2 }}>

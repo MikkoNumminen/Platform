@@ -71,10 +71,10 @@ export default function LeaderboardView({
               sx={{
                 height: 12,
                 borderRadius: 2,
-                backgroundColor: "rgba(255,255,255,0.05)",
+                backgroundColor: colors.surfaceOverlay,
                 "& .MuiLinearProgress-bar": {
                   borderRadius: 2,
-                  background: "linear-gradient(90deg, #4ade80, #22d3ee)",
+                  background: colors.progressGradient,
                 },
               }}
             />
@@ -99,8 +99,8 @@ export default function LeaderboardView({
               <Card
                 key={entry.userId}
                 sx={{
-                  border: isCurrentUser ? "2px solid #4ade80" : undefined,
-                  boxShadow: isCurrentUser ? "0 0 12px rgba(74,222,128,0.2)" : undefined,
+                  border: isCurrentUser ? `2px solid ${colors.green400}` : undefined,
+                  boxShadow: isCurrentUser ? `0 0 12px ${colors.accentGlow}` : undefined,
                 }}
               >
                 <CardContent sx={{ py: 1.5, "&:last-child": { pb: 1.5 } }}>
@@ -125,7 +125,9 @@ export default function LeaderboardView({
                       sx={{
                         width: 40,
                         height: 40,
-                        border: isCurrentUser ? "2px solid #4ade80" : "2px solid transparent",
+                        border: isCurrentUser
+                          ? `2px solid ${colors.green400}`
+                          : "2px solid transparent",
                       }}
                     />
 
@@ -133,7 +135,7 @@ export default function LeaderboardView({
                     <Box sx={{ flex: 1, minWidth: 0 }}>
                       <Typography
                         variant="subtitle2"
-                        sx={{ fontWeight: 600, color: isCurrentUser ? "#4ade80" : undefined }}
+                        sx={{ fontWeight: 600, color: isCurrentUser ? colors.green400 : undefined }}
                         noWrap
                       >
                         {entry.alias ?? entry.name ?? "Anonymous"}
@@ -149,7 +151,7 @@ export default function LeaderboardView({
                       variant="body2"
                       sx={{
                         fontWeight: 700,
-                        color: "#4ade80",
+                        color: colors.green400,
                         whiteSpace: "nowrap",
                       }}
                     >

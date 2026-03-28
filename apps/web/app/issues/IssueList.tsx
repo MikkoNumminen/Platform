@@ -47,7 +47,7 @@ function IssueCard({ issue, canResolve }: { issue: IssueData; canResolve: boolea
                   height: 20,
                   fontSize: "0.65rem",
                   backgroundColor: colors.success,
-                  color: "#fff",
+                  color: colors.slate100,
                 }}
               />
             )}

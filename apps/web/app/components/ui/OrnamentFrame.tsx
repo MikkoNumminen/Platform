@@ -2,6 +2,7 @@
 
 import { Box } from "@mui/material";
 import { useTheme } from "../ThemeRegistry";
+import { colors } from "../../styles";
 
 interface OrnamentFrameProps {
   children: React.ReactNode;
@@ -16,7 +17,12 @@ function CornerOrnament({ rotate = 0 }: { rotate?: number }) {
       data-testid="corner-ornament"
       style={{ transform: `rotate(${rotate}deg)` }}
     >
-      <path d="M 2 8 L 8 2 L 14 8 L 8 14 Z" fill="#D4A843" stroke="#8B7355" strokeWidth="1" />
+      <path
+        d="M 2 8 L 8 2 L 14 8 L 8 14 Z"
+        fill={colors.decorAccent}
+        stroke={colors.decorBorder}
+        strokeWidth="1"
+      />
     </svg>
   );
 }
