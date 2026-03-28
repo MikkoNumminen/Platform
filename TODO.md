@@ -32,6 +32,9 @@
 ### UX Fixes
 > "Feedback & Survey" removed from UserMenu (done by Claude 2).
 
+### Code Quality
+> Color centralization done: all component colors use `colors.*` tokens from styles.ts (Claude 2).
+
 ### GitHub & Branding
 - [ ] 🔵 Add repo icon/social preview image and fix GitHub OAuth app visibility (logo, description)
 

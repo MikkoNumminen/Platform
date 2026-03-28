@@ -6,8 +6,10 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import ScienceIcon from "@mui/icons-material/Science";
 import { useTutorialMaybe } from "./TutorialProvider";
 import { TIER_NAMES } from "@/lib/tutorial/tutorial-config";
+import { colors } from "../styles";
 
 const STEP_LABELS: Record<string, string> = {
   set_alias: "Set your alias",
@@ -22,7 +24,7 @@ const STEP_LABELS: Record<string, string> = {
   check_leaderboard: "Check the leaderboard",
   create_board: "Create a board",
   view_survey_results: "View survey results",
-  view_gamification_dashboard: "View gamification stats",
+  view_gamification_dashboard: "View Vuohiliitto dashboard",
   resolve_issue: "Resolve an issue",
   manage_users: "Open user management",
   approve_user: "Approve a pending user",
@@ -52,8 +54,8 @@ export default function TutorialChecklist() {
         width: { xs: 280, sm: 320 },
         maxHeight: expanded ? "80vh" : "auto",
         overflow: expanded ? "auto" : "hidden",
-        border: "1px solid rgba(74, 222, 128, 0.2)",
-        backgroundColor: "rgba(0, 0, 0, 0.95)",
+        border: `1px solid ${colors.accentBorder}`,
+        backgroundColor: colors.backdrop,
       }}
     >
       {/* Header */}
@@ -68,13 +70,29 @@ export default function TutorialChecklist() {
         onClick={() => setExpanded(!expanded)}
       >
         <Box>
-          <Typography
-            variant="subtitle2"
-            sx={{ color: "#fff", fontWeight: 600, fontSize: "0.85rem" }}
-          >
-            Guided Tour
-          </Typography>
-          <Typography variant="caption" sx={{ color: "#94a3b8" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+            <Typography
+              variant="subtitle2"
+              sx={{ color: colors.slate100, fontWeight: 600, fontSize: "0.85rem" }}
+            >
+              Guided Tour
+            </Typography>
+            <Chip
+              icon={<ScienceIcon sx={{ fontSize: 12 }} />}
+              label="Beta"
+              size="small"
+              sx={{
+                height: 18,
+                fontSize: "0.6rem",
+                fontWeight: 700,
+                letterSpacing: "0.03em",
+                backgroundColor: colors.surfaceOverlay,
+                color: colors.warning,
+                "& .MuiChip-icon": { color: colors.warning, ml: 0.5 },
+              }}
+            />
+          </Box>
+          <Typography variant="caption" sx={{ color: colors.slate400 }}>
             {ctx.completedCount} of {ctx.totalSteps} complete
           </Typography>
         </Box>
@@ -86,11 +104,11 @@ export default function TutorialChecklist() {
               height: 20,
               fontSize: "0.7rem",
               fontWeight: 700,
-              backgroundColor: "rgba(74, 222, 128, 0.2)",
-              color: "#4ade80",
+              backgroundColor: colors.accentBorder,
+              color: colors.green400,
             }}
           />
-          <IconButton size="small" sx={{ color: "#94a3b8" }}>
+          <IconButton size="small" sx={{ color: colors.slate400 }}>
             {expanded ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
           </IconButton>
         </Box>
@@ -102,9 +120,9 @@ export default function TutorialChecklist() {
         value={progressPercent}
         sx={{
           height: 3,
-          backgroundColor: "rgba(255,255,255,0.05)",
+          backgroundColor: colors.surfaceOverlay,
           "& .MuiLinearProgress-bar": {
-            background: "linear-gradient(90deg, #4ade80, #22d3ee)",
+            background: colors.progressGradient,
           },
         }}
       />
@@ -119,7 +137,7 @@ export default function TutorialChecklist() {
                 <Typography
                   variant="caption"
                   sx={{
-                    color: "#4ade80",
+                    color: colors.green400,
                     fontWeight: 600,
                     textTransform: "uppercase",
                     letterSpacing: "0.05em",
@@ -143,12 +161,12 @@ export default function TutorialChecklist() {
                       }}
                     >
                       {done ? (
-                        <CheckCircleIcon sx={{ fontSize: 16, color: "#4ade80" }} />
+                        <CheckCircleIcon sx={{ fontSize: 16, color: colors.green400 }} />
                       ) : (
                         <RadioButtonUncheckedIcon
                           sx={{
                             fontSize: 16,
-                            color: isCurrent ? "#4ade80" : "#475569",
+                            color: isCurrent ? colors.green400 : colors.slate400,
                           }}
                         />
                       )}
@@ -156,7 +174,11 @@ export default function TutorialChecklist() {
                         variant="body2"
                         sx={{
                           fontSize: "0.78rem",
-                          color: done ? "#64748b" : isCurrent ? "#fff" : "#94a3b8",
+                          color: done
+                            ? colors.slate500
+                            : isCurrent
+                              ? colors.slate100
+                              : colors.slate400,
                           textDecoration: done ? "line-through" : "none",
                           fontWeight: isCurrent ? 600 : 400,
                         }}
@@ -171,8 +193,8 @@ export default function TutorialChecklist() {
                             height: 16,
                             fontSize: "0.6rem",
                             ml: "auto",
-                            backgroundColor: "rgba(74,222,128,0.15)",
-                            color: "#4ade80",
+                            backgroundColor: colors.accentBgSubtle,
+                            color: colors.green400,
                           }}
                         />
                       )}
