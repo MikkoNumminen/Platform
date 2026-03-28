@@ -1,6 +1,10 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import BoardFormDialog from "../components/BoardFormDialog";
 
+jest.mock("@/app/components/TutorialProvider", () => ({
+  emitTutorialEvent: jest.fn(),
+}));
+
 jest.mock("@/lib/board-actions", () => ({
   createBoard: jest.fn().mockResolvedValue(undefined),
   updateBoard: jest.fn().mockResolvedValue(undefined),

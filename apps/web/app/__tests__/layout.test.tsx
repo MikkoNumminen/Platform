@@ -1,3 +1,49 @@
+jest.mock("@/app/components/TutorialProvider", () => {
+  return {
+    __esModule: true,
+    default: function MockTutorialProvider({ children }: { children: React.ReactNode }) {
+      return <>{children}</>;
+    },
+    useTutorial: () => ({
+      isActive: false,
+      steps: [],
+      completedSteps: new Set(),
+      currentStep: null,
+      completeStep: jest.fn(),
+      totalSteps: 0,
+      completedCount: 0,
+      allComplete: false,
+      celebratingStep: null,
+      celebratingTier: null,
+      dismissCelebration: jest.fn(),
+    }),
+    useTutorialMaybe: () => null,
+    emitTutorialEvent: jest.fn(),
+  };
+});
+
+jest.mock(
+  "@/app/components/TutorialSpotlight",
+  () =>
+    function MockSpotlight() {
+      return null;
+    },
+);
+jest.mock(
+  "@/app/components/TutorialChecklist",
+  () =>
+    function MockChecklist() {
+      return null;
+    },
+);
+jest.mock(
+  "@/app/components/TutorialCelebration",
+  () =>
+    function MockCelebration() {
+      return null;
+    },
+);
+
 jest.mock("@/app/components/PromotionGate", () => {
   return function MockPromotionGate() {
     return null;

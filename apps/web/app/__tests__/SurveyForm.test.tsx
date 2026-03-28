@@ -3,6 +3,10 @@ import userEvent from "@testing-library/user-event";
 import { axe } from "jest-axe";
 import SurveyForm from "../components/survey/SurveyForm";
 
+jest.mock("@/app/components/TutorialProvider", () => ({
+  emitTutorialEvent: jest.fn(),
+}));
+
 jest.mock("@/lib/survey-actions", () => ({
   submitSurvey: jest.fn().mockResolvedValue({ success: true }),
 }));

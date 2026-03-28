@@ -1,6 +1,10 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import PostFormDialog from "../components/PostFormDialog";
 
+jest.mock("@/app/components/TutorialProvider", () => ({
+  emitTutorialEvent: jest.fn(),
+}));
+
 jest.mock("@/lib/post-actions", () => ({
   createPost: jest.fn().mockResolvedValue(undefined),
   updatePost: jest.fn().mockResolvedValue(undefined),

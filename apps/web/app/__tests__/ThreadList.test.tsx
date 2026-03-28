@@ -3,6 +3,10 @@ import { axe } from "jest-axe";
 import ThreadList from "../components/ThreadList";
 import type { ThreadData } from "../types/thread";
 
+jest.mock("@/app/components/TutorialProvider", () => ({
+  emitTutorialEvent: jest.fn(),
+}));
+
 jest.mock("@/lib/thread-actions", () => ({
   createThread: jest.fn().mockResolvedValue(undefined),
 }));

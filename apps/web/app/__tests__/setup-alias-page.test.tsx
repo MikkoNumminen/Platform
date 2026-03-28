@@ -1,6 +1,10 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
+jest.mock("@/app/components/TutorialProvider", () => ({
+  emitTutorialEvent: jest.fn(),
+}));
+
 const mockUseSession = jest.fn();
 const mockUpdate = jest.fn();
 const mockReplace = jest.fn();

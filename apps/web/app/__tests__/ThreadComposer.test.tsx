@@ -2,6 +2,10 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { axe } from "jest-axe";
 import ThreadComposer from "../components/ThreadComposer";
 
+jest.mock("@/app/components/TutorialProvider", () => ({
+  emitTutorialEvent: jest.fn(),
+}));
+
 jest.mock("@/lib/thread-actions", () => ({
   createThread: jest.fn().mockResolvedValue(undefined),
 }));
