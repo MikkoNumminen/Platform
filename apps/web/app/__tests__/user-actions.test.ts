@@ -120,9 +120,9 @@ describe("updateUserRole", () => {
     expect(updateArgs.data.permissionsVersion).toEqual({ increment: 1 });
   });
 
-  test("sets hasSeenPromotion to false when promoting from pending to vuohi", async () => {
+  test("sets hasSeenPromotion to false when promoting any role to vuohi", async () => {
     mockAuth.mockResolvedValue(superuserSession());
-    mockFindFirst.mockResolvedValue({ id: "user-1", role: "pending" });
+    mockFindFirst.mockResolvedValue({ id: "user-1", role: "user" });
     await updateUserRole("550e8400-e29b-41d4-a716-446655440000", "vuohi");
     const updateArgs = mockUpdate.mock.calls[0][0];
     expect(updateArgs.data.hasSeenPromotion).toBe(false);
@@ -132,6 +132,14 @@ describe("updateUserRole", () => {
     mockAuth.mockResolvedValue(adminSession());
     mockFindFirst.mockResolvedValue({ id: "user-1", role: "pending" });
     await updateUserRole("550e8400-e29b-41d4-a716-446655440000", "user");
+    const updateArgs = mockUpdate.mock.calls[0][0];
+    expect(updateArgs.data.hasSeenPromotion).toBeUndefined();
+  });
+
+  test("does not set hasSeenPromotion when user is already vuohi", async () => {
+    mockAuth.mockResolvedValue(superuserSession());
+    mockFindFirst.mockResolvedValue({ id: "user-1", role: "vuohi" });
+    await updateUserRole("550e8400-e29b-41d4-a716-446655440000", "vuohi");
     const updateArgs = mockUpdate.mock.calls[0][0];
     expect(updateArgs.data.hasSeenPromotion).toBeUndefined();
   });
