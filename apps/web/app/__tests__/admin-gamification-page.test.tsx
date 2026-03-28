@@ -104,7 +104,7 @@ describe("GamificationDashboardPage", () => {
     expect(screen.getByText("Manage Achievements & Quests")).toBeInTheDocument();
   });
 
-  test("renders level distribution", async () => {
+  test("renders level distribution with completion icons", async () => {
     mockAuth.mockResolvedValue({
       user: { role: "superuser", permissions: { "admin:users": true } },
     });
@@ -113,6 +113,32 @@ describe("GamificationDashboardPage", () => {
     render(page);
     expect(screen.getByText("Level Distribution")).toBeInTheDocument();
     expect(screen.getByText(/Newcomer/)).toBeInTheDocument();
+    expect(screen.getByText(/Explorer/)).toBeInTheDocument();
+    // Level 1 has 5 users (completed) — shows CheckCircleIcon
+    // Level 2 has 3 users (completed) — shows CheckCircleIcon
+    const checkIcons = document.querySelectorAll("[data-testid='CheckCircleIcon']");
+    expect(checkIcons.length).toBe(2);
+  });
+
+  test("renders unchecked icon for levels with no users", async () => {
+    mockAuth.mockResolvedValue({
+      user: { role: "superuser", permissions: { "admin:users": true } },
+    });
+    const statsWithEmpty = {
+      ...mockStats,
+      levelDistribution: [
+        { level: 1, title: "Newcomer", count: 5 },
+        { level: 2, title: "Explorer", count: 0 },
+      ],
+    };
+    mockGetGamificationStats.mockResolvedValue(statsWithEmpty);
+    const page = await GamificationDashboardPage();
+    render(page);
+    // Level 1 has users — CheckCircle, Level 2 has 0 — RadioButtonUnchecked
+    const checkIcons = document.querySelectorAll("[data-testid='CheckCircleIcon']");
+    const uncheckedIcons = document.querySelectorAll("[data-testid='RadioButtonUncheckedIcon']");
+    expect(checkIcons.length).toBe(1);
+    expect(uncheckedIcons.length).toBe(1);
   });
 
   test("renders top achievements", async () => {

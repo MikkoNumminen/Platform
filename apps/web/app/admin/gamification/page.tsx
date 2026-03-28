@@ -6,13 +6,17 @@ import {
   Chip,
   Divider,
   LinearProgress,
+  Tooltip,
   Typography,
 } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import Link from "next/link";
 import TopBar from "../../components/TopBar";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getGamificationStats } from "@/lib/gamification/admin-queries";
+import { LEVEL_THRESHOLDS, XP_AMOUNTS } from "@/lib/gamification/xp-config";
 import { colors } from "../../styles";
 
 export const dynamic = "force-dynamic";
@@ -72,38 +76,92 @@ export default async function GamificationDashboardPage() {
               Level Distribution
             </Typography>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-              {stats.levelDistribution.map((ld) => (
-                <Box key={ld.level} sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                  <Typography variant="body2" sx={{ minWidth: 140, color: colors.slate300 }}>
-                    Lvl {ld.level} — {ld.title}
-                  </Typography>
-                  <Box sx={{ flex: 1 }}>
-                    <LinearProgress
-                      variant="determinate"
-                      value={
-                        stats.summary.totalUsersWithXp > 0
-                          ? (ld.count / stats.summary.totalUsersWithXp) * 100
-                          : 0
-                      }
-                      sx={{
-                        height: 20,
-                        borderRadius: 2,
-                        backgroundColor: "rgba(255,255,255,0.05)",
-                        "& .MuiLinearProgress-bar": {
-                          borderRadius: 2,
-                          background: "linear-gradient(90deg, #4ade80, #22d3ee)",
+              {stats.levelDistribution.map((ld) => {
+                const threshold = LEVEL_THRESHOLDS.find((t) => t.level === ld.level);
+                const nextThreshold = LEVEL_THRESHOLDS.find((t) => t.level === ld.level + 1);
+                const hasUsers = ld.count > 0;
+
+                return (
+                  <Tooltip
+                    key={ld.level}
+                    arrow
+                    placement="top"
+                    slotProps={{
+                      tooltip: {
+                        sx: {
+                          maxWidth: 360,
+                          backgroundColor: "rgba(30, 30, 30, 0.97)",
+                          border: "1px solid rgba(74, 222, 128, 0.2)",
+                          p: 1.5,
                         },
-                      }}
-                    />
-                  </Box>
-                  <Typography
-                    variant="body2"
-                    sx={{ minWidth: 30, textAlign: "right", fontWeight: 600 }}
+                      },
+                    }}
+                    title={
+                      <LevelTooltip
+                        level={ld.level}
+                        title={ld.title}
+                        xpRequired={threshold?.xpRequired ?? 0}
+                        nextXp={nextThreshold?.xpRequired ?? null}
+                        userCount={ld.count}
+                      />
+                    }
                   >
-                    {ld.count}
-                  </Typography>
-                </Box>
-              ))}
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 2,
+                        cursor: "pointer",
+                        borderRadius: 1,
+                        px: 1,
+                        py: 0.5,
+                        transition: "background-color 0.15s",
+                        "&:hover": { backgroundColor: "rgba(255,255,255,0.04)" },
+                      }}
+                    >
+                      {hasUsers ? (
+                        <CheckCircleIcon
+                          sx={{ fontSize: 18, color: colors.green400, flexShrink: 0 }}
+                        />
+                      ) : (
+                        <RadioButtonUncheckedIcon
+                          sx={{ fontSize: 18, color: colors.slate500, flexShrink: 0 }}
+                        />
+                      )}
+                      <Typography variant="body2" sx={{ minWidth: 140, color: colors.slate300 }}>
+                        Lvl {ld.level} — {ld.title}
+                      </Typography>
+                      <Box sx={{ flex: 1 }}>
+                        <LinearProgress
+                          variant="determinate"
+                          value={
+                            stats.summary.totalUsersWithXp > 0
+                              ? (ld.count / stats.summary.totalUsersWithXp) * 100
+                              : 0
+                          }
+                          sx={{
+                            height: 20,
+                            borderRadius: 2,
+                            backgroundColor: "rgba(255,255,255,0.05)",
+                            "& .MuiLinearProgress-bar": {
+                              borderRadius: 2,
+                              background: hasUsers
+                                ? "linear-gradient(90deg, #4ade80, #22d3ee)"
+                                : "rgba(255,255,255,0.1)",
+                            },
+                          }}
+                        />
+                      </Box>
+                      <Typography
+                        variant="body2"
+                        sx={{ minWidth: 30, textAlign: "right", fontWeight: 600 }}
+                      >
+                        {ld.count}
+                      </Typography>
+                    </Box>
+                  </Tooltip>
+                );
+              })}
             </Box>
           </CardContent>
         </Card>
@@ -233,6 +291,88 @@ export default async function GamificationDashboardPage() {
         </Card>
       </Box>
     </>
+  );
+}
+
+const XP_ACTION_LABELS: Record<string, string> = {
+  "post:create": "Create a post",
+  "thread:create": "Write a comment",
+  "topic:create": "Create a topic",
+  "event:create": "Create an event",
+  "shout:create": "Send a shout",
+  "issue:create": "Report an issue",
+  "alias:set": "Set your alias",
+  "survey:complete": "Complete the survey",
+  "daily:login": "Daily login",
+  "streak:7day": "7-day login streak",
+  "streak:30day": "30-day login streak",
+};
+
+function LevelTooltip({
+  level,
+  title,
+  xpRequired,
+  nextXp,
+  userCount,
+}: {
+  level: number;
+  title: string;
+  xpRequired: number;
+  nextXp: number | null;
+  userCount: number;
+}) {
+  const xpRange = nextXp
+    ? `${xpRequired.toLocaleString()} – ${(nextXp - 1).toLocaleString()} XP`
+    : `${xpRequired.toLocaleString()}+ XP`;
+
+  // Calculate example actions to reach this level from zero
+  const exampleActions = Object.entries(XP_AMOUNTS)
+    .filter(([, xp]) => xp > 0)
+    .sort(([, a], [, b]) => b - a)
+    .map(([action, xp]) => ({
+      label: XP_ACTION_LABELS[action] ?? action,
+      xp,
+      count: Math.ceil(xpRequired / xp),
+    }));
+
+  return (
+    <Box>
+      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: colors.green400, mb: 0.5 }}>
+        Lvl {level} — {title}
+      </Typography>
+      <Typography variant="caption" sx={{ color: colors.slate300, display: "block", mb: 1 }}>
+        Requires {xpRange}
+        {userCount > 0
+          ? ` · ${userCount} user${userCount !== 1 ? "s" : ""} at this level`
+          : " · No users yet"}
+      </Typography>
+
+      {xpRequired > 0 && (
+        <>
+          <Typography
+            variant="caption"
+            sx={{ color: colors.slate400, display: "block", mb: 0.5, fontWeight: 600 }}
+          >
+            How to earn XP:
+          </Typography>
+          <Box component="ul" sx={{ m: 0, pl: 2 }}>
+            {exampleActions.slice(0, 6).map((action) => (
+              <Box component="li" key={action.label} sx={{ listStyle: "disc" }}>
+                <Typography variant="caption" sx={{ color: colors.slate300 }}>
+                  {action.label} — <strong>{action.xp} XP</strong>
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </>
+      )}
+
+      {xpRequired === 0 && (
+        <Typography variant="caption" sx={{ color: colors.slate400, fontStyle: "italic" }}>
+          Starting level — everyone begins here
+        </Typography>
+      )}
+    </Box>
   );
 }
 
