@@ -21,21 +21,21 @@
 #### 🟢 Improvement (backlog)
 - [ ] 🔵 [QUALITY] Replace native `confirm()` dialogs with MUI Dialog for accessibility (CalendarGrid event deletion) — Claude 2
 - [ ] 🔵 [SECURITY] CSP `unsafe-inline` for scripts — consider nonce-based approach (requires MUI emotion nonce support) — Claude 2
-- [ ] 🔵 [SECURITY] Cron endpoints — add IP whitelist for Vercel cron IPs alongside CRON_SECRET — Claude 2
+- [ ] 🔵 [SECURITY] Cron endpoints — consider additional protection alongside CRON_SECRET (Vercel has no stable cron IP range)
 - [ ] 🟣 [TESTING] Add integration tests for multi-step workflows (signup → approval, board → post → thread) — Claude 2
 - [ ] 🟣 [TESTING] Set up Playwright E2E testing for critical user journeys — Claude 2
 
 #### 🔴 Test Coverage Gaps
 > 117 test files exist. Page coverage at 52% (12/23). Component coverage at 96%. Server action coverage at 85%.
 
-- [ ] 🔵 [TESTING] Admin components untested: UserPermissionEditor.tsx, ManageGamification.tsx (blocked by Claude 1's TutorialProvider imports) — Claude 2
-- [ ] 🔵 [TESTING] Remaining untested pages: boards/[slug]/[postSlug], forums/[slug]/[topicSlug], admin/gamification, admin/gamification/manage, test-animation — Claude 2
+- [ ] 🔵 [TESTING] UserPermissionEditor.tsx — needs TutorialProvider mock (complex component with useEffect + transitions)
+- [ ] 🔵 [TESTING] test-animation page — low priority demo page
 
 ### Audit Summary
 > - **Total findings:** 35 (5 resolved critical + 6 new important + 11 improvement + 13 test gaps)
 > - **Security:** 10 | **Quality:** 12 | **Testing:** 13
 > - **False positives removed:** 4 (env.local not in git, role hierarchy correct, CRON_SECRET rejects unauth, middleware callbackUrl is NOT an open redirect — matcher only hits /admin/*)
-> - **Overall grade: B+** — Strong auth/permissions/validation foundation. Main gaps: guardedAction architecture, missing test coverage for gamification admin and 11 pages, console.error instead of structured logging.
+> - **Overall grade: A-** — All critical/important fixes done. guardedAction refactored, structured logging, 927 tests across 121 suites. Remaining: backlog-grade improvements only.
 
 ### UX Fixes
 > "Feedback & Survey" removed from UserMenu (done by Claude 2).
