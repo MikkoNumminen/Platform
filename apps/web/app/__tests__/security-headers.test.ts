@@ -56,6 +56,13 @@ describe("securityHeaders", () => {
     expect(csp!.value).not.toContain("unsafe-eval");
   });
 
+  test("CSP script-src does not include unsafe-inline in production", () => {
+    const csp = securityHeaders.find((h) => h.key === "Content-Security-Policy");
+    const scriptSrc = csp!.value.split(";").find((d) => d.trim().startsWith("script-src"));
+    expect(scriptSrc).toBeDefined();
+    expect(scriptSrc).not.toContain("unsafe-inline");
+  });
+
   test("CSP restricts connect-src to specific OAuth domains", () => {
     const csp = securityHeaders.find((h) => h.key === "Content-Security-Policy");
     expect(csp!.value).toContain("connect-src 'self'");
