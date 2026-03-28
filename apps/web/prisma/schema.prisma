@@ -436,6 +436,7 @@ model CustomQuest {
   xpReward    Int       @default(0)
   status      String    @default("open") // open, in_progress, completed
   priority    String    @default("normal") // low, normal, high, urgent
+  targetSkill String?   // matches DEVELOPMENT_SKILL_OPTIONS — double XP when assignee has this skill
   assigneeId    String
   creatorId     String
   surveyRoundId String?

@@ -6,8 +6,10 @@ import { ActionError } from "@/lib/actionErrors";
 import { safe, type ActionResult } from "@/lib/actionUtils";
 import { validateSurveyData, type SurveyData } from "@/lib/survey-config";
 import { triggerGamification } from "@/lib/gamification/trigger";
+import { getDemoSessionId } from "@/lib/demo-session";
+import { awardCustomXp } from "@/lib/gamification/xp-service";
 
-export async function submitSurvey(data: SurveyData): Promise<ActionResult> {
+export async function submitSurvey(data: SurveyData, roundId?: string): Promise<ActionResult> {
   return safe(async () => {
     const { valid, errors } = validateSurveyData(data);
     if (!valid) {
@@ -17,6 +19,7 @@ export async function submitSurvey(data: SurveyData): Promise<ActionResult> {
 
     const session = await auth();
     const userId = session?.user?.id ?? null;
+    const sessionId = await getDemoSessionId();
 
     await prisma.surveyResponse.create({
       data: {
@@ -28,10 +31,11 @@ export async function submitSurvey(data: SurveyData): Promise<ActionResult> {
         wantsToDevelop: (data.developmentSkills ?? []).length > 0,
         developmentSkills: data.developmentSkills ?? [],
         userId,
+        roundId: roundId ?? null,
+        sessionId,
       },
     });
 
-    // Also save skills to user profile if authenticated
     if (userId) {
       const skills = data.developmentSkills ?? [];
       await prisma.user.update({
@@ -42,6 +46,26 @@ export async function submitSurvey(data: SurveyData): Promise<ActionResult> {
         },
       });
       await triggerGamification(userId, "survey:complete");
+
+      if (roundId) {
+        const quest = await prisma.customQuest.findFirst({
+          where: {
+            surveyRoundId: roundId,
+            assigneeId: userId,
+            status: { not: "completed" },
+            deletedAt: null,
+          },
+        });
+        if (quest) {
+          await prisma.customQuest.update({
+            where: { id: quest.id },
+            data: { status: "completed", completedAt: new Date() },
+          });
+          if (quest.xpReward > 0) {
+            await awardCustomXp(userId, quest.xpReward, "custom_quest:complete", quest.id);
+          }
+        }
+      }
     }
   });
 }
