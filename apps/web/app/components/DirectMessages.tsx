@@ -11,8 +11,8 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddCommentIcon from "@mui/icons-material/AddComment";
+import CloseIcon from "@mui/icons-material/Close";
 import LockIcon from "@mui/icons-material/Lock";
 import StarIcon from "@mui/icons-material/Star";
 import { useTranslations } from "next-intl";
@@ -22,19 +22,12 @@ import { getConversationMessages, getDmUsers } from "@/lib/dm-queries";
 import { useXpToast } from "./XpToastProvider";
 import type { ConversationSummary, DmMessageData } from "@/lib/dm-queries";
 
+// WoW whisper pink
+const WHISPER_COLOR = "#FF80FF";
+const WHISPER_LABEL = "#B880CC";
+
 function formatTime(iso: string): string {
   return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
-
-function formatRelative(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "now";
-  if (mins < 60) return `${mins}m`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h`;
-  const days = Math.floor(hours / 24);
-  return `${days}d`;
 }
 
 interface DirectMessagesProps {
@@ -48,6 +41,7 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
   const { onAction } = useXpToast();
   const t = useTranslations("dm");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const [conversations, setConversations] = useState(initialConversations);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
@@ -70,47 +64,59 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
     }
   }, [messages]);
 
+  // Load users list for /w command
+  const ensureUsersLoaded = async () => {
+    if (dmUsers.length === 0) {
+      setLoadingUsers(true);
+      const users = await getDmUsers();
+      setDmUsers(users);
+      setLoadingUsers(false);
+      return users;
+    }
+    return dmUsers;
+  };
+
   const openConversation = async (conversationId: string) => {
     setActiveConversationId(conversationId);
     setShowNewMessage(false);
     const msgs = await getConversationMessages(conversationId);
     setMessages(msgs);
-    // Clear unread count locally
     setConversations((prev) =>
       prev.map((c) => (c.id === conversationId ? { ...c, unreadCount: 0 } : c)),
     );
+    // Pre-fill input with /w alias for convenience
+    const conv = conversations.find((c) => c.id === conversationId);
+    if (conv && !conv.isPrivacy) {
+      setMessage("");
+    }
   };
 
-  const handleBack = () => {
-    setActiveConversationId(null);
-    setMessages([]);
-    setShowNewMessage(false);
+  const closeTab = (e: React.MouseEvent, conversationId: string) => {
+    e.stopPropagation();
+    if (activeConversationId === conversationId) {
+      setActiveConversationId(null);
+      setMessages([]);
+    }
   };
 
   const handleNewMessage = async () => {
     setShowNewMessage(true);
     setActiveConversationId(null);
     setMessages([]);
-    if (dmUsers.length === 0) {
-      setLoadingUsers(true);
-      const users = await getDmUsers();
-      setDmUsers(users);
-      setLoadingUsers(false);
-    }
+    await ensureUsersLoaded();
   };
 
   const handleSelectUser = async (user: DmUser | null) => {
     if (!user) return;
-    // Check if conversation already exists
     const existing = conversations.find((c) => c.otherUser.id === user.id);
     if (existing) {
       await openConversation(existing.id);
       return;
     }
-    // Show empty chat — first message will create the conversation
     setShowNewMessage(false);
     setActiveConversationId(`new:${user.id}`);
     setMessages([]);
+    setMessage("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -121,8 +127,94 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
     const alias = session.user.alias ?? session.user.name ?? "Unknown";
     const role = (session.user as { role?: string })?.role ?? "user";
 
+    // Parse /w command: /w alias message
+    const whisperMatch = trimmed.match(/^\/w(?:hisper)?\s+(\S+)\s+(.+)$/i);
+    if (whisperMatch) {
+      const targetAlias = whisperMatch[1];
+      const whisperMessage = whisperMatch[2];
+
+      const users = await ensureUsersLoaded();
+      const targetUser = users.find((u) => u.alias.toLowerCase() === targetAlias.toLowerCase());
+      if (!targetUser) {
+        // Show error in chat
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `err-${Date.now()}`,
+            message: `No player named "${targetAlias}" found.`,
+            senderId: "system",
+            senderAlias: "System",
+            senderRole: "system",
+            isMe: false,
+            createdAt: new Date().toISOString(),
+          },
+        ]);
+        setMessage("");
+        return;
+      }
+
+      // Find or start conversation with target
+      const existing = conversations.find((c) => c.otherUser.id === targetUser.id);
+      setSending(true);
+      setMessage("");
+
+      if (existing) {
+        // Send to existing conversation
+        setActiveConversationId(existing.id);
+        const optimistic: DmMessageData = {
+          id: `temp-${Date.now()}`,
+          message: whisperMessage,
+          senderId: session.user.id,
+          senderAlias: alias,
+          senderRole: role,
+          isMe: true,
+          createdAt: new Date().toISOString(),
+        };
+        // Load messages if not in this conversation
+        if (activeConversationId !== existing.id) {
+          const msgs = await getConversationMessages(existing.id);
+          setMessages([...msgs, optimistic]);
+        } else {
+          setMessages((prev) => [...prev, optimistic]);
+        }
+        const result = await sendDirectMessage(existing.id, whisperMessage);
+        if (result?.error) {
+          setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
+        } else {
+          onAction();
+          setConversations((prev) =>
+            prev.map((c) =>
+              c.id === existing.id
+                ? { ...c, lastMessage: whisperMessage, lastMessageAt: new Date().toISOString() }
+                : c,
+            ),
+          );
+        }
+      } else {
+        // Start new conversation via /w
+        const result = await startConversation(targetUser.id, whisperMessage);
+        if (result?.conversationId) {
+          onAction();
+          setConversations((prev) => [
+            {
+              id: result.conversationId!,
+              otherUser: targetUser,
+              lastMessage: whisperMessage,
+              lastMessageAt: new Date().toISOString(),
+              unreadCount: 0,
+              isPrivacy: false,
+            },
+            ...prev,
+          ]);
+          await openConversation(result.conversationId!);
+        }
+      }
+      setSending(false);
+      return;
+    }
+
+    // Regular message to active conversation
     if (activeConversationId?.startsWith("new:")) {
-      // Starting a new conversation
       const otherUserId = activeConversationId.slice(4);
       setSending(true);
       setMessage("");
@@ -130,21 +222,18 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
       if (result?.conversationId) {
         onAction();
         await openConversation(result.conversationId);
-        // Refresh conversations list
-        setConversations((prev) => {
-          const otherUser = dmUsers.find((u) => u.id === otherUserId);
-          return [
-            {
-              id: result.conversationId!,
-              otherUser: otherUser ?? { id: otherUserId, alias: "Unknown", role: "user" },
-              lastMessage: trimmed,
-              lastMessageAt: new Date().toISOString(),
-              unreadCount: 0,
-              isPrivacy: false,
-            },
-            ...prev,
-          ];
-        });
+        const otherUser = dmUsers.find((u) => u.id === otherUserId);
+        setConversations((prev) => [
+          {
+            id: result.conversationId!,
+            otherUser: otherUser ?? { id: otherUserId, alias: "Unknown", role: "user" },
+            lastMessage: trimmed,
+            lastMessageAt: new Date().toISOString(),
+            unreadCount: 0,
+            isPrivacy: false,
+          },
+          ...prev,
+        ]);
       }
       setSending(false);
       return;
@@ -152,7 +241,6 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
 
     if (!activeConversationId) return;
 
-    // Optimistic update
     const optimistic: DmMessageData = {
       id: `temp-${Date.now()}`,
       message: trimmed,
@@ -172,7 +260,6 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
       setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
     } else {
       onAction();
-      // Update conversation list
       setConversations((prev) =>
         prev.map((c) =>
           c.id === activeConversationId
@@ -186,6 +273,13 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
 
   // ── Render ──────────────────────────────────────────────────────────────
 
+  const otherAlias = activeConversation?.isPrivacy
+    ? t("privacy")
+    : (activeConversation?.otherUser.alias ??
+      (activeConversationId?.startsWith("new:")
+        ? (dmUsers.find((u) => u.id === activeConversationId?.slice(4))?.alias ?? "...")
+        : null));
+
   return (
     <Box
       sx={{
@@ -196,7 +290,7 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
         overflow: "hidden",
       }}
     >
-      {/* Header */}
+      {/* Header with title + new message button */}
       <Box
         sx={{
           px: 1.5,
@@ -208,30 +302,14 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
           justifyContent: "space-between",
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-          {(activeConversationId || showNewMessage) && (
-            <IconButton size="small" onClick={handleBack} sx={{ color: colors.slate400, p: 0.25 }}>
-              <ArrowBackIcon sx={{ fontSize: 16 }} />
-            </IconButton>
-          )}
-          <Typography
-            variant="caption"
-            sx={{ color: colors.slate400, fontFamily: "inherit", fontWeight: 600 }}
-          >
-            {activeConversation?.isPrivacy
-              ? t("privacy")
-              : activeConversation
-                ? activeConversation.otherUser.alias
-                : showNewMessage
-                  ? t("newMessage")
-                  : t("title")}
-          </Typography>
-          {activeConversation?.isPrivacy && (
-            <LockIcon sx={{ fontSize: 14, color: colors.warning, ml: 0.5 }} />
-          )}
-        </Box>
-        {!activeConversationId && !showNewMessage && session?.user && (
-          <Tooltip title={t("newMessage")}>
+        <Typography
+          variant="caption"
+          sx={{ color: colors.slate400, fontFamily: "inherit", fontWeight: 600 }}
+        >
+          {t("title")}
+        </Typography>
+        {session?.user && (
+          <Tooltip title="/w alias message">
             <IconButton
               size="small"
               onClick={handleNewMessage}
@@ -242,6 +320,80 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
           </Tooltip>
         )}
       </Box>
+
+      {/* Conversation tabs */}
+      {conversations.length > 0 && (
+        <Box
+          sx={{
+            display: "flex",
+            gap: 0,
+            overflowX: "auto",
+            borderBottom: `1px solid ${colors.slate300}`,
+            "&::-webkit-scrollbar": { height: 0 },
+          }}
+        >
+          {conversations.map((conv) => {
+            const isActive = conv.id === activeConversationId;
+            return (
+              <Box
+                key={conv.id}
+                onClick={() => openConversation(conv.id)}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.5,
+                  px: 1.5,
+                  py: 0.5,
+                  cursor: "pointer",
+                  borderRight: `1px solid ${colors.slate300}`,
+                  backgroundColor: isActive ? colors.slate700 : colors.slate600,
+                  "&:hover": {
+                    backgroundColor: isActive ? colors.slate700 : "rgba(255,255,255,0.04)",
+                  },
+                  flexShrink: 0,
+                }}
+              >
+                {conv.isPrivacy && <LockIcon sx={{ fontSize: 12, color: colors.warning }} />}
+                <Badge
+                  color="error"
+                  variant="dot"
+                  invisible={conv.unreadCount === 0}
+                  sx={{ "& .MuiBadge-dot": { width: 6, height: 6 } }}
+                >
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: isActive
+                        ? WHISPER_COLOR
+                        : conv.unreadCount > 0
+                          ? colors.slate100
+                          : colors.slate400,
+                      fontFamily: "inherit",
+                      fontWeight: isActive || conv.unreadCount > 0 ? 700 : 400,
+                      fontSize: "0.75rem",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {conv.isPrivacy ? t("privacy") : conv.otherUser.alias}
+                  </Typography>
+                </Badge>
+                <IconButton
+                  size="small"
+                  onClick={(e) => closeTab(e, conv.id)}
+                  sx={{
+                    color: colors.slate400,
+                    p: 0,
+                    ml: 0.25,
+                    "&:hover": { color: colors.slate100 },
+                  }}
+                >
+                  <CloseIcon sx={{ fontSize: 12 }} />
+                </IconButton>
+              </Box>
+            );
+          })}
+        </Box>
+      )}
 
       {/* Content area */}
       <Box
@@ -259,8 +411,13 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
         }}
       >
         {showNewMessage ? (
-          // User picker
           <Box sx={{ py: 1 }}>
+            <Typography
+              variant="body2"
+              sx={{ color: colors.slate400, fontFamily: "inherit", mb: 1, fontSize: "0.8rem" }}
+            >
+              Type <span style={{ color: WHISPER_COLOR }}>/w alias message</span> or pick a user:
+            </Typography>
             <Autocomplete
               options={dmUsers}
               getOptionLabel={(o) => o.alias}
@@ -301,7 +458,6 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
             />
           </Box>
         ) : activeConversationId ? (
-          // Chat view
           messages.length === 0 ? (
             <Typography
               variant="body2"
@@ -310,129 +466,129 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
               {t("empty")}
             </Typography>
           ) : (
-            messages.map((msg) => (
-              <Box key={msg.id} sx={{ display: "flex", gap: 0.75, lineHeight: 1.6 }}>
-                <Typography
-                  component="span"
-                  variant="body2"
-                  sx={{
-                    color: colors.slate400,
-                    fontFamily: "inherit",
-                    flexShrink: 0,
-                    fontSize: "0.8rem",
-                  }}
-                >
-                  {formatTime(msg.createdAt)}
-                </Typography>
-                <Typography
-                  component="span"
-                  variant="body2"
-                  sx={{
-                    color: msg.isMe
-                      ? colors.cyan400
-                      : msg.senderRole === "superuser"
-                        ? colors.warning
-                        : colors.green400,
-                    fontFamily: "inherit",
-                    fontWeight: 700,
-                    flexShrink: 0,
-                    fontSize: "0.8rem",
-                  }}
-                >
-                  &lt;{msg.senderAlias}&gt;
-                </Typography>
-                <Typography
-                  component="span"
-                  variant="body2"
-                  sx={{
-                    color: colors.slate100,
-                    fontFamily: "inherit",
-                    wordBreak: "break-word",
-                    fontSize: "0.8rem",
-                  }}
-                >
-                  {msg.message}
-                </Typography>
-              </Box>
-            ))
+            messages.map((msg) => {
+              // System messages (e.g. /w errors)
+              if (msg.senderRole === "system") {
+                return (
+                  <Box key={msg.id} sx={{ lineHeight: 1.6 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: colors.error, fontFamily: "inherit", fontSize: "0.8rem" }}
+                    >
+                      {msg.message}
+                    </Typography>
+                  </Box>
+                );
+              }
+
+              return (
+                <Box key={msg.id} sx={{ display: "flex", gap: 0.75, lineHeight: 1.6 }}>
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    sx={{
+                      color: colors.slate400,
+                      fontFamily: "inherit",
+                      flexShrink: 0,
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    {formatTime(msg.createdAt)}
+                  </Typography>
+                  {msg.isMe ? (
+                    <>
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        sx={{
+                          color: WHISPER_LABEL,
+                          fontFamily: "inherit",
+                          flexShrink: 0,
+                          fontSize: "0.8rem",
+                        }}
+                      >
+                        To
+                      </Typography>
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        sx={{
+                          color: WHISPER_COLOR,
+                          fontFamily: "inherit",
+                          fontWeight: 700,
+                          flexShrink: 0,
+                          fontSize: "0.8rem",
+                        }}
+                      >
+                        [{otherAlias}]:
+                      </Typography>
+                    </>
+                  ) : (
+                    <>
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        sx={{
+                          color: WHISPER_COLOR,
+                          fontFamily: "inherit",
+                          fontWeight: 700,
+                          flexShrink: 0,
+                          fontSize: "0.8rem",
+                        }}
+                      >
+                        [{msg.senderAlias}]
+                      </Typography>
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        sx={{
+                          color: WHISPER_LABEL,
+                          fontFamily: "inherit",
+                          flexShrink: 0,
+                          fontSize: "0.8rem",
+                        }}
+                      >
+                        whispers:
+                      </Typography>
+                    </>
+                  )}
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    sx={{
+                      color: WHISPER_COLOR,
+                      fontFamily: "inherit",
+                      wordBreak: "break-word",
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    {msg.message}
+                  </Typography>
+                </Box>
+              );
+            })
           )
-        ) : // Inbox view
-        conversations.length === 0 ? (
-          <Typography
-            variant="body2"
-            sx={{ color: colors.slate400, fontFamily: "inherit", fontStyle: "italic" }}
-          >
-            {t("empty")}
-          </Typography>
         ) : (
-          conversations.map((conv) => (
-            <Box
-              key={conv.id}
-              onClick={() => openConversation(conv.id)}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                py: 0.75,
-                px: 0.5,
-                cursor: "pointer",
-                borderRadius: 1,
-                "&:hover": { backgroundColor: colors.slate600 },
-              }}
+          // No active conversation — show help text
+          <Box sx={{ py: 2 }}>
+            <Typography
+              variant="body2"
+              sx={{ color: colors.slate400, fontFamily: "inherit", fontSize: "0.8rem", mb: 1 }}
             >
-              {conv.isPrivacy && (
-                <LockIcon sx={{ fontSize: 14, color: colors.warning, flexShrink: 0 }} />
-              )}
-              <Badge
-                color="error"
-                variant="dot"
-                invisible={conv.unreadCount === 0}
-                sx={{ "& .MuiBadge-dot": { width: 8, height: 8 } }}
-              >
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: conv.unreadCount > 0 ? colors.slate100 : colors.green400,
-                    fontFamily: "inherit",
-                    fontWeight: conv.unreadCount > 0 ? 700 : 600,
-                    fontSize: "0.8rem",
-                    flexShrink: 0,
-                  }}
-                >
-                  {conv.isPrivacy ? t("privacy") : conv.otherUser.alias}
-                </Typography>
-              </Badge>
-              <Typography
-                variant="body2"
-                noWrap
-                sx={{
-                  color: colors.slate400,
-                  fontFamily: "inherit",
-                  fontSize: "0.75rem",
-                  flex: 1,
-                  minWidth: 0,
-                }}
-              >
-                {conv.lastMessage ?? "..."}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: colors.slate400,
-                  fontFamily: "inherit",
-                  fontSize: "0.7rem",
-                  flexShrink: 0,
-                }}
-              >
-                {formatRelative(conv.lastMessageAt)}
-              </Typography>
-            </Box>
-          ))
+              {conversations.length > 0 ? "Click a tab above to open a conversation." : t("empty")}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ color: colors.slate400, fontFamily: "inherit", fontSize: "0.75rem" }}
+            >
+              <span style={{ color: WHISPER_COLOR }}>/w alias message</span> — whisper a player
+            </Typography>
+          </Box>
         )}
       </Box>
 
-      {/* Input field */}
-      {session?.user && activeConversationId && (
+      {/* Input field — always visible when logged in */}
+      {session?.user && (
         <Box
           component="form"
           onSubmit={handleSubmit}
@@ -444,9 +600,10 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
           }}
         >
           <TextField
+            inputRef={inputRef}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder={t("placeholder")}
+            placeholder={activeConversationId ? t("placeholder") : "/w alias message"}
             size="small"
             fullWidth
             autoComplete="off"
