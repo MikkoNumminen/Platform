@@ -127,6 +127,15 @@
 - [ ] 🟣 Tests for demo seed data completeness, tutorial step coverage, session isolation — Claude 3
 - [ ] 🔵 README: document demo mode setup, env variables, how to add new demo tour steps — Claude 3
 
+### GDPR Compliance Gaps
+> From GDPR analysis (see GDPR-ANALYSIS.md). Address before scaling up.
+
+- [ ] 🔵 Add specific contact email to privacy policy (currently says "contact the administrator")
+- [ ] 🔵 Document a breach notification process (72-hour GDPR requirement)
+- [ ] 🔵 Create a formal Article 30 data processing register (based on GDPR-ANALYSIS.md)
+- [ ] 🔵 Confirm whether DPO appointment is needed based on user count and data volume
+- [ ] 🔵 Document demo mode data handling in the privacy policy
+
 ### Developer Onboarding
 - [ ] 🟣 Contributor request page — public view where people can apply for repo edit rights to help develop the site
 
