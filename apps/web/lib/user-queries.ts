@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/db";
 import { getDemoSessionId } from "@/lib/demo-session";
 
+const DEMO_EMAIL = "demo@platform.app";
+
 export async function getUsers() {
   const sessionId = await getDemoSessionId();
   return prisma.user.findMany({
-    where: { deletedAt: null, sessionId },
+    where: { deletedAt: null, sessionId, email: { not: DEMO_EMAIL } },
     orderBy: { createdAt: "desc" },
     select: {
       id: true,

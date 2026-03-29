@@ -54,7 +54,7 @@ describe("getUsers", () => {
     const result = await getUsers();
     expect(result).toEqual(users);
     expect(mockUserFindMany).toHaveBeenCalledWith({
-      where: { deletedAt: null, sessionId: null },
+      where: { deletedAt: null, sessionId: null, email: { not: "demo@platform.app" } },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,

@@ -21,7 +21,7 @@ export async function recordLogin(userId: string) {
 
   const lastLogin = new Date(existing.lastLoginDate);
   lastLogin.setHours(0, 0, 0, 0);
-  const diffDays = Math.floor((today.getTime() - lastLogin.getTime()) / (1000 * 60 * 60 * 24));
+  const diffDays = Math.round((today.getTime() - lastLogin.getTime()) / (1000 * 60 * 60 * 24));
 
   if (diffDays === 0) return { streak: existing.currentStreak, xpAwarded: 0, isNewDay: false };
 

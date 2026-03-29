@@ -402,9 +402,10 @@ describe("login-streak", () => {
     });
 
     test("increments streak for consecutive day", async () => {
-      const yesterday = new Date();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const yesterday = new Date(today);
       yesterday.setDate(yesterday.getDate() - 1);
-      yesterday.setHours(0, 0, 0, 0);
       mockLoginStreakFindUnique.mockResolvedValue({
         userId: "u1",
         currentStreak: 2,
@@ -424,9 +425,10 @@ describe("login-streak", () => {
     });
 
     test("resets streak after gap", async () => {
-      const threeDaysAgo = new Date();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const threeDaysAgo = new Date(today);
       threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-      threeDaysAgo.setHours(0, 0, 0, 0);
       mockLoginStreakFindUnique.mockResolvedValue({
         userId: "u1",
         currentStreak: 10,
