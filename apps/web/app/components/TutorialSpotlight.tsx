@@ -75,17 +75,21 @@ export default function TutorialSpotlight() {
         .${SPOTLIGHT_CLASS} {
           position: relative;
           z-index: 1100;
-          animation: tutorialPulse 2s ease-in-out infinite;
+          animation: tutorialPulse 1.5s ease-in-out infinite;
+          border-radius: 4px;
         }
         @keyframes tutorialPulse {
           0%,
           100% {
-            box-shadow: 0 0 4px ${colors.accentBorder};
+            box-shadow:
+              0 0 6px ${colors.accentBorder},
+              inset 0 0 2px ${colors.accentBorder};
           }
           50% {
             box-shadow:
-              0 0 16px ${colors.accentGlow},
-              0 0 32px ${colors.accentBorder};
+              0 0 20px ${colors.accentGlow},
+              0 0 40px ${colors.accentBorder},
+              inset 0 0 4px ${colors.accentGlow};
           }
         }
         @media (prefers-reduced-motion: reduce) {
@@ -172,13 +176,10 @@ const STEP_TITLES: Record<string, string> = {
   complete_survey: "Complete the survey",
   report_issue: "Report an issue",
   explore_home: "Explore the homepage",
-  browse_boards: "Browse the boards",
-  create_post: "Create your first post",
-  write_comment: "Write a comment",
+  send_shoutbox: "Send a shoutbox message",
   check_quests: "Check your quest log",
   view_achievements: "View achievements",
   check_leaderboard: "Check the leaderboard",
-  create_board: "Create a board",
   view_survey_results: "View survey results",
   view_gamification_dashboard: "View gamification stats",
   resolve_issue: "Resolve an issue",
@@ -197,13 +198,10 @@ const HINT_TEXTS: Record<string, string> = {
   hint_complete_survey: "Tell us what features matter most to you.",
   hint_report_issue: "Found a bug? Let us know so we can fix it.",
   hint_explore_home: "Welcome! This is the community hub with the shoutbox.",
-  hint_browse_boards: "Boards are where community discussions happen.",
-  hint_create_post: "Click the + button to share something with the community.",
-  hint_write_comment: "Join the conversation by leaving a comment.",
+  hint_send_shoutbox: "Type a message and press Enter to chat with the community.",
   hint_check_quests: "See your active quests and track your progress.",
   hint_view_achievements: "Check out the badges you can unlock.",
   hint_check_leaderboard: "See how you rank against other members.",
-  hint_create_board: "As an admin, you can create new discussion boards.",
   hint_view_survey_results: "See what the community thinks.",
   hint_view_gamification_dashboard: "Monitor community engagement and XP stats.",
   hint_resolve_issue: "Mark reported issues as resolved.",
@@ -213,9 +211,6 @@ const HINT_TEXTS: Record<string, string> = {
   nav_setup_alias: "Set your alias to get started.",
   nav_click_survey: "Take the community survey.",
   nav_report_issue: "Open the menu to report an issue.",
-  nav_click_boards: "Navigate to the Boards section.",
-  nav_click_board: "Click a board to see its posts.",
-  nav_click_post: "Click a post to read and comment.",
   nav_click_quests: "Open your quest log from the menu.",
   nav_click_achievements: "View your achievements from the menu.",
   nav_click_leaderboard: "Check the leaderboard from the menu.",
