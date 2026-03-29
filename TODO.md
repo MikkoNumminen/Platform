@@ -16,16 +16,8 @@
 > Zero-credential demo for unregistered visitors. Superuser account with isolated mock data.
 > Branch merged. Seed data complete. Tutorial auto-activates. Nav hint fixed. README updated. (Claude 3)
 
-#### UX Polish (priority) — Claude 1
-- [x] 🟣 Remove yellow demo banner — use DEMO chip as exit button with pulse effect — Claude 1
-- [x] 🟣 Highlight next action for user to click in demo mode (tutorial spotlight integration) — Claude 1
-
 #### Remaining — Claude 3
 - [ ] 🔵 Demo-specific welcome overlay on first load — Claude 3
-- [ ] 🟣 Tests for demo seed data completeness, tutorial step coverage, session isolation — Claude 3
-
-### Dev Log — Live Commit Feed ✅
-> Done by Claude 3. IRC-style commit feed with CI status colors.
 
 ### Quest Log UX Refactor
 > Show completed quests, merge custom quests into tabs, add progress summaries.
@@ -35,9 +27,6 @@
 - [ ] 🔵 Merge custom quests into tabs — assigned quests show in "Assigned" tab — Claude 3
 - [ ] 🔵 Highlight active/in-progress quests with visual emphasis — Claude 3
 - [ ] 🔵 Update getActiveQuests to return completed quests too — Claude 3
-- [ ] 🔵 Create DevLog client component — IRC-style display matching shoutbox aesthetic — Claude 3
-- [ ] 🔵 Add DevLog to home page — side by side with shoutbox on desktop, stacked on mobile — Claude 3
-- [ ] 🔵 Tests for DevLog component — Claude 3
 
 ### GDPR Compliance Gaps
 > From GDPR analysis. Address before scaling up.
@@ -62,6 +51,7 @@
 
 ### Testing Backlog
 - [ ] 🔵 test-animation page tests
+- [ ] 🔵 Tests for DevLog component — Claude 3
 - [ ] 🟣 Integration tests for multi-step workflows (signup → approval, board → post → thread)
 - [ ] 🟣 Playwright E2E testing for critical user journeys
 
