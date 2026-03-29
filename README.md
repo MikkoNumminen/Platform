@@ -26,7 +26,6 @@ packages/config/ — Shared types and config (@platform/config)
 - **User aliases** — Public display names (callsigns) shown instead of real names in all community areas
 - **Themes** — 8 switchable themes including Epic (WoW-inspired with Cinzel font, textured backgrounds, gold ornamental borders)
 - **i18n** — Multilingual support (Finnish, English, Somali, Arabic) via next-intl with cookie-based locale detection, Accept-Language fallback, and RTL support for Arabic
-- **Community Survey** — Feature prioritization survey with multi-round support and admin results dashboard
 - **Pending user gate** — New users are redirected to the survey and cannot access the platform until an admin approves them
 
 ### Gamification
@@ -37,6 +36,19 @@ packages/config/ — Shared types and config (@platform/config)
 - **Leaderboard** — Top users ranked by XP with current user highlighting
 - **XP Toast notifications** — Real-time XP award popups after actions
 - **Custom Quests** — Superuser-assigned quests with configurable XP rewards, priority levels, deadlines, and status management (open/in progress/completed)
+- **Skill-targeted quests** — Quests can target a development skill; matching users earn double XP on completion
+
+### Feedback System
+- **Survey rounds** — Superuser creates survey rounds with optional XP rewards; users take surveys from the feedback page
+- **Results dashboard** — Expandable per-round results with bar charts and text response lists
+- **Quest integration** — Survey rounds can auto-create CustomQuests for all active users; completing the survey auto-completes the quest and awards XP
+
+### Demo Mode
+- **Zero-credential demo** — "Try Demo" button in TopBar for unauthenticated visitors; one-click login as superuser
+- **Isolated mock data** — Demo sessions are fully isolated via `sessionId` scoping; real community data is never exposed
+- **Comprehensive seed data** — 6 users, 2 boards, 5 posts, 12 comments, 10 shoutbox messages, 6 calendar events, 4 issues, 5 survey responses, 4 custom quests, gamification profiles with XP/achievements/quest progress
+- **Auto-cleanup** — Stale demo sessions (>24h) are automatically cascade-deleted
+- **Tutorial integration** — Guided tour auto-activates for demo users with fresh state
 
 ### Guided Tour
 - **Role-based tutorial** — 13-step guided tour with 4 tiers (Getting Started, Community Explorer, Admin Basics, Team Leader)
@@ -52,7 +64,7 @@ packages/config/ — Shared types and config (@platform/config)
 - **Achievement & Quest CRUD** — Admin editor for managing gamification content
 
 ### Security
-- **Authentication** — NextAuth v5 with Google and GitHub OAuth
+- **Authentication** — NextAuth v5 with Google OAuth, GitHub OAuth, and zero-credential demo login
 - **Role-based permissions** — Superuser, vuohi, admin, user, and pending roles with 24 granular permission keys and per-user overrides
 - **Role hierarchy enforcement** — Users can only modify lower-ranked users and assign lower-ranked roles
 - **Content ownership** — Edit actions verify the user is the author; admin routes check role in middleware
@@ -77,7 +89,7 @@ packages/config/ — Shared types and config (@platform/config)
 ### UX Polish
 - **Loading skeletons** — Skeleton loading states for all routes
 - **Keyboard shortcuts** — `g+h/b/f/c` for navigation, `?` for help dialog
-- **Welcome page** — Animated landing page with sign-in arrow for unauthenticated users
+- **Welcome page** — Animated landing page with "Try Demo" and "Sign In" for unauthenticated visitors
 - **Level-up celebration** — Confetti and overlay animation on XP level milestones
 - **Vuohi promotion celebration** — Special animation when promoted to vuohi role
 - **Goat favicon** — Custom SVG goat head icon matching the community identity
@@ -111,7 +123,7 @@ npx turbo run build --filter=web # Production build
 
 ## Testing
 
-956 tests across 123 test suites with accessibility checks (jest-axe). Playwright E2E framework configured for critical user journeys.
+960+ tests across 123+ test suites with accessibility checks (jest-axe). Playwright E2E framework configured for critical user journeys.
 
 ```bash
 npx turbo run test --filter=web           # All unit/integration tests
@@ -132,7 +144,7 @@ New features are developed in the HRM repo first, then ported to Platform as nee
 
 ### User access model
 
-1. A new user signs in with Google or GitHub OAuth
+1. A new user signs in with Google or GitHub OAuth (or clicks "Try Demo" for a zero-credential demo with isolated mock data)
 2. They choose a public alias (callsign) on first login — shown instead of real name everywhere
 3. They complete a community survey (required before approval)
 4. They get a `"pending"` role with **zero permissions** — redirected to the survey, no access to community content
@@ -153,6 +165,7 @@ Required environment variables:
 - `NEXT_PUBLIC_APP_NAME` — App name displayed in UI
 - `NEXT_PUBLIC_BASE_URL` — Production URL for OG meta tags (default: `https://vuohiliitto.com`)
 - `CRON_SECRET` — Secret for authenticating cron job requests (soft-delete cleanup)
+- `NEXT_PUBLIC_DEMO_LOGIN` — Set to `"false"` to hide the demo button (default: enabled)
 
 ## CI/CD
 
