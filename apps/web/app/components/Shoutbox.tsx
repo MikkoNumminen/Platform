@@ -19,6 +19,12 @@ interface ShoutboxProps {
   initialShouts: ShoutData[];
 }
 
+const DEMO_REACTIONS: Array<{ alias: string; message: string; delayMs: number }> = [
+  { alias: "Valtava", message: "Welcome to the community! 🐐", delayMs: 1500 },
+  { alias: "Perserkki", message: "Hey! Nice to see a new face 👋", delayMs: 3000 },
+  { alias: "Turo", message: "Check out the quests, you can earn XP!", delayMs: 5000 },
+];
+
 export default function Shoutbox({ initialShouts }: ShoutboxProps) {
   const { data: session } = useSession();
   const { onAction } = useXpToast();
@@ -26,7 +32,9 @@ export default function Shoutbox({ initialShouts }: ShoutboxProps) {
   const [shouts, setShouts] = useState(initialShouts);
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const [demoReacted, setDemoReacted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const isDemo = Boolean((session?.user as { demoSessionId?: string })?.demoSessionId);
 
   useEffect(() => {
     setShouts(initialShouts);
@@ -62,6 +70,25 @@ export default function Shoutbox({ initialShouts }: ShoutboxProps) {
     } else {
       onAction();
       emitTutorialEvent("write_comment");
+
+      // Demo mode: fake community reactions on first message
+      if (isDemo && !demoReacted) {
+        setDemoReacted(true);
+        for (const reaction of DEMO_REACTIONS) {
+          setTimeout(() => {
+            setShouts((prev) => [
+              ...prev,
+              {
+                id: `demo-${Date.now()}-${reaction.alias}`,
+                message: reaction.message,
+                alias: reaction.alias,
+                role: "user",
+                createdAt: new Date().toISOString(),
+              },
+            ]);
+          }, reaction.delayMs);
+        }
+      }
     }
     setSending(false);
   };
