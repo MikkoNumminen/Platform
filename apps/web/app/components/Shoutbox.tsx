@@ -47,6 +47,14 @@ interface ShoutboxProps {
 
 type DmUser = { id: string; alias: string; role: string };
 
+const SYSTEM_MOTD = [
+  {
+    label: "[System]",
+    text: "Welcome. Type /w alias message to whisper.",
+    color: "warning" as const,
+  },
+];
+
 // "guild" = shoutbox, string ID = conversation, "new:userId" = new DM
 type ActiveTab = "guild" | string;
 
@@ -73,6 +81,7 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
   const [activeTab, setActiveTab] = useState<ActiveTab>("guild");
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const [whisperSuggestions, setWhisperSuggestions] = useState<DmUser[]>([]);
 
   const activeConversation = conversations.find((c) => c.id === activeTab);
   const isGuild = activeTab === "guild";
@@ -141,6 +150,30 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
     setActiveTab(`new:${user.id}`);
     setDmMessages([]);
     setMessage("");
+    setWhisperSuggestions([]);
+  };
+
+  // ── Input change with /w autocomplete ────────────────────────────────────
+
+  const handleMessageChange = async (val: string) => {
+    setMessage(val);
+    // Detect /w <partial> pattern (no space after alias = still typing the name)
+    const partialMatch = val.match(/^\/w(?:hisper)?\s+(\S*)$/i);
+    if (partialMatch && partialMatch[1].length >= 1) {
+      const partial = partialMatch[1].toLowerCase();
+      const users = await ensureUsersLoaded();
+      const matches = users.filter((u) => u.alias.toLowerCase().startsWith(partial)).slice(0, 5);
+      setWhisperSuggestions(matches);
+    } else {
+      setWhisperSuggestions([]);
+    }
+  };
+
+  const applySuggestion = (alias: string) => {
+    // Replace the partial alias with the full one and add a space
+    const newMsg = message.replace(/^(\/w(?:hisper)?\s+)\S*$/i, `$1${alias} `);
+    setMessage(newMsg);
+    setWhisperSuggestions([]);
   };
 
   // ── Submit handler ──────────────────────────────────────────────────────
@@ -175,6 +208,7 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
           },
         ]);
         setMessage("");
+        setWhisperSuggestions([]);
         if (isGuild) setActiveTab("guild"); // stay on guild but show error won't work — switch to a temp view
         return;
       }
@@ -182,6 +216,7 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
       const existing = conversations.find((c) => c.otherUser.id === targetUser.id);
       setSending(true);
       setMessage("");
+      setWhisperSuggestions([]);
 
       if (existing) {
         setActiveTab(existing.id);
@@ -246,6 +281,7 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
       };
       setShouts((prev) => [...prev, optimistic]);
       setMessage("");
+      setWhisperSuggestions([]);
       setSending(true);
 
       const result = await createShout(trimmed);
@@ -281,6 +317,7 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
       const otherUserId = activeTab.slice(4);
       setSending(true);
       setMessage("");
+      setWhisperSuggestions([]);
       const result = await startConversation(otherUserId, trimmed);
       if (result?.conversationId) {
         onAction();
@@ -314,6 +351,7 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
     };
     setDmMessages((prev) => [...prev, optimistic]);
     setMessage("");
+    setWhisperSuggestions([]);
     setSending(true);
 
     const result = await sendDirectMessage(activeTab, trimmed);
@@ -459,13 +497,32 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
         {/* New whisper button */}
         {session?.user && (
           <Tooltip title="/w alias message">
-            <IconButton
-              size="small"
+            <Box
               onClick={handleNewWhisper}
-              sx={{ color: colors.slate400, px: 1, "&:hover": { color: colors.slate100 } }}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 0.5,
+                px: 1.5,
+                py: 0.5,
+                cursor: "pointer",
+                flexShrink: 0,
+                "&:hover": { backgroundColor: "rgba(255,255,255,0.04)" },
+              }}
             >
-              <AddCommentIcon sx={{ fontSize: 14 }} />
-            </IconButton>
+              <AddCommentIcon sx={{ fontSize: 14, color: WHISPER_COLOR }} />
+              <Typography
+                variant="caption"
+                sx={{
+                  color: WHISPER_COLOR,
+                  fontFamily: "inherit",
+                  fontSize: "0.7rem",
+                  fontWeight: 600,
+                }}
+              >
+                /w
+              </Typography>
+            </Box>
           </Tooltip>
         )}
       </Box>
@@ -530,220 +587,320 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
           </Box>
         ) : isGuild ? (
           /* Guild (shoutbox) content */
-          shouts.length === 0 ? (
-            <Typography
-              variant="body2"
-              sx={{ color: colors.slate400, fontFamily: "inherit", fontStyle: "italic" }}
-            >
-              {t("empty")}
-            </Typography>
-          ) : (
-            shouts.map((shout) => {
-              const isSuperuser = shout.role === "superuser";
-              return (
-                <Box key={shout.id} sx={{ display: "flex", gap: 0.75, lineHeight: 1.6 }}>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    sx={{
-                      color: colors.slate400,
-                      fontFamily: "inherit",
-                      flexShrink: 0,
-                      fontSize: "0.8rem",
-                    }}
-                  >
-                    {formatTime(shout.createdAt)}
-                  </Typography>
-                  {isSuperuser && (
-                    <Tooltip title="Superuser" arrow>
-                      <StarIcon
-                        sx={{
-                          fontSize: 14,
-                          color: colors.warning,
-                          alignSelf: "center",
-                          flexShrink: 0,
-                        }}
-                      />
-                    </Tooltip>
-                  )}
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    sx={{
-                      color: isSuperuser ? colors.warning : GUILD_COLOR,
-                      fontFamily: "inherit",
-                      fontWeight: 700,
-                      flexShrink: 0,
-                      fontSize: "0.8rem",
-                    }}
-                  >
-                    &lt;{shout.alias}&gt;
-                  </Typography>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    sx={{
-                      color: colors.slate100,
-                      fontFamily: "inherit",
-                      wordBreak: "break-word",
-                      fontSize: "0.8rem",
-                      fontWeight: isSuperuser ? 500 : 400,
-                    }}
-                  >
-                    {shout.message}
-                  </Typography>
-                </Box>
-              );
-            })
-          )
+          <>
+            {SYSTEM_MOTD.map((line, i) => (
+              <Box key={`motd-${i}`} sx={{ display: "flex", gap: 0.75, lineHeight: 1.6, mb: 0.5 }}>
+                <Typography
+                  component="span"
+                  variant="body2"
+                  sx={{
+                    color: colors.warning,
+                    fontFamily: "inherit",
+                    fontWeight: 700,
+                    fontSize: "0.75rem",
+                  }}
+                >
+                  {line.label}
+                </Typography>
+                <Typography
+                  component="span"
+                  variant="body2"
+                  sx={{ color: colors.slate400, fontFamily: "inherit", fontSize: "0.75rem" }}
+                >
+                  {line.text}
+                </Typography>
+              </Box>
+            ))}
+            {shouts.length === 0 ? (
+              <Typography
+                variant="body2"
+                sx={{ color: colors.slate400, fontFamily: "inherit", fontStyle: "italic" }}
+              >
+                {t("empty")}
+              </Typography>
+            ) : (
+              shouts.map((shout) => {
+                const isSuperuser = shout.role === "superuser";
+                return (
+                  <Box key={shout.id} sx={{ display: "flex", gap: 0.75, lineHeight: 1.6 }}>
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      sx={{
+                        color: colors.slate400,
+                        fontFamily: "inherit",
+                        flexShrink: 0,
+                        fontSize: "0.8rem",
+                      }}
+                    >
+                      {formatTime(shout.createdAt)}
+                    </Typography>
+                    {isSuperuser && (
+                      <Tooltip title="Superuser" arrow>
+                        <StarIcon
+                          sx={{
+                            fontSize: 14,
+                            color: colors.warning,
+                            alignSelf: "center",
+                            flexShrink: 0,
+                          }}
+                        />
+                      </Tooltip>
+                    )}
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      sx={{
+                        color: isSuperuser ? colors.warning : GUILD_COLOR,
+                        fontFamily: "inherit",
+                        fontWeight: 700,
+                        flexShrink: 0,
+                        fontSize: "0.8rem",
+                      }}
+                    >
+                      &lt;{shout.alias}&gt;
+                    </Typography>
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      sx={{
+                        color: colors.slate100,
+                        fontFamily: "inherit",
+                        wordBreak: "break-word",
+                        fontSize: "0.8rem",
+                        fontWeight: isSuperuser ? 500 : 400,
+                      }}
+                    >
+                      {shout.message}
+                    </Typography>
+                  </Box>
+                );
+              })
+            )}
+          </>
         ) : isDmTab ? (
           /* DM conversation content */
-          dmMessages.length === 0 ? (
-            <Typography
-              variant="body2"
-              sx={{ color: colors.slate400, fontFamily: "inherit", fontStyle: "italic" }}
-            >
-              {tDm("empty")}
-            </Typography>
-          ) : (
-            dmMessages.map((msg) => {
-              if (msg.senderRole === "system") {
+          <>
+            {SYSTEM_MOTD.map((line, i) => (
+              <Box
+                key={`motd-dm-${i}`}
+                sx={{ display: "flex", gap: 0.75, lineHeight: 1.6, mb: 0.5 }}
+              >
+                <Typography
+                  component="span"
+                  variant="body2"
+                  sx={{
+                    color: colors.warning,
+                    fontFamily: "inherit",
+                    fontWeight: 700,
+                    fontSize: "0.75rem",
+                  }}
+                >
+                  {line.label}
+                </Typography>
+                <Typography
+                  component="span"
+                  variant="body2"
+                  sx={{ color: colors.slate400, fontFamily: "inherit", fontSize: "0.75rem" }}
+                >
+                  {line.text}
+                </Typography>
+              </Box>
+            ))}
+            {dmMessages.length === 0 ? (
+              <Typography
+                variant="body2"
+                sx={{ color: colors.slate400, fontFamily: "inherit", fontStyle: "italic" }}
+              >
+                {tDm("empty")}
+              </Typography>
+            ) : (
+              dmMessages.map((msg) => {
+                if (msg.senderRole === "system") {
+                  return (
+                    <Box key={msg.id} sx={{ lineHeight: 1.6 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: colors.error, fontFamily: "inherit", fontSize: "0.8rem" }}
+                      >
+                        {msg.message}
+                      </Typography>
+                    </Box>
+                  );
+                }
                 return (
-                  <Box key={msg.id} sx={{ lineHeight: 1.6 }}>
+                  <Box key={msg.id} sx={{ display: "flex", gap: 0.75, lineHeight: 1.6 }}>
                     <Typography
+                      component="span"
                       variant="body2"
-                      sx={{ color: colors.error, fontFamily: "inherit", fontSize: "0.8rem" }}
+                      sx={{
+                        color: colors.slate400,
+                        fontFamily: "inherit",
+                        flexShrink: 0,
+                        fontSize: "0.8rem",
+                      }}
+                    >
+                      {formatTime(msg.createdAt)}
+                    </Typography>
+                    {msg.isMe ? (
+                      <>
+                        {msg.senderRole === "superuser" && (
+                          <Tooltip title="Superuser" arrow>
+                            <StarIcon
+                              sx={{
+                                fontSize: 14,
+                                color: colors.warning,
+                                alignSelf: "center",
+                                flexShrink: 0,
+                              }}
+                            />
+                          </Tooltip>
+                        )}
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          sx={{
+                            color: WHISPER_LABEL,
+                            fontFamily: "inherit",
+                            flexShrink: 0,
+                            fontSize: "0.8rem",
+                          }}
+                        >
+                          To
+                        </Typography>
+                        {activeConversation?.otherUser.role === "superuser" && (
+                          <Tooltip title="Superuser" arrow>
+                            <StarIcon
+                              sx={{
+                                fontSize: 14,
+                                color: colors.warning,
+                                alignSelf: "center",
+                                flexShrink: 0,
+                              }}
+                            />
+                          </Tooltip>
+                        )}
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          sx={{
+                            color: WHISPER_COLOR,
+                            fontFamily: "inherit",
+                            fontWeight: 700,
+                            flexShrink: 0,
+                            fontSize: "0.8rem",
+                          }}
+                        >
+                          [{otherAlias}]:
+                        </Typography>
+                      </>
+                    ) : (
+                      <>
+                        {msg.senderRole === "superuser" && (
+                          <Tooltip title="Superuser" arrow>
+                            <StarIcon
+                              sx={{
+                                fontSize: 14,
+                                color: colors.warning,
+                                alignSelf: "center",
+                                flexShrink: 0,
+                              }}
+                            />
+                          </Tooltip>
+                        )}
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          sx={{
+                            color: WHISPER_COLOR,
+                            fontFamily: "inherit",
+                            fontWeight: 700,
+                            flexShrink: 0,
+                            fontSize: "0.8rem",
+                          }}
+                        >
+                          [{msg.senderAlias}]
+                        </Typography>
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          sx={{
+                            color: WHISPER_LABEL,
+                            fontFamily: "inherit",
+                            flexShrink: 0,
+                            fontSize: "0.8rem",
+                          }}
+                        >
+                          whispers:
+                        </Typography>
+                      </>
+                    )}
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      sx={{
+                        color: WHISPER_COLOR,
+                        fontFamily: "inherit",
+                        wordBreak: "break-word",
+                        fontSize: "0.8rem",
+                      }}
                     >
                       {msg.message}
                     </Typography>
                   </Box>
                 );
-              }
-              return (
-                <Box key={msg.id} sx={{ display: "flex", gap: 0.75, lineHeight: 1.6 }}>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    sx={{
-                      color: colors.slate400,
-                      fontFamily: "inherit",
-                      flexShrink: 0,
-                      fontSize: "0.8rem",
-                    }}
-                  >
-                    {formatTime(msg.createdAt)}
-                  </Typography>
-                  {msg.isMe ? (
-                    <>
-                      {msg.senderRole === "superuser" && (
-                        <Tooltip title="Superuser" arrow>
-                          <StarIcon
-                            sx={{
-                              fontSize: 14,
-                              color: colors.warning,
-                              alignSelf: "center",
-                              flexShrink: 0,
-                            }}
-                          />
-                        </Tooltip>
-                      )}
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        sx={{
-                          color: WHISPER_LABEL,
-                          fontFamily: "inherit",
-                          flexShrink: 0,
-                          fontSize: "0.8rem",
-                        }}
-                      >
-                        To
-                      </Typography>
-                      {activeConversation?.otherUser.role === "superuser" && (
-                        <Tooltip title="Superuser" arrow>
-                          <StarIcon
-                            sx={{
-                              fontSize: 14,
-                              color: colors.warning,
-                              alignSelf: "center",
-                              flexShrink: 0,
-                            }}
-                          />
-                        </Tooltip>
-                      )}
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        sx={{
-                          color: WHISPER_COLOR,
-                          fontFamily: "inherit",
-                          fontWeight: 700,
-                          flexShrink: 0,
-                          fontSize: "0.8rem",
-                        }}
-                      >
-                        [{otherAlias}]:
-                      </Typography>
-                    </>
-                  ) : (
-                    <>
-                      {msg.senderRole === "superuser" && (
-                        <Tooltip title="Superuser" arrow>
-                          <StarIcon
-                            sx={{
-                              fontSize: 14,
-                              color: colors.warning,
-                              alignSelf: "center",
-                              flexShrink: 0,
-                            }}
-                          />
-                        </Tooltip>
-                      )}
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        sx={{
-                          color: WHISPER_COLOR,
-                          fontFamily: "inherit",
-                          fontWeight: 700,
-                          flexShrink: 0,
-                          fontSize: "0.8rem",
-                        }}
-                      >
-                        [{msg.senderAlias}]
-                      </Typography>
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        sx={{
-                          color: WHISPER_LABEL,
-                          fontFamily: "inherit",
-                          flexShrink: 0,
-                          fontSize: "0.8rem",
-                        }}
-                      >
-                        whispers:
-                      </Typography>
-                    </>
-                  )}
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    sx={{
-                      color: WHISPER_COLOR,
-                      fontFamily: "inherit",
-                      wordBreak: "break-word",
-                      fontSize: "0.8rem",
-                    }}
-                  >
-                    {msg.message}
-                  </Typography>
-                </Box>
-              );
-            })
-          )
+              })
+            )}
+          </>
         ) : null}
       </Box>
+
+      {/* Whisper autocomplete suggestions */}
+      {whisperSuggestions.length > 0 && (
+        <Box
+          sx={{
+            borderTop: `1px solid ${colors.slate300}`,
+            px: 1.5,
+            py: 0.5,
+            backgroundColor: colors.slate600,
+            display: "flex",
+            gap: 1,
+            flexWrap: "wrap",
+          }}
+        >
+          {whisperSuggestions.map((u) => (
+            <Box
+              key={u.id}
+              onClick={() => applySuggestion(u.alias)}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 0.5,
+                px: 1,
+                py: 0.25,
+                cursor: "pointer",
+                borderRadius: 1,
+                backgroundColor: "rgba(255,128,255,0.08)",
+                border: `1px solid ${WHISPER_COLOR}40`,
+                "&:hover": { backgroundColor: "rgba(255,128,255,0.18)" },
+              }}
+            >
+              {u.role === "superuser" && <StarIcon sx={{ fontSize: 12, color: colors.warning }} />}
+              <Typography
+                variant="caption"
+                sx={{
+                  color: WHISPER_COLOR,
+                  fontFamily: "inherit",
+                  fontWeight: 600,
+                  fontSize: "0.75rem",
+                }}
+              >
+                {u.alias}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+      )}
 
       {/* Input field */}
       {session?.user && (
@@ -751,7 +908,7 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
           component="form"
           onSubmit={handleSubmit}
           sx={{
-            borderTop: `1px solid ${colors.slate300}`,
+            borderTop: whisperSuggestions.length > 0 ? "none" : `1px solid ${colors.slate300}`,
             px: 1.5,
             py: 1,
             backgroundColor: colors.slate700,
@@ -760,7 +917,7 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
           <TextField
             data-tutorial="shoutbox-input"
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={(e) => handleMessageChange(e.target.value)}
             placeholder={
               isGuild ? t("placeholder") : isDmTab ? tDm("placeholder") : "/w alias message"
             }
