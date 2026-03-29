@@ -44,6 +44,9 @@ model User {
   assignedQuests     CustomQuest[]     @relation("CustomQuestAssignee")
   createdQuests      CustomQuest[]     @relation("CustomQuestCreator")
   createdSurveyRounds SurveyRound[]   @relation("SurveyRoundCreator")
+  conversationsAsA    Conversation[]   @relation("ConversationParticipantA")
+  conversationsAsB    Conversation[]   @relation("ConversationParticipantB")
+  sentDirectMessages  DirectMessage[]  @relation("DirectMessageSender")
 
   sessionId      String?
 
@@ -484,5 +487,44 @@ model UserTourProgress {
 
   @@unique([userId, stepId])
   @@index([userId])
+  @@index([sessionId])
+}
+
+// ─── Direct Messages ──────────────────────────────────────────────────────
+
+model Conversation {
+  id            String    @id @default(uuid())
+  participantA  String
+  participantB  String
+  isPrivacy     Boolean   @default(false)
+  lastMessageAt DateTime  @default(now())
+  sessionId     String?
+  createdAt     DateTime  @default(now())
+
+  userA    User             @relation("ConversationParticipantA", fields: [participantA], references: [id], onDelete: Cascade)
+  userB    User             @relation("ConversationParticipantB", fields: [participantB], references: [id], onDelete: Cascade)
+  messages DirectMessage[]
+
+  @@unique([participantA, participantB, sessionId])
+  @@index([participantA])
+  @@index([participantB])
+  @@index([lastMessageAt])
+  @@index([sessionId])
+}
+
+model DirectMessage {
+  id             String    @id @default(uuid())
+  conversationId String
+  senderId       String
+  message        String
+  readAt         DateTime?
+  sessionId      String?
+  createdAt      DateTime  @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation("DirectMessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@index([senderId])
   @@index([sessionId])
 }

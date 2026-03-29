@@ -37,6 +37,9 @@ export const PERMISSIONS = {
 
   // Survey
   "survey:results": "View survey results",
+
+  // Direct Messages
+  "dm:send": "Send direct messages",
 } as const;
 
 export type PermissionKey = keyof typeof PERMISSIONS;
@@ -68,6 +71,7 @@ const ROLE_DEFAULTS: Record<Role, PermissionKey[]> = {
     "quest:manage",
     "quest:view",
     "survey:results",
+    "dm:send",
   ],
   admin: [
     "board:create",
@@ -91,8 +95,9 @@ const ROLE_DEFAULTS: Record<Role, PermissionKey[]> = {
     "issue:resolve",
     "quest:view",
     "survey:results",
+    "dm:send",
   ],
-  user: ["post:create", "topic:create", "thread:create", "event:create"],
+  user: ["post:create", "topic:create", "thread:create", "event:create", "dm:send"],
   pending: [],
 };
 

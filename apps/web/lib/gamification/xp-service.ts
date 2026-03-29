@@ -2,7 +2,13 @@
 
 import { prisma } from "@/lib/db";
 import { getDemoSessionId } from "@/lib/demo-session";
-import { getLevelForXp, type XpSource, XP_AMOUNTS, DAILY_SHOUT_XP_CAP } from "./xp-config";
+import {
+  getLevelForXp,
+  type XpSource,
+  XP_AMOUNTS,
+  DAILY_SHOUT_XP_CAP,
+  DAILY_DM_XP_CAP,
+} from "./xp-config";
 
 export interface XpAwardResult {
   xpAwarded: number;
@@ -28,6 +34,16 @@ export async function awardXp(
       where: { userId, source: "shout:create", createdAt: { gte: todayStart } },
     });
     if ((todayShoutXp._sum.amount ?? 0) >= DAILY_SHOUT_XP_CAP) return null;
+  }
+
+  if (source === "dm:send") {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayDmXp = await prisma.xpTransaction.aggregate({
+      _sum: { amount: true },
+      where: { userId, source: "dm:send", createdAt: { gte: todayStart } },
+    });
+    if ((todayDmXp._sum.amount ?? 0) >= DAILY_DM_XP_CAP) return null;
   }
 
   await prisma.xpTransaction.create({ data: { userId, amount, source, sourceId } });

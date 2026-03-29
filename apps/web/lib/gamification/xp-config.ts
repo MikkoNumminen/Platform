@@ -11,6 +11,7 @@ export const XP_AMOUNTS = {
   "streak:7day": 50,
   "streak:30day": 200,
   "quest:complete": 0,
+  "dm:send": 3,
 } as const;
 
 export type XpSource = keyof typeof XP_AMOUNTS;
@@ -68,3 +69,4 @@ export function getXpProgress(totalXp: number): {
 }
 
 export const DAILY_SHOUT_XP_CAP = 25;
+export const DAILY_DM_XP_CAP = 15;
