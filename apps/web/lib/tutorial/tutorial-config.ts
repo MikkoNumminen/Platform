@@ -86,7 +86,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     navigationHints: [
       {
         fromRoute: /.*/,
-        targetSelector: '[data-tutorial="nav-issues"]',
+        targetSelector: '[data-tutorial="user-menu-button"]',
         hintKey: "nav_report_issue",
       },
     ],
@@ -119,7 +119,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     navigationHints: [
       {
         fromRoute: /.*/,
-        targetSelector: '[data-tutorial="nav-quests"]',
+        targetSelector: '[data-tutorial="user-menu-button"]',
         hintKey: "nav_click_quests",
       },
     ],
@@ -134,7 +134,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     navigationHints: [
       {
         fromRoute: /.*/,
-        targetSelector: '[data-tutorial="nav-achievements"]',
+        targetSelector: '[data-tutorial="user-menu-button"]',
         hintKey: "nav_click_achievements",
       },
     ],
@@ -149,7 +149,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     navigationHints: [
       {
         fromRoute: /.*/,
-        targetSelector: '[data-tutorial="nav-leaderboard"]',
+        targetSelector: '[data-tutorial="user-menu-button"]',
         hintKey: "nav_click_leaderboard",
       },
     ],
@@ -166,7 +166,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     navigationHints: [
       {
         fromRoute: /.*/,
-        targetSelector: '[data-tutorial="nav-survey-results"]',
+        targetSelector: '[data-tutorial="user-menu-button"]',
         hintKey: "nav_click_survey_results",
       },
     ],
@@ -181,7 +181,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     navigationHints: [
       {
         fromRoute: /.*/,
-        targetSelector: '[data-tutorial="nav-gamification"]',
+        targetSelector: '[data-tutorial="user-menu-button"]',
         hintKey: "nav_click_gamification",
       },
     ],
@@ -198,7 +198,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     navigationHints: [
       {
         fromRoute: /.*/,
-        targetSelector: '[data-tutorial="nav-manage-users"]',
+        targetSelector: '[data-tutorial="user-menu-button"]',
         hintKey: "nav_click_manage_users",
       },
     ],

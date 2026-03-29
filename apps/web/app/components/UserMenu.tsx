@@ -116,22 +116,30 @@ export default function UserMenu() {
             fontWeight: 700,
             fontSize: "0.7rem",
             cursor: "pointer",
-            animation: "demoPulse 2.5s ease-in-out infinite",
-            "@keyframes demoPulse": {
-              "0%, 100%": { boxShadow: `0 0 4px ${colors.error}` },
-              "50%": { boxShadow: `0 0 12px ${colors.error}, 0 0 24px ${colors.error}` },
-            },
             "&:hover": {
               backgroundColor: "#dc2626",
             },
           }}
         />
       )}
-      <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small">
+      <IconButton
+        data-tutorial="user-menu-button"
+        onClick={(e) => setAnchorEl(e.currentTarget)}
+        size="small"
+      >
         <Avatar
           src={user.image ?? undefined}
           alt={displayName ?? "User"}
-          sx={{ width: 32, height: 32, fontSize: "0.875rem" }}
+          sx={{
+            width: 32,
+            height: 32,
+            fontSize: "0.875rem",
+            ...(isDemoUser && {
+              backgroundColor: colors.green400,
+              color: colors.slate700,
+              fontWeight: 700,
+            }),
+          }}
         >
           {getInitials(displayName)}
         </Avatar>

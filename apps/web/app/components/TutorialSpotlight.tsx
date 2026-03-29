@@ -210,14 +210,14 @@ const HINT_TEXTS: Record<string, string> = {
   hint_edit_permissions: "Customize individual user permissions.",
   nav_setup_alias: "Set your alias to get started.",
   nav_click_survey: "Take the community survey.",
-  nav_report_issue: "Open the menu to report an issue.",
-  nav_click_quests: "Open your quest log from the menu.",
-  nav_click_achievements: "View your achievements from the menu.",
-  nav_click_leaderboard: "Check the leaderboard from the menu.",
-  nav_click_survey_results: "Open Survey Results from the admin menu.",
-  nav_click_gamification: "Open Gamification Stats from the admin menu.",
-  nav_click_issues: "Go to the Issue Tracker.",
-  nav_click_manage_users: "Open Manage Users from the admin menu.",
+  nav_report_issue: "Click your avatar to open the menu, then Report Issue.",
+  nav_click_quests: "Click your avatar to open the menu, then Quests.",
+  nav_click_achievements: "Click your avatar to open the menu, then Achievements.",
+  nav_click_leaderboard: "Click your avatar to open the menu, then Leaderboard.",
+  nav_click_survey_results: "Click your avatar to open the menu, then Survey Results.",
+  nav_click_gamification: "Click your avatar to open the menu, then Gamification Dashboard.",
+  nav_click_issues: "Click your avatar to open the menu, then Issues.",
+  nav_click_manage_users: "Click your avatar to open the menu, then Manage Users.",
 };
 
 function getHintText(hintKey: string): string {
