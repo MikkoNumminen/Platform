@@ -54,11 +54,31 @@ interface CustomQuestData {
   creator: string;
 }
 
+interface QuestBoardData {
+  quests: Array<{
+    id: string;
+    title: string;
+    description: string;
+    xpReward: number;
+    status: string;
+    priority: string;
+    targetSkill: string | null;
+    deadline: string | null;
+    completedAt: string | null;
+    createdAt: string;
+    assignee: { id: string; alias: string | null; name: string | null; image: string | null };
+    creator: { id: string; alias: string | null; name: string | null };
+  }>;
+  users: Array<{ id: string; alias: string | null; name: string | null }>;
+  canManage: boolean;
+}
+
 interface QuestLogProps {
   quests: QuestData[];
   xpProgress: XpProgress;
   customQuests?: CustomQuestData[];
   canManageQuests?: boolean;
+  questBoard?: QuestBoardData;
 }
 
 const QUEST_TABS = ["onboarding", "daily", "weekly", "special"] as const;
