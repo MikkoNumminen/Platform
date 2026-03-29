@@ -12,20 +12,10 @@
 
 - 🟣 **Ongoing:** Monitor CI pipeline and Vercel deployments, fix errors immediately — Claude 1
 
-### GDPR Compliance Gaps
-> From GDPR analysis. Address before scaling up.
-
-- [ ] 🔵 Add specific contact email to privacy policy
-- [ ] 🔵 Document a breach notification process (72-hour GDPR requirement)
-- [ ] 🔵 Create a formal Article 30 data processing register
-- [ ] 🔵 Confirm whether DPO appointment is needed
-- [ ] 🔵 Document demo mode data handling in privacy policy
 
 ### GitHub & Branding
 - [ ] 🔵 Add repo icon/social preview image and fix GitHub OAuth app visibility
 
-### Survey System
-- [ ] 🟣 Survey list page — show all survey rounds with completion stats and links to results
 
 ### Vuohi Exclusive Features
 - [ ] 🟣 Exclusive vuohi view/dashboard (separate from regular user view)
@@ -34,7 +24,6 @@
 - [ ] 🟣 Contributor request page — public view where people can apply for repo edit rights
 
 ### Testing Backlog
-- [ ] 🔵 test-animation page tests
 - [ ] 🟣 Integration tests for multi-step workflows (signup → approval, board → post → thread)
 - [ ] 🟣 Playwright E2E testing for critical user journeys
 

@@ -68,6 +68,24 @@ export default function PrivacyPolicyPage() {
               </Ul>
             </Section>
 
+            <Section title="5a. Demo mode">
+              <P>
+                The platform offers a zero-credential demo mode for visitors. Demo sessions create
+                an isolated sandbox with mock data. Demo data is:
+              </P>
+              <Ul>
+                <Li>Fully isolated — no real user data is visible to demo users</Li>
+                <Li>Temporary — demo sessions are automatically deleted after 24 hours</Li>
+                <Li>
+                  Non-personal — demo accounts use generated emails and aliases, not real identities
+                </Li>
+              </Ul>
+              <P>
+                No personal data is collected from demo users. The demo session ID is stored in a
+                cookie for the duration of the session only.
+              </P>
+            </Section>
+
             <Section title="6. Your rights (GDPR)">
               <P>As an EU resident, you have the right to:</P>
               <Ul>
@@ -104,10 +122,47 @@ export default function PrivacyPolicyPage() {
               </P>
             </Section>
 
-            <Section title="8. Contact">
+            <Section title="8. Breach notification">
               <P>
-                For questions about your data or to exercise your rights, contact the platform
-                administrator.
+                In the event of a personal data breach that poses a risk to your rights and
+                freedoms, we will notify the relevant supervisory authority within 72 hours of
+                becoming aware of the breach, as required by GDPR Article 33. If the breach is
+                likely to result in a high risk to you, we will also notify you directly without
+                undue delay (Article 34).
+              </P>
+            </Section>
+
+            <Section title="9. Data processing">
+              <P>We process personal data under the following legal bases (GDPR Article 6):</P>
+              <Ul>
+                <Li>
+                  <strong>Legitimate interest</strong> — Operating the community platform,
+                  displaying user content, and maintaining platform security
+                </Li>
+                <Li>
+                  <strong>Consent</strong> — Optional profile information (alias, bio, development
+                  interests) and survey responses
+                </Li>
+                <Li>
+                  <strong>Contract</strong> — Providing the service you signed up for, including
+                  authentication and account management
+                </Li>
+              </Ul>
+              <P>
+                This platform is operated by a small community team. Given the limited scope of data
+                processing, no Data Protection Officer (DPO) has been formally appointed. For any
+                data protection concerns, contact us using the details in Section 10.
+              </P>
+            </Section>
+
+            <Section title="10. Contact">
+              <P>
+                For questions about your data, to exercise your GDPR rights, or to report a data
+                protection concern, contact the platform administrator at{" "}
+                <a href="mailto:privacy@vuohiliitto.com" style={{ color: "inherit" }}>
+                  privacy@vuohiliitto.com
+                </a>
+                .
               </P>
             </Section>
           </CardContent>
