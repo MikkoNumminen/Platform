@@ -82,6 +82,12 @@
       "noResponses": "Ei vastauksia"
     }
   },
+  "demo": {
+    "tryDemo": "Kokeile demoa",
+    "exitDemo": "Poistu demosta",
+    "bannerMessage": "Olet demotilassa. Kaikki tiedot ovat eristettyjä ja väliaikaisia.",
+    "modeIndicator": "DEMO"
+  },
   "feedback": {
     "createRound": "Luo uusi kierros",
     "closeRound": "Sulje kierros",

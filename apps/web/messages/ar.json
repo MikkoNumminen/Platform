@@ -82,6 +82,12 @@
       "noResponses": "لا توجد ردود"
     }
   },
+  "demo": {
+    "tryDemo": "جرّب العرض التجريبي",
+    "exitDemo": "الخروج من العرض التجريبي",
+    "bannerMessage": "أنت في الوضع التجريبي. جميع البيانات معزولة ومؤقتة.",
+    "modeIndicator": "تجريبي"
+  },
   "feedback": {
     "createRound": "إنشاء جولة جديدة",
     "closeRound": "إغلاق الجولة",

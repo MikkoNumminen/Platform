@@ -20,7 +20,6 @@ import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import LogoutIcon from "@mui/icons-material/Logout";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { colors } from "../styles";
@@ -49,19 +48,17 @@ export default function UserMenu() {
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
         {showDemo && (
           <Button
-            variant="contained"
             size="small"
-            startIcon={<PlayArrowIcon />}
             onClick={() => signIn("demo", { callbackUrl: "/" })}
             sx={{
-              backgroundColor: "#4ade80",
-              color: "#000",
+              color: colors.green400,
               fontWeight: 600,
-              fontSize: "0.75rem",
-              "&:hover": { backgroundColor: "#22c55e" },
+              "&:hover": {
+                backgroundColor: "rgba(var(--platform-green400-rgb, 74, 222, 128), 0.1)",
+              },
             }}
           >
-            {td("tryDemoShort")}
+            {td("tryDemo")}
           </Button>
         )}
         <Button

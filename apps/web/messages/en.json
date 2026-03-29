@@ -82,6 +82,12 @@
       "noResponses": "No responses"
     }
   },
+  "demo": {
+    "tryDemo": "Try Demo",
+    "exitDemo": "Exit Demo",
+    "bannerMessage": "You are in demo mode. All data is isolated and temporary.",
+    "modeIndicator": "DEMO"
+  },
   "feedback": {
     "createRound": "Create New Round",
     "closeRound": "Close Round",
