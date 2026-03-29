@@ -1,4 +1,5 @@
 import { prisma } from "./db";
+import { getDemoSessionId } from "@/lib/demo-session";
 
 export interface BoardListItem {
   id: string;
@@ -9,12 +10,13 @@ export interface BoardListItem {
 }
 
 export async function getBoards(): Promise<BoardListItem[]> {
+  const sessionId = await getDemoSessionId();
   const boards = await prisma.board.findMany({
-    where: { deletedAt: null },
+    where: { deletedAt: null, sessionId },
     orderBy: { sortOrder: "asc" },
     include: {
       _count: {
-        select: { posts: { where: { deletedAt: null } } },
+        select: { posts: { where: { deletedAt: null, sessionId } } },
       },
     },
   });
@@ -36,8 +38,9 @@ export interface BoardDetail {
 }
 
 export async function getBoardBySlug(slug: string): Promise<BoardDetail | null> {
+  const sessionId = await getDemoSessionId();
   return prisma.board.findFirst({
-    where: { slug, deletedAt: null },
+    where: { slug, deletedAt: null, sessionId },
     select: { id: true, name: true, slug: true, description: true },
   });
 }

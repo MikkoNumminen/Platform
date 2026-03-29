@@ -1,4 +1,5 @@
 import { prisma } from "./db";
+import { getDemoSessionId } from "@/lib/demo-session";
 import type { ThreadData } from "@/app/types/thread";
 
 interface FlatThread {
@@ -13,8 +14,9 @@ export async function getThreadsByParent(
   parentType: "POST" | "TOPIC",
   parentId: string,
 ): Promise<ThreadData[]> {
+  const sessionId = await getDemoSessionId();
   const flat = await prisma.thread.findMany({
-    where: { parentType, parentId, deletedAt: null },
+    where: { parentType, parentId, deletedAt: null, sessionId },
     orderBy: { createdAt: "asc" },
     include: { author: { select: { alias: true, name: true } } },
   });

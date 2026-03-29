@@ -10,6 +10,10 @@ jest.mock("@/lib/db", () => ({
   },
 }));
 
+jest.mock("@/lib/demo-session", () => ({
+  getDemoSessionId: jest.fn().mockResolvedValue(null),
+}));
+
 import { getPostsByBoard, getPostBySlug } from "@/lib/post-queries";
 
 describe("getPostsByBoard", () => {
@@ -90,7 +94,7 @@ describe("getPostsByBoard", () => {
 
     expect(mockFindMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { boardId: "board-123", deletedAt: null },
+        where: { boardId: "board-123", deletedAt: null, sessionId: null },
       }),
     );
   });

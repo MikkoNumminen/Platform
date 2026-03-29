@@ -6,6 +6,7 @@ import { ActionError } from "./actionErrors";
 import { validateUUID, createStringValidator } from "./actionUtils";
 import { revalidatePath } from "next/cache";
 import { slugify } from "./slug-utils";
+import { getDemoSessionId } from "@/lib/demo-session";
 
 const validateBoardName = createStringValidator(
   "Board name",
@@ -20,13 +21,14 @@ export const createBoard = guardedAction(
   async (_session, name: string, description?: string) => {
     const validName = validateBoardName(name);
     const slug = slugify(validName);
+    const sessionId = await getDemoSessionId();
 
     if (!slug) {
       throw new ActionError("invalidBoardName", "Board name produces an invalid URL slug");
     }
 
     const existing = await prisma.board.findFirst({
-      where: { slug, deletedAt: null },
+      where: { slug, deletedAt: null, sessionId },
     });
     if (existing) {
       throw new ActionError("boardSlugExists", "A board with this name already exists");
@@ -34,7 +36,7 @@ export const createBoard = guardedAction(
 
     const maxSort = await prisma.board.aggregate({
       _max: { sortOrder: true },
-      where: { deletedAt: null },
+      where: { deletedAt: null, sessionId },
     });
 
     await prisma.board.create({
@@ -43,6 +45,7 @@ export const createBoard = guardedAction(
         slug,
         description: description?.trim() || null,
         sortOrder: (maxSort._max.sortOrder ?? 0) + 1,
+        sessionId,
       },
     });
 
@@ -57,20 +60,21 @@ export const updateBoard = guardedAction(
     validateUUID(boardId, "boardId");
     const validName = validateBoardName(name);
     const slug = slugify(validName);
+    const sessionId = await getDemoSessionId();
 
     if (!slug) {
       throw new ActionError("invalidBoardName", "Board name produces an invalid URL slug");
     }
 
     const board = await prisma.board.findFirst({
-      where: { id: boardId, deletedAt: null },
+      where: { id: boardId, deletedAt: null, sessionId },
     });
     if (!board) {
       throw new ActionError("boardNotFound", "Board not found");
     }
 
     const conflict = await prisma.board.findFirst({
-      where: { slug, deletedAt: null, id: { not: boardId } },
+      where: { slug, deletedAt: null, id: { not: boardId }, sessionId },
     });
     if (conflict) {
       throw new ActionError("boardSlugExists", "A board with this name already exists");
@@ -94,9 +98,10 @@ export const deleteBoard = guardedAction(
   "board:delete",
   async (_session, boardId: string) => {
     validateUUID(boardId, "boardId");
+    const sessionId = await getDemoSessionId();
 
     const board = await prisma.board.findFirst({
-      where: { id: boardId, deletedAt: null },
+      where: { id: boardId, deletedAt: null, sessionId },
     });
     if (!board) {
       throw new ActionError("boardNotFound", "Board not found");

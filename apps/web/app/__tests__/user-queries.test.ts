@@ -14,6 +14,10 @@ jest.mock("@/lib/db", () => ({
   },
 }));
 
+jest.mock("@/lib/demo-session", () => ({
+  getDemoSessionId: jest.fn().mockResolvedValue(null),
+}));
+
 import {
   getUsers,
   getUserById,
@@ -50,7 +54,7 @@ describe("getUsers", () => {
     const result = await getUsers();
     expect(result).toEqual(users);
     expect(mockUserFindMany).toHaveBeenCalledWith({
-      where: { deletedAt: null },
+      where: { deletedAt: null, sessionId: null },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
@@ -92,7 +96,7 @@ describe("getUserById", () => {
     const result = await getUserById("1");
     expect(result).toEqual(user);
     expect(mockUserFindFirst).toHaveBeenCalledWith({
-      where: { id: "1", deletedAt: null },
+      where: { id: "1", deletedAt: null, sessionId: null },
       select: {
         id: true,
         email: true,

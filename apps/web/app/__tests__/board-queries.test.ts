@@ -10,6 +10,10 @@ jest.mock("@/lib/db", () => ({
   },
 }));
 
+jest.mock("@/lib/demo-session", () => ({
+  getDemoSessionId: jest.fn().mockResolvedValue(null),
+}));
+
 import { getBoards, getBoardBySlug } from "@/lib/board-queries";
 
 describe("getBoards", () => {
@@ -52,7 +56,7 @@ describe("getBoards", () => {
 
     expect(mockFindMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { deletedAt: null },
+        where: { deletedAt: null, sessionId: null },
         orderBy: { sortOrder: "asc" },
       }),
     );
@@ -97,7 +101,7 @@ describe("getBoardBySlug", () => {
 
     expect(mockFindFirst).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { slug: "test-board", deletedAt: null },
+        where: { slug: "test-board", deletedAt: null, sessionId: null },
       }),
     );
   });

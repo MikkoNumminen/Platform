@@ -1,4 +1,5 @@
 import { prisma } from "./db";
+import { getDemoSessionId } from "@/lib/demo-session";
 
 export interface PostListItem {
   id: string;
@@ -10,8 +11,9 @@ export interface PostListItem {
 }
 
 export async function getPostsByBoard(boardId: string): Promise<PostListItem[]> {
+  const sessionId = await getDemoSessionId();
   const posts = await prisma.post.findMany({
-    where: { boardId, deletedAt: null },
+    where: { boardId, deletedAt: null, sessionId },
     orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
     include: { author: { select: { alias: true, name: true } } },
   });
@@ -38,8 +40,9 @@ export interface PostDetail {
 }
 
 export async function getPostBySlug(boardId: string, postSlug: string): Promise<PostDetail | null> {
+  const sessionId = await getDemoSessionId();
   const post = await prisma.post.findFirst({
-    where: { boardId, slug: postSlug, deletedAt: null },
+    where: { boardId, slug: postSlug, deletedAt: null, sessionId },
     include: { author: { select: { alias: true, name: true } } },
   });
 

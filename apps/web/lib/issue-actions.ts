@@ -8,6 +8,7 @@ import { rateLimit } from "@/lib/rateLimit";
 import { revalidatePath } from "next/cache";
 import { guardedAction } from "@/lib/guardedAction";
 import { triggerGamification } from "@/lib/gamification/trigger";
+import { getDemoSessionId } from "@/lib/demo-session";
 
 const MAX_ISSUE_TITLE_LENGTH = 200;
 const MAX_ISSUE_DESCRIPTION_LENGTH = 2000;
@@ -39,12 +40,15 @@ export async function createIssueReport(
 
     await rateLimit("issue:create");
 
+    const sessionId = await getDemoSessionId();
+
     await prisma.issueReport.create({
       data: {
         title: trimmedTitle,
         description: trimmedDesc,
         url: url?.trim() || null,
         authorId: session.user.id,
+        sessionId,
       },
     });
 
@@ -59,8 +63,11 @@ export const resolveIssue = guardedAction(
   "issue:resolve",
   async (_session, issueId: string) => {
     validateUUID(issueId, "issue ID");
+    const sessionId = await getDemoSessionId();
 
-    const issue = await prisma.issueReport.findUnique({ where: { id: issueId } });
+    const issue = await prisma.issueReport.findFirst({
+      where: { id: issueId, sessionId },
+    });
     if (!issue) {
       throw new ActionError("notFound", "Issue not found");
     }

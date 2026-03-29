@@ -13,11 +13,14 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
+import Chip from "@mui/material/Chip";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import BugReportIcon from "@mui/icons-material/BugReport";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import LogoutIcon from "@mui/icons-material/Logout";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { colors } from "../styles";
@@ -37,34 +40,56 @@ export default function UserMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const t = useTranslations("common");
   const tm = useTranslations("userMenu");
+  const td = useTranslations("demo");
+
+  const showDemo = process.env.NEXT_PUBLIC_DEMO_LOGIN !== "false";
 
   if (!session?.user) {
     return (
-      <Button
-        variant="outlined"
-        size="small"
-        onClick={() => signIn()}
-        sx={{
-          color: colors.green400,
-          borderColor: colors.green400,
-          fontWeight: 600,
-          animation: "signInPulse 2s ease-in-out infinite",
-          "@keyframes signInPulse": {
-            "0%, 100%": {
-              boxShadow: `0 0 4px var(--platform-green400)`,
-            },
-            "50%": {
-              boxShadow: `0 0 16px var(--platform-green400), 0 0 32px var(--platform-green400)`,
-            },
-          },
-          "&:hover": {
+      <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+        {showDemo && (
+          <Button
+            variant="contained"
+            size="small"
+            startIcon={<PlayArrowIcon />}
+            onClick={() => signIn("demo", { callbackUrl: "/" })}
+            sx={{
+              backgroundColor: "#4ade80",
+              color: "#000",
+              fontWeight: 600,
+              fontSize: "0.75rem",
+              "&:hover": { backgroundColor: "#22c55e" },
+            }}
+          >
+            {td("tryDemoShort")}
+          </Button>
+        )}
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => signIn()}
+          sx={{
+            color: colors.green400,
             borderColor: colors.green400,
-            backgroundColor: "rgba(var(--platform-green400-rgb, 74, 222, 128), 0.1)",
-          },
-        }}
-      >
-        {t("signIn")}
-      </Button>
+            fontWeight: 600,
+            animation: "signInPulse 2s ease-in-out infinite",
+            "@keyframes signInPulse": {
+              "0%, 100%": {
+                boxShadow: `0 0 4px var(--platform-green400)`,
+              },
+              "50%": {
+                boxShadow: `0 0 16px var(--platform-green400), 0 0 32px var(--platform-green400)`,
+              },
+            },
+            "&:hover": {
+              borderColor: colors.green400,
+              backgroundColor: "rgba(var(--platform-green400-rgb, 74, 222, 128), 0.1)",
+            },
+          }}
+        >
+          {t("signIn")}
+        </Button>
+      </Box>
     );
   }
 
@@ -75,9 +100,22 @@ export default function UserMenu() {
   const canViewSurveyResults = Boolean(permissions["survey:results"]);
   const isVuohiOrSuperuser = user.role === "superuser" || user.role === "vuohi";
   const isApproved = user.role !== "pending";
+  const isDemoUser = Boolean(user.demoSessionId);
 
   return (
-    <Box>
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      {isDemoUser && (
+        <Chip
+          label={td("modeIndicator")}
+          size="small"
+          sx={{
+            backgroundColor: "#4ade80",
+            color: "#000",
+            fontWeight: 700,
+            fontSize: "0.7rem",
+          }}
+        />
+      )}
       <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small">
         <Avatar
           src={user.image ?? undefined}
@@ -94,6 +132,30 @@ export default function UserMenu() {
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
+        {isDemoUser && (
+          <Box sx={{ px: 2, py: 1 }}>
+            <Button
+              variant="contained"
+              fullWidth
+              startIcon={<LogoutIcon />}
+              onClick={() => {
+                localStorage.removeItem(LOCALSTORAGE_KEY);
+                localStorage.removeItem("tutorial-progress");
+                signOut();
+              }}
+              sx={{
+                backgroundColor: "#4ade80",
+                color: "#000",
+                fontWeight: 600,
+                "&:hover": {
+                  backgroundColor: "#22c55e",
+                },
+              }}
+            >
+              {td("exitDemo")}
+            </Button>
+          </Box>
+        )}
         <MenuItem component={Link} href="/account" onClick={() => setAnchorEl(null)}>
           <Box sx={{ py: 0.25 }}>
             <Typography variant="subtitle2">{displayName}</Typography>

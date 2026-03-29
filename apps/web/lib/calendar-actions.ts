@@ -12,6 +12,7 @@ import {
   type UpdateEventInput,
 } from "./calendar-schemas";
 import { triggerGamification } from "@/lib/gamification/trigger";
+import { getDemoSessionId } from "@/lib/demo-session";
 
 export async function fetchEvents(year: number, month: number): Promise<CalendarEvent[]> {
   const dbEvents = await getEvents(year, month);
@@ -32,11 +33,13 @@ export const createEvent = guardedAction(
   "event:create",
   async (session, input: CreateEventInput) => {
     const data = validateEventInput(input);
+    const sessionId = await getDemoSessionId();
 
     await prisma.calendarEvent.create({
       data: {
         ...data,
         authorId: session.user.id,
+        sessionId,
       },
     });
 
@@ -50,9 +53,10 @@ export const updateEvent = guardedAction(
   async (session, input: UpdateEventInput) => {
     validateUUID(input.id, "event ID");
     const data = validateEventInput(input);
+    const sessionId = await getDemoSessionId();
 
     const existing = await prisma.calendarEvent.findFirst({
-      where: { id: input.id, deletedAt: null },
+      where: { id: input.id, deletedAt: null, sessionId },
     });
     if (!existing) {
       throw new ActionError("eventNotFound", "Event not found");
@@ -74,9 +78,10 @@ export const deleteEvent = guardedAction(
   "event:delete",
   async (_session, id: string) => {
     validateUUID(id, "event ID");
+    const sessionId = await getDemoSessionId();
 
     const existing = await prisma.calendarEvent.findFirst({
-      where: { id, deletedAt: null },
+      where: { id, deletedAt: null, sessionId },
     });
     if (!existing) {
       throw new ActionError("eventNotFound", "Event not found");

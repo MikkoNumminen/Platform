@@ -1,12 +1,50 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import GitHub from "next-auth/providers/github";
+import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/db";
 import { resolvePermissions } from "@/lib/permissions";
 import { logger } from "@/lib/logger";
+import { DEMO_EMAIL, seedDemoData, cleanupStaleDemoSessions } from "@/lib/demo-session";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  providers: [Google({ authorization: { params: { prompt: "select_account" } } }), GitHub],
+  providers: [
+    Google({ authorization: { params: { prompt: "select_account" } } }),
+    GitHub,
+    Credentials({
+      id: "demo",
+      name: "Demo",
+      credentials: {},
+      async authorize() {
+        const user = await prisma.user.upsert({
+          where: { email: DEMO_EMAIL },
+          update: {},
+          create: {
+            email: DEMO_EMAIL,
+            name: "Demo User",
+            alias: "Demo User",
+            role: "superuser",
+            hasSeenPromotion: true,
+          },
+        });
+
+        const demoSession = await prisma.demoSession.create({
+          data: { userId: user.id },
+        });
+
+        await seedDemoData(demoSession.id);
+
+        cleanupStaleDemoSessions().catch(() => {});
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          demoSessionId: demoSession.id,
+        };
+      },
+    }),
+  ],
   pages: { signIn: "/auth/signin" },
   session: { strategy: "jwt" },
   callbacks: {
@@ -20,7 +58,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           });
 
           if (!existing) {
-            const userCount = await tx.user.count();
+            const userCount = await tx.user.count({ where: { sessionId: null } });
             const role = userCount === 0 ? "superuser" : "pending";
 
             await tx.user.upsert({
@@ -41,8 +79,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true;
     },
 
-    async jwt({ token, trigger }) {
+    async jwt({ token, trigger, user }) {
       if (!token.email) return token;
+
+      if (trigger === "signIn" && user?.demoSessionId) {
+        token.demoSessionId = user.demoSessionId;
+      }
 
       const needsRefresh =
         trigger === "signIn" || !token.role || typeof token.permissionsVersion !== "number";
@@ -137,6 +179,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (token.role) session.user.role = token.role;
       session.user.hasSeenPromotion = token.hasSeenPromotion ?? true;
       if (token.permissions) session.user.permissions = token.permissions;
+      if (token.demoSessionId) session.user.demoSessionId = token.demoSessionId;
       return session;
     },
   },

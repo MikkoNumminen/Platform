@@ -1,4 +1,5 @@
 import { prisma } from "./db";
+import { getDemoSessionId } from "@/lib/demo-session";
 
 export interface ShoutData {
   id: string;
@@ -10,7 +11,9 @@ export interface ShoutData {
 const SHOUT_LIMIT = 50;
 
 export async function getRecentShouts(): Promise<ShoutData[]> {
+  const sessionId = await getDemoSessionId();
   const shouts = await prisma.shout.findMany({
+    where: { sessionId },
     orderBy: { createdAt: "desc" },
     take: SHOUT_LIMIT,
     include: { author: { select: { alias: true, name: true } } },
