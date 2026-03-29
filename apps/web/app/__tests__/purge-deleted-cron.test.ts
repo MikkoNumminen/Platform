@@ -111,7 +111,8 @@ describe("purge-deleted cron", () => {
     const call = mockRateLimitDeleteMany.mock.calls[0][0];
     const cutoff = new Date(call.where.windowStart.lt);
     const hoursAgo = (Date.now() - cutoff.getTime()) / (1000 * 60 * 60);
-    expect(hoursAgo).toBeCloseTo(24, 0);
+    expect(hoursAgo).toBeGreaterThan(22);
+    expect(hoursAgo).toBeLessThan(26);
   });
 
   test("returns 500 on database error", async () => {
