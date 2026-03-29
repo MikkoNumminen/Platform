@@ -569,20 +569,50 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
             })
           )
         ) : (
-          // No active conversation — show help text
-          <Box sx={{ py: 2 }}>
-            <Typography
-              variant="body2"
-              sx={{ color: colors.slate400, fontFamily: "inherit", fontSize: "0.8rem", mb: 1 }}
-            >
-              {conversations.length > 0 ? "Click a tab above to open a conversation." : t("empty")}
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ color: colors.slate400, fontFamily: "inherit", fontSize: "0.75rem" }}
-            >
-              <span style={{ color: WHISPER_COLOR }}>/w alias message</span> — whisper a player
-            </Typography>
+          // No active conversation — bot help messages
+          <Box>
+            {[
+              { time: "", label: "[System]", text: "Welcome to private messages." },
+              { time: "", label: "", text: "" },
+              { time: "", label: "Commands:", text: "" },
+              { time: "", label: "/w", text: "alias message — whisper a player" },
+              { time: "", label: "/whisper", text: "alias message — same as /w" },
+              { time: "", label: "", text: "" },
+              ...(conversations.length > 0
+                ? [{ time: "", label: "Tip:", text: "Click a tab above to open a conversation." }]
+                : [{ time: "", label: "Tip:", text: "Click + to start a new conversation." }]),
+            ].map((line, i) =>
+              !line.label && !line.text ? (
+                <Box key={i} sx={{ height: 8 }} />
+              ) : (
+                <Box key={i} sx={{ display: "flex", gap: 0.75, lineHeight: 1.6 }}>
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    sx={{
+                      color: line.label === "[System]" ? colors.warning : WHISPER_COLOR,
+                      fontFamily: "inherit",
+                      fontWeight: 700,
+                      flexShrink: 0,
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    {line.label}
+                  </Typography>
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    sx={{
+                      color: line.label === "Tip:" ? colors.slate400 : colors.slate100,
+                      fontFamily: "inherit",
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    {line.text}
+                  </Typography>
+                </Box>
+              ),
+            )}
           </Box>
         )}
       </Box>
