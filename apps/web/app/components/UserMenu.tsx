@@ -19,6 +19,7 @@ import BugReportIcon from "@mui/icons-material/BugReport";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import ScienceIcon from "@mui/icons-material/Science";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { colors } from "../styles";
@@ -59,6 +60,21 @@ export default function UserMenu() {
             }}
           >
             {td("tryDemo")}
+            <Chip
+              icon={<ScienceIcon sx={{ fontSize: 12 }} />}
+              label="Beta"
+              size="small"
+              sx={{
+                ml: 0.5,
+                height: 18,
+                fontSize: "0.6rem",
+                fontWeight: 700,
+                letterSpacing: "0.03em",
+                backgroundColor: colors.surfaceOverlay,
+                color: colors.warning,
+                "& .MuiChip-icon": { color: colors.warning, ml: 0.5 },
+              }}
+            />
           </Button>
         )}
         <Button
