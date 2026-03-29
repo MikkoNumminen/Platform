@@ -5,6 +5,7 @@ export interface ShoutData {
   id: string;
   message: string;
   alias: string;
+  role: string;
   createdAt: string;
 }
 
@@ -16,13 +17,14 @@ export async function getRecentShouts(): Promise<ShoutData[]> {
     where: { sessionId },
     orderBy: { createdAt: "desc" },
     take: SHOUT_LIMIT,
-    include: { author: { select: { alias: true, name: true } } },
+    include: { author: { select: { alias: true, name: true, role: true } } },
   });
 
   return shouts.reverse().map((s) => ({
     id: s.id,
     message: s.message,
     alias: s.author.alias ?? s.author.name ?? "Unknown",
+    role: s.author.role,
     createdAt: s.createdAt.toISOString(),
   }));
 }

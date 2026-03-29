@@ -24,8 +24,14 @@ import Shoutbox from "@/app/components/Shoutbox";
 import type { ShoutData } from "@/lib/shout-queries";
 
 const sampleShouts: ShoutData[] = [
-  { id: "s1", message: "Hello!", alias: "Alice", createdAt: "2026-03-27T10:00:00Z" },
-  { id: "s2", message: "Hey there", alias: "Bob", createdAt: "2026-03-27T10:01:00Z" },
+  { id: "s1", message: "Hello!", alias: "Alice", role: "user", createdAt: "2026-03-27T10:00:00Z" },
+  {
+    id: "s2",
+    message: "Hey there",
+    alias: "Bob",
+    role: "superuser",
+    createdAt: "2026-03-27T10:01:00Z",
+  },
 ];
 
 describe("Shoutbox", () => {

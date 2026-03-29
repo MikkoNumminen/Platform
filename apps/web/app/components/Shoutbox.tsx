@@ -2,7 +2,8 @@
 
 import { useRef, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { Box, TextField, Typography } from "@mui/material";
+import { Box, TextField, Tooltip, Typography } from "@mui/material";
+import StarIcon from "@mui/icons-material/Star";
 import { useTranslations } from "next-intl";
 import { colors } from "../styles";
 import { createShout } from "@/lib/shout-actions";
@@ -42,10 +43,12 @@ export default function Shoutbox({ initialShouts }: ShoutboxProps) {
     if (!message.trim() || sending) return;
 
     const alias = session?.user?.alias ?? session?.user?.name ?? "Unknown";
+    const role = (session?.user as { role?: string })?.role ?? "user";
     const optimistic: ShoutData = {
       id: `temp-${Date.now()}`,
       message: message.trim(),
       alias,
+      role,
       createdAt: new Date().toISOString(),
     };
 
@@ -112,47 +115,63 @@ export default function Shoutbox({ initialShouts }: ShoutboxProps) {
             {t("empty")}
           </Typography>
         ) : (
-          shouts.map((shout) => (
-            <Box key={shout.id} sx={{ display: "flex", gap: 0.75, lineHeight: 1.6 }}>
-              <Typography
-                component="span"
-                variant="body2"
-                sx={{
-                  color: colors.slate400,
-                  fontFamily: "inherit",
-                  flexShrink: 0,
-                  fontSize: "0.8rem",
-                }}
-              >
-                {formatTime(shout.createdAt)}
-              </Typography>
-              <Typography
-                component="span"
-                variant="body2"
-                sx={{
-                  color: colors.green400,
-                  fontFamily: "inherit",
-                  fontWeight: 700,
-                  flexShrink: 0,
-                  fontSize: "0.8rem",
-                }}
-              >
-                &lt;{shout.alias}&gt;
-              </Typography>
-              <Typography
-                component="span"
-                variant="body2"
-                sx={{
-                  color: colors.slate100,
-                  fontFamily: "inherit",
-                  wordBreak: "break-word",
-                  fontSize: "0.8rem",
-                }}
-              >
-                {shout.message}
-              </Typography>
-            </Box>
-          ))
+          shouts.map((shout) => {
+            const isSuperuser = shout.role === "superuser";
+            return (
+              <Box key={shout.id} sx={{ display: "flex", gap: 0.75, lineHeight: 1.6 }}>
+                <Typography
+                  component="span"
+                  variant="body2"
+                  sx={{
+                    color: colors.slate400,
+                    fontFamily: "inherit",
+                    flexShrink: 0,
+                    fontSize: "0.8rem",
+                  }}
+                >
+                  {formatTime(shout.createdAt)}
+                </Typography>
+                {isSuperuser && (
+                  <Tooltip title="Superuser" arrow>
+                    <StarIcon
+                      sx={{
+                        fontSize: 14,
+                        color: colors.warning,
+                        alignSelf: "center",
+                        flexShrink: 0,
+                      }}
+                    />
+                  </Tooltip>
+                )}
+                <Typography
+                  component="span"
+                  variant="body2"
+                  sx={{
+                    color: isSuperuser ? colors.warning : colors.green400,
+                    fontFamily: "inherit",
+                    fontWeight: 700,
+                    flexShrink: 0,
+                    fontSize: "0.8rem",
+                  }}
+                >
+                  &lt;{shout.alias}&gt;
+                </Typography>
+                <Typography
+                  component="span"
+                  variant="body2"
+                  sx={{
+                    color: isSuperuser ? colors.slate100 : colors.slate100,
+                    fontFamily: "inherit",
+                    wordBreak: "break-word",
+                    fontSize: "0.8rem",
+                    fontWeight: isSuperuser ? 500 : 400,
+                  }}
+                >
+                  {shout.message}
+                </Typography>
+              </Box>
+            );
+          })
         )}
       </Box>
 
