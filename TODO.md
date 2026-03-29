@@ -113,6 +113,27 @@
 - [ ] 🟣 Show skill badge on quest cards in /admin/quests and /my-quests — Claude 1
 - [ ] 🔵 Tests for skill-targeted quest flow — Claude 1
 
+### Demo Mode — Interactive Platform Showcase
+> Zero-credential demo for unregistered visitors. Superuser account with isolated mock data.
+> All real community data hidden. Tutorial guides through every feature.
+> Architecture: config-driven step registry so new features auto-integrate.
+
+#### Phase 1 — Merge demo branch + seed data gaps
+- [ ] 🟣 Merge feat/demo-mode into master (resolve conflicts with custom quests, feedback system, skill quests) — Claude 3
+- [ ] 🟣 Seed quest progress + achievement unlocks for demo users (currently empty on /quests and /achievements) — Claude 3
+- [ ] 🟣 Seed CustomQuest data for demo (show quest board with assigned quests) — Claude 3
+- [ ] 🟣 Seed SurveyRound for demo (show feedback page with active round + past results) — Claude 3
+
+#### Phase 2 — Demo tour integration
+- [ ] 🟣 Auto-activate tutorial for demo user (fresh tour state, skip set_alias since already set) — Claude 3
+- [ ] 🟣 Make tutorial config extensible — step registry pattern so new features can register steps without editing core config — Claude 3
+- [ ] 🔵 Fix nav hint for report_issue step (selector mismatch after UserMenu consolidation) — Claude 3
+
+#### Phase 3 — Polish + tests
+- [ ] 🔵 Demo-specific welcome overlay on first load (brief "Welcome to the demo" with feature highlights) — Claude 3
+- [ ] 🟣 Tests for demo seed data completeness, tutorial step coverage, session isolation — Claude 3
+- [ ] 🔵 README: document demo mode setup, env variables, how to add new demo tour steps — Claude 3
+
 ### Developer Onboarding
 - [ ] 🟣 Contributor request page — public view where people can apply for repo edit rights to help develop the site
 
