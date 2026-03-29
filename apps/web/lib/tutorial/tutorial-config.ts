@@ -91,7 +91,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
       },
       {
         fromRoute: /.*/,
-        targetSelector: '[data-tutorial="nav-issues"]',
+        targetSelector: '[data-tutorial="user-menu-button"]',
         hintKey: "nav_report_issue",
       },
     ],

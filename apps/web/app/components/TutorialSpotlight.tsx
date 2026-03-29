@@ -9,6 +9,17 @@ import { colors } from "../styles";
 
 const SPOTLIGHT_CLASS = "tutorial-spotlight-target";
 
+// When the user menu is open, highlight the specific menu item instead of the avatar
+const STEP_MENU_ITEMS: Record<string, string> = {
+  report_issue: '[data-tutorial="nav-issues"]',
+  check_quests: '[data-tutorial="nav-quests"]',
+  view_achievements: '[data-tutorial="nav-achievements"]',
+  check_leaderboard: '[data-tutorial="nav-leaderboard"]',
+  view_survey_results: '[data-tutorial="nav-survey-results"]',
+  view_gamification_dashboard: '[data-tutorial="nav-gamification"]',
+  manage_users: '[data-tutorial="nav-manage-users"]',
+};
+
 export default function TutorialSpotlight() {
   const ctx = useTutorialMaybe();
   const pathname = usePathname();
@@ -25,17 +36,36 @@ export default function TutorialSpotlight() {
       return;
     }
 
-    const selector = isOnStepRoute
-      ? step.targetSelector
-      : findNavigationHintSelector(step, pathname);
+    const navHintSelector = isOnStepRoute ? null : findNavigationHintSelector(step, pathname);
+    const primarySelector = isOnStepRoute ? step.targetSelector : navHintSelector;
 
-    if (!selector) {
+    if (!primarySelector) {
       setAnchorEl(null);
       return;
     }
 
     function findTarget() {
-      const el = document.querySelector<HTMLElement>(selector!);
+      // Remove previous spotlight
+      document.querySelectorAll(`.${SPOTLIGHT_CLASS}`).forEach((el) => {
+        el.classList.remove(SPOTLIGHT_CLASS);
+      });
+
+      // When highlighting the user menu button, check if the menu is open
+      // and a more specific menu item is now visible
+      let el: HTMLElement | null = null;
+      if (!isOnStepRoute && primarySelector === '[data-tutorial="user-menu-button"]' && step) {
+        const menuItemSelector = STEP_MENU_ITEMS[step.id];
+        if (menuItemSelector) {
+          const menuItem = document.querySelector<HTMLElement>(menuItemSelector);
+          if (menuItem) el = menuItem;
+        }
+      }
+
+      // Fall back to the primary selector
+      if (!el) {
+        el = document.querySelector<HTMLElement>(primarySelector!);
+      }
+
       if (el) {
         el.classList.add(SPOTLIGHT_CLASS);
         setAnchorEl(el);
