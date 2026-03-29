@@ -17,11 +17,11 @@
   "welcome": {
     "title": "Soo dhawoow",
     "subtitle": "Tani waa barnamij bulshada oo gaar ah.",
-    "description": "Soo gal si aad u bilowdo. Ka dib marka aad soo gasho, waxaa lagaa codsanayaa inaad buuxiso xog-ururin yar. Maamulaha ayaa dib u eegaya oo oggolaanaya akoonkaaga.",
-    "step1": "Ku soo gal Google ama GitHub",
-    "step2": "Dooro magacaaga",
-    "step3": "Buuxi xog-uruurinta bulshada",
-    "step4": "Sug ogolaanshaha maamulaha"
+    "description": "Tijaabi demo-ga si aad u aragto dhammaan sifooyinka isla markiiba, ama soo gal si aad ugu biirto bulshada.",
+    "step1": "Tijaabi demo-ga — sahami barnaamijka xog tijaabo ah",
+    "step2": "Ku soo gal Google ama GitHub si aad ugu biirto",
+    "step3": "Dooro magacaaga oo buuxi xog-uruurinta bulshada",
+    "step4": "Maamulaha ayaa dib u eegaya oo oggolaanaya akoonkaaga"
   },
   "pending": {
     "banner": "Soo dhawoow! Waad soo gashay. Fadlan buuxi xog-uruurinta hoose — maamulaha ayaa dib u eegaya gelitaankaaga ka dib markaad dirto."

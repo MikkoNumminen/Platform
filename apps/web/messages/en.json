@@ -17,11 +17,11 @@
   "welcome": {
     "title": "Welcome",
     "subtitle": "This is a private community platform.",
-    "description": "Sign in to get started. After signing in, you'll be asked to complete a quick survey. An admin will then review and approve your account.",
-    "step1": "Sign in with Google or GitHub",
-    "step2": "Choose your alias",
-    "step3": "Take the community survey",
-    "step4": "Wait for admin approval"
+    "description": "Try the demo to explore all features instantly, or sign in to join the community.",
+    "step1": "Try Demo — explore the full platform with mock data",
+    "step2": "Sign in with Google or GitHub to join",
+    "step3": "Choose your alias and take the community survey",
+    "step4": "An admin will review and approve your account"
   },
   "pending": {
     "banner": "Welcome! You are signed in. Please complete the survey below — an admin will review your access after you submit it."

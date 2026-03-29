@@ -94,6 +94,7 @@ packages/config/ — Shared types and config (@platform/config)
 - **Loading skeletons** — Skeleton loading states for all routes
 - **Keyboard shortcuts** — `g+h/b/f/c` for navigation, `?` for help dialog
 - **Welcome page** — Animated landing page with "Try Demo" and "Sign In" for unauthenticated visitors
+- **Dev Log** — Live GitHub commit feed on the landing page showing recent changes with relative timestamps and CI build status
 - **Level-up celebration** — Confetti and overlay animation on XP level milestones
 - **Vuohi promotion celebration** — Special animation when promoted to vuohi role
 - **Goat favicon** — Custom SVG goat head icon matching the community identity

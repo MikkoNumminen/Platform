@@ -33,10 +33,10 @@ describe("WelcomeHero", () => {
 
   test("renders step instructions", () => {
     render(<WelcomeHero />);
+    expect(screen.getByText(/try demo/i)).toBeInTheDocument();
     expect(screen.getByText(/sign in with google or github/i)).toBeInTheDocument();
-    expect(screen.getByText(/choose your alias/i)).toBeInTheDocument();
-    expect(screen.getByText(/take the community survey/i)).toBeInTheDocument();
-    expect(screen.getByText(/wait for admin approval/i)).toBeInTheDocument();
+    expect(screen.getByText(/alias/i)).toBeInTheDocument();
+    expect(screen.getByText(/review and approve/i)).toBeInTheDocument();
   });
 
   test("does not render 'Click Sign In' text", () => {

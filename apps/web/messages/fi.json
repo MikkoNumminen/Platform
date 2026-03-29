@@ -17,11 +17,11 @@
   "welcome": {
     "title": "Tervetuloa",
     "subtitle": "Tämä on yksityinen yhteisöalusta.",
-    "description": "Kirjaudu sisään aloittaaksesi. Kirjautumisen jälkeen sinua pyydetään vastaamaan lyhyeen kyselyyn. Ylläpitäjä tarkistaa ja hyväksyy tilisi.",
-    "step1": "Kirjaudu Googlella tai GitHubilla",
-    "step2": "Valitse nimimerkki",
-    "step3": "Vastaa yhteisökyselyyn",
-    "step4": "Odota ylläpitäjän hyväksyntää"
+    "description": "Kokeile demoa nähdäksesi kaikki ominaisuudet heti, tai kirjaudu sisään liittyäksesi yhteisöön.",
+    "step1": "Kokeile demoa — tutustu alustaan testidatalla",
+    "step2": "Kirjaudu Googlella tai GitHubilla liittyäksesi",
+    "step3": "Valitse nimimerkki ja vastaa yhteisökyselyyn",
+    "step4": "Ylläpitäjä tarkistaa ja hyväksyy tilisi"
   },
   "pending": {
     "banner": "Tervetuloa! Olet kirjautunut sisään. Täytä alla oleva kysely — ylläpitäjä tarkistaa pääsysi sen jälkeen."
