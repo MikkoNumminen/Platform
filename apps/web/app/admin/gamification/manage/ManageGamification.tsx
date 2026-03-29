@@ -40,6 +40,68 @@ import {
 } from "@/lib/gamification/admin-actions";
 import { useRouter } from "next/navigation";
 
+const ICON_OPTIONS = [
+  // Goats
+  "🐐",
+  "🐑",
+  "🐏",
+  // Animals
+  "🦁",
+  "🐺",
+  "🦊",
+  "🐻",
+  "🐸",
+  "🐔",
+  "🐧",
+  "🦅",
+  "🐉",
+  "🦄",
+  // Combat / RPG
+  "⚔️",
+  "🛡️",
+  "🏹",
+  "🗡️",
+  "🔮",
+  "💎",
+  "👑",
+  "🏆",
+  "🎯",
+  "🔥",
+  // Fun / Stupid
+  "💩",
+  "🤡",
+  "👻",
+  "💀",
+  "🧠",
+  "👁️",
+  "🫡",
+  "🤌",
+  "🫠",
+  "🤯",
+  // Achievement vibes
+  "⭐",
+  "🌟",
+  "✨",
+  "🎉",
+  "🎊",
+  "🏅",
+  "🥇",
+  "🥈",
+  "🥉",
+  "💫",
+  // Nature / misc
+  "🌿",
+  "🍀",
+  "🌙",
+  "☀️",
+  "🌊",
+  "🗻",
+  "🧭",
+  "📜",
+  "📋",
+  "🎪",
+];
+
 interface AchievementData {
   id: string;
   key: string;
@@ -515,14 +577,42 @@ export default function ManageGamification({
               multiline
               rows={2}
             />
+            <Box>
+              <Typography
+                variant="caption"
+                sx={{ color: colors.slate400, mb: 0.5, display: "block" }}
+              >
+                Icon
+              </Typography>
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mb: 1.5 }}>
+                {ICON_OPTIONS.map((emoji) => (
+                  <Box
+                    key={emoji}
+                    onClick={() => setAchievementForm((f) => ({ ...f, icon: emoji }))}
+                    sx={{
+                      width: 36,
+                      height: 36,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "1.2rem",
+                      borderRadius: 1,
+                      cursor: "pointer",
+                      border:
+                        achievementForm.icon === emoji
+                          ? `2px solid ${colors.green400}`
+                          : `1px solid ${colors.slate400}`,
+                      backgroundColor:
+                        achievementForm.icon === emoji ? colors.accentBgSubtle : "transparent",
+                      "&:hover": { backgroundColor: colors.hoverOverlay },
+                    }}
+                  >
+                    {emoji}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
             <Box sx={{ display: "flex", gap: 2 }}>
-              <TextField
-                label="Icon"
-                value={achievementForm.icon}
-                onChange={(e) => setAchievementForm((f) => ({ ...f, icon: e.target.value }))}
-                size="small"
-                sx={{ width: 80 }}
-              />
               <TextField
                 label="XP Reward"
                 type="number"
@@ -655,14 +745,42 @@ export default function ManageGamification({
               multiline
               rows={2}
             />
+            <Box>
+              <Typography
+                variant="caption"
+                sx={{ color: colors.slate400, mb: 0.5, display: "block" }}
+              >
+                Icon
+              </Typography>
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mb: 1.5 }}>
+                {ICON_OPTIONS.map((emoji) => (
+                  <Box
+                    key={emoji}
+                    onClick={() => setQuestForm((f) => ({ ...f, icon: emoji }))}
+                    sx={{
+                      width: 36,
+                      height: 36,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "1.2rem",
+                      borderRadius: 1,
+                      cursor: "pointer",
+                      border:
+                        questForm.icon === emoji
+                          ? `2px solid ${colors.green400}`
+                          : `1px solid ${colors.slate400}`,
+                      backgroundColor:
+                        questForm.icon === emoji ? colors.accentBgSubtle : "transparent",
+                      "&:hover": { backgroundColor: colors.hoverOverlay },
+                    }}
+                  >
+                    {emoji}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
             <Box sx={{ display: "flex", gap: 2 }}>
-              <TextField
-                label="Icon"
-                value={questForm.icon}
-                onChange={(e) => setQuestForm((f) => ({ ...f, icon: e.target.value }))}
-                size="small"
-                sx={{ width: 80 }}
-              />
               <TextField
                 label="XP Reward"
                 type="number"
