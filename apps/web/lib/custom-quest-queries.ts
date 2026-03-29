@@ -10,6 +10,7 @@ export type CustomQuestData = {
   xpReward: number;
   status: string;
   priority: string;
+  targetSkill: string | null;
   deadline: Date | null;
   completedAt: Date | null;
   createdAt: Date;
@@ -24,6 +25,7 @@ const QUEST_SELECT = {
   xpReward: true,
   status: true,
   priority: true,
+  targetSkill: true,
   deadline: true,
   completedAt: true,
   createdAt: true,
