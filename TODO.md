@@ -24,10 +24,17 @@
 - [ ] 🔵 Demo-specific welcome overlay on first load — Claude 3
 - [ ] 🟣 Tests for demo seed data completeness, tutorial step coverage, session isolation — Claude 3
 
-### Dev Log — Live Commit Feed
-> IRC-style box on home page showing recent GitHub commits. Server-side fetch with 10min cache.
+### Dev Log — Live Commit Feed ✅
+> Done by Claude 3. IRC-style commit feed with CI status colors.
 
-- [ ] 🔵 Create DevLog server component — fetch commits from GitHub API, 10min revalidate — Claude 3
+### Quest Log UX Refactor
+> Show completed quests, merge custom quests into tabs, add progress summaries.
+
+- [ ] 🔵 Show completed quests in each tab (greyed out with checkmark, below active) — Claude 3
+- [ ] 🔵 Add progress summary per tab ("3/5 complete") in tab labels — Claude 3
+- [ ] 🔵 Merge custom quests into tabs — assigned quests show in "Assigned" tab — Claude 3
+- [ ] 🔵 Highlight active/in-progress quests with visual emphasis — Claude 3
+- [ ] 🔵 Update getActiveQuests to return completed quests too — Claude 3
 - [ ] 🔵 Create DevLog client component — IRC-style display matching shoutbox aesthetic — Claude 3
 - [ ] 🔵 Add DevLog to home page — side by side with shoutbox on desktop, stacked on mobile — Claude 3
 - [ ] 🔵 Tests for DevLog component — Claude 3
