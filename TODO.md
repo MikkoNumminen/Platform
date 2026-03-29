@@ -13,6 +13,11 @@
 - 🟣 **Ongoing:** Monitor CI pipeline and Vercel deployments, fix errors immediately — Claude 1
 
 
+### Private Messaging (DM System)
+> User-voted feature from survey. Also needed for GDPR compliance: privacy@vuohiliitto.com has no actual inbox — privacy emails need to land somewhere. The DM system provides a Privacy Inbox for superuser where these messages appear.
+
+- [ ] 🔵 Future: email webhook intake for privacy@vuohiliitto.com (not yet)
+
 ### GitHub & Branding
 - [ ] 🔵 Add repo icon/social preview image and fix GitHub OAuth app visibility
 
@@ -26,6 +31,9 @@
 ### Testing Backlog
 - [ ] 🟣 Integration tests for multi-step workflows (signup → approval, board → post → thread)
 - [ ] 🟣 Playwright E2E testing for critical user journeys
+
+### XP System
+- [ ] 🟣 Audit and analysis of the current XP system — balancing, caps, progression curve, quest rewards
 
 ### Backlog — Ideas
 - [ ] 🟣 Evaluate custom username/password login (in addition to OAuth providers)

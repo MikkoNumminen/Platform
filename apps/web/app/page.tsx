@@ -6,9 +6,11 @@ import DevLog from "./components/DevLog";
 import WelcomeHero from "./components/WelcomeHero";
 import QuestReceivedCelebration from "./components/QuestReceivedCelebration";
 import DemoWelcomeOverlay from "./components/DemoWelcomeOverlay";
+import DirectMessages from "./components/DirectMessages";
 import { getRecentShouts } from "@/lib/shout-queries";
 import { getRecentCommits } from "@/lib/github-commits";
 import { getMyCustomQuests } from "@/lib/custom-quest-queries";
+import { getMyConversations } from "@/lib/dm-queries";
 import { getUserSurveyStatus } from "@/lib/survey-user-queries";
 import { auth } from "@/auth";
 
@@ -17,9 +19,10 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const session = await auth();
   const userId = session?.user?.id;
-  const [shouts, commits] = await Promise.all([
+  const [shouts, commits, conversations] = await Promise.all([
     userId ? getRecentShouts() : Promise.resolve([]),
     getRecentCommits(),
+    userId ? getMyConversations() : Promise.resolve([]),
   ]);
 
   let surveyCompleted = false;
@@ -61,9 +64,22 @@ export default async function Home() {
       <TopBar title="Platform" />
       {session?.user ? (
         <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-          <Shoutbox initialShouts={shouts} />
-          <Box sx={{ mt: 2 }}>
-            <DevLog commits={commits} />
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+              gap: 2,
+            }}
+          >
+            <Box>
+              <Shoutbox initialShouts={shouts} />
+              <Box sx={{ mt: 2 }}>
+                <DevLog commits={commits} />
+              </Box>
+            </Box>
+            <Box>
+              <DirectMessages initialConversations={conversations} />
+            </Box>
           </Box>
           {!surveyCompleted && <SurveyCTA />}
         </Box>

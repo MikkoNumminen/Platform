@@ -12,6 +12,7 @@ import {
   DEMO_ACHIEVEMENT_UNLOCKS,
   DEMO_QUEST_PROGRESS,
   DEMO_SURVEY_ROUND,
+  DEMO_DM_CONVERSATIONS,
 } from "@/lib/demo-seeds";
 
 describe("demo-seeds — data completeness", () => {
@@ -384,6 +385,40 @@ describe("demo-seeds — data completeness", () => {
       expect(DEMO_SURVEY_ROUND.xpReward).toBeGreaterThan(0);
       expect(DEMO_SURVEY_ROUND.creatorIndex).toBeGreaterThanOrEqual(0);
       expect(DEMO_SURVEY_ROUND.creatorIndex).toBeLessThan(DEMO_USERS.length);
+    });
+  });
+
+  describe("DEMO_DM_CONVERSATIONS", () => {
+    test("has 2 conversations", () => {
+      expect(DEMO_DM_CONVERSATIONS).toHaveLength(2);
+    });
+
+    test("every conversation has valid participant indices", () => {
+      for (const conv of DEMO_DM_CONVERSATIONS) {
+        expect(conv.participantAIndex).toBeGreaterThanOrEqual(0);
+        expect(conv.participantAIndex).toBeLessThan(DEMO_USERS.length);
+        expect(conv.participantBIndex).toBeGreaterThanOrEqual(0);
+        expect(conv.participantBIndex).toBeLessThan(DEMO_USERS.length);
+        expect(conv.participantAIndex).not.toBe(conv.participantBIndex);
+      }
+    });
+
+    test("every message has valid sender index and non-empty message", () => {
+      for (const conv of DEMO_DM_CONVERSATIONS) {
+        for (const msg of conv.messages) {
+          expect(msg.senderIndex).toBeGreaterThanOrEqual(0);
+          expect(msg.senderIndex).toBeLessThan(DEMO_USERS.length);
+          expect(msg.message).toBeTruthy();
+          // Sender must be one of the participants
+          expect([conv.participantAIndex, conv.participantBIndex]).toContain(msg.senderIndex);
+        }
+      }
+    });
+
+    test("conversations have multiple messages", () => {
+      for (const conv of DEMO_DM_CONVERSATIONS) {
+        expect(conv.messages.length).toBeGreaterThanOrEqual(2);
+      }
     });
   });
 

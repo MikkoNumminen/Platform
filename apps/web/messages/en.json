@@ -146,5 +146,15 @@
     "step_manage_users": "Open user management",
     "step_approve_user": "Approve a pending user",
     "step_edit_permissions": "Edit user permissions"
+  },
+  "dm": {
+    "title": "Messages",
+    "empty": "No conversations yet.",
+    "placeholder": "Write a message...",
+    "newMessage": "New message",
+    "back": "Back",
+    "unread": "{count} unread",
+    "privacy": "Privacy Inbox",
+    "selectUser": "Select a user to message..."
   }
 }

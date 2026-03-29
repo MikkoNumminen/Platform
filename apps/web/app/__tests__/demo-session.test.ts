@@ -72,6 +72,8 @@ jest.mock("@/lib/db", () => {
     "surveyRound",
     "achievement",
     "quest",
+    "conversation",
+    "directMessage",
   ]) {
     tx[m] = {
       create: makeCreate(m),
@@ -116,6 +118,8 @@ jest.mock("@/lib/db", () => {
     "topic",
     "forum",
     "demoSession",
+    "directMessage",
+    "conversation",
   ]) {
     top[m] = {
       findMany: jest.fn().mockResolvedValue([]),

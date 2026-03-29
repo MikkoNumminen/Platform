@@ -146,5 +146,15 @@
     "step_manage_users": "Fur maamulka isticmaalayaasha",
     "step_approve_user": "Oggolow isticmaale sugaya",
     "step_edit_permissions": "Wax ka beddel ogolaanshaha"
+  },
+  "dm": {
+    "title": "Fariimaha",
+    "empty": "Wali ma jiraan wada hadallo.",
+    "placeholder": "Qor fariin...",
+    "newMessage": "Fariin cusub",
+    "back": "Dib u noqo",
+    "unread": "{count} aan la akhriyin",
+    "privacy": "Xogta Gaarka ah",
+    "selectUser": "Dooro isticmaale..."
   }
 }

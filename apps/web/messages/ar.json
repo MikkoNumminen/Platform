@@ -146,5 +146,15 @@
     "step_manage_users": "افتح إدارة المستخدمين",
     "step_approve_user": "وافق على مستخدم معلق",
     "step_edit_permissions": "تعديل الأذونات"
+  },
+  "dm": {
+    "title": "الرسائل",
+    "empty": "لا توجد محادثات بعد.",
+    "placeholder": "اكتب رسالة...",
+    "newMessage": "رسالة جديدة",
+    "back": "رجوع",
+    "unread": "{count} غير مقروءة",
+    "privacy": "صندوق الخصوصية",
+    "selectUser": "اختر مستخدماً..."
   }
 }

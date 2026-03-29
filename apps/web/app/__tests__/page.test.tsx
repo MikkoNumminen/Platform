@@ -56,6 +56,16 @@ jest.mock("../components/DemoWelcomeOverlay", () => {
   };
 });
 
+jest.mock("../components/DirectMessages", () => {
+  return function MockDirectMessages() {
+    return <div data-testid="direct-messages">Direct Messages</div>;
+  };
+});
+
+jest.mock("@/lib/dm-queries", () => ({
+  getMyConversations: jest.fn().mockResolvedValue([]),
+}));
+
 import Home from "../page";
 
 describe("Home", () => {

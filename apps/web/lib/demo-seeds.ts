@@ -475,6 +475,28 @@ export const DEMO_QUEST_PROGRESS = [
   { userIndex: 3, questKey: "onboarding_survey", progress: 1, completed: true },
 ] as const;
 
+export const DEMO_DM_CONVERSATIONS = [
+  {
+    participantAIndex: 0, // alice (vuohi)
+    participantBIndex: 2, // carol (user)
+    messages: [
+      { senderIndex: 2, message: "Hi Alice, is the meetup still on for Saturday?" },
+      { senderIndex: 0, message: "Yes! 10am at the usual spot. Bringing coffee." },
+      { senderIndex: 2, message: "Perfect, see you there!" },
+    ],
+  },
+  {
+    participantAIndex: 1, // bob (admin)
+    participantBIndex: 3, // dave (user)
+    messages: [
+      { senderIndex: 3, message: "Hey Bob, I found another calendar bug on Android." },
+      { senderIndex: 1, message: "Can you file an issue report? I'll take a look today." },
+      { senderIndex: 3, message: "Done, check the issues board." },
+      { senderIndex: 1, message: "Thanks, I see it. Fix incoming!" },
+    ],
+  },
+] as const;
+
 export const DEMO_SURVEY_ROUND = {
   number: 1,
   title: "Spring 2026 Community Feedback",

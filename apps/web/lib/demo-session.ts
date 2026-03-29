@@ -16,6 +16,7 @@ import {
   DEMO_ACHIEVEMENT_UNLOCKS,
   DEMO_QUEST_PROGRESS,
   DEMO_SURVEY_ROUND,
+  DEMO_DM_CONVERSATIONS,
 } from "./demo-seeds";
 
 // Used by auth.ts signIn callback to identify demo users
@@ -242,6 +243,28 @@ export async function seedDemoData(sessionId: string): Promise<void> {
       }
     }
 
+    // Seed DM conversations
+    for (const seed of DEMO_DM_CONVERSATIONS) {
+      const aId = userMap.get(seed.participantAIndex)!;
+      const bId = userMap.get(seed.participantBIndex)!;
+      const [participantA, participantB] = aId < bId ? [aId, bId] : [bId, aId];
+
+      const conversation = await tx.conversation.create({
+        data: { participantA, participantB, sessionId, lastMessageAt: new Date() },
+      });
+
+      for (const msg of seed.messages) {
+        await tx.directMessage.create({
+          data: {
+            conversationId: conversation.id,
+            senderId: userMap.get(msg.senderIndex)!,
+            message: msg.message,
+            sessionId,
+          },
+        });
+      }
+    }
+
     // Seed survey round
     const surveyRound = await tx.surveyRound.create({
       data: {
@@ -307,6 +330,8 @@ export async function cleanupStaleDemoSessions(): Promise<number> {
       await prisma.surveyRound.deleteMany({ where: { id: { in: roundIds } } });
     }
 
+    await prisma.directMessage.deleteMany({ where: { sessionId: sid } });
+    await prisma.conversation.deleteMany({ where: { sessionId: sid } });
     await prisma.userTourProgress.deleteMany({ where: { sessionId: sid } });
     await prisma.userQuestProgress.deleteMany({ where: { sessionId: sid } });
     await prisma.userAchievement.deleteMany({ where: { sessionId: sid } });
