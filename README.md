@@ -18,8 +18,11 @@ packages/config/ — Shared types and config (@platform/config)
 ## Features
 
 ### Community
-- **Shoutbox** — IRC-style live chat on the landing page with `<alias> message` format and optimistic updates
-- **Direct Messages** — Private IRC-style messaging between users with inbox, unread indicators, and user picker. Two-column landing page layout (Shoutbox+DevLog | Messages). Superuser gets a Privacy Inbox for data protection inquiries.
+- **Unified Chat Box** — WoW-inspired tabbed chat on the landing page combining guild chat and private whispers in one box:
+  - **Guild tab** — Public IRC-style shoutbox with `<alias> message` format, optimistic updates, and superuser star icons
+  - **Whisper tabs** — Private DM conversations in pink WoW whisper style (`To [alias]:` / `[alias] whispers:`) with closable tabs, unread badges, and superuser indicators
+  - **`/w alias message`** — Slash command to whisper any user from any tab, with live autocomplete suggestions as you type
+  - **Privacy Inbox** — Superuser gets a special locked conversation for data protection inquiries (privacy@vuohiliitto.com)
 - **Completed Quests Feed** — Shows recently completed custom quests below the shoutbox (who, what, XP earned)
 - **Dev Log** — Live GitHub commit feed with color-coded build status (green/red/pending), 10-minute cache, visible to all visitors
 - **Boards** — Categorized discussion boards with full CRUD, pinned posts, and threaded comments
@@ -93,7 +96,7 @@ packages/config/ — Shared types and config (@platform/config)
 
 ### UX Polish
 - **Loading skeletons** — Skeleton loading states for all routes
-- **Keyboard shortcuts** — `g+h/b/f/c` for navigation, `?` for help dialog
+- **Keyboard shortcuts** — `g+h/b/f/c` for navigation, `?` for help dialog, `/w alias msg` for whispers
 - **Welcome page** — Animated landing page with "Try Demo" and "Sign In" for unauthenticated visitors
 - **Dev Log** — Live GitHub commit feed on the landing page showing recent changes with relative timestamps and CI build status
 - **Level-up celebration** — Confetti and overlay animation on XP level milestones
@@ -129,7 +132,7 @@ npx turbo run build --filter=web # Production build
 
 ## Testing
 
-1090+ tests across 128+ test suites with accessibility checks (jest-axe). Playwright E2E framework configured for critical user journeys.
+1100+ tests across 130+ test suites with accessibility checks (jest-axe). Playwright E2E framework configured for critical user journeys.
 
 ```bash
 npx turbo run test --filter=web           # All unit/integration tests
