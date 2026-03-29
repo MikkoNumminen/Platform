@@ -64,22 +64,12 @@ export default async function Home() {
       <TopBar title="Platform" />
       {session?.user ? (
         <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-              gap: 2,
-            }}
-          >
-            <Box>
-              <Shoutbox initialShouts={shouts} />
-              <Box sx={{ mt: 2 }}>
-                <DevLog commits={commits} />
-              </Box>
-            </Box>
-            <Box>
-              <DirectMessages initialConversations={conversations} />
-            </Box>
+          <Shoutbox initialShouts={shouts} />
+          <Box sx={{ mt: 2 }}>
+            <DirectMessages initialConversations={conversations} />
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            <DevLog commits={commits} />
           </Box>
           {!surveyCompleted && <SurveyCTA />}
         </Box>
