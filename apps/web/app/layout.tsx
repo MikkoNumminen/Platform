@@ -17,7 +17,6 @@ import TutorialProvider from "./components/TutorialProvider";
 import TutorialSpotlight from "./components/TutorialSpotlight";
 import TutorialChecklist from "./components/TutorialChecklist";
 import TutorialCelebration from "./components/TutorialCelebration";
-import DemoBanner from "./components/DemoBanner";
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -63,7 +62,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <SnackbarProvider>
                   <XpToastProvider>
                     <TutorialProvider>
-                      <DemoBanner />
                       <AliasGuard />
                       <PendingGate />
                       <PromotionGate />

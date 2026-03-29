@@ -19,10 +19,10 @@ import BugReportIcon from "@mui/icons-material/BugReport";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-import LogoutIcon from "@mui/icons-material/Logout";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { colors } from "../styles";
+import { LOCALSTORAGE_KEY } from "@/lib/survey-config";
 
 function getInitials(name?: string | null): string {
   if (!name) return "?";
@@ -103,13 +103,27 @@ export default function UserMenu() {
     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
       {isDemoUser && (
         <Chip
-          label={td("modeIndicator")}
+          label={td("exitDemo")}
           size="small"
+          onClick={() => {
+            localStorage.removeItem(LOCALSTORAGE_KEY);
+            localStorage.removeItem("tutorial-progress");
+            signOut();
+          }}
           sx={{
-            backgroundColor: "#4ade80",
-            color: "#000",
+            backgroundColor: colors.error,
+            color: "#fff",
             fontWeight: 700,
             fontSize: "0.7rem",
+            cursor: "pointer",
+            animation: "demoPulse 2.5s ease-in-out infinite",
+            "@keyframes demoPulse": {
+              "0%, 100%": { boxShadow: `0 0 4px ${colors.error}` },
+              "50%": { boxShadow: `0 0 12px ${colors.error}, 0 0 24px ${colors.error}` },
+            },
+            "&:hover": {
+              backgroundColor: "#dc2626",
+            },
           }}
         />
       )}
@@ -129,30 +143,6 @@ export default function UserMenu() {
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        {isDemoUser && (
-          <Box sx={{ px: 2, py: 1 }}>
-            <Button
-              variant="contained"
-              fullWidth
-              startIcon={<LogoutIcon />}
-              onClick={() => {
-                localStorage.removeItem("platform_survey_submitted");
-                localStorage.removeItem("tutorial-progress");
-                signOut();
-              }}
-              sx={{
-                backgroundColor: "#4ade80",
-                color: "#000",
-                fontWeight: 600,
-                "&:hover": {
-                  backgroundColor: "#22c55e",
-                },
-              }}
-            >
-              {td("exitDemo")}
-            </Button>
-          </Box>
-        )}
         <MenuItem component={Link} href="/account" onClick={() => setAnchorEl(null)}>
           <Box sx={{ py: 0.25 }}>
             <Typography variant="subtitle2">{displayName}</Typography>
