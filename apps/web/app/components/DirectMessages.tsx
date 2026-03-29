@@ -497,6 +497,18 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
                   </Typography>
                   {msg.isMe ? (
                     <>
+                      {msg.senderRole === "superuser" && (
+                        <Tooltip title="Superuser" arrow>
+                          <StarIcon
+                            sx={{
+                              fontSize: 14,
+                              color: colors.warning,
+                              alignSelf: "center",
+                              flexShrink: 0,
+                            }}
+                          />
+                        </Tooltip>
+                      )}
                       <Typography
                         component="span"
                         variant="body2"
@@ -509,6 +521,18 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
                       >
                         To
                       </Typography>
+                      {activeConversation?.otherUser.role === "superuser" && (
+                        <Tooltip title="Superuser" arrow>
+                          <StarIcon
+                            sx={{
+                              fontSize: 14,
+                              color: colors.warning,
+                              alignSelf: "center",
+                              flexShrink: 0,
+                            }}
+                          />
+                        </Tooltip>
+                      )}
                       <Typography
                         component="span"
                         variant="body2"
@@ -525,6 +549,18 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
                     </>
                   ) : (
                     <>
+                      {msg.senderRole === "superuser" && (
+                        <Tooltip title="Superuser" arrow>
+                          <StarIcon
+                            sx={{
+                              fontSize: 14,
+                              color: colors.warning,
+                              alignSelf: "center",
+                              flexShrink: 0,
+                            }}
+                          />
+                        </Tooltip>
+                      )}
                       <Typography
                         component="span"
                         variant="body2"
