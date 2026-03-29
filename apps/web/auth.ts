@@ -34,7 +34,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           data: { userId: user.id },
         });
 
-        await seedDemoData(demoSession.id);
+        try {
+          await seedDemoData(demoSession.id);
+        } catch (error) {
+          logger.error("Demo seed failed", error, "demo");
+        }
 
         cleanupStaleDemoSessions().catch(() => {});
 
