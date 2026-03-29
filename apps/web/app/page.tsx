@@ -6,7 +6,6 @@ import DevLog from "./components/DevLog";
 import WelcomeHero from "./components/WelcomeHero";
 import QuestReceivedCelebration from "./components/QuestReceivedCelebration";
 import DemoWelcomeOverlay from "./components/DemoWelcomeOverlay";
-import DirectMessages from "./components/DirectMessages";
 import { getRecentShouts } from "@/lib/shout-queries";
 import { getRecentCommits } from "@/lib/github-commits";
 import { getMyCustomQuests } from "@/lib/custom-quest-queries";
@@ -64,10 +63,7 @@ export default async function Home() {
       <TopBar title="Platform" />
       {session?.user ? (
         <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-          <Shoutbox initialShouts={shouts} />
-          <Box sx={{ mt: 2 }}>
-            <DirectMessages initialConversations={conversations} />
-          </Box>
+          <Shoutbox initialShouts={shouts} initialConversations={conversations} />
           <Box sx={{ mt: 2 }}>
             <DevLog commits={commits} />
           </Box>
