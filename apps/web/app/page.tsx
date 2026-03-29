@@ -59,20 +59,16 @@ export default async function Home() {
       <TopBar title="Platform" />
       {session?.user ? (
         <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-          <Box sx={{ display: "flex", gap: 2, flexDirection: { xs: "column", md: "row" } }}>
-            <Box sx={{ flex: 1 }}>
-              <Shoutbox initialShouts={shouts} />
-            </Box>
-            <Box sx={{ flex: 1 }}>
-              <DevLog commits={commits} />
-            </Box>
+          <Shoutbox initialShouts={shouts} />
+          <Box sx={{ mt: 2 }}>
+            <DevLog commits={commits} />
           </Box>
           {!surveyCompleted && <SurveyCTA />}
         </Box>
       ) : (
         <>
           <WelcomeHero />
-          <Box sx={{ maxWidth: 520, mx: "auto", px: 2, mt: 2 }}>
+          <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 }, mt: 2 }}>
             <DevLog commits={commits} />
           </Box>
         </>
