@@ -19,15 +19,16 @@ packages/config/ — Shared types and config (@platform/config)
 
 ### Community
 - **Shoutbox** — IRC-style live chat on the landing page with `<alias> message` format and optimistic updates
+- **Completed Quests Feed** — Shows recently completed custom quests below the shoutbox (who, what, XP earned)
 - **Dev Log** — Live GitHub commit feed with color-coded build status (green/red/pending), 10-minute cache, visible to all visitors
 - **Boards** — Categorized discussion boards with full CRUD, pinned posts, and threaded comments
 - **Forums** — Discussion forums with topics and threaded replies
 - **Calendar** — Monthly calendar view with event creation, editing, and deletion
 - **Issue Tracker** — Report and resolve issues; superuser can manage issue status
-- **User aliases** — Public display names (callsigns) shown instead of real names in all community areas
+- **User aliases** — Public display names (callsigns) shown instead of real names, editable from account page
 - **Themes** — 8 switchable themes including Epic (WoW-inspired with Cinzel font, textured backgrounds, gold ornamental borders)
 - **i18n** — Multilingual support (Finnish, English, Somali, Arabic) via next-intl with cookie-based locale detection, Accept-Language fallback, and RTL support for Arabic
-- **Pending user gate** — New users are redirected to the survey and cannot access the platform until an admin approves them
+- **Pending user gate** — New users complete the survey, then see a "Waiting for approval" screen until an admin assigns them a role
 
 ### Gamification
 - **XP System** — Earn XP for platform actions (posting, commenting, creating events, completing surveys, login streaks)
@@ -52,14 +53,15 @@ packages/config/ — Shared types and config (@platform/config)
 - **Tutorial integration** — Guided tour auto-activates for demo users with fresh state
 
 ### Guided Tour
-- **Role-based tutorial** — 13-step guided tour with 4 tiers (Getting Started, Community Explorer, Admin Basics, Team Leader)
+- **Role-based tutorial** — 14-step guided tour with 4 tiers (Getting Started, Community Explorer, Admin Basics, Team Leader)
 - **Spotlight overlay** — Highlights target elements with pulsing border and tooltip
 - **Progress checklist** — Fixed bottom-right panel showing completion status with XP rewards per step
 - **Gamification integration** — Tutorial quests and achievements seeded, XP awarded on step completion
+- **Auto-sync** — Detects actions completed before the tutorial existed (alias, survey, issues, shoutbox) and backfills progress
 
 ### Admin
-- **User management** — Role assignment with hierarchy enforcement, permission overrides, survey completion status
-- **Developer skills** — Users can indicate development interest; superuser assigns developer tags (Master, Coder, Artist, etc.)
+- **User management** — Role assignment via approval dropdown (no separate approve button), hierarchy enforcement, permission overrides, survey completion status
+- **Developer team** — Users indicate skills via survey and account page; superuser assigns team roles (Master, Coder, Artist, Storyteller, Architect, Scout, Advisor); only one Master allowed
 - **Vuohiliitto Dashboard** — XP stats, level distribution with hover tooltips, achievement/quest completion rates (superuser/vuohi only)
 - **Quest Board** — Global view of all custom quests with filters, creation form, and status management
 - **Achievement & Quest CRUD** — Admin editor for managing gamification content
@@ -75,6 +77,7 @@ packages/config/ — Shared types and config (@platform/config)
 - **Security headers** — CSP, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy
 
 ### GDPR Compliance
+- **Account page** — Profile with editable alias, developer tag badge, development interest toggle, gamification stats
 - **Account deletion** — Users can delete their account from `/account`, scrubbing all PII and anonymizing authored content
 - **Data export** — Users can download all their data as JSON from `/account`
 - **Privacy policy** — Full policy at `/privacy` covering data collection, cookies, retention, and user rights
@@ -148,8 +151,8 @@ New features are developed in the HRM repo first, then ported to Platform as nee
 1. A new user signs in with Google or GitHub OAuth (or clicks "Try Demo" for a zero-credential demo with isolated mock data)
 2. They choose a public alias (callsign) on first login — shown instead of real name everywhere
 3. They complete a community survey (required before approval)
-4. They get a `"pending"` role with **zero permissions** — redirected to the survey, no access to community content
-5. An admin approves them via `/admin/users` (which shows survey completion status) and assigns a role
+4. They get a `"pending"` role with **zero permissions** — shown a "Waiting for approval" screen after completing the survey
+5. An admin approves them via `/admin/users` by selecting a role from the dropdown (approval and role assignment in one step)
 6. The first user to sign up automatically gets `superuser` role (bootstrap admin)
 
 ## Deployment
