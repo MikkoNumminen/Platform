@@ -32,6 +32,7 @@ export default async function IssuesPage() {
       <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
         <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
           <Button
+            data-tutorial="report-issue-button"
             component={Link}
             href="/report-issue"
             variant="contained"

@@ -85,8 +85,13 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     xpReward: 10,
     navigationHints: [
       {
+        fromRoute: /^\/issues/,
+        targetSelector: '[data-tutorial="report-issue-button"]',
+        hintKey: "nav_report_issue",
+      },
+      {
         fromRoute: /.*/,
-        targetSelector: '[data-tutorial="user-menu-button"]',
+        targetSelector: '[data-tutorial="nav-issues"]',
         hintKey: "nav_report_issue",
       },
     ],
