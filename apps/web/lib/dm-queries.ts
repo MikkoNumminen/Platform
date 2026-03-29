@@ -133,6 +133,7 @@ export async function getDmUsers(): Promise<Array<{ id: string; alias: string; r
       deletedAt: null,
       id: { not: session.user.id },
       role: { not: "pending" },
+      email: { not: "demo@platform.app" },
     },
     select: { id: true, alias: true, name: true, role: true },
     orderBy: { alias: "asc" },
