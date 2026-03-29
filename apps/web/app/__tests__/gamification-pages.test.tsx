@@ -12,6 +12,11 @@ jest.mock("@/auth", () => ({
 
 jest.mock("@/lib/custom-quest-queries", () => ({
   getMyCustomQuests: jest.fn().mockResolvedValue([]),
+  getAllCustomQuests: jest.fn().mockResolvedValue([]),
+}));
+
+jest.mock("@/lib/user-queries", () => ({
+  getUsers: jest.fn().mockResolvedValue([]),
 }));
 
 jest.mock("next/navigation", () => ({
