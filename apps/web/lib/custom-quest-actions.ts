@@ -6,9 +6,11 @@ import { ActionError } from "./actionErrors";
 import { validateUUID, createStringValidator } from "./actionUtils";
 import { revalidatePath } from "next/cache";
 import { awardCustomXp } from "./gamification/xp-service";
+import { DEVELOPMENT_SKILL_OPTIONS } from "./survey-config";
 
 const VALID_STATUSES = ["open", "in_progress", "completed"] as const;
 const VALID_PRIORITIES = ["low", "normal", "high", "urgent"] as const;
+const VALID_SKILLS = DEVELOPMENT_SKILL_OPTIONS as readonly string[];
 
 const validateTitle = createStringValidator(
   "Quest title",
@@ -32,8 +34,9 @@ export const createCustomQuest = guardedAction(
     description: string,
     assigneeId: string,
     xpReward: number,
-    priority?: string,
-    deadline?: string | null,
+    priority: string | null,
+    deadline: string | null,
+    targetSkill: string | null,
   ) => {
     const validTitle = validateTitle(title);
     const validDescription = validateDescription(description);
@@ -45,6 +48,10 @@ export const createCustomQuest = guardedAction(
 
     if (priority && !VALID_PRIORITIES.includes(priority as (typeof VALID_PRIORITIES)[number])) {
       throw new ActionError("invalidInput", `Invalid priority: ${priority}`);
+    }
+
+    if (targetSkill && !VALID_SKILLS.includes(targetSkill)) {
+      throw new ActionError("invalidInput", `Invalid skill: ${targetSkill}`);
     }
 
     const assignee = await prisma.user.findFirst({
@@ -60,6 +67,7 @@ export const createCustomQuest = guardedAction(
         description: validDescription,
         xpReward: Math.round(xpReward),
         priority: priority ?? "normal",
+        targetSkill: targetSkill ?? null,
         assigneeId,
         creatorId: session.user.id,
         deadline: deadline ? new Date(deadline) : null,
@@ -85,6 +93,7 @@ export const updateCustomQuest = guardedAction(
       status?: string;
       assigneeId?: string;
       deadline?: string | null;
+      targetSkill?: string | null;
     },
   ) => {
     validateUUID(questId, "questId");
@@ -139,6 +148,12 @@ export const updateCustomQuest = guardedAction(
     if (data.deadline !== undefined) {
       updateData.deadline = data.deadline ? new Date(data.deadline) : null;
     }
+    if (data.targetSkill !== undefined) {
+      if (data.targetSkill && !VALID_SKILLS.includes(data.targetSkill)) {
+        throw new ActionError("invalidInput", `Invalid skill: ${data.targetSkill}`);
+      }
+      updateData.targetSkill = data.targetSkill || null;
+    }
 
     await prisma.customQuest.update({
       where: { id: questId },
@@ -171,9 +186,21 @@ export const completeCustomQuest = guardedAction(
       data: { status: "completed", completedAt: new Date() },
     });
 
-    // Award custom XP to the assignee
+    // Award custom XP — double if assignee's skills match the quest's target skill
     if (quest.xpReward > 0) {
-      await awardCustomXp(quest.assigneeId, quest.xpReward, "custom_quest:complete", quest.id);
+      let xpAmount = quest.xpReward;
+
+      if (quest.targetSkill) {
+        const assignee = await prisma.user.findUnique({
+          where: { id: quest.assigneeId },
+          select: { developmentSkills: true },
+        });
+        if (assignee?.developmentSkills?.includes(quest.targetSkill)) {
+          xpAmount *= 2;
+        }
+      }
+
+      await awardCustomXp(quest.assigneeId, xpAmount, "custom_quest:complete", quest.id);
     }
 
     revalidatePath("/admin/quests");

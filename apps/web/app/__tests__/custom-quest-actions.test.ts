@@ -6,6 +6,7 @@ const mockCustomQuestFindFirst = jest.fn();
 const mockCustomQuestCreate = jest.fn();
 const mockCustomQuestUpdate = jest.fn();
 const mockUserFindFirst = jest.fn();
+const mockUserFindUnique = jest.fn();
 const mockAwardCustomXp = jest.fn();
 
 jest.mock("@/auth", () => ({
@@ -29,6 +30,7 @@ jest.mock("@/lib/db", () => ({
     },
     user: {
       findFirst: (...args: unknown[]) => mockUserFindFirst(...args),
+      findUnique: (...args: unknown[]) => mockUserFindUnique(...args),
     },
   },
 }));
@@ -110,6 +112,7 @@ describe("createCustomQuest", () => {
       100,
       "high",
       null,
+      null,
     );
 
     expect(result).toBeUndefined();
@@ -130,7 +133,7 @@ describe("createCustomQuest", () => {
   test("regular user cannot create a quest", async () => {
     mockAuth.mockResolvedValue(userSession());
 
-    const result = await createCustomQuest("Test", "Test", assigneeId, 50);
+    const result = await createCustomQuest("Test", "Test", assigneeId, 50, null, null, null);
 
     expect(result).toEqual({
       error: expect.stringContaining("Missing permission"),
@@ -143,7 +146,7 @@ describe("createCustomQuest", () => {
     mockAuth.mockResolvedValue(superuserSession());
     mockUserFindFirst.mockResolvedValue(null);
 
-    const result = await createCustomQuest("Test", "Test", assigneeId, 50);
+    const result = await createCustomQuest("Test", "Test", assigneeId, 50, null, null, null);
 
     expect(result).toEqual({ error: "Assignee not found", code: "notFound" });
   });
@@ -151,7 +154,7 @@ describe("createCustomQuest", () => {
   test("rejects XP reward out of range", async () => {
     mockAuth.mockResolvedValue(superuserSession());
 
-    const result = await createCustomQuest("Test", "Test", assigneeId, 99999);
+    const result = await createCustomQuest("Test", "Test", assigneeId, 99999, null, null, null);
 
     expect(result).toEqual({
       error: "XP reward must be between 0 and 10,000",
@@ -223,6 +226,56 @@ describe("completeCustomQuest", () => {
     await completeCustomQuest(questId);
 
     expect(mockAwardCustomXp).not.toHaveBeenCalled();
+  });
+
+  test("awards double XP when assignee skill matches quest targetSkill", async () => {
+    mockAuth.mockResolvedValue(superuserSession());
+    mockCustomQuestFindFirst.mockResolvedValue({
+      id: questId,
+      status: "open",
+      xpReward: 100,
+      assigneeId,
+      targetSkill: "Coding (frontend)",
+    });
+    mockCustomQuestUpdate.mockResolvedValue({});
+    mockUserFindUnique.mockResolvedValue({
+      developmentSkills: ["Coding (frontend)", "Testing / QA"],
+    });
+    mockAwardCustomXp.mockResolvedValue(null);
+
+    await completeCustomQuest(questId);
+
+    expect(mockAwardCustomXp).toHaveBeenCalledWith(
+      assigneeId,
+      200, // doubled
+      "custom_quest:complete",
+      questId,
+    );
+  });
+
+  test("awards normal XP when assignee skill does not match quest targetSkill", async () => {
+    mockAuth.mockResolvedValue(superuserSession());
+    mockCustomQuestFindFirst.mockResolvedValue({
+      id: questId,
+      status: "open",
+      xpReward: 100,
+      assigneeId,
+      targetSkill: "Graphic art / illustrations",
+    });
+    mockCustomQuestUpdate.mockResolvedValue({});
+    mockUserFindUnique.mockResolvedValue({
+      developmentSkills: ["Coding (frontend)"],
+    });
+    mockAwardCustomXp.mockResolvedValue(null);
+
+    await completeCustomQuest(questId);
+
+    expect(mockAwardCustomXp).toHaveBeenCalledWith(
+      assigneeId,
+      100, // not doubled
+      "custom_quest:complete",
+      questId,
+    );
   });
 });
 
