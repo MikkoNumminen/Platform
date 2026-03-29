@@ -2,9 +2,11 @@ import { Box } from "@mui/material";
 import TopBar from "./components/TopBar";
 import SurveyCTA from "./components/SurveyCTA";
 import Shoutbox from "./components/Shoutbox";
+import DevLog from "./components/DevLog";
 import WelcomeHero from "./components/WelcomeHero";
 import QuestReceivedCelebration from "./components/QuestReceivedCelebration";
 import { getRecentShouts } from "@/lib/shout-queries";
+import { getRecentCommits } from "@/lib/github-commits";
 import { getMyCustomQuests } from "@/lib/custom-quest-queries";
 import { getUserSurveyStatus } from "@/lib/survey-user-queries";
 import { auth } from "@/auth";
@@ -14,7 +16,10 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const session = await auth();
   const userId = session?.user?.id;
-  const shouts = userId ? await getRecentShouts() : [];
+  const [shouts, commits] = await Promise.all([
+    userId ? getRecentShouts() : Promise.resolve([]),
+    getRecentCommits(),
+  ]);
 
   let surveyCompleted = false;
   if (userId) {
@@ -54,11 +59,23 @@ export default async function Home() {
       <TopBar title="Platform" />
       {session?.user ? (
         <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-          <Shoutbox initialShouts={shouts} />
+          <Box sx={{ display: "flex", gap: 2, flexDirection: { xs: "column", md: "row" } }}>
+            <Box sx={{ flex: 1 }}>
+              <Shoutbox initialShouts={shouts} />
+            </Box>
+            <Box sx={{ flex: 1 }}>
+              <DevLog commits={commits} />
+            </Box>
+          </Box>
           {!surveyCompleted && <SurveyCTA />}
         </Box>
       ) : (
-        <WelcomeHero />
+        <>
+          <WelcomeHero />
+          <Box sx={{ maxWidth: 520, mx: "auto", px: 2, mt: 2 }}>
+            <DevLog commits={commits} />
+          </Box>
+        </>
       )}
     </>
   );

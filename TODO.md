@@ -17,12 +17,20 @@
 > Branch merged. Seed data complete. Tutorial auto-activates. Nav hint fixed. README updated. (Claude 3)
 
 #### UX Polish (priority) — Claude 1
-- [ ] 🟣 Remove yellow demo banner — use DEMO chip as exit button with pulse effect — Claude 1 (in progress)
-- [ ] 🟣 Highlight next action for user to click in demo mode (tutorial spotlight integration) — Claude 1
+- [x] 🟣 Remove yellow demo banner — use DEMO chip as exit button with pulse effect — Claude 1
+- [x] 🟣 Highlight next action for user to click in demo mode (tutorial spotlight integration) — Claude 1
 
 #### Remaining — Claude 3
 - [ ] 🔵 Demo-specific welcome overlay on first load — Claude 3
 - [ ] 🟣 Tests for demo seed data completeness, tutorial step coverage, session isolation — Claude 3
+
+### Dev Log — Live Commit Feed
+> IRC-style box on home page showing recent GitHub commits. Server-side fetch with 10min cache.
+
+- [ ] 🔵 Create DevLog server component — fetch commits from GitHub API, 10min revalidate — Claude 3
+- [ ] 🔵 Create DevLog client component — IRC-style display matching shoutbox aesthetic — Claude 3
+- [ ] 🔵 Add DevLog to home page — side by side with shoutbox on desktop, stacked on mobile — Claude 3
+- [ ] 🔵 Tests for DevLog component — Claude 3
 
 ### GDPR Compliance Gaps
 > From GDPR analysis. Address before scaling up.

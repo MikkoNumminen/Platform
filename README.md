@@ -19,6 +19,7 @@ packages/config/ — Shared types and config (@platform/config)
 
 ### Community
 - **Shoutbox** — IRC-style live chat on the landing page with `<alias> message` format and optimistic updates
+- **Dev Log** — Live GitHub commit feed with color-coded build status (green/red/pending), 10-minute cache, visible to all visitors
 - **Boards** — Categorized discussion boards with full CRUD, pinned posts, and threaded comments
 - **Forums** — Discussion forums with topics and threaded replies
 - **Calendar** — Monthly calendar view with event creation, editing, and deletion
@@ -166,6 +167,7 @@ Required environment variables:
 - `NEXT_PUBLIC_BASE_URL` — Production URL for OG meta tags (default: `https://vuohiliitto.com`)
 - `CRON_SECRET` — Secret for authenticating cron job requests (soft-delete cleanup)
 - `NEXT_PUBLIC_DEMO_LOGIN` — Set to `"false"` to hide the demo button (default: enabled)
+- `GITHUB_TOKEN` — GitHub personal access token for Dev Log commit feed (optional; increases rate limit from 60 to 5000 req/hour)
 
 ## CI/CD
 
