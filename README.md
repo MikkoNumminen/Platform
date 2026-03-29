@@ -19,6 +19,7 @@ packages/config/ — Shared types and config (@platform/config)
 
 ### Community
 - **Shoutbox** — IRC-style live chat on the landing page with `<alias> message` format and optimistic updates
+- **Direct Messages** — Private IRC-style messaging between users with inbox, unread indicators, and user picker. Two-column landing page layout (Shoutbox+DevLog | Messages). Superuser gets a Privacy Inbox for data protection inquiries.
 - **Completed Quests Feed** — Shows recently completed custom quests below the shoutbox (who, what, XP earned)
 - **Dev Log** — Live GitHub commit feed with color-coded build status (green/red/pending), 10-minute cache, visible to all visitors
 - **Boards** — Categorized discussion boards with full CRUD, pinned posts, and threaded comments
@@ -48,7 +49,7 @@ packages/config/ — Shared types and config (@platform/config)
 ### Demo Mode
 - **Zero-credential demo** — "Try Demo" button in TopBar for unauthenticated visitors; one-click login as superuser
 - **Isolated mock data** — Demo sessions are fully isolated via `sessionId` scoping; real community data is never exposed
-- **Comprehensive seed data** — 6 users, 2 boards, 5 posts, 12 comments, 10 shoutbox messages, 6 calendar events, 4 issues, 5 survey responses, 4 custom quests, gamification profiles with XP/achievements/quest progress
+- **Comprehensive seed data** — 6 users, 2 boards, 5 posts, 12 comments, 10 shoutbox messages, 2 DM conversations, 6 calendar events, 4 issues, 5 survey responses, 4 custom quests, gamification profiles with XP/achievements/quest progress
 - **Auto-cleanup** — Stale demo sessions (>24h) are automatically cascade-deleted
 - **Tutorial integration** — Guided tour auto-activates for demo users with fresh state
 
@@ -68,7 +69,7 @@ packages/config/ — Shared types and config (@platform/config)
 
 ### Security
 - **Authentication** — NextAuth v5 with Google OAuth, GitHub OAuth, and zero-credential demo login
-- **Role-based permissions** — Superuser, vuohi, admin, user, and pending roles with 24 granular permission keys and per-user overrides
+- **Role-based permissions** — Superuser, vuohi, admin, user, and pending roles with 25 granular permission keys and per-user overrides
 - **Role hierarchy enforcement** — Users can only modify lower-ranked users and assign lower-ranked roles
 - **Content ownership** — Edit actions verify the user is the author; admin routes check role in middleware
 - **Pending user approval** — New users get zero permissions until approved by an admin
@@ -80,7 +81,7 @@ packages/config/ — Shared types and config (@platform/config)
 - **Account page** — Profile with editable alias, developer tag badge, development interest toggle, gamification stats
 - **Account deletion** — Users can delete their account from `/account`, scrubbing all PII and anonymizing authored content
 - **Data export** — Users can download all their data as JSON from `/account`
-- **Privacy policy** — Full policy at `/privacy` covering data collection, cookies, retention, and user rights
+- **Privacy policy** — Full policy at `/privacy` covering data collection, cookies, retention, user rights, breach notification, data processing legal bases, demo mode handling, and contact email
 - **Soft-delete cleanup** — Weekly cron job purges records deleted more than 30 days ago
 
 ### Shared Components
@@ -128,7 +129,7 @@ npx turbo run build --filter=web # Production build
 
 ## Testing
 
-960+ tests across 123+ test suites with accessibility checks (jest-axe). Playwright E2E framework configured for critical user journeys.
+1090+ tests across 128+ test suites with accessibility checks (jest-axe). Playwright E2E framework configured for critical user journeys.
 
 ```bash
 npx turbo run test --filter=web           # All unit/integration tests
