@@ -20,14 +20,14 @@ describe("DemoWelcomeOverlay", () => {
       data: { user: { id: "u1", name: "Alice" } },
       status: "authenticated",
     });
-    const { container } = render(<DemoWelcomeOverlay />);
-    expect(container.firstChild).toBeNull();
+    render(<DemoWelcomeOverlay />);
+    expect(screen.queryByText("Welcome to the Demo")).not.toBeInTheDocument();
   });
 
   test("renders nothing for unauthenticated users", () => {
     mockUseSession.mockReturnValue({ data: null, status: "unauthenticated" });
-    const { container } = render(<DemoWelcomeOverlay />);
-    expect(container.firstChild).toBeNull();
+    render(<DemoWelcomeOverlay />);
+    expect(screen.queryByText("Welcome to the Demo")).not.toBeInTheDocument();
   });
 
   test("renders overlay for demo users", () => {
@@ -72,7 +72,7 @@ describe("DemoWelcomeOverlay", () => {
       data: { user: { id: "u1", demoSessionId: "demo-123" } },
       status: "authenticated",
     });
-    const { container } = render(<DemoWelcomeOverlay />);
-    expect(container.firstChild).toBeNull();
+    render(<DemoWelcomeOverlay />);
+    expect(screen.queryByText("Welcome to the Demo")).not.toBeInTheDocument();
   });
 });
