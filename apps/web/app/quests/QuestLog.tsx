@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import TopBar from "../components/TopBar";
+import QuestReceivedCelebration from "../components/QuestReceivedCelebration";
 import { colors } from "../styles";
 import type { LevelThreshold } from "@/lib/gamification/xp-config";
 
@@ -97,8 +98,20 @@ export default function QuestLog({
   const currentType = QUEST_TABS[tab];
   const filtered = quests.filter((q) => q.type === currentType);
 
+  const activeCustomQuests = customQuests.filter((q) => q.status !== "completed");
+
   return (
     <>
+      <QuestReceivedCelebration
+        quests={activeCustomQuests.map((q) => ({
+          id: q.id,
+          title: q.title,
+          description: q.description,
+          xpReward: q.xpReward,
+          priority: q.priority,
+          creator: q.creator,
+        }))}
+      />
       <TopBar title="Quest Log" backHref="/" />
       <Box sx={{ maxWidth: 800, mx: "auto", px: { xs: 1, sm: 2 }, py: 2 }}>
         {/* XP Summary */}

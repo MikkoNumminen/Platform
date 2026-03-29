@@ -40,6 +40,16 @@ jest.mock("@/lib/survey-user-queries", () => ({
   getUserSurveyStatus: (...args: unknown[]) => mockGetSurveyStatus(...args),
 }));
 
+jest.mock("@/lib/custom-quest-queries", () => ({
+  getMyCustomQuests: jest.fn().mockResolvedValue([]),
+}));
+
+jest.mock("../components/QuestReceivedCelebration", () => {
+  return function MockQuestCelebration() {
+    return null;
+  };
+});
+
 import Home from "../page";
 
 describe("Home", () => {
