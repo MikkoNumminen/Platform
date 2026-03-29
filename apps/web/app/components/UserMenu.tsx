@@ -195,6 +195,11 @@ export default function UserMenu() {
             {tm("vuohiliittoDashboard")}
           </MenuItem>
         )}
+        {user.role === "superuser" && (
+          <MenuItem component={Link} href="/admin/audit-log" onClick={() => setAnchorEl(null)}>
+            {tm("auditLog")}
+          </MenuItem>
+        )}
         {isApproved && <Divider />}
         {isApproved && (
           <MenuItem data-tutorial="nav-quests" component={Link} href="/quests">

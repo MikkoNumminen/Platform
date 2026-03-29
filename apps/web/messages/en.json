@@ -56,7 +56,8 @@
     "quests": "Quests",
     "achievements": "Achievements",
     "leaderboard": "Leaderboard",
-    "myQuests": "My Quests"
+    "myQuests": "My Quests",
+    "auditLog": "Audit Log"
   },
   "admin": {
     "users": {

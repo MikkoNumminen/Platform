@@ -9,6 +9,7 @@ import { revalidatePath } from "next/cache";
 import { guardedAction } from "@/lib/guardedAction";
 import { triggerGamification } from "@/lib/gamification/trigger";
 import { getDemoSessionId } from "@/lib/demo-session";
+import { logAudit } from "@/lib/audit";
 
 const MAX_ISSUE_TITLE_LENGTH = 200;
 const MAX_ISSUE_DESCRIPTION_LENGTH = 2000;
@@ -61,7 +62,7 @@ export async function createIssueReport(
 export const resolveIssue = guardedAction(
   "issue:resolve",
   "issue:resolve",
-  async (_session, issueId: string) => {
+  async (session, issueId: string) => {
     validateUUID(issueId, "issue ID");
     const sessionId = await getDemoSessionId();
 
@@ -72,9 +73,19 @@ export const resolveIssue = guardedAction(
       throw new ActionError("notFound", "Issue not found");
     }
 
+    const newResolvedAt = issue.resolvedAt ? null : new Date();
     await prisma.issueReport.update({
       where: { id: issueId },
-      data: { resolvedAt: issue.resolvedAt ? null : new Date() },
+      data: { resolvedAt: newResolvedAt },
+    });
+
+    await logAudit({
+      action: newResolvedAt ? "issue.resolve" : "issue.unresolve",
+      entityType: "IssueReport",
+      entityId: issueId,
+      actorId: session.user.id,
+      actorName: session.user.alias ?? session.user.name,
+      details: { title: issue.title },
     });
 
     revalidatePath("/issues");

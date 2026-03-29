@@ -6,20 +6,21 @@ import { safe, validateUUID, type ActionResult } from "@/lib/actionUtils";
 import { ActionError } from "@/lib/actionErrors";
 import { revalidatePath } from "next/cache";
 import type { Prisma } from "@prisma/client";
+import { logAudit } from "@/lib/audit";
 
-async function requireAdmin() {
+async function requireAdmin(): Promise<{ id: string; name: string | null }> {
   const session = await auth();
   if (!session?.user?.id) {
     throw new ActionError("permissionDenied", "Not authenticated");
   }
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { role: true },
+    select: { role: true, alias: true, name: true },
   });
   if (!user || (user.role !== "admin" && user.role !== "superuser")) {
     throw new ActionError("permissionDenied", "Admin access required");
   }
-  return session.user.id;
+  return { id: session.user.id, name: user.alias ?? user.name };
 }
 
 function validateAchievementInput(data: {
@@ -74,13 +75,13 @@ export async function createAchievement(data: {
   sortOrder?: number;
 }): Promise<ActionResult> {
   return safe(async () => {
-    await requireAdmin();
+    const actor = await requireAdmin();
     validateAchievementInput(data);
 
     const existing = await prisma.achievement.findUnique({ where: { key: data.key.trim() } });
     if (existing) throw new ActionError("conflict", "An achievement with this key already exists");
 
-    await prisma.achievement.create({
+    const created = await prisma.achievement.create({
       data: {
         key: data.key.trim(),
         name: data.name.trim(),
@@ -92,6 +93,15 @@ export async function createAchievement(data: {
         criteria: data.criteria as Prisma.InputJsonValue as Prisma.InputJsonValue,
         sortOrder: data.sortOrder ?? 0,
       },
+    });
+
+    await logAudit({
+      action: "achievement.create",
+      entityType: "Achievement",
+      entityId: created.id,
+      actorId: actor.id,
+      actorName: actor.name,
+      details: { key: data.key, name: data.name },
     });
 
     revalidatePath("/admin/gamification/manage");
@@ -112,7 +122,7 @@ export async function updateAchievement(
   },
 ): Promise<ActionResult> {
   return safe(async () => {
-    await requireAdmin();
+    const actor = await requireAdmin();
     validateUUID(id, "achievement ID");
 
     const existing = await prisma.achievement.findUnique({ where: { id } });
@@ -132,19 +142,37 @@ export async function updateAchievement(
       },
     });
 
+    await logAudit({
+      action: "achievement.update",
+      entityType: "Achievement",
+      entityId: id,
+      actorId: actor.id,
+      actorName: actor.name,
+      details: { name: existing.name, changes: data },
+    });
+
     revalidatePath("/admin/gamification/manage");
   });
 }
 
 export async function deleteAchievement(id: string): Promise<ActionResult> {
   return safe(async () => {
-    await requireAdmin();
+    const actor = await requireAdmin();
     validateUUID(id, "achievement ID");
 
     const existing = await prisma.achievement.findUnique({ where: { id } });
     if (!existing) throw new ActionError("notFound", "Achievement not found");
 
     await prisma.achievement.delete({ where: { id } });
+
+    await logAudit({
+      action: "achievement.delete",
+      entityType: "Achievement",
+      entityId: id,
+      actorId: actor.id,
+      actorName: actor.name,
+      details: { key: existing.key, name: existing.name },
+    });
 
     revalidatePath("/admin/gamification/manage");
   });
@@ -162,13 +190,13 @@ export async function createQuest(data: {
   sortOrder?: number;
 }): Promise<ActionResult> {
   return safe(async () => {
-    await requireAdmin();
+    const actor = await requireAdmin();
     validateQuestInput(data);
 
     const existing = await prisma.quest.findUnique({ where: { key: data.key.trim() } });
     if (existing) throw new ActionError("conflict", "A quest with this key already exists");
 
-    await prisma.quest.create({
+    const created = await prisma.quest.create({
       data: {
         key: data.key.trim(),
         name: data.name.trim(),
@@ -180,6 +208,15 @@ export async function createQuest(data: {
         repeatable: data.repeatable ?? false,
         sortOrder: data.sortOrder ?? 0,
       },
+    });
+
+    await logAudit({
+      action: "quest.create",
+      entityType: "Quest",
+      entityId: created.id,
+      actorId: actor.id,
+      actorName: actor.name,
+      details: { key: data.key, name: data.name, xpReward: data.xpReward },
     });
 
     revalidatePath("/admin/gamification/manage");
@@ -200,7 +237,7 @@ export async function updateQuest(
   },
 ): Promise<ActionResult> {
   return safe(async () => {
-    await requireAdmin();
+    const actor = await requireAdmin();
     validateUUID(id, "quest ID");
 
     const existing = await prisma.quest.findUnique({ where: { id } });
@@ -220,19 +257,37 @@ export async function updateQuest(
       },
     });
 
+    await logAudit({
+      action: "quest.update",
+      entityType: "Quest",
+      entityId: id,
+      actorId: actor.id,
+      actorName: actor.name,
+      details: { name: existing.name, changes: data },
+    });
+
     revalidatePath("/admin/gamification/manage");
   });
 }
 
 export async function deleteQuest(id: string): Promise<ActionResult> {
   return safe(async () => {
-    await requireAdmin();
+    const actor = await requireAdmin();
     validateUUID(id, "quest ID");
 
     const existing = await prisma.quest.findUnique({ where: { id } });
     if (!existing) throw new ActionError("notFound", "Quest not found");
 
     await prisma.quest.delete({ where: { id } });
+
+    await logAudit({
+      action: "quest.delete",
+      entityType: "Quest",
+      entityId: id,
+      actorId: actor.id,
+      actorName: actor.name,
+      details: { key: existing.key, name: existing.name },
+    });
 
     revalidatePath("/admin/gamification/manage");
   });

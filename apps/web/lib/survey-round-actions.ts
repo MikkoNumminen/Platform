@@ -7,6 +7,7 @@ import { validateUUID, createStringValidator } from "./actionUtils";
 import { revalidatePath } from "next/cache";
 import { getSurveyResults } from "./survey-queries";
 import type { SurveyResultsData } from "./survey-queries";
+import { logAudit } from "./audit";
 
 const validateTitle = createStringValidator(
   "Round title",
@@ -66,6 +67,15 @@ export const createSurveyRound = guardedAction(
       }
     }
 
+    await logAudit({
+      action: "surveyRound.create",
+      entityType: "SurveyRound",
+      entityId: round.id,
+      actorId: session.user.id,
+      actorName: session.user.alias ?? session.user.name,
+      details: { title: validTitle, number: nextNumber, xpReward: reward },
+    });
+
     revalidatePath("/feedback");
     revalidatePath("/my-quests");
     revalidatePath("/admin/quests");
@@ -75,7 +85,7 @@ export const createSurveyRound = guardedAction(
 export const closeSurveyRound = guardedAction(
   "survey:results",
   "survey:closeRound",
-  async (_session, roundId: string) => {
+  async (session, roundId: string) => {
     validateUUID(roundId, "roundId");
 
     const round = await prisma.surveyRound.findFirst({
@@ -88,6 +98,15 @@ export const closeSurveyRound = guardedAction(
     await prisma.surveyRound.update({
       where: { id: roundId },
       data: { status: "closed", closedAt: new Date() },
+    });
+
+    await logAudit({
+      action: "surveyRound.close",
+      entityType: "SurveyRound",
+      entityId: roundId,
+      actorId: session.user.id,
+      actorName: session.user.alias ?? session.user.name,
+      details: { title: round.title, number: round.number },
     });
 
     revalidatePath("/feedback");

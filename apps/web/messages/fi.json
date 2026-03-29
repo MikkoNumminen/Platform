@@ -56,7 +56,8 @@
     "quests": "Tehtävät",
     "achievements": "Saavutukset",
     "leaderboard": "Tulostaulukko",
-    "myQuests": "Omat tehtävät"
+    "myQuests": "Omat tehtävät",
+    "auditLog": "Tapahtumaloki"
   },
   "admin": {
     "users": {

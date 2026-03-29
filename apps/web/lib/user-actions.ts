@@ -7,6 +7,7 @@ import { ActionError } from "@/lib/actionErrors";
 import { validateUUID } from "@/lib/actionUtils";
 import { ROLES, PERMISSIONS, type PermissionKey } from "@/lib/permissions";
 import { DEVELOPER_TAGS, type DeveloperTag } from "@/lib/developer-config";
+import { logAudit } from "@/lib/audit";
 
 // ROLES is ordered highest → lowest: superuser, vuohi, admin, user, pending
 function roleRank(role: string): number {
@@ -54,6 +55,15 @@ export const updateUserRole = guardedAction(
         ...(promotedToVuohi && { hasSeenPromotion: false }),
       },
     });
+
+    await logAudit({
+      action: "user.updateRole",
+      entityType: "User",
+      entityId: userId,
+      actorId: session.user.id,
+      actorName: session.user.alias ?? session.user.name,
+      details: { oldValues: { role: user.role }, newValues: { role } },
+    });
   },
 );
 
@@ -93,6 +103,15 @@ export const setDeveloperTag = guardedAction(
     await prisma.user.update({
       where: { id: userId },
       data: { developerTag: tag },
+    });
+
+    await logAudit({
+      action: "user.setDeveloperTag",
+      entityType: "User",
+      entityId: userId,
+      actorId: session.user.id,
+      actorName: session.user.alias ?? session.user.name,
+      details: { oldValues: { developerTag: user.developerTag }, newValues: { developerTag: tag } },
     });
   },
 );
@@ -167,6 +186,15 @@ export const updateUserPermissions = guardedAction(
     await prisma.user.update({
       where: { id: userId },
       data: { permissionsVersion: { increment: 1 } },
+    });
+
+    await logAudit({
+      action: "user.updatePermissions",
+      entityType: "User",
+      entityId: userId,
+      actorId: session.user.id,
+      actorName: session.user.alias ?? session.user.name,
+      details: { overrides },
     });
   },
 );

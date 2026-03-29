@@ -56,7 +56,8 @@
     "quests": "Hawlgallada",
     "achievements": "Guulaha",
     "leaderboard": "Miisaanka Hogaamiyaha",
-    "myQuests": "Hawlgallahayga"
+    "myQuests": "Hawlgallahayga",
+    "auditLog": "Diiwaanka Hubinta"
   },
   "admin": {
     "users": {

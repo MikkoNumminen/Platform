@@ -48,7 +48,7 @@
 - [ ] 🟣 Leave management system
 - [ ] 🟣 Performance review system
 - [ ] 🟣 Admin dashboard & analytics
-- [ ] 🟣 Audit logging
+- [ ] 🟣 Audit logging — Claude 1
 - [ ] 🔵 2FA (TOTP) support
 - [ ] 🔵 Concurrent session limiting
 

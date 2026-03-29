@@ -6,6 +6,7 @@ import { ActionError } from "@/lib/actionErrors";
 import { safe, type ActionResult } from "@/lib/actionUtils";
 import { rateLimit } from "@/lib/rateLimit";
 import { logger } from "@/lib/logger";
+import { logAudit } from "@/lib/audit";
 
 /**
  * GDPR Right to Erasure — anonymize user PII and mark as deleted.
@@ -35,6 +36,16 @@ export async function deleteMyAccount(confirmation: string): Promise<ActionResul
     if (!user) {
       throw new ActionError("notFound", "User not found");
     }
+
+    // Log before scrubbing PII
+    await logAudit({
+      action: "user.deleteAccount",
+      entityType: "User",
+      entityId: userId,
+      actorId: userId,
+      actorName: user.alias ?? user.name,
+      details: { email: user.email },
+    });
 
     await prisma.$transaction(async (tx) => {
       // 1. Scrub PII from the user record
@@ -220,6 +231,14 @@ export async function exportMyData(): Promise<{ error: string; code: string } | 
       issueReports: issues,
       surveyResponses: surveys,
     };
+
+    await logAudit({
+      action: "user.exportData",
+      entityType: "User",
+      entityId: userId,
+      actorId: userId,
+      actorName: user?.alias ?? user?.name,
+    });
 
     return { data: JSON.stringify(exportData, null, 2) };
   } catch (error) {

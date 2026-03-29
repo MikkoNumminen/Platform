@@ -56,7 +56,8 @@
     "quests": "المهام",
     "achievements": "الإنجازات",
     "leaderboard": "لوحة المتصدرين",
-    "myQuests": "مهامي"
+    "myQuests": "مهامي",
+    "auditLog": "سجل التدقيق"
   },
   "admin": {
     "users": {

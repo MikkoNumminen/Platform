@@ -490,6 +490,26 @@ model UserTourProgress {
   @@index([sessionId])
 }
 
+// ─── Audit Log ───────────────────────────────────────────────────────────
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  action     String
+  entityType String
+  entityId   String?
+  actorId    String
+  actorName  String?
+  details    Json?
+  sessionId  String?
+  createdAt  DateTime @default(now())
+
+  @@index([action])
+  @@index([entityType])
+  @@index([actorId])
+  @@index([createdAt])
+  @@index([sessionId])
+}
+
 // ─── Direct Messages ──────────────────────────────────────────────────────
 
 model Conversation {
