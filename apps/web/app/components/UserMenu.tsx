@@ -210,6 +210,16 @@ export default function UserMenu() {
           {tm("issues")}
         </MenuItem>
         <Divider />
+        {!isDemoUser && showDemo && (
+          <MenuItem
+            onClick={() => {
+              setAnchorEl(null);
+              signIn("demo", { callbackUrl: "/" });
+            }}
+          >
+            {td("tryDemo")}
+          </MenuItem>
+        )}
         <MenuItem onClick={() => signOut()}>{t("signOut")}</MenuItem>
       </Menu>
     </Box>
