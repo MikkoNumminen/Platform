@@ -22,15 +22,38 @@ packages/config/ — Shared types and config (@platform/config)
 - **Boards** — Categorized discussion boards with full CRUD, pinned posts, and threaded comments
 - **Forums** — Discussion forums with topics and threaded replies
 - **Calendar** — Monthly calendar view with event creation, editing, and deletion
+- **Issue Tracker** — Report and resolve issues; superuser can manage issue status
 - **User aliases** — Public display names (callsigns) shown instead of real names in all community areas
-- **Themes** — 8 switchable themes including Epic (WoW-inspired with Cinzel font, textured backgrounds, red beveled buttons, gold ornamental borders)
+- **Themes** — 8 switchable themes including Epic (WoW-inspired with Cinzel font, textured backgrounds, gold ornamental borders)
 - **i18n** — Multilingual support (Finnish, English, Somali, Arabic) via next-intl with cookie-based locale detection, Accept-Language fallback, and RTL support for Arabic
-- **Community Survey** — Feature prioritization survey with admin results dashboard and server-side completion tracking
+- **Community Survey** — Feature prioritization survey with multi-round support and admin results dashboard
 - **Pending user gate** — New users are redirected to the survey and cannot access the platform until an admin approves them
+
+### Gamification
+- **XP System** — Earn XP for platform actions (posting, commenting, creating events, completing surveys, login streaks)
+- **10-level progression** — Newcomer through Mythic with XP thresholds and level-up celebrations
+- **Achievements** — 31 unlockable achievements across categories (onboarding, content, engagement, streaks, moderation)
+- **Quest Log** — Daily, weekly, and special quests with progress tracking and XP rewards
+- **Leaderboard** — Top users ranked by XP with current user highlighting
+- **XP Toast notifications** — Real-time XP award popups after actions
+- **Custom Quests** — Superuser-assigned quests with configurable XP rewards, priority levels, deadlines, and status management (open/in progress/completed)
+
+### Guided Tour
+- **Role-based tutorial** — 13-step guided tour with 4 tiers (Getting Started, Community Explorer, Admin Basics, Team Leader)
+- **Spotlight overlay** — Highlights target elements with pulsing border and tooltip
+- **Progress checklist** — Fixed bottom-right panel showing completion status with XP rewards per step
+- **Gamification integration** — Tutorial quests and achievements seeded, XP awarded on step completion
+
+### Admin
+- **User management** — Role assignment with hierarchy enforcement, permission overrides, survey completion status
+- **Developer skills** — Users can indicate development interest; superuser assigns developer tags (Master, Coder, Artist, etc.)
+- **Vuohiliitto Dashboard** — XP stats, level distribution with hover tooltips, achievement/quest completion rates (superuser/vuohi only)
+- **Quest Board** — Global view of all custom quests with filters, creation form, and status management
+- **Achievement & Quest CRUD** — Admin editor for managing gamification content
 
 ### Security
 - **Authentication** — NextAuth v5 with Google and GitHub OAuth
-- **Role-based permissions** — Superuser, vuohi, admin, user, and pending roles with granular permission overrides
+- **Role-based permissions** — Superuser, vuohi, admin, user, and pending roles with 24 granular permission keys and per-user overrides
 - **Role hierarchy enforcement** — Users can only modify lower-ranked users and assign lower-ranked roles
 - **Content ownership** — Edit actions verify the user is the author; admin routes check role in middleware
 - **Pending user approval** — New users get zero permissions until approved by an admin
@@ -49,11 +72,14 @@ packages/config/ — Shared types and config (@platform/config)
 - **EmptyState** — Reusable empty state with icon, description, and action button
 - **SnackbarProvider** — Context-based notification system with `useSnackbar()` hook
 - **ConfirmDeleteDialog** — Reusable delete confirmation dialog
+- **Centralized color system** — 48 theme-aware color tokens in `styles.ts`, all components reference centralized tokens
 
 ### UX Polish
 - **Loading skeletons** — Skeleton loading states for all routes
 - **Keyboard shortcuts** — `g+h/b/f/c` for navigation, `?` for help dialog
 - **Welcome page** — Animated landing page with sign-in arrow for unauthenticated users
+- **Level-up celebration** — Confetti and overlay animation on XP level milestones
+- **Vuohi promotion celebration** — Special animation when promoted to vuohi role
 - **Goat favicon** — Custom SVG goat head icon matching the community identity
 
 ## Getting started
@@ -85,11 +111,12 @@ npx turbo run build --filter=web # Production build
 
 ## Testing
 
-602 tests across 85 test suites with accessibility checks (jest-axe).
+956 tests across 123 test suites with accessibility checks (jest-axe). Playwright E2E framework configured for critical user journeys.
 
 ```bash
-npx turbo run test --filter=web           # All tests
+npx turbo run test --filter=web           # All unit/integration tests
 npx turbo run test:coverage --filter=web  # With coverage
+cd apps/web && npm run test:e2e           # Playwright E2E tests
 ```
 
 ## Architecture
@@ -98,7 +125,7 @@ npx turbo run test:coverage --filter=web  # With coverage
 
 Platform and HRM are **separate applications with separate databases**. They are both portfolio showpieces:
 
-- **Platform** — the production community app with boards, forums, calendar, user management
+- **Platform** — the production community app with boards, forums, calendar, gamification, user management
 - **HRM** — a standalone HR management showpiece (git submodule at `apps/hrm/`)
 
 New features are developed in the HRM repo first, then ported to Platform as needed using the same patterns but fresh code. HRM is never modified from within this repo.
@@ -110,7 +137,7 @@ New features are developed in the HRM repo first, then ported to Platform as nee
 3. They complete a community survey (required before approval)
 4. They get a `"pending"` role with **zero permissions** — redirected to the survey, no access to community content
 5. An admin approves them via `/admin/users` (which shows survey completion status) and assigns a role
-5. The first user to sign up automatically gets `superuser` role (bootstrap admin)
+6. The first user to sign up automatically gets `superuser` role (bootstrap admin)
 
 ## Deployment
 
