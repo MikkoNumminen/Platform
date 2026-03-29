@@ -47,6 +47,7 @@ interface CustomQuestData {
   xpReward: number;
   status: string;
   priority: string;
+  targetSkill: string | null;
   deadline: string | null;
   completedAt: string | null;
   creator: string;
@@ -231,6 +232,19 @@ export default function QuestLog({
                               fontWeight: 600,
                               backgroundColor: colors.accentBgSubtle,
                               color: colors.green400,
+                            }}
+                          />
+                        )}
+                        {cq.targetSkill && (
+                          <Chip
+                            label={`${cq.targetSkill} · 2x XP`}
+                            size="small"
+                            sx={{
+                              height: 20,
+                              fontSize: "0.6rem",
+                              backgroundColor: "rgba(34,211,238,0.12)",
+                              color: colors.info,
+                              border: `1px solid ${colors.info}`,
                             }}
                           />
                         )}

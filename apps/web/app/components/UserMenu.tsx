@@ -139,7 +139,7 @@ export default function UserMenu() {
               fullWidth
               startIcon={<LogoutIcon />}
               onClick={() => {
-                localStorage.removeItem(LOCALSTORAGE_KEY);
+                localStorage.removeItem("platform_survey_submitted");
                 localStorage.removeItem("tutorial-progress");
                 signOut();
               }}

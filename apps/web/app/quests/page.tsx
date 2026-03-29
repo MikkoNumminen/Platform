@@ -37,6 +37,7 @@ export default async function QuestsPage() {
         xpReward: q.xpReward,
         status: q.status,
         priority: q.priority,
+        targetSkill: q.targetSkill,
         deadline: q.deadline?.toISOString() ?? null,
         completedAt: q.completedAt?.toISOString() ?? null,
         creator: q.creator.alias ?? q.creator.name ?? "Unknown",

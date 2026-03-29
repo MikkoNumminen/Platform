@@ -5,7 +5,9 @@ import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/db";
 import { resolvePermissions } from "@/lib/permissions";
 import { logger } from "@/lib/logger";
-import { DEMO_EMAIL, seedDemoData, cleanupStaleDemoSessions } from "@/lib/demo-session";
+import { seedDemoData, cleanupStaleDemoSessions } from "@/lib/demo-session";
+
+const DEMO_EMAIL = "demo@platform.app";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [

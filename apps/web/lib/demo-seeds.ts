@@ -392,3 +392,94 @@ export const DEMO_XP_PROFILES = [
   { userIndex: 2, totalXp: 400, level: 3 },
   { userIndex: 3, totalXp: 150, level: 2 },
 ] as const;
+
+export const DEMO_CUSTOM_QUESTS = [
+  {
+    title: "Review the privacy policy",
+    description: "Check that the privacy policy is up to date and covers all data we collect.",
+    xpReward: 150,
+    status: "completed",
+    priority: "high",
+    assigneeIndex: 1,
+    creatorIndex: 0,
+    completed: true,
+  },
+  {
+    title: "Write a welcome guide for new members",
+    description: "Create a short guide that helps new members find their way around the platform.",
+    xpReward: 200,
+    status: "in_progress",
+    priority: "normal",
+    assigneeIndex: 2,
+    creatorIndex: 0,
+    completed: false,
+  },
+  {
+    title: "Test the calendar on mobile devices",
+    description: "Verify that calendar events display correctly on phones and tablets.",
+    xpReward: 100,
+    status: "open",
+    priority: "normal",
+    assigneeIndex: 3,
+    creatorIndex: 0,
+    completed: false,
+  },
+  {
+    title: "Organize the community kick-off meetup",
+    description: "Coordinate venue, send invites, and prepare the agenda for the first meetup.",
+    xpReward: 300,
+    status: "open",
+    priority: "urgent",
+    assigneeIndex: 0,
+    creatorIndex: 1,
+    completed: false,
+  },
+] as const;
+
+export const DEMO_ACHIEVEMENT_UNLOCKS = [
+  {
+    userIndex: 0,
+    achievementKeys: [
+      "welcome",
+      "surveyor",
+      "writer_bronze",
+      "shouter_bronze",
+      "bug_hunter_bronze",
+      "organizer_bronze",
+      "streak_bronze",
+    ],
+  },
+  {
+    userIndex: 1,
+    achievementKeys: ["welcome", "surveyor", "commenter_bronze", "bug_hunter_bronze"],
+  },
+  { userIndex: 2, achievementKeys: ["welcome", "surveyor", "shouter_bronze"] },
+  { userIndex: 3, achievementKeys: ["welcome", "surveyor"] },
+] as const;
+
+export const DEMO_QUEST_PROGRESS = [
+  { userIndex: 0, questKey: "onboarding_alias", progress: 1, completed: true },
+  { userIndex: 0, questKey: "onboarding_survey", progress: 1, completed: true },
+  { userIndex: 0, questKey: "onboarding_first_shout", progress: 1, completed: true },
+  { userIndex: 0, questKey: "onboarding_first_post", progress: 1, completed: true },
+  { userIndex: 0, questKey: "daily_login", progress: 1, completed: true },
+  { userIndex: 0, questKey: "daily_shout", progress: 2, completed: false },
+  { userIndex: 1, questKey: "onboarding_alias", progress: 1, completed: true },
+  { userIndex: 1, questKey: "onboarding_survey", progress: 1, completed: true },
+  { userIndex: 1, questKey: "onboarding_first_comment", progress: 1, completed: true },
+  { userIndex: 1, questKey: "daily_login", progress: 1, completed: true },
+  { userIndex: 2, questKey: "onboarding_alias", progress: 1, completed: true },
+  { userIndex: 2, questKey: "onboarding_survey", progress: 1, completed: true },
+  { userIndex: 2, questKey: "daily_login", progress: 1, completed: true },
+  { userIndex: 3, questKey: "onboarding_alias", progress: 1, completed: true },
+  { userIndex: 3, questKey: "onboarding_survey", progress: 1, completed: true },
+] as const;
+
+export const DEMO_SURVEY_ROUND = {
+  number: 1,
+  title: "Spring 2026 Community Feedback",
+  description: "Help us shape the next features for the platform.",
+  status: "active",
+  xpReward: 100,
+  creatorIndex: 0,
+} as const;

@@ -60,7 +60,10 @@ export default function TutorialProvider({ children }: { children: ReactNode }) 
   const completingRef = useRef<Set<string>>(new Set());
 
   const role = (session?.user as { role?: string } | undefined)?.role ?? "pending";
-  const isActive = !!session?.user && role !== "pending";
+  const isDemoUser = Boolean(
+    (session?.user as { demoSessionId?: string } | undefined)?.demoSessionId,
+  );
+  const isActive = !!session?.user && (role !== "pending" || isDemoUser);
 
   const steps = useMemo(() => getStepsForRole(role), [role]);
 
@@ -114,6 +117,14 @@ export default function TutorialProvider({ children }: { children: ReactNode }) 
     },
     [completedSteps],
   );
+
+  // Demo users: auto-complete set_alias since they already have an alias
+  useEffect(() => {
+    if (!isDemoUser || !loaded) return;
+    if (!completedSteps.has("set_alias")) {
+      completeStep("set_alias");
+    }
+  }, [isDemoUser, loaded, completedSteps, completeStep]);
 
   // Auto-complete steps on route match
   useEffect(() => {

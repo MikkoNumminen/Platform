@@ -1,3 +1,13 @@
+// ─── Tutorial Step Registry ─────────────────────────────────────────────────
+// To add a new tutorial step:
+// 1. Add a step object to TUTORIAL_STEPS with: id, route, targetSelector, tier, xpReward
+// 2. Add optional: event (for action-triggered completion), autoCompleteOnRoute (for visit-based)
+// 3. Add navigation hints if needed (fromRoute → targetSelector mapping)
+// 4. Add data-tutorial="your-selector" attribute to the target UI element
+// 5. Add i18n key: tutorial.step_<id> in all locale files
+// Steps are cumulative — higher tiers include all lower-tier steps.
+// ────────────────────────────────────────────────────────────────────────────
+
 export interface NavigationHint {
   fromRoute: string | RegExp;
   targetSelector: string;
@@ -76,7 +86,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     navigationHints: [
       {
         fromRoute: /.*/,
-        targetSelector: '[data-tutorial="nav-report-issue"]',
+        targetSelector: '[data-tutorial="nav-issues"]',
         hintKey: "nav_report_issue",
       },
     ],

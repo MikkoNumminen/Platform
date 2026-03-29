@@ -12,10 +12,14 @@ import {
   DEMO_ISSUES,
   DEMO_SURVEY_RESPONSES,
   DEMO_XP_PROFILES,
+  DEMO_CUSTOM_QUESTS,
+  DEMO_ACHIEVEMENT_UNLOCKS,
+  DEMO_QUEST_PROGRESS,
+  DEMO_SURVEY_ROUND,
 } from "./demo-seeds";
 
 // Used by auth.ts signIn callback to identify demo users
-const _DEMO_EMAIL = "demo@platform.app";
+const DEMO_EMAIL = "demo@platform.app";
 const DEMO_SESSION_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 export async function getDemoSessionId(): Promise<string | null> {
@@ -190,6 +194,79 @@ export async function seedDemoData(sessionId: string): Promise<void> {
         },
       });
     }
+
+    // Seed custom quests
+    for (const seed of DEMO_CUSTOM_QUESTS) {
+      await tx.customQuest.create({
+        data: {
+          title: seed.title,
+          description: seed.description,
+          xpReward: seed.xpReward,
+          status: seed.status,
+          priority: seed.priority,
+          assigneeId: userMap.get(seed.assigneeIndex)!,
+          creatorId: userMap.get(seed.creatorIndex)!,
+          completedAt: seed.completed ? new Date() : null,
+        },
+      });
+    }
+
+    // Seed achievement unlocks
+    for (const seed of DEMO_ACHIEVEMENT_UNLOCKS) {
+      const userId = userMap.get(seed.userIndex)!;
+      for (const key of seed.achievementKeys) {
+        const achievement = await tx.achievement.findUnique({ where: { key } });
+        if (achievement) {
+          await tx.userAchievement.create({
+            data: { userId, achievementId: achievement.id, sessionId },
+          });
+        }
+      }
+    }
+
+    // Seed quest progress
+    for (const seed of DEMO_QUEST_PROGRESS) {
+      const userId = userMap.get(seed.userIndex)!;
+      const quest = await tx.quest.findUnique({ where: { key: seed.questKey } });
+      if (quest) {
+        await tx.userQuestProgress.create({
+          data: {
+            userId,
+            questId: quest.id,
+            progress: seed.progress,
+            completed: seed.completed,
+            completedAt: seed.completed ? new Date() : null,
+            sessionId,
+          },
+        });
+      }
+    }
+
+    // Seed survey round
+    const surveyRound = await tx.surveyRound.create({
+      data: {
+        number: DEMO_SURVEY_ROUND.number,
+        title: DEMO_SURVEY_ROUND.title,
+        description: DEMO_SURVEY_ROUND.description,
+        status: DEMO_SURVEY_ROUND.status,
+        xpReward: DEMO_SURVEY_ROUND.xpReward,
+        creatorId: userMap.get(DEMO_SURVEY_ROUND.creatorIndex)!,
+      },
+    });
+
+    // Link some survey responses to the round
+    // (first 3 responses belong to the active round)
+    const responsesWithRound = await tx.surveyResponse.findMany({
+      where: { sessionId },
+      take: 3,
+      orderBy: { submittedAt: "asc" },
+    });
+    for (const r of responsesWithRound) {
+      await tx.surveyResponse.update({
+        where: { id: r.id },
+        data: { roundId: surveyRound.id },
+      });
+    }
   });
 }
 
@@ -205,6 +282,30 @@ export async function cleanupStaleDemoSessions(): Promise<number> {
 
   for (const session of staleSessions) {
     const sid = session.id;
+
+    const demoUsers = await prisma.user.findMany({
+      where: { sessionId: sid },
+      select: { id: true },
+    });
+    const demoUserIds = demoUsers.map((u) => u.id);
+
+    if (demoUserIds.length > 0) {
+      await prisma.customQuest.deleteMany({ where: { creatorId: { in: demoUserIds } } });
+    }
+
+    // Clean up survey rounds created by demo users
+    const demoRounds = await prisma.surveyRound.findMany({
+      where: { creatorId: { in: demoUserIds } },
+      select: { id: true },
+    });
+    if (demoRounds.length > 0) {
+      const roundIds = demoRounds.map((r) => r.id);
+      await prisma.surveyResponse.updateMany({
+        where: { roundId: { in: roundIds } },
+        data: { roundId: null },
+      });
+      await prisma.surveyRound.deleteMany({ where: { id: { in: roundIds } } });
+    }
 
     await prisma.userTourProgress.deleteMany({ where: { sessionId: sid } });
     await prisma.userQuestProgress.deleteMany({ where: { sessionId: sid } });
