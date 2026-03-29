@@ -12,22 +12,6 @@
 
 - 🟣 **Ongoing:** Monitor CI pipeline and Vercel deployments, fix errors immediately — Claude 1
 
-### Demo Mode — Interactive Platform Showcase
-> Zero-credential demo for unregistered visitors. Superuser account with isolated mock data.
-> Branch merged. Seed data complete. Tutorial auto-activates. Nav hint fixed. README updated. (Claude 3)
-
-#### Remaining — Claude 3
-- [ ] 🔵 Demo-specific welcome overlay on first load — Claude 3
-
-### Quest Log UX Refactor
-> Show completed quests, merge custom quests into tabs, add progress summaries.
-
-- [ ] 🔵 Show completed quests in each tab (greyed out with checkmark, below active) — Claude 3
-- [ ] 🔵 Add progress summary per tab ("3/5 complete") in tab labels — Claude 3
-- [ ] 🔵 Merge custom quests into tabs — assigned quests show in "Assigned" tab — Claude 3
-- [ ] 🔵 Highlight active/in-progress quests with visual emphasis — Claude 3
-- [ ] 🔵 Update getActiveQuests to return completed quests too — Claude 3
-
 ### GDPR Compliance Gaps
 > From GDPR analysis. Address before scaling up.
 
@@ -51,7 +35,6 @@
 
 ### Testing Backlog
 - [ ] 🔵 test-animation page tests
-- [ ] 🔵 Tests for DevLog component — Claude 3
 - [ ] 🟣 Integration tests for multi-step workflows (signup → approval, board → post → thread)
 - [ ] 🟣 Playwright E2E testing for critical user journeys
 

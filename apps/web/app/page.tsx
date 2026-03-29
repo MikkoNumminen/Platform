@@ -5,6 +5,7 @@ import Shoutbox from "./components/Shoutbox";
 import DevLog from "./components/DevLog";
 import WelcomeHero from "./components/WelcomeHero";
 import QuestReceivedCelebration from "./components/QuestReceivedCelebration";
+import DemoWelcomeOverlay from "./components/DemoWelcomeOverlay";
 import { getRecentShouts } from "@/lib/shout-queries";
 import { getRecentCommits } from "@/lib/github-commits";
 import { getMyCustomQuests } from "@/lib/custom-quest-queries";
@@ -55,6 +56,7 @@ export default async function Home() {
 
   return (
     <>
+      <DemoWelcomeOverlay />
       {customQuests.length > 0 && <QuestReceivedCelebration quests={customQuests} />}
       <TopBar title="Platform" />
       {session?.user ? (

@@ -86,7 +86,10 @@
     "tryDemo": "Kokeile demoa",
     "exitDemo": "Poistu demosta",
     "bannerMessage": "Olet demotilassa. Kaikki tiedot ovat eristettyjä ja väliaikaisia.",
-    "modeIndicator": "DEMO"
+    "modeIndicator": "DEMO",
+    "welcomeTitle": "Tervetuloa demoon",
+    "welcomeBody": "Tutustu alustaan pääkäyttäjänä täydellä pääsyllä. Kokeile shoutboxia, tehtäviä, kalenteria, käyttäjähallintaa — kaikki on käytettävissä esimerkkidatalla. Istuntosi on eristetty ja väliaikainen.",
+    "welcomeStart": "Aloitetaan"
   },
   "feedback": {
     "createRound": "Luo uusi kierros",

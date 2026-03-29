@@ -50,6 +50,12 @@ jest.mock("../components/QuestReceivedCelebration", () => {
   };
 });
 
+jest.mock("../components/DemoWelcomeOverlay", () => {
+  return function MockDemoWelcomeOverlay() {
+    return null;
+  };
+});
+
 import Home from "../page";
 
 describe("Home", () => {
