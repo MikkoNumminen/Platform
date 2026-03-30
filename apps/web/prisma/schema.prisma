@@ -276,16 +276,18 @@ model RateLimit {
 // ─── Survey ─────────────────────────────────────────────────────────────────
 
 model SurveyRound {
-  id          String    @id @default(uuid())
-  number      Int       @unique
-  title       String
-  description String?
-  status      String    @default("active")
-  xpReward    Int       @default(0)
-  creatorId   String
-  closedAt    DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id              String    @id @default(uuid())
+  number          Int       @unique
+  title           String
+  description     String?
+  status          String    @default("active")
+  xpReward        Int       @default(0)
+  customQuestions  Json?
+  deadline        DateTime?
+  creatorId       String
+  closedAt        DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   responses SurveyResponse[]
   quests    CustomQuest[]    @relation("SurveyRoundQuests")
@@ -304,6 +306,7 @@ model SurveyResponse {
   otherFeedback     String?
   wantsToDevelop    Boolean   @default(false)
   developmentSkills String[]  @default([])
+  customAnswers     Json?
   userId            String?
   roundId           String?
   sessionId         String?

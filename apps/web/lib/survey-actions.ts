@@ -5,6 +5,8 @@ import { auth } from "@/auth";
 import { ActionError } from "@/lib/actionErrors";
 import { safe, type ActionResult } from "@/lib/actionUtils";
 import { validateSurveyData, type SurveyData } from "@/lib/survey-config";
+import type { CustomAnswers } from "@/lib/custom-survey-config";
+import type { Prisma } from "@prisma/client";
 import { triggerGamification } from "@/lib/gamification/trigger";
 import { getDemoSessionId } from "@/lib/demo-session";
 import { awardCustomXp } from "@/lib/gamification/xp-service";
@@ -64,6 +66,55 @@ export async function submitSurvey(data: SurveyData, roundId?: string): Promise<
           if (quest.xpReward > 0) {
             await awardCustomXp(userId, quest.xpReward, "custom_quest:complete", quest.id);
           }
+        }
+      }
+    }
+  });
+}
+
+export async function submitCustomSurvey(
+  answers: CustomAnswers,
+  roundId: string,
+): Promise<ActionResult> {
+  return safe(async () => {
+    if (!roundId) {
+      throw new ActionError("invalidInput", "Round ID is required");
+    }
+
+    const session = await auth();
+    const userId = session?.user?.id ?? null;
+    const sessionId = await getDemoSessionId();
+
+    await prisma.surveyResponse.create({
+      data: {
+        conversationStyle: "custom",
+        features: [],
+        mustHave: "custom",
+        customAnswers: answers as unknown as Prisma.InputJsonValue,
+        userId,
+        roundId,
+        sessionId,
+      },
+    });
+
+    if (userId) {
+      await triggerGamification(userId, "survey:complete");
+
+      const quest = await prisma.customQuest.findFirst({
+        where: {
+          surveyRoundId: roundId,
+          assigneeId: userId,
+          status: { not: "completed" },
+          deletedAt: null,
+        },
+      });
+      if (quest) {
+        await prisma.customQuest.update({
+          where: { id: quest.id },
+          data: { status: "completed", completedAt: new Date() },
+        });
+        if (quest.xpReward > 0) {
+          await awardCustomXp(userId, quest.xpReward, "custom_quest:complete", quest.id);
         }
       }
     }

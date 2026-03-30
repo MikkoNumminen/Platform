@@ -27,6 +27,8 @@ import type { SurveyResultsData } from "@/lib/survey-queries";
 import { closeSurveyRound } from "@/lib/survey-round-actions";
 import { fetchRoundResults } from "@/lib/survey-round-actions";
 import SurveyForm from "../components/survey/SurveyForm";
+import CustomSurveyForm from "../components/survey/CustomSurveyForm";
+import type { CustomQuestion } from "@/lib/custom-survey-config";
 import ResultsBarChart from "../components/survey/ResultsBarChart";
 import TextResponseList from "../components/survey/TextResponseList";
 import CreateRoundDialog from "./CreateRoundDialog";
@@ -96,7 +98,7 @@ export default function FeedbackClient({
     });
   };
 
-  const _handleSurveyComplete = () => {
+  const handleSurveyComplete = () => {
     if (activeRound) {
       localStorage.setItem(`platform_survey_${activeRound.id}`, "true");
       setSubmittedRounds((prev) => new Set(prev).add(activeRound.id));
@@ -107,20 +109,38 @@ export default function FeedbackClient({
 
   const renderResults = (results: SurveyResultsData) => (
     <Box sx={{ mt: 1 }}>
-      {results.conversationStyleCounts.length > 0 && (
-        <ResultsBarChart title="Conversation Style" items={results.conversationStyleCounts} />
+      {/* Custom question results (themed surveys) */}
+      {results.customResults?.map((item) =>
+        item.type === "text" && item.textResponses && item.textResponses.length > 0 ? (
+          <TextResponseList
+            key={item.questionId}
+            title={item.questionText}
+            responses={item.textResponses}
+          />
+        ) : item.counts && item.counts.length > 0 ? (
+          <ResultsBarChart key={item.questionId} title={item.questionText} items={item.counts} />
+        ) : null,
       )}
-      {results.featureCounts.length > 0 && (
-        <ResultsBarChart title="Feature Votes" items={results.featureCounts} />
-      )}
-      {results.mustHaveResponses.length > 0 && (
-        <TextResponseList title="Must-Have Features" responses={results.mustHaveResponses} />
-      )}
-      {results.dealbreakerResponses.length > 0 && (
-        <TextResponseList title="Dealbreakers" responses={results.dealbreakerResponses} />
-      )}
-      {results.otherFeedbackResponses.length > 0 && (
-        <TextResponseList title="Other Feedback" responses={results.otherFeedbackResponses} />
+
+      {/* Standard survey results (only show if no custom questions) */}
+      {!results.customResults && (
+        <>
+          {results.conversationStyleCounts.length > 0 && (
+            <ResultsBarChart title="Conversation Style" items={results.conversationStyleCounts} />
+          )}
+          {results.featureCounts.length > 0 && (
+            <ResultsBarChart title="Feature Votes" items={results.featureCounts} />
+          )}
+          {results.mustHaveResponses.length > 0 && (
+            <TextResponseList title="Must-Have Features" responses={results.mustHaveResponses} />
+          )}
+          {results.dealbreakerResponses.length > 0 && (
+            <TextResponseList title="Dealbreakers" responses={results.dealbreakerResponses} />
+          )}
+          {results.otherFeedbackResponses.length > 0 && (
+            <TextResponseList title="Other Feedback" responses={results.otherFeedbackResponses} />
+          )}
+        </>
       )}
     </Box>
   );
@@ -205,6 +225,11 @@ export default function FeedbackClient({
             <Typography variant="caption" color="text.secondary">
               Created {new Date(round.createdAt).toLocaleDateString()}
             </Typography>
+            {round.deadline && (
+              <Typography variant="caption" color="text.secondary">
+                Deadline {new Date(round.deadline).toLocaleDateString()}
+              </Typography>
+            )}
             {round.closedAt && (
               <Typography variant="caption" color="text.secondary">
                 Closed {new Date(round.closedAt).toLocaleDateString()}
@@ -319,7 +344,16 @@ export default function FeedbackClient({
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <SurveyForm />
+          {activeRound?.customQuestions ? (
+            <CustomSurveyForm
+              questions={activeRound.customQuestions as CustomQuestion[]}
+              roundId={activeRound.id}
+              roundTitle={activeRound.title}
+              onComplete={handleSurveyComplete}
+            />
+          ) : (
+            <SurveyForm />
+          )}
         </DialogContent>
       </Dialog>
 

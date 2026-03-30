@@ -8,6 +8,8 @@ export interface SurveyRoundData {
   description: string | null;
   status: string;
   xpReward: number;
+  customQuestions: unknown[] | null;
+  deadline: Date | null;
   responseCount: number;
   creatorName: string;
   closedAt: Date | null;
@@ -31,6 +33,8 @@ export async function getAllSurveyRounds(): Promise<SurveyRoundData[]> {
     description: r.description,
     status: r.status,
     xpReward: r.xpReward,
+    customQuestions: r.customQuestions as unknown[] | null,
+    deadline: r.deadline,
     responseCount: r._count.responses,
     creatorName: r.creator.alias ?? r.creator.name ?? "Unknown",
     closedAt: r.closedAt,
@@ -56,6 +60,8 @@ export async function getActiveSurveyRound(): Promise<SurveyRoundData | null> {
     description: round.description,
     status: round.status,
     xpReward: round.xpReward,
+    customQuestions: round.customQuestions as unknown[] | null,
+    deadline: round.deadline,
     responseCount: round._count.responses,
     creatorName: round.creator.alias ?? round.creator.name ?? "Unknown",
     closedAt: round.closedAt,

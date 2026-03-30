@@ -1,6 +1,14 @@
 import { prisma } from "@/lib/db";
 import { getDemoSessionId } from "./demo-session";
 
+export interface CustomResultItem {
+  questionId: string;
+  questionText: string;
+  type: "single" | "multi" | "text";
+  counts?: Array<{ label: string; count: number }>;
+  textResponses?: Array<{ text: string; submittedAt: Date }>;
+}
+
 export interface SurveyResultsData {
   totalResponses: number;
   conversationStyleCounts: Array<{ label: string; count: number }>;
@@ -8,6 +16,7 @@ export interface SurveyResultsData {
   mustHaveResponses: Array<{ text: string; submittedAt: Date }>;
   dealbreakerResponses: Array<{ text: string; submittedAt: Date }>;
   otherFeedbackResponses: Array<{ text: string; submittedAt: Date }>;
+  customResults?: CustomResultItem[];
 }
 
 export async function getSurveyResults(roundId?: string | null): Promise<SurveyResultsData> {
@@ -55,6 +64,51 @@ export async function getSurveyResults(roundId?: string | null): Promise<SurveyR
     .filter((r) => r.otherFeedback)
     .map((r) => ({ text: r.otherFeedback!, submittedAt: r.submittedAt }));
 
+  // Aggregate custom answers if this is a round with custom questions
+  let customResults: CustomResultItem[] | undefined;
+  if (roundId) {
+    const round = await prisma.surveyRound.findUnique({
+      where: { id: roundId },
+      select: { customQuestions: true },
+    });
+    const questions = round?.customQuestions as Array<{
+      id: string;
+      text: string;
+      type: "single" | "multi" | "text";
+    }> | null;
+
+    if (questions && questions.length > 0) {
+      customResults = questions.map((q) => {
+        if (q.type === "text") {
+          const textResponses: Array<{ text: string; submittedAt: Date }> = [];
+          for (const r of responses) {
+            const ca = r.customAnswers as Record<string, unknown> | null;
+            const val = ca?.[q.id];
+            if (typeof val === "string" && val.trim()) {
+              textResponses.push({ text: val, submittedAt: r.submittedAt });
+            }
+          }
+          return { questionId: q.id, questionText: q.text, type: q.type, textResponses };
+        }
+
+        // single or multi — aggregate counts
+        const countMap = new Map<string, number>();
+        for (const r of responses) {
+          const ca = r.customAnswers as Record<string, unknown> | null;
+          const val = ca?.[q.id];
+          const values = Array.isArray(val) ? val : typeof val === "string" && val ? [val] : [];
+          for (const v of values) {
+            countMap.set(String(v), (countMap.get(String(v)) ?? 0) + 1);
+          }
+        }
+        const counts = Array.from(countMap.entries())
+          .map(([label, count]) => ({ label, count }))
+          .sort((a, b) => b.count - a.count);
+        return { questionId: q.id, questionText: q.text, type: q.type, counts };
+      });
+    }
+  }
+
   return {
     totalResponses: responses.length,
     conversationStyleCounts,
@@ -62,5 +116,6 @@ export async function getSurveyResults(roundId?: string | null): Promise<SurveyR
     mustHaveResponses,
     dealbreakerResponses,
     otherFeedbackResponses,
+    customResults,
   };
 }
