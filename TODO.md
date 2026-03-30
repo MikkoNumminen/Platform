@@ -18,6 +18,27 @@
 
 - [ ] 🔵 Future: email webhook intake for privacy@vuohiliitto.com (not yet)
 
+### DM Security & GDPR Audit — 2026-03-30
+> Audit of the private messaging system. Strong auth/authorization/rate limiting in place.
+> Critical gaps in GDPR compliance and privacy policy.
+
+#### 🔴 Critical (fix before scaling)
+- [ ] 🟣 Add DMs to GDPR data export — exportMyData() is missing Conversation and DirectMessage records
+- [ ] 🔵 Update privacy policy to mention private messaging — data collection, storage, deletion, no encryption at rest
+- [ ] 🟣 Implement soft-delete for DMs — add deletedAt, anonymize on account deletion instead of CASCADE hard-delete (other participant loses conversation history)
+
+#### 🟡 Important
+- [ ] 🟣 Finish Privacy Inbox — isPrivacy field exists but is never set to true; implement superuser-only access or remove the field
+- [ ] 🔵 Add DM audit logging — log who accessed what conversation (GDPR accountability)
+- [ ] 🔵 Define DM retention policy — no auto-expiry exists; decide on retention period or keep indefinitely
+
+#### 🟢 Improvement
+- [ ] 🔵 Add block/report mechanism for DM abuse
+- [ ] 🔵 Add message deletion for users — allow deleting own sent messages
+- [ ] 🔵 Consider field-level encryption for DM content at rest
+
+> **Positive findings:** Auth checks solid, participant verification on all operations, demo mode properly isolated, rate limiting active, React escapes text (XSS mitigated), input validation (1-500 chars).
+
 ### GitHub & Branding
 - [ ] 🔵 Add repo icon/social preview image and fix GitHub OAuth app visibility
 
@@ -48,7 +69,7 @@
 - [ ] 🟣 Leave management system
 - [ ] 🟣 Performance review system
 - [ ] 🟣 Admin dashboard & analytics
-- [ ] 🟣 Audit logging — Claude 1
+- [ ] 🟣 Custom survey questions + DM testing round — Claude 1
 - [ ] 🔵 2FA (TOTP) support
 - [ ] 🔵 Concurrent session limiting
 
