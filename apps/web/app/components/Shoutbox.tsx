@@ -24,6 +24,21 @@ import type { ShoutData } from "@/lib/shout-queries";
 import type { ConversationSummary, DmMessageData } from "@/lib/dm-queries";
 import { useXpToast } from "./XpToastProvider";
 import { emitTutorialEvent } from "./TutorialProvider";
+import { DEVELOPER_TAG_ICONS, DEVELOPER_TAG_LABELS } from "@/lib/developer-config";
+
+function DevTagIcon({ tag }: { tag: string | null }) {
+  if (!tag || !DEVELOPER_TAG_ICONS[tag]) return null;
+  return (
+    <Tooltip title={DEVELOPER_TAG_LABELS[tag] ?? tag} arrow>
+      <Typography
+        component="span"
+        sx={{ fontSize: "0.75rem", cursor: "help", flexShrink: 0, lineHeight: 1 }}
+      >
+        {DEVELOPER_TAG_ICONS[tag]}
+      </Typography>
+    </Tooltip>
+  );
+}
 
 // WoW channel colors
 const GUILD_COLOR = colors.green400;
@@ -82,6 +97,8 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [whisperSuggestions, setWhisperSuggestions] = useState<DmUser[]>([]);
+  const [suggestionIndex, setSuggestionIndex] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const activeConversation = conversations.find((c) => c.id === activeTab);
   const isGuild = activeTab === "guild";
@@ -164,8 +181,10 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
       const users = await ensureUsersLoaded();
       const matches = users.filter((u) => u.alias.toLowerCase().startsWith(partial)).slice(0, 5);
       setWhisperSuggestions(matches);
+      setSuggestionIndex(0);
     } else {
       setWhisperSuggestions([]);
+      setSuggestionIndex(0);
     }
   };
 
@@ -174,6 +193,32 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
     const newMsg = message.replace(/^(\/w(?:hisper)?\s+)\S*$/i, `$1${alias} `);
     setMessage(newMsg);
     setWhisperSuggestions([]);
+    setSuggestionIndex(0);
+    inputRef.current?.focus();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (whisperSuggestions.length === 0) return;
+
+    if (e.key === "Tab") {
+      e.preventDefault();
+      if (e.shiftKey) {
+        // Shift+Tab cycles backwards
+        setSuggestionIndex((i) => (i - 1 + whisperSuggestions.length) % whisperSuggestions.length);
+      } else {
+        // Tab applies current suggestion or cycles forward
+        applySuggestion(whisperSuggestions[suggestionIndex].alias);
+      }
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSuggestionIndex((i) => (i - 1 + whisperSuggestions.length) % whisperSuggestions.length);
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSuggestionIndex((i) => (i + 1) % whisperSuggestions.length);
+    } else if (e.key === "Escape") {
+      setWhisperSuggestions([]);
+      setSuggestionIndex(0);
+    }
   };
 
   // ── Submit handler ──────────────────────────────────────────────────────
@@ -203,6 +248,7 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
             senderId: "system",
             senderAlias: "System",
             senderRole: "system",
+            senderDevTag: null,
             isMe: false,
             createdAt: new Date().toISOString(),
           },
@@ -226,6 +272,7 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
           senderId: session.user.id,
           senderAlias: alias,
           senderRole: role,
+          senderDevTag: null,
           isMe: true,
           createdAt: new Date().toISOString(),
         };
@@ -277,6 +324,7 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
         message: trimmed,
         alias,
         role,
+        developerTag: null,
         createdAt: new Date().toISOString(),
       };
       setShouts((prev) => [...prev, optimistic]);
@@ -301,6 +349,7 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
                   message: reaction.message,
                   alias: reaction.alias,
                   role: "user",
+                  developerTag: null,
                   createdAt: new Date().toISOString(),
                 },
               ]);
@@ -647,6 +696,7 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
                         />
                       </Tooltip>
                     )}
+                    <DevTagIcon tag={shout.developerTag} />
                     <Typography
                       component="span"
                       variant="body2"
@@ -756,6 +806,7 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
                             />
                           </Tooltip>
                         )}
+                        <DevTagIcon tag={msg.senderDevTag} />
                         <Typography
                           component="span"
                           variant="body2"
@@ -780,6 +831,7 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
                             />
                           </Tooltip>
                         )}
+                        <DevTagIcon tag={activeConversation?.otherUser.developerTag ?? null} />
                         <Typography
                           component="span"
                           variant="body2"
@@ -808,6 +860,7 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
                             />
                           </Tooltip>
                         )}
+                        <DevTagIcon tag={msg.senderDevTag} />
                         <Typography
                           component="span"
                           variant="body2"
@@ -866,9 +919,16 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
             display: "flex",
             gap: 1,
             flexWrap: "wrap",
+            alignItems: "center",
           }}
         >
-          {whisperSuggestions.map((u) => (
+          <Typography
+            variant="caption"
+            sx={{ color: colors.slate400, fontSize: "0.65rem", mr: 0.5 }}
+          >
+            Tab ↹
+          </Typography>
+          {whisperSuggestions.map((u, i) => (
             <Box
               key={u.id}
               onClick={() => applySuggestion(u.alias)}
@@ -880,8 +940,9 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
                 py: 0.25,
                 cursor: "pointer",
                 borderRadius: 1,
-                backgroundColor: "rgba(255,128,255,0.08)",
-                border: `1px solid ${WHISPER_COLOR}40`,
+                backgroundColor:
+                  i === suggestionIndex ? "rgba(255,128,255,0.25)" : "rgba(255,128,255,0.08)",
+                border: `1px solid ${i === suggestionIndex ? WHISPER_COLOR : `${WHISPER_COLOR}40`}`,
                 "&:hover": { backgroundColor: "rgba(255,128,255,0.18)" },
               }}
             >
@@ -914,27 +975,63 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
             backgroundColor: colors.slate700,
           }}
         >
-          <TextField
-            data-tutorial="shoutbox-input"
-            value={message}
-            onChange={(e) => handleMessageChange(e.target.value)}
-            placeholder={
-              isGuild ? t("placeholder") : isDmTab ? tDm("placeholder") : "/w alias message"
-            }
-            size="small"
-            fullWidth
-            autoComplete="off"
-            inputProps={{ maxLength: isGuild ? 280 : 500 }}
-            sx={{
-              "& .MuiInputBase-root": {
-                fontFamily: "'Courier New', Courier, monospace",
-                fontSize: "0.85rem",
-                backgroundColor: colors.slate700,
-                color: colors.slate100,
-              },
-              "& .MuiOutlinedInput-notchedOutline": { borderColor: colors.slate300 },
-            }}
-          />
+          <Box sx={{ position: "relative" }}>
+            {/* Ghost text showing autocomplete suggestion */}
+            {whisperSuggestions.length > 0 &&
+              (() => {
+                const suggestion = whisperSuggestions[suggestionIndex];
+                const partialMatch = message.match(/^(\/w(?:hisper)?\s+)(\S*)$/i);
+                if (!partialMatch || !suggestion) return null;
+                const prefix = partialMatch[1];
+                const partial = partialMatch[2];
+                const fullAlias = suggestion.alias;
+                if (!fullAlias.toLowerCase().startsWith(partial.toLowerCase())) return null;
+                const ghost = prefix + partial + fullAlias.slice(partial.length) + " ";
+                return (
+                  <Typography
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: 14,
+                      transform: "translateY(-50%)",
+                      fontFamily: "'Courier New', Courier, monospace",
+                      fontSize: "0.85rem",
+                      color: `${WHISPER_COLOR}50`,
+                      pointerEvents: "none",
+                      zIndex: 1,
+                      whiteSpace: "pre",
+                    }}
+                  >
+                    {ghost}
+                  </Typography>
+                );
+              })()}
+            <TextField
+              data-tutorial="shoutbox-input"
+              inputRef={inputRef}
+              value={message}
+              onChange={(e) => handleMessageChange(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={
+                isGuild ? t("placeholder") : isDmTab ? tDm("placeholder") : "/w alias message"
+              }
+              size="small"
+              fullWidth
+              autoComplete="off"
+              inputProps={{ maxLength: isGuild ? 280 : 500 }}
+              sx={{
+                "& .MuiInputBase-root": {
+                  fontFamily: "'Courier New', Courier, monospace",
+                  fontSize: "0.85rem",
+                  backgroundColor: "transparent",
+                  color: colors.slate100,
+                  position: "relative",
+                  zIndex: 2,
+                },
+                "& .MuiOutlinedInput-notchedOutline": { borderColor: colors.slate300 },
+              }}
+            />
+          </Box>
         </Box>
       )}
     </Box>

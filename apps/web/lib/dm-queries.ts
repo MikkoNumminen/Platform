@@ -6,7 +6,7 @@ import { getDemoSessionId } from "@/lib/demo-session";
 
 export interface ConversationSummary {
   id: string;
-  otherUser: { id: string; alias: string; role: string };
+  otherUser: { id: string; alias: string; role: string; developerTag: string | null };
   lastMessage: string | null;
   lastMessageAt: string;
   unreadCount: number;
@@ -19,6 +19,7 @@ export interface DmMessageData {
   senderId: string;
   senderAlias: string;
   senderRole: string;
+  senderDevTag: string | null;
   isMe: boolean;
   createdAt: string;
 }
@@ -38,8 +39,8 @@ export async function getMyConversations(): Promise<ConversationSummary[]> {
     },
     orderBy: { lastMessageAt: "desc" },
     include: {
-      userA: { select: { id: true, alias: true, name: true, role: true } },
-      userB: { select: { id: true, alias: true, name: true, role: true } },
+      userA: { select: { id: true, alias: true, name: true, role: true, developerTag: true } },
+      userB: { select: { id: true, alias: true, name: true, role: true, developerTag: true } },
       messages: {
         orderBy: { createdAt: "desc" },
         take: 1,
@@ -67,6 +68,7 @@ export async function getMyConversations(): Promise<ConversationSummary[]> {
         id: otherUser.id,
         alias: otherUser.alias ?? otherUser.name ?? "Unknown",
         role: otherUser.role,
+        developerTag: otherUser.developerTag,
       },
       lastMessage: conv.messages[0]?.message ?? null,
       lastMessageAt: conv.lastMessageAt.toISOString(),
@@ -107,7 +109,7 @@ export async function getConversationMessages(conversationId: string): Promise<D
     orderBy: { createdAt: "asc" },
     take: DM_LIMIT,
     include: {
-      sender: { select: { id: true, alias: true, name: true, role: true } },
+      sender: { select: { id: true, alias: true, name: true, role: true, developerTag: true } },
     },
   });
 
@@ -117,6 +119,7 @@ export async function getConversationMessages(conversationId: string): Promise<D
     senderId: m.sender.id,
     senderAlias: m.sender.alias ?? m.sender.name ?? "Unknown",
     senderRole: m.sender.role,
+    senderDevTag: m.sender.developerTag,
     isMe: m.sender.id === userId,
     createdAt: m.createdAt.toISOString(),
   }));
@@ -135,7 +138,7 @@ export async function getDmUsers(): Promise<Array<{ id: string; alias: string; r
       role: { not: "pending" },
       email: { not: "demo@platform.app" },
     },
-    select: { id: true, alias: true, name: true, role: true },
+    select: { id: true, alias: true, name: true, role: true, developerTag: true },
     orderBy: { alias: "asc" },
   });
 
