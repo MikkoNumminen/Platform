@@ -75,10 +75,6 @@ export default function CampaignQuestPanel() {
       <Paper
         elevation={6}
         sx={{
-          position: "fixed",
-          bottom: { xs: 8, sm: 16 },
-          right: { xs: 8, sm: 16 },
-          zIndex: 1099,
           width: { xs: 280, sm: 320 },
           maxHeight: expanded ? "80vh" : "auto",
           overflow: expanded ? "auto" : "hidden",

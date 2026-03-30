@@ -30,24 +30,16 @@ jest.mock(
     },
 );
 jest.mock(
-  "@/app/components/TutorialChecklist",
-  () =>
-    function MockChecklist() {
-      return null;
-    },
-);
-jest.mock(
   "@/app/components/TutorialCelebration",
   () =>
     function MockCelebration() {
       return null;
     },
 );
-
 jest.mock(
-  "@/app/components/CampaignQuestPanel",
+  "@/app/components/BottomPanelStack",
   () =>
-    function MockCampaignPanel() {
+    function MockBottomPanelStack() {
       return null;
     },
 );

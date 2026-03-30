@@ -15,9 +15,8 @@ import PromotionGate from "./components/PromotionGate";
 import XpToastProvider from "./components/XpToastProvider";
 import TutorialProvider from "./components/TutorialProvider";
 import TutorialSpotlight from "./components/TutorialSpotlight";
-import TutorialChecklist from "./components/TutorialChecklist";
 import TutorialCelebration from "./components/TutorialCelebration";
-import CampaignQuestPanel from "./components/CampaignQuestPanel";
+import BottomPanelStack from "./components/BottomPanelStack";
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -75,8 +74,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                       <KeyboardShortcuts />
                       <TutorialSpotlight />
                       <TutorialCelebration />
-                      <TutorialChecklist />
-                      <CampaignQuestPanel />
+                      <BottomPanelStack />
                     </TutorialProvider>
                   </XpToastProvider>
                 </SnackbarProvider>
