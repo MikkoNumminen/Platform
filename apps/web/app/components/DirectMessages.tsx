@@ -145,6 +145,7 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
             senderId: "system",
             senderAlias: "System",
             senderRole: "system",
+            senderDevTag: null,
             isMe: false,
             createdAt: new Date().toISOString(),
           },
@@ -167,6 +168,7 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
           senderId: session.user.id,
           senderAlias: alias,
           senderRole: role,
+          senderDevTag: null,
           isMe: true,
           createdAt: new Date().toISOString(),
         };
@@ -198,7 +200,7 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
           setConversations((prev) => [
             {
               id: result.conversationId!,
-              otherUser: targetUser,
+              otherUser: { ...targetUser, developerTag: null },
               lastMessage: whisperMessage,
               lastMessageAt: new Date().toISOString(),
               unreadCount: 0,
@@ -226,7 +228,9 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
         setConversations((prev) => [
           {
             id: result.conversationId!,
-            otherUser: otherUser ?? { id: otherUserId, alias: "Unknown", role: "user" },
+            otherUser: otherUser
+              ? { ...otherUser, developerTag: null }
+              : { id: otherUserId, alias: "Unknown", role: "user", developerTag: null },
             lastMessage: trimmed,
             lastMessageAt: new Date().toISOString(),
             unreadCount: 0,
@@ -247,6 +251,7 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
       senderId: session.user.id,
       senderAlias: alias,
       senderRole: role,
+      senderDevTag: null,
       isMe: true,
       createdAt: new Date().toISOString(),
     };
