@@ -54,13 +54,13 @@ export default function FeedbackClient({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [showSurveyDialog, setShowSurveyDialog] = useState(false);
+  const [surveyRoundId, setSurveyRoundId] = useState<string | null>(null);
   const [expandedRound, setExpandedRound] = useState<string | null>(null);
   const [roundResults, setRoundResults] = useState<Record<string, SurveyResultsData>>({});
   const [loadingResults, setLoadingResults] = useState<string | null>(null);
   const [submittedRounds, setSubmittedRounds] = useState<Set<string>>(new Set());
 
-  const activeRound = rounds.find((r) => r.status === "active") ?? null;
+  const activeRounds = rounds.filter((r) => r.status === "active");
   const closedRounds = rounds.filter((r) => r.status === "closed");
 
   useEffect(() => {
@@ -98,12 +98,10 @@ export default function FeedbackClient({
     });
   };
 
-  const handleSurveyComplete = () => {
-    if (activeRound) {
-      localStorage.setItem(`platform_survey_${activeRound.id}`, "true");
-      setSubmittedRounds((prev) => new Set(prev).add(activeRound.id));
-    }
-    setShowSurveyDialog(false);
+  const handleSurveyComplete = (roundId: string) => {
+    localStorage.setItem(`platform_survey_${roundId}`, "true");
+    setSubmittedRounds((prev) => new Set(prev).add(roundId));
+    setSurveyRoundId(null);
     router.refresh();
   };
 
@@ -190,7 +188,7 @@ export default function FeedbackClient({
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               {isActive && !hasSubmitted && (
-                <Button variant="contained" size="small" onClick={() => setShowSurveyDialog(true)}>
+                <Button variant="contained" size="small" onClick={() => setSurveyRoundId(round.id)}>
                   Take Survey
                 </Button>
               )}
@@ -279,14 +277,14 @@ export default function FeedbackClient({
             size="small"
             startIcon={<AddIcon />}
             onClick={() => setShowCreateDialog(true)}
-            disabled={!!activeRound}
+            disabled={false}
           >
             Create New Round
           </Button>
         </Box>
       )}
 
-      {activeRound && renderRoundCard(activeRound, true)}
+      {activeRounds.map((round) => renderRoundCard(round, true))}
 
       {closedRounds.length > 0 && (
         <Box sx={{ mt: 3 }}>
@@ -329,33 +327,38 @@ export default function FeedbackClient({
       )}
 
       {/* Survey Dialog */}
-      <Dialog
-        open={showSurveyDialog}
-        onClose={() => setShowSurveyDialog(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle
-          sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
-        >
-          {activeRound?.title ?? "Survey"}
-          <IconButton size="small" onClick={() => setShowSurveyDialog(false)}>
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
-          {activeRound?.customQuestions ? (
-            <CustomSurveyForm
-              questions={activeRound.customQuestions as CustomQuestion[]}
-              roundId={activeRound.id}
-              roundTitle={activeRound.title}
-              onComplete={handleSurveyComplete}
-            />
-          ) : (
-            <SurveyForm />
-          )}
-        </DialogContent>
-      </Dialog>
+      {(() => {
+        const selectedRound = rounds.find((r) => r.id === surveyRoundId);
+        return (
+          <Dialog
+            open={!!surveyRoundId}
+            onClose={() => setSurveyRoundId(null)}
+            maxWidth="sm"
+            fullWidth
+          >
+            <DialogTitle
+              sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+            >
+              {selectedRound?.title ?? "Survey"}
+              <IconButton size="small" onClick={() => setSurveyRoundId(null)}>
+                <CloseIcon />
+              </IconButton>
+            </DialogTitle>
+            <DialogContent>
+              {selectedRound?.customQuestions ? (
+                <CustomSurveyForm
+                  questions={selectedRound.customQuestions as CustomQuestion[]}
+                  roundId={selectedRound.id}
+                  roundTitle={selectedRound.title}
+                  onComplete={() => handleSurveyComplete(selectedRound.id)}
+                />
+              ) : (
+                <SurveyForm />
+              )}
+            </DialogContent>
+          </Dialog>
+        );
+      })()}
 
       {/* Create Round Dialog */}
       <CreateRoundDialog open={showCreateDialog} onClose={() => setShowCreateDialog(false)} />

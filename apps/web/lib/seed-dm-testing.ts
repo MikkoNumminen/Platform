@@ -22,17 +22,6 @@ export async function seedDmTestingRound(): Promise<ActionResult> {
       throw new ActionError("permissionDenied", "Superuser only");
     }
 
-    // Check no active round exists
-    const existingActive = await prisma.surveyRound.findFirst({
-      where: { status: "active" },
-    });
-    if (existingActive) {
-      throw new ActionError(
-        "roundAlreadyActive",
-        "Close the current active round before creating a new one",
-      );
-    }
-
     const creatorId = session.user.id;
     const deadline = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 1 week from now
 

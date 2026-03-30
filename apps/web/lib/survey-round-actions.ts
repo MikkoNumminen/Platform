@@ -23,15 +23,6 @@ export const createSurveyRound = guardedAction(
     const validTitle = validateTitle(title);
     const reward = Math.round(Math.max(0, Math.min(xpReward ?? 0, 10000)));
 
-    // Check no other round is active
-    const existing = await prisma.surveyRound.findFirst({ where: { status: "active" } });
-    if (existing) {
-      throw new ActionError(
-        "roundAlreadyActive",
-        "Close the current active round before creating a new one",
-      );
-    }
-
     // Auto-increment round number
     const maxRound = await prisma.surveyRound.aggregate({ _max: { number: true } });
     const nextNumber = (maxRound._max.number ?? 0) + 1;
