@@ -44,6 +44,14 @@ jest.mock(
     },
 );
 
+jest.mock(
+  "@/app/components/CampaignQuestPanel",
+  () =>
+    function MockCampaignPanel() {
+      return null;
+    },
+);
+
 jest.mock("@/app/components/PromotionGate", () => {
   return function MockPromotionGate() {
     return null;
