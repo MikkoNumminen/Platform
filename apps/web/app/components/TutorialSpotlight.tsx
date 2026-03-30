@@ -142,11 +142,13 @@ export default function TutorialSpotlight() {
       >
         <Paper
           elevation={8}
+          onClick={() => anchorEl?.scrollIntoView({ behavior: "smooth", block: "center" })}
           sx={{
             p: 2,
             maxWidth: 320,
             border: `1px solid ${colors.accentBorder}`,
             backgroundColor: colors.backdrop,
+            cursor: "pointer",
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
