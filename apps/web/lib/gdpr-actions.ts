@@ -97,7 +97,13 @@ export async function deleteMyAccount(confirmation: string): Promise<ActionResul
       await tx.shout.deleteMany({ where: { authorId: userId } });
       await tx.issueReport.deleteMany({ where: { authorId: userId } });
 
-      // 6. Clean up rate limit entries
+      // 6. Anonymize DMs — keep conversation for the other participant but scrub sender identity
+      await tx.directMessage.updateMany({
+        where: { senderId: userId },
+        data: { message: "[deleted]" },
+      });
+
+      // 7. Clean up rate limit entries
       await tx.rateLimit.deleteMany({ where: { identifier: userId } });
     });
   });
@@ -117,100 +123,119 @@ export async function exportMyData(): Promise<{ error: string; code: string } | 
 
     const userId = session.user.id;
 
-    const [user, posts, topics, threads, events, shouts, issues, surveys, permissions] =
-      await Promise.all([
-        prisma.user.findFirst({
-          where: { id: userId },
-          select: {
-            id: true,
-            email: true,
-            name: true,
-            alias: true,
-            image: true,
-            avatarUrl: true,
-            bio: true,
-            role: true,
-            createdAt: true,
+    const [
+      user,
+      posts,
+      topics,
+      threads,
+      events,
+      shouts,
+      issues,
+      surveys,
+      permissions,
+      conversations,
+    ] = await Promise.all([
+      prisma.user.findFirst({
+        where: { id: userId },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          alias: true,
+          image: true,
+          avatarUrl: true,
+          bio: true,
+          role: true,
+          createdAt: true,
+        },
+      }),
+      prisma.post.findMany({
+        where: { authorId: userId },
+        select: {
+          id: true,
+          title: true,
+          body: true,
+          pinned: true,
+          createdAt: true,
+          deletedAt: true,
+        },
+      }),
+      prisma.topic.findMany({
+        where: { authorId: userId },
+        select: {
+          id: true,
+          title: true,
+          body: true,
+          pinned: true,
+          locked: true,
+          createdAt: true,
+          deletedAt: true,
+        },
+      }),
+      prisma.thread.findMany({
+        where: { authorId: userId },
+        select: {
+          id: true,
+          body: true,
+          parentType: true,
+          parentId: true,
+          createdAt: true,
+          deletedAt: true,
+        },
+      }),
+      prisma.calendarEvent.findMany({
+        where: { authorId: userId },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          location: true,
+          startTime: true,
+          endTime: true,
+          allDay: true,
+          createdAt: true,
+        },
+      }),
+      prisma.shout.findMany({
+        where: { authorId: userId },
+        select: { id: true, message: true, createdAt: true },
+      }),
+      prisma.issueReport.findMany({
+        where: { authorId: userId },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          url: true,
+          createdAt: true,
+        },
+      }),
+      prisma.surveyResponse.findMany({
+        where: { userId },
+        select: {
+          id: true,
+          conversationStyle: true,
+          features: true,
+          mustHave: true,
+          dealbreaker: true,
+          otherFeedback: true,
+          submittedAt: true,
+        },
+      }),
+      prisma.userPermission.findMany({
+        where: { userId },
+        include: { permission: { select: { key: true, description: true } } },
+      }),
+      prisma.conversation.findMany({
+        where: { OR: [{ participantA: userId }, { participantB: userId }] },
+        include: {
+          messages: {
+            select: { id: true, message: true, senderId: true, createdAt: true },
+            orderBy: { createdAt: "asc" },
           },
-        }),
-        prisma.post.findMany({
-          where: { authorId: userId },
-          select: {
-            id: true,
-            title: true,
-            body: true,
-            pinned: true,
-            createdAt: true,
-            deletedAt: true,
-          },
-        }),
-        prisma.topic.findMany({
-          where: { authorId: userId },
-          select: {
-            id: true,
-            title: true,
-            body: true,
-            pinned: true,
-            locked: true,
-            createdAt: true,
-            deletedAt: true,
-          },
-        }),
-        prisma.thread.findMany({
-          where: { authorId: userId },
-          select: {
-            id: true,
-            body: true,
-            parentType: true,
-            parentId: true,
-            createdAt: true,
-            deletedAt: true,
-          },
-        }),
-        prisma.calendarEvent.findMany({
-          where: { authorId: userId },
-          select: {
-            id: true,
-            title: true,
-            description: true,
-            location: true,
-            startTime: true,
-            endTime: true,
-            allDay: true,
-            createdAt: true,
-          },
-        }),
-        prisma.shout.findMany({
-          where: { authorId: userId },
-          select: { id: true, message: true, createdAt: true },
-        }),
-        prisma.issueReport.findMany({
-          where: { authorId: userId },
-          select: {
-            id: true,
-            title: true,
-            description: true,
-            url: true,
-            createdAt: true,
-          },
-        }),
-        prisma.surveyResponse.findMany({
-          where: { userId },
-          select: {
-            id: true,
-            conversationStyle: true,
-            features: true,
-            mustHave: true,
-            dealbreaker: true,
-            otherFeedback: true,
-            submittedAt: true,
-          },
-        }),
-        prisma.userPermission.findMany({
-          where: { userId },
-          include: { permission: { select: { key: true, description: true } } },
-        }),
-      ]);
+        },
+      }),
+    ]);
 
     if (!user) {
       return { error: "User not found", code: "notFound" };
@@ -230,6 +255,16 @@ export async function exportMyData(): Promise<{ error: string; code: string } | 
       shoutboxMessages: shouts,
       issueReports: issues,
       surveyResponses: surveys,
+      directMessages: conversations.map((c) => ({
+        conversationId: c.id,
+        createdAt: c.createdAt,
+        messages: c.messages.map((m) => ({
+          id: m.id,
+          message: m.message,
+          sentByMe: m.senderId === userId,
+          createdAt: m.createdAt,
+        })),
+      })),
     };
 
     await logAudit({

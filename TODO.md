@@ -23,12 +23,12 @@
 > Critical gaps in GDPR compliance and privacy policy.
 
 #### 🔴 Critical (fix before scaling)
-- [ ] 🟣 Add DMs to GDPR data export — exportMyData() is missing Conversation and DirectMessage records
-- [ ] 🔵 Update privacy policy to mention private messaging — data collection, storage, deletion, no encryption at rest
-- [ ] 🟣 Implement soft-delete for DMs — add deletedAt, anonymize on account deletion instead of CASCADE hard-delete (other participant loses conversation history)
+- [ ] 🟣 Add DMs to GDPR data export — exportMyData() is missing Conversation and DirectMessage records — Claude 3
+- [ ] 🔵 Update privacy policy to mention private messaging — Claude 3
+- [ ] 🟣 Implement soft-delete for DMs — anonymize on account deletion instead of CASCADE hard-delete — Claude 3
 
 #### 🟡 Important
-- [ ] 🟣 Finish Privacy Inbox — isPrivacy field exists but is never set to true; implement superuser-only access or remove the field
+- [ ] 🔵 Remove unused isPrivacy field from Conversation model — dead code, messaging lives in shoutbox
 - [ ] 🔵 Add DM audit logging — log who accessed what conversation (GDPR accountability)
 - [ ] 🔵 Define DM retention policy — no auto-expiry exists; decide on retention period or keep indefinitely
 

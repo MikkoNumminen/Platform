@@ -14,6 +14,7 @@ const mocks = {
     threadUpdateMany: jest.fn(),
     shoutDeleteMany: jest.fn(),
     issueDeleteMany: jest.fn(),
+    dmUpdateMany: jest.fn(),
     rateLimitDeleteMany: jest.fn(),
   },
   // Direct prisma mocks (exportMyData)
@@ -26,6 +27,7 @@ const mocks = {
   issueFindMany: jest.fn(),
   surveyFindMany: jest.fn(),
   permissionFindMany: jest.fn(),
+  conversationFindMany: jest.fn(),
 };
 
 jest.mock("@/auth", () => ({
@@ -50,6 +52,7 @@ jest.mock("@/lib/db", () => {
     thread: { updateMany: (...a: unknown[]) => mocks.tx.threadUpdateMany(...a) },
     shout: { deleteMany: (...a: unknown[]) => mocks.tx.shoutDeleteMany(...a) },
     issueReport: { deleteMany: (...a: unknown[]) => mocks.tx.issueDeleteMany(...a) },
+    directMessage: { updateMany: (...a: unknown[]) => mocks.tx.dmUpdateMany(...a) },
     rateLimit: { deleteMany: (...a: unknown[]) => mocks.tx.rateLimitDeleteMany(...a) },
   };
   return {
@@ -63,6 +66,7 @@ jest.mock("@/lib/db", () => {
       issueReport: { findMany: (...a: unknown[]) => mocks.issueFindMany(...a) },
       surveyResponse: { findMany: (...a: unknown[]) => mocks.surveyFindMany(...a) },
       userPermission: { findMany: (...a: unknown[]) => mocks.permissionFindMany(...a) },
+      conversation: { findMany: (...a: unknown[]) => mocks.conversationFindMany(...a) },
       $transaction: async (fn: (tx: typeof txObj) => Promise<void>) => {
         mocks.tx.userFindFirst.mockResolvedValue({ id: "user-1", email: "test@example.com" });
         await fn(txObj);
@@ -219,6 +223,7 @@ describe("exportMyData", () => {
     mocks.issueFindMany.mockResolvedValue([]);
     mocks.surveyFindMany.mockResolvedValue([]);
     mocks.permissionFindMany.mockResolvedValue([]);
+    mocks.conversationFindMany.mockResolvedValue([]);
   });
 
   test("returns JSON export of all user data", async () => {

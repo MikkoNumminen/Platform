@@ -23,7 +23,7 @@ export default function PrivacyPolicyPage() {
               </Ul>
               <P>
                 We store content you create: posts, forum topics, comments, shoutbox messages,
-                calendar events, issue reports, and survey responses.
+                calendar events, issue reports, survey responses, and private messages.
               </P>
             </Section>
 
@@ -68,7 +68,24 @@ export default function PrivacyPolicyPage() {
               </Ul>
             </Section>
 
-            <Section title="5a. Demo mode">
+            <Section title="5a. Private messaging">
+              <P>
+                The platform provides a private messaging feature. Messages are stored as plain text
+                in the database and are visible only to the two participants of each conversation.
+              </P>
+              <Ul>
+                <Li>Messages are not encrypted at rest — they are protected by access controls</Li>
+                <Li>Only conversation participants can read messages</Li>
+                <Li>
+                  If you delete your account, your sent messages are anonymized (replaced with
+                  &quot;[deleted]&quot;) — the conversation is preserved for the other participant
+                </Li>
+                <Li>Private messages are included in your data export (Account Settings)</Li>
+                <Li>Platform administrators cannot read private messages</Li>
+              </Ul>
+            </Section>
+
+            <Section title="5b. Demo mode">
               <P>
                 The platform offers a zero-credential demo mode for visitors. Demo sessions create
                 an isolated sandbox with mock data. Demo data is:

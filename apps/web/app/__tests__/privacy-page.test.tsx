@@ -20,7 +20,8 @@ describe("PrivacyPolicyPage", () => {
     expect(screen.getByText("3. Cookies and local storage")).toBeInTheDocument();
     expect(screen.getByText("4. Third-party sharing")).toBeInTheDocument();
     expect(screen.getByText("5. Data retention")).toBeInTheDocument();
-    expect(screen.getByText("5a. Demo mode")).toBeInTheDocument();
+    expect(screen.getByText("5a. Private messaging")).toBeInTheDocument();
+    expect(screen.getByText("5b. Demo mode")).toBeInTheDocument();
     expect(screen.getByText("6. Your rights (GDPR)")).toBeInTheDocument();
     expect(screen.getByText("7. Security")).toBeInTheDocument();
     expect(screen.getByText("8. Breach notification")).toBeInTheDocument();
