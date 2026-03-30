@@ -82,9 +82,9 @@ packages/config/ — Shared types and config (@platform/config)
 
 ### GDPR Compliance
 - **Account page** — Profile with editable alias, developer tag badge, development interest toggle, gamification stats
-- **Account deletion** — Users can delete their account from `/account`, scrubbing all PII and anonymizing authored content
-- **Data export** — Users can download all their data as JSON from `/account`
-- **Privacy policy** — Full policy at `/privacy` covering data collection, cookies, retention, user rights, breach notification, data processing legal bases, demo mode handling, and contact email
+- **Account deletion** — Users can delete their account from `/account`, scrubbing all PII, anonymizing authored content, and replacing sent DMs with `[deleted]`
+- **Data export** — Users can download all their data as JSON from `/account` (profile, posts, threads, events, shouts, issues, surveys, DM conversations)
+- **Privacy policy** — Full policy at `/privacy` covering data collection, cookies, retention, private messaging, user rights, breach notification, data processing legal bases, demo mode handling, and contact email
 - **Soft-delete cleanup** — Weekly cron job purges records deleted more than 30 days ago
 
 ### Shared Components
@@ -132,7 +132,7 @@ npx turbo run build --filter=web # Production build
 
 ## Testing
 
-1100+ tests across 130+ test suites with accessibility checks (jest-axe). Playwright E2E framework configured for critical user journeys.
+1117+ tests across 131+ test suites with accessibility checks (jest-axe). Playwright E2E framework configured for critical user journeys.
 
 ```bash
 npx turbo run test --filter=web           # All unit/integration tests
