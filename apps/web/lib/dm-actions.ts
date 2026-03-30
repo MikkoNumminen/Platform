@@ -87,7 +87,13 @@ export async function startConversation(
 
   // Verify other user exists and is in same session
   const otherUser = await prisma.user.findFirst({
-    where: { id: otherUserId, sessionId, deletedAt: null, role: { not: "pending" } },
+    where: {
+      id: otherUserId,
+      sessionId,
+      deletedAt: null,
+      role: { not: "pending" },
+      email: { not: "demo@platform.app" },
+    },
   });
   if (!otherUser) {
     return { error: "User not found", code: "invalidInput" };
