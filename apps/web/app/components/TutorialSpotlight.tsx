@@ -18,6 +18,8 @@ const STEP_MENU_ITEMS: Record<string, string> = {
   view_survey_results: '[data-tutorial="nav-survey-results"]',
   view_gamification_dashboard: '[data-tutorial="nav-gamification"]',
   manage_users: '[data-tutorial="nav-manage-users"]',
+  approve_user: '[data-tutorial="nav-manage-users"]',
+  edit_permissions: '[data-tutorial="nav-manage-users"]',
 };
 
 export default function TutorialSpotlight() {
