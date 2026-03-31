@@ -28,8 +28,10 @@ import { emitTutorialEvent } from "./TutorialProvider";
 import { DEVELOPER_TAG_ICONS, DEVELOPER_TAG_LABELS } from "@/lib/developer-config";
 import { completeWhisperQuest } from "@/lib/campaign-completion";
 
-function DevTagIcon({ tag }: { tag: string | null }) {
+function DevTagIcon({ tag, role }: { tag: string | null; role?: string }) {
   if (!tag || !DEVELOPER_TAG_ICONS[tag]) return null;
+  // Superuser already has the star icon — don't show a second icon
+  if (role === "superuser") return null;
   return (
     <Tooltip title={DEVELOPER_TAG_LABELS[tag] ?? tag} arrow>
       <Typography
@@ -768,7 +770,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
                         />
                       </Tooltip>
                     )}
-                    <DevTagIcon tag={shout.developerTag} />
+                    <DevTagIcon tag={shout.developerTag} role={shout.role} />
                     <Typography
                       component="span"
                       variant="body2"
@@ -888,7 +890,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
                             />
                           </Tooltip>
                         )}
-                        <DevTagIcon tag={msg.senderDevTag} />
+                        <DevTagIcon tag={msg.senderDevTag} role={msg.senderRole} />
                         <Typography
                           component="span"
                           variant="body2"
@@ -913,7 +915,10 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
                             />
                           </Tooltip>
                         )}
-                        <DevTagIcon tag={activeConversation?.otherUser.developerTag ?? null} />
+                        <DevTagIcon
+                          tag={activeConversation?.otherUser.developerTag ?? null}
+                          role={activeConversation?.otherUser.role}
+                        />
                         <Typography
                           component="span"
                           variant="body2"
@@ -942,7 +947,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
                             />
                           </Tooltip>
                         )}
-                        <DevTagIcon tag={msg.senderDevTag} />
+                        <DevTagIcon tag={msg.senderDevTag} role={msg.senderRole} />
                         <Typography
                           component="span"
                           variant="body2"
