@@ -27,12 +27,9 @@ interface UserPermissionEditorProps {
 
 const PERMISSION_GROUPS: Record<string, PermissionKey[]> = {
   Admin: ["admin:users", "admin:settings"],
-  Boards: ["board:create", "board:edit", "board:delete"],
-  Posts: ["post:create", "post:edit", "post:delete"],
-  Forums: ["forum:create", "forum:edit", "forum:delete"],
-  Topics: ["topic:create", "topic:edit", "topic:delete"],
-  Threads: ["thread:create", "thread:edit", "thread:delete"],
-  Calendar: ["event:create", "event:edit", "event:delete"],
+  Issues: ["issue:resolve"],
+  Quests: ["quest:manage", "quest:view"],
+  Messaging: ["dm:send"],
   Survey: ["survey:results"],
 };
 

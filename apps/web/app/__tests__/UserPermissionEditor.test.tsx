@@ -84,8 +84,8 @@ describe("UserPermissionEditor", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Admin")).toBeInTheDocument();
-      expect(screen.getByText("Boards")).toBeInTheDocument();
-      expect(screen.getByText("Posts")).toBeInTheDocument();
+      expect(screen.getByText("Issues")).toBeInTheDocument();
+      expect(screen.getByText("Messaging")).toBeInTheDocument();
     });
   });
 
@@ -133,8 +133,8 @@ describe("UserPermissionEditor", () => {
     await userEvent.click(screen.getByLabelText("Toggle permissions"));
 
     await waitFor(() => {
-      // "user" role should have some permissions like post:create
-      expect(screen.getByText(/Create posts/i)).toBeInTheDocument();
+      // "user" role should have dm:send permission
+      expect(screen.getByText(/Send direct messages/i)).toBeInTheDocument();
     });
   });
 });
