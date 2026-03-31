@@ -53,7 +53,10 @@ export default function CampaignQuestPanel() {
       .finally(() => setLoaded(true));
   }, [session?.user]);
 
-  if (!loaded || !campaign) return null;
+  const isDemoUser = Boolean(
+    (session?.user as { demoSessionId?: string } | undefined)?.demoSessionId,
+  );
+  if (!loaded || !campaign || isDemoUser) return null;
 
   const completedCount = campaign.quests.filter((q) => q.status === "completed").length;
   const totalCount = campaign.quests.length;
