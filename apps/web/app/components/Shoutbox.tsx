@@ -62,13 +62,21 @@ interface ShoutboxProps {
 
 type DmUser = { id: string; alias: string; role: string };
 
-const SYSTEM_MOTD = [
-  {
-    label: "[System]",
-    text: "Welcome. Type /w alias message to whisper.",
-    color: "warning" as const,
-  },
+const SYSTEM_MOTD = [{ label: "[System]", text: "Welcome. Type /help for commands." }];
+
+const _HELP_LINES = [
+  { label: "[System]", text: "Available commands:" },
+  { label: "/w", text: "alias message — whisper a player" },
+  { label: "/whisper", text: "alias message — same as /w" },
+  { label: "/help", text: "— show this help (only you can see this)" },
+  { label: "", text: "" },
+  { label: "Tip:", text: "Tab key autocompletes the alias when typing /w" },
 ];
+
+interface SystemLine {
+  label: string;
+  text: string;
+}
 
 // "guild" = shoutbox, string ID = conversation, "new:userId" = new DM
 type ActiveTab = "guild" | string;
@@ -97,6 +105,7 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [whisperSuggestions, setWhisperSuggestions] = useState<DmUser[]>([]);
+  const [localSystemMsgs, setLocalSystemMsgs] = useState<SystemLine[]>([]);
   const [suggestionIndex, setSuggestionIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -134,6 +143,7 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
   const openConversation = async (conversationId: string) => {
     setActiveTab(conversationId);
     setShowUserPicker(false);
+    setLocalSystemMsgs([]);
     const msgs = await getConversationMessages(conversationId);
     setDmMessages(msgs);
     setConversations((prev) =>
@@ -230,6 +240,14 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
     const trimmed = message.trim();
     const alias = session.user.alias ?? session.user.name ?? "Unknown";
     const role = (session.user as { role?: string })?.role ?? "user";
+
+    // /help — client-only, shows commands to the user
+    if (/^\/help$/i.test(trimmed)) {
+      setLocalSystemMsgs((prev) => [...prev, ...HELP_LINES]);
+      setMessage("");
+      setWhisperSuggestions([]);
+      return;
+    }
 
     // Parse /w command from any tab
     const whisperMatch = trimmed.match(/^\/w(?:hisper)?\s+(\S+)\s+(.+)$/i);
@@ -730,6 +748,42 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
                 );
               })
             )}
+            {/* Local system messages (e.g. /help output) — only visible to this user */}
+            {localSystemMsgs.map((line, i) =>
+              !line.label && !line.text ? (
+                <Box key={`sys-${i}`} sx={{ height: 8 }} />
+              ) : (
+                <Box key={`sys-${i}`} sx={{ display: "flex", gap: 0.75, lineHeight: 1.6 }}>
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    sx={{
+                      color:
+                        line.label === "[System]" || line.label === "Tip:"
+                          ? colors.warning
+                          : WHISPER_COLOR,
+                      fontFamily: "inherit",
+                      fontWeight: 700,
+                      flexShrink: 0,
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    {line.label}
+                  </Typography>
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    sx={{
+                      color: line.label === "Tip:" ? colors.slate400 : colors.slate100,
+                      fontFamily: "inherit",
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    {line.text}
+                  </Typography>
+                </Box>
+              ),
+            )}
           </>
         ) : isDmTab ? (
           /* DM conversation content */
@@ -906,6 +960,42 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
                   </Box>
                 );
               })
+            )}
+            {/* Local system messages (e.g. /help output) */}
+            {localSystemMsgs.map((line, i) =>
+              !line.label && !line.text ? (
+                <Box key={`sys-dm-${i}`} sx={{ height: 8 }} />
+              ) : (
+                <Box key={`sys-dm-${i}`} sx={{ display: "flex", gap: 0.75, lineHeight: 1.6 }}>
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    sx={{
+                      color:
+                        line.label === "[System]" || line.label === "Tip:"
+                          ? colors.warning
+                          : WHISPER_COLOR,
+                      fontFamily: "inherit",
+                      fontWeight: 700,
+                      flexShrink: 0,
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    {line.label}
+                  </Typography>
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    sx={{
+                      color: line.label === "Tip:" ? colors.slate400 : colors.slate100,
+                      fontFamily: "inherit",
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    {line.text}
+                  </Typography>
+                </Box>
+              ),
             )}
           </>
         ) : null}
