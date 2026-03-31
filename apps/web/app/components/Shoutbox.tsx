@@ -120,10 +120,8 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
   const isDmTab = !isGuild && activeTab !== "picker";
 
   const userRole = (session?.user as { role?: string })?.role;
-  const canChangeMotd = userRole === "superuser";
-  // Architect check is done server-side; for /help display we also check client-side
-  // but developerTag isn't in session — so we show /motd for superuser always,
-  // architects will see it work even if not shown in /help
+  const userDevTag = (session?.user as { developerTag?: string | null })?.developerTag;
+  const canChangeMotd = userRole === "superuser" || userDevTag === "architect";
 
   const [currentMotd, setCurrentMotd] = useState(motd);
 

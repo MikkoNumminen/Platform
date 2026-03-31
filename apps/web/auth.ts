@@ -115,6 +115,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.userId = dbUser.id;
         token.alias = dbUser.alias;
         token.role = dbUser.role;
+        token.developerTag = dbUser.developerTag;
         token.hasSeenPromotion = dbUser.hasSeenPromotion;
         token.permissionsVersion = dbUser.permissionsVersion;
         const overrides = dbUser.permissions.map((up) => ({
@@ -137,6 +138,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             id: true,
             alias: true,
             role: true,
+            developerTag: true,
             hasSeenPromotion: true,
             permissionsVersion: true,
           },
@@ -150,6 +152,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         token.alias = dbUser.alias;
+        token.developerTag = dbUser.developerTag;
         token.hasSeenPromotion = dbUser.hasSeenPromotion;
 
         if (dbUser.permissionsVersion !== token.permissionsVersion || dbUser.role !== token.role) {
@@ -185,6 +188,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (token.role) session.user.role = token.role;
       session.user.hasSeenPromotion = token.hasSeenPromotion ?? true;
       if (token.permissions) session.user.permissions = token.permissions;
+      session.user.developerTag = token.developerTag ?? null;
       if (token.demoSessionId) session.user.demoSessionId = token.demoSessionId;
       return session;
     },

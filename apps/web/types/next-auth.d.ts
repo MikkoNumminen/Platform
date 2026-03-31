@@ -5,6 +5,7 @@ declare module "next-auth" {
   interface User {
     alias?: string | null;
     role?: string;
+    developerTag?: string | null;
     hasSeenPromotion?: boolean;
     permissions?: Record<string, boolean>;
     demoSessionId?: string;
@@ -18,6 +19,7 @@ declare module "next-auth" {
       image?: string | null;
       alias?: string | null;
       role?: string;
+      developerTag?: string | null;
       hasSeenPromotion?: boolean;
       permissions?: Record<string, boolean>;
       demoSessionId?: string;
@@ -30,6 +32,7 @@ declare module "next-auth/jwt" {
     userId?: string;
     alias?: string | null;
     role?: string;
+    developerTag?: string | null;
     hasSeenPromotion?: boolean;
     permissionsVersion?: number;
     permissions?: Record<string, boolean>;
