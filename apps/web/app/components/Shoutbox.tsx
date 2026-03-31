@@ -662,7 +662,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
             fontSize: "0.75rem",
           }}
         >
-          [System]
+          [MOTD]
         </Typography>
         <Typography
           component="span"
