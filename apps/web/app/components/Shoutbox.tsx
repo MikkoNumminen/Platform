@@ -26,6 +26,7 @@ import type { ConversationSummary, DmMessageData } from "@/lib/dm-queries";
 import { useXpToast } from "./XpToastProvider";
 import { emitTutorialEvent } from "./TutorialProvider";
 import { DEVELOPER_TAG_ICONS, DEVELOPER_TAG_LABELS } from "@/lib/developer-config";
+import { completeWhisperQuest } from "@/lib/campaign-completion";
 
 function DevTagIcon({ tag }: { tag: string | null }) {
   if (!tag || !DEVELOPER_TAG_ICONS[tag]) return null;
@@ -346,6 +347,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
           setDmMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
         } else {
           onAction();
+          completeWhisperQuest();
           setConversations((prev) =>
             prev.map((c) =>
               c.id === existing.id
@@ -358,6 +360,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
         const result = await startConversation(targetUser.id, whisperMessage);
         if (result?.conversationId) {
           onAction();
+          completeWhisperQuest();
           setConversations((prev) => [
             {
               id: result.conversationId!,
@@ -638,6 +641,38 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
         )}
       </Box>
 
+      {/* Pinned MOTD */}
+      <Box
+        sx={{
+          px: 1.5,
+          py: 0.5,
+          borderBottom: `1px solid ${colors.slate300}`,
+          backgroundColor: colors.slate700,
+          display: "flex",
+          gap: 0.75,
+        }}
+      >
+        <Typography
+          component="span"
+          variant="body2"
+          sx={{
+            color: colors.warning,
+            fontFamily: "inherit",
+            fontWeight: 700,
+            fontSize: "0.75rem",
+          }}
+        >
+          [System]
+        </Typography>
+        <Typography
+          component="span"
+          variant="body2"
+          sx={{ color: colors.slate400, fontFamily: "inherit", fontSize: "0.75rem" }}
+        >
+          {currentMotd}
+        </Typography>
+      </Box>
+
       {/* Content area */}
       <Box
         ref={scrollRef}
@@ -699,27 +734,6 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
         ) : isGuild ? (
           /* Guild (shoutbox) content */
           <>
-            <Box sx={{ display: "flex", gap: 0.75, lineHeight: 1.6, mb: 0.5 }}>
-              <Typography
-                component="span"
-                variant="body2"
-                sx={{
-                  color: colors.warning,
-                  fontFamily: "inherit",
-                  fontWeight: 700,
-                  fontSize: "0.75rem",
-                }}
-              >
-                [System]
-              </Typography>
-              <Typography
-                component="span"
-                variant="body2"
-                sx={{ color: colors.slate400, fontFamily: "inherit", fontSize: "0.75rem" }}
-              >
-                {currentMotd}
-              </Typography>
-            </Box>
             {shouts.length === 0 ? (
               <Typography
                 variant="body2"
@@ -827,27 +841,6 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
         ) : isDmTab ? (
           /* DM conversation content */
           <>
-            <Box sx={{ display: "flex", gap: 0.75, lineHeight: 1.6, mb: 0.5 }}>
-              <Typography
-                component="span"
-                variant="body2"
-                sx={{
-                  color: colors.warning,
-                  fontFamily: "inherit",
-                  fontWeight: 700,
-                  fontSize: "0.75rem",
-                }}
-              >
-                [System]
-              </Typography>
-              <Typography
-                component="span"
-                variant="body2"
-                sx={{ color: colors.slate400, fontFamily: "inherit", fontSize: "0.75rem" }}
-              >
-                {currentMotd}
-              </Typography>
-            </Box>
             {dmMessages.length === 0 ? (
               <Typography
                 variant="body2"
