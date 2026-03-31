@@ -243,7 +243,7 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
 
     // /help — client-only, shows commands to the user
     if (/^\/help$/i.test(trimmed)) {
-      setLocalSystemMsgs((prev) => [...prev, ...HELP_LINES]);
+      setLocalSystemMsgs((prev) => [...prev, ..._HELP_LINES]);
       setMessage("");
       setWhisperSuggestions([]);
       return;
