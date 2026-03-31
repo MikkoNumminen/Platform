@@ -89,7 +89,7 @@
     "bannerMessage": "You are in demo mode. All data is isolated and temporary.",
     "modeIndicator": "DEMO",
     "welcomeTitle": "Welcome to the Demo",
-    "welcomeBody": "You're exploring the platform as a superuser with full access. Try the shoutbox, check quests, browse the calendar, manage users — everything is live with sample data. Your session is isolated and temporary.",
+    "welcomeBody": "You're exploring the platform as a superuser with full access. Try the shoutbox, check quests, send messages, manage users — everything is live with sample data. Your session is isolated and temporary.",
     "welcomeStart": "Let's Go"
   },
   "feedback": {
