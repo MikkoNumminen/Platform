@@ -59,6 +59,9 @@ export default async function AdminUsersPage() {
                 <TableCell sx={{ color: colors.slate400, borderColor: colors.slate300 }}>
                   Joined
                 </TableCell>
+                <TableCell
+                  sx={{ color: colors.slate400, borderColor: colors.slate300, width: 40 }}
+                />
               </TableRow>
             </TableHead>
             <TableBody>
@@ -128,9 +131,10 @@ export default async function AdminUsersPage() {
                         {user.createdAt.toLocaleDateString()}
                       </Typography>
                     </TableCell>
+                    <TableCell sx={{ borderColor: colors.slate300, p: 0 }} />
                   </TableRow>
                   <TableRow>
-                    <TableCell colSpan={5} sx={{ borderColor: colors.slate300, py: 0, px: 2 }}>
+                    <TableCell colSpan={6} sx={{ borderColor: colors.slate300, py: 0, px: 2 }}>
                       <UserPermissionEditor
                         userId={user.id}
                         userRole={user.role}

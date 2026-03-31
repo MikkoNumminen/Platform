@@ -23,7 +23,7 @@ describe("UserPermissionEditor", () => {
     mockUpdatePermissions.mockResolvedValue(undefined);
   });
 
-  test("renders toggle button", () => {
+  test("renders permissions toggle", () => {
     render(
       <UserPermissionEditor
         userId="u1"
@@ -35,7 +35,7 @@ describe("UserPermissionEditor", () => {
     expect(screen.getByLabelText("Toggle permissions")).toBeInTheDocument();
   });
 
-  test("toggle button is disabled when isSelf", () => {
+  test("toggle is dimmed when isSelf", () => {
     render(
       <UserPermissionEditor
         userId="u1"
@@ -44,10 +44,11 @@ describe("UserPermissionEditor", () => {
         initialHasOverrides={false}
       />,
     );
-    expect(screen.getByLabelText("Toggle permissions")).toBeDisabled();
+    const toggle = screen.getByLabelText("Toggle permissions");
+    expect(toggle).toHaveStyle("opacity: 0.4");
   });
 
-  test("shows Custom permissions chip when initialHasOverrides is true", () => {
+  test("shows custom chip when initialHasOverrides is true", () => {
     render(
       <UserPermissionEditor
         userId="u1"
@@ -56,7 +57,7 @@ describe("UserPermissionEditor", () => {
         initialHasOverrides={true}
       />,
     );
-    expect(screen.getByText("Custom permissions")).toBeInTheDocument();
+    expect(screen.getByText(/override/i)).toBeInTheDocument();
   });
 
   test("does not show Custom permissions chip when no overrides", () => {
@@ -68,7 +69,7 @@ describe("UserPermissionEditor", () => {
         initialHasOverrides={false}
       />,
     );
-    expect(screen.queryByText("Custom permissions")).not.toBeInTheDocument();
+    expect(screen.queryByText(/override/i)).not.toBeInTheDocument();
   });
 
   test("expands permission groups on toggle click", async () => {

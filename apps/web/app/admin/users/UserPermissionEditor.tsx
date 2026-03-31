@@ -1,18 +1,8 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
-import {
-  Box,
-  Button,
-  Checkbox,
-  Chip,
-  Collapse,
-  FormControlLabel,
-  IconButton,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Checkbox, Chip, Collapse, FormControlLabel, Typography } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { PERMISSIONS, resolvePermissions, type PermissionKey } from "@/lib/permissions";
 import { fetchUserPermissionOverrides, updateUserPermissions } from "@/lib/user-actions";
 import { colors } from "../../styles";
@@ -66,10 +56,8 @@ export default function UserPermissionEditor({
       const currentOverride = prev[key];
 
       if (currentOverride === null || currentOverride === undefined) {
-        // No override yet — set to opposite of role default
         return { ...prev, [key]: !roleDefault };
       }
-      // Has override — remove it (revert to role default)
       const next = { ...prev };
       delete next[key];
       return next;
@@ -88,35 +76,54 @@ export default function UserPermissionEditor({
     });
   };
 
-  const hasChanges = Object.keys(overrides).some(
-    (key) => overrides[key] !== null && overrides[key] !== undefined,
-  );
+  const overrideCount = Object.values(overrides).filter(
+    (v) => v !== null && v !== undefined,
+  ).length;
+
+  const hasChanges = overrideCount > 0;
 
   return (
-    <Box data-tutorial="permission-editor" sx={{ mt: 0.5 }}>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <IconButton
-          size="small"
-          onClick={() => setOpen(!open)}
-          disabled={isSelf}
-          sx={{ color: colors.slate400 }}
-          aria-label="Toggle permissions"
-        >
-          {open ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
-        </IconButton>
+    <Box data-tutorial="permission-editor">
+      {/* Clickable trigger bar */}
+      <Box
+        onClick={isSelf ? undefined : () => setOpen(!open)}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 1,
+          py: 0.5,
+          cursor: isSelf ? "default" : "pointer",
+          opacity: isSelf ? 0.4 : 0.7,
+          "&:hover": isSelf ? {} : { opacity: 1 },
+          transition: "opacity 0.2s",
+        }}
+        aria-label="Toggle permissions"
+      >
         {hasOverrides && (
           <Chip
-            label="Custom permissions"
+            label={`${overrideCount || "?"} override${overrideCount !== 1 ? "s" : ""}`}
             size="small"
             sx={{
-              backgroundColor: colors.warning,
-              color: colors.slate700,
+              backgroundColor: "transparent",
+              color: colors.warning,
+              border: `1px solid ${colors.warning}`,
               fontWeight: 600,
-              fontSize: "0.7rem",
+              fontSize: "0.6rem",
+              height: 18,
             }}
           />
         )}
+        <ExpandMoreIcon
+          sx={{
+            color: colors.slate400,
+            fontSize: 18,
+            transition: "transform 0.2s",
+            transform: open ? "rotate(180deg)" : "rotate(0deg)",
+          }}
+        />
       </Box>
+
       <Collapse in={open}>
         <Box
           sx={{
