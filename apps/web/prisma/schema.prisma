@@ -513,6 +513,14 @@ model AuditLog {
   @@index([sessionId])
 }
 
+// ─── Platform Settings ────────────────────────────────────────────────────
+
+model PlatformSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
 // ─── Direct Messages ──────────────────────────────────────────────────────
 
 model Conversation {

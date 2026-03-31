@@ -11,6 +11,7 @@ import { getRecentCommits } from "@/lib/github-commits";
 import { getMyCustomQuests } from "@/lib/custom-quest-queries";
 import { getMyConversations } from "@/lib/dm-queries";
 import { getUserSurveyStatus } from "@/lib/survey-user-queries";
+import { getMotd } from "@/lib/setting-queries";
 import { auth } from "@/auth";
 
 export const dynamic = "force-dynamic";
@@ -18,10 +19,11 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const session = await auth();
   const userId = session?.user?.id;
-  const [shouts, commits, conversations] = await Promise.all([
+  const [shouts, commits, conversations, motd] = await Promise.all([
     userId ? getRecentShouts() : Promise.resolve([]),
     getRecentCommits(),
     userId ? getMyConversations() : Promise.resolve([]),
+    getMotd(),
   ]);
 
   let surveyCompleted = false;
@@ -63,7 +65,7 @@ export default async function Home() {
       <TopBar title="Platform" />
       {session?.user ? (
         <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-          <Shoutbox initialShouts={shouts} initialConversations={conversations} />
+          <Shoutbox initialShouts={shouts} initialConversations={conversations} motd={motd} />
           <Box sx={{ mt: 2 }}>
             <DevLog commits={commits} />
           </Box>

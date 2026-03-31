@@ -30,6 +30,10 @@ jest.mock("@/lib/dm-queries", () => ({
   getDmUsers: jest.fn().mockResolvedValue([]),
 }));
 
+jest.mock("@/lib/setting-actions", () => ({
+  setMotd: jest.fn().mockResolvedValue(undefined),
+}));
+
 import Shoutbox from "@/app/components/Shoutbox";
 import type { ShoutData } from "@/lib/shout-queries";
 
@@ -63,7 +67,7 @@ describe("Shoutbox", () => {
   });
 
   test("renders shout messages with IRC format", () => {
-    render(<Shoutbox initialShouts={sampleShouts} initialConversations={[]} />);
+    render(<Shoutbox initialShouts={sampleShouts} initialConversations={[]} motd="Welcome." />);
     expect(screen.getByText("<Alice>")).toBeInTheDocument();
     expect(screen.getByText("Hello!")).toBeInTheDocument();
     expect(screen.getByText("<Bob>")).toBeInTheDocument();
@@ -71,23 +75,23 @@ describe("Shoutbox", () => {
   });
 
   test("renders empty state when no shouts", () => {
-    render(<Shoutbox initialShouts={[]} initialConversations={[]} />);
+    render(<Shoutbox initialShouts={[]} initialConversations={[]} motd="Welcome." />);
     expect(screen.getByText(/no messages yet/i)).toBeInTheDocument();
   });
 
   test("renders input field for authenticated users", () => {
-    render(<Shoutbox initialShouts={[]} initialConversations={[]} />);
+    render(<Shoutbox initialShouts={[]} initialConversations={[]} motd="Welcome." />);
     expect(screen.getByPlaceholderText("Write a comment...")).toBeInTheDocument();
   });
 
   test("does not render input for unauthenticated users", () => {
     mockUseSession.mockReturnValue({ data: null, status: "unauthenticated" });
-    render(<Shoutbox initialShouts={[]} initialConversations={[]} />);
+    render(<Shoutbox initialShouts={[]} initialConversations={[]} motd="Welcome." />);
     expect(screen.queryByPlaceholderText("Write a comment...")).not.toBeInTheDocument();
   });
 
   test("submits a message", async () => {
-    render(<Shoutbox initialShouts={[]} initialConversations={[]} />);
+    render(<Shoutbox initialShouts={[]} initialConversations={[]} motd="Welcome." />);
     const input = screen.getByPlaceholderText("Write a comment...");
     fireEvent.change(input, { target: { value: "Test shout" } });
     fireEvent.submit(input);
@@ -98,7 +102,7 @@ describe("Shoutbox", () => {
   });
 
   test("shows optimistic message immediately", async () => {
-    render(<Shoutbox initialShouts={[]} initialConversations={[]} />);
+    render(<Shoutbox initialShouts={[]} initialConversations={[]} motd="Welcome." />);
     const input = screen.getByPlaceholderText("Write a comment...");
     fireEvent.change(input, { target: { value: "Optimistic!" } });
     fireEvent.submit(input);
@@ -108,7 +112,7 @@ describe("Shoutbox", () => {
   });
 
   test("renders Guild tab", () => {
-    render(<Shoutbox initialShouts={[]} initialConversations={[]} />);
+    render(<Shoutbox initialShouts={[]} initialConversations={[]} motd="Welcome." />);
     expect(screen.getByText("Guild")).toBeInTheDocument();
   });
 });

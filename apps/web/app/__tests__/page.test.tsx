@@ -60,6 +60,10 @@ jest.mock("@/lib/dm-queries", () => ({
   getMyConversations: jest.fn().mockResolvedValue([]),
 }));
 
+jest.mock("@/lib/setting-queries", () => ({
+  getMotd: jest.fn().mockResolvedValue("Welcome."),
+}));
+
 import Home from "../page";
 
 describe("Home", () => {

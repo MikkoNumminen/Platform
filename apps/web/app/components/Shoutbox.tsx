@@ -18,6 +18,7 @@ import StarIcon from "@mui/icons-material/Star";
 import { useTranslations } from "next-intl";
 import { colors } from "../styles";
 import { createShout } from "@/lib/shout-actions";
+import { setMotd as setMotdAction } from "@/lib/setting-actions";
 import { sendDirectMessage, startConversation } from "@/lib/dm-actions";
 import { getConversationMessages, getDmUsers } from "@/lib/dm-queries";
 import type { ShoutData } from "@/lib/shout-queries";
@@ -58,13 +59,12 @@ const DEMO_REACTIONS: Array<{ alias: string; message: string; delayMs: number }>
 interface ShoutboxProps {
   initialShouts: ShoutData[];
   initialConversations: ConversationSummary[];
+  motd: string;
 }
 
 type DmUser = { id: string; alias: string; role: string };
 
-const SYSTEM_MOTD = [{ label: "[System]", text: "Welcome. Type /help for commands." }];
-
-const _HELP_LINES = [
+const _HELP_LINES_BASE: SystemLine[] = [
   { label: "[System]", text: "Available commands:" },
   { label: "/w", text: "alias message — whisper a player" },
   { label: "/whisper", text: "alias message — same as /w" },
@@ -72,6 +72,11 @@ const _HELP_LINES = [
   { label: "", text: "" },
   { label: "Tip:", text: "Tab key autocompletes the alias when typing /w" },
 ];
+
+const _HELP_LINE_MOTD: SystemLine = {
+  label: "/motd",
+  text: "message — change the welcome message (superuser/architect)",
+};
 
 interface SystemLine {
   label: string;
@@ -81,7 +86,7 @@ interface SystemLine {
 // "guild" = shoutbox, string ID = conversation, "new:userId" = new DM
 type ActiveTab = "guild" | string;
 
-export default function Shoutbox({ initialShouts, initialConversations }: ShoutboxProps) {
+export default function Shoutbox({ initialShouts, initialConversations, motd }: ShoutboxProps) {
   const { data: session } = useSession();
   const { onAction } = useXpToast();
   const t = useTranslations("shoutbox");
@@ -112,6 +117,19 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
   const activeConversation = conversations.find((c) => c.id === activeTab);
   const isGuild = activeTab === "guild";
   const isDmTab = !isGuild && activeTab !== "picker";
+
+  const userRole = (session?.user as { role?: string })?.role;
+  const canChangeMotd = userRole === "superuser";
+  // Architect check is done server-side; for /help display we also check client-side
+  // but developerTag isn't in session — so we show /motd for superuser always,
+  // architects will see it work even if not shown in /help
+
+  const [currentMotd, setCurrentMotd] = useState(motd);
+
+  const helpLines: SystemLine[] = [
+    ..._HELP_LINES_BASE,
+    ...(canChangeMotd ? [_HELP_LINE_MOTD] : []),
+  ];
 
   useEffect(() => {
     setShouts(initialShouts);
@@ -247,9 +265,28 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
 
     // /help — client-only, shows commands to the user
     if (/^\/help$/i.test(trimmed)) {
-      setLocalSystemMsgs((prev) => [...prev, ..._HELP_LINES]);
+      setLocalSystemMsgs((prev) => [...prev, ...helpLines]);
       setMessage("");
       setWhisperSuggestions([]);
+      return;
+    }
+
+    // /motd message — change the MOTD (superuser/architect)
+    const motdMatch = trimmed.match(/^\/motd\s+(.+)$/i);
+    if (motdMatch) {
+      const newMotd = motdMatch[1];
+      setMessage("");
+      setWhisperSuggestions([]);
+      const result = await setMotdAction(newMotd);
+      if (result?.error) {
+        setLocalSystemMsgs((prev) => [...prev, { label: "[System]", text: result.error }]);
+      } else {
+        setCurrentMotd(newMotd);
+        setLocalSystemMsgs((prev) => [
+          ...prev,
+          { label: "[System]", text: `MOTD updated: ${newMotd}` },
+        ]);
+      }
       return;
     }
 
@@ -662,29 +699,27 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
         ) : isGuild ? (
           /* Guild (shoutbox) content */
           <>
-            {SYSTEM_MOTD.map((line, i) => (
-              <Box key={`motd-${i}`} sx={{ display: "flex", gap: 0.75, lineHeight: 1.6, mb: 0.5 }}>
-                <Typography
-                  component="span"
-                  variant="body2"
-                  sx={{
-                    color: colors.warning,
-                    fontFamily: "inherit",
-                    fontWeight: 700,
-                    fontSize: "0.75rem",
-                  }}
-                >
-                  {line.label}
-                </Typography>
-                <Typography
-                  component="span"
-                  variant="body2"
-                  sx={{ color: colors.slate400, fontFamily: "inherit", fontSize: "0.75rem" }}
-                >
-                  {line.text}
-                </Typography>
-              </Box>
-            ))}
+            <Box sx={{ display: "flex", gap: 0.75, lineHeight: 1.6, mb: 0.5 }}>
+              <Typography
+                component="span"
+                variant="body2"
+                sx={{
+                  color: colors.warning,
+                  fontFamily: "inherit",
+                  fontWeight: 700,
+                  fontSize: "0.75rem",
+                }}
+              >
+                [System]
+              </Typography>
+              <Typography
+                component="span"
+                variant="body2"
+                sx={{ color: colors.slate400, fontFamily: "inherit", fontSize: "0.75rem" }}
+              >
+                {currentMotd}
+              </Typography>
+            </Box>
             {shouts.length === 0 ? (
               <Typography
                 variant="body2"
@@ -792,32 +827,27 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
         ) : isDmTab ? (
           /* DM conversation content */
           <>
-            {SYSTEM_MOTD.map((line, i) => (
-              <Box
-                key={`motd-dm-${i}`}
-                sx={{ display: "flex", gap: 0.75, lineHeight: 1.6, mb: 0.5 }}
+            <Box sx={{ display: "flex", gap: 0.75, lineHeight: 1.6, mb: 0.5 }}>
+              <Typography
+                component="span"
+                variant="body2"
+                sx={{
+                  color: colors.warning,
+                  fontFamily: "inherit",
+                  fontWeight: 700,
+                  fontSize: "0.75rem",
+                }}
               >
-                <Typography
-                  component="span"
-                  variant="body2"
-                  sx={{
-                    color: colors.warning,
-                    fontFamily: "inherit",
-                    fontWeight: 700,
-                    fontSize: "0.75rem",
-                  }}
-                >
-                  {line.label}
-                </Typography>
-                <Typography
-                  component="span"
-                  variant="body2"
-                  sx={{ color: colors.slate400, fontFamily: "inherit", fontSize: "0.75rem" }}
-                >
-                  {line.text}
-                </Typography>
-              </Box>
-            ))}
+                [System]
+              </Typography>
+              <Typography
+                component="span"
+                variant="body2"
+                sx={{ color: colors.slate400, fontFamily: "inherit", fontSize: "0.75rem" }}
+              >
+                {currentMotd}
+              </Typography>
+            </Box>
             {dmMessages.length === 0 ? (
               <Typography
                 variant="body2"
