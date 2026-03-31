@@ -19,10 +19,11 @@ packages/config/ — Shared types and config (@platform/config)
 
 ### Community
 - **Unified Chat Box** — WoW-inspired tabbed chat on the landing page combining guild chat and private whispers in one box:
-  - **Guild tab** — Public IRC-style shoutbox with `<alias> message` format, optimistic updates, and superuser star icons
-  - **Whisper tabs** — Private DM conversations in pink WoW whisper style (`To [alias]:` / `[alias] whispers:`) with closable tabs, unread badges, and superuser indicators
-  - **`/w alias message`** — Slash command to whisper any user from any tab, with live autocomplete suggestions as you type
+  - **Guild tab** — Public IRC-style shoutbox with `<alias> message` format, optimistic updates, superuser star icons, and developer tag emoji badges (💻🎨📖🏗️🔭🧠👑)
+  - **Whisper tabs** — Private DM conversations in pink WoW whisper style (`To [alias]:` / `[alias] whispers:`) with closable tabs, unread badges, developer tag icons, and superuser indicators
+  - **`/w alias message`** — Slash command to whisper any user from any tab, with live autocomplete suggestions and Tab key completion as you type
   - **Privacy Inbox** — Superuser gets a special locked conversation for data protection inquiries (privacy@vuohiliitto.com)
+  - **System MOTD** — Welcome message with command help shown on every tab load
 - **Completed Quests Feed** — Shows recently completed custom quests below the shoutbox (who, what, XP earned)
 - **Dev Log** — Live GitHub commit feed with color-coded build status (green/red/pending), 10-minute cache, visible to all visitors
 - **Boards** — Categorized discussion boards with full CRUD, pinned posts, and threaded comments
@@ -35,7 +36,7 @@ packages/config/ — Shared types and config (@platform/config)
 - **Pending user gate** — New users complete the survey, then see a "Waiting for approval" screen until an admin assigns them a role
 
 ### Gamification
-- **XP System** — Earn XP for platform actions (posting, commenting, creating events, completing surveys, login streaks)
+- **XP System** — Earn XP for platform actions (posting, commenting, creating events, completing surveys, login streaks, sending DMs)
 - **10-level progression** — Newcomer through Mythic with XP thresholds and level-up celebrations
 - **Achievements** — 31 unlockable achievements across categories (onboarding, content, engagement, streaks, moderation)
 - **Quest Log** — Daily, weekly, and special quests with progress tracking and XP rewards
@@ -51,6 +52,7 @@ packages/config/ — Shared types and config (@platform/config)
 
 ### Demo Mode
 - **Zero-credential demo** — "Try Demo" button in TopBar for unauthenticated visitors; one-click login as superuser
+- **Welcome overlay** — First-time demo users see a modal explaining the platform with dismiss and localStorage persistence
 - **Isolated mock data** — Demo sessions are fully isolated via `sessionId` scoping; real community data is never exposed
 - **Comprehensive seed data** — 6 users, 2 boards, 5 posts, 12 comments, 10 shoutbox messages, 2 DM conversations, 6 calendar events, 4 issues, 5 survey responses, 4 custom quests, gamification profiles with XP/achievements/quest progress
 - **Auto-cleanup** — Stale demo sessions (>24h) are automatically cascade-deleted
@@ -58,17 +60,18 @@ packages/config/ — Shared types and config (@platform/config)
 
 ### Guided Tour
 - **Role-based tutorial** — 14-step guided tour with 4 tiers (Getting Started, Community Explorer, Admin Basics, Team Leader)
-- **Spotlight overlay** — Highlights target elements with pulsing border and tooltip
+- **Spotlight overlay** — Highlights target elements with pulsing border and tooltip; clicking the tooltip scrolls the target into view
 - **Progress checklist** — Fixed bottom-right panel showing completion status with XP rewards per step
 - **Gamification integration** — Tutorial quests and achievements seeded, XP awarded on step completion
 - **Auto-sync** — Detects actions completed before the tutorial existed (alias, survey, issues, shoutbox) and backfills progress
 
 ### Admin
 - **User management** — Role assignment via approval dropdown (no separate approve button), hierarchy enforcement, permission overrides, survey completion status
-- **Developer team** — Users indicate skills via survey and account page; superuser assigns team roles (Master, Coder, Artist, Storyteller, Architect, Scout, Advisor); only one Master allowed
+- **Developer team** — Users indicate skills via survey and account page; superuser assigns team roles (Master 👑, Coder 💻, Artist 🎨, Storyteller 📖, Architect 🏗️, Scout 🔭, Advisor 🧠); only one Master allowed; tag icons shown in chat
 - **Vuohiliitto Dashboard** — XP stats, level distribution with hover tooltips, achievement/quest completion rates (superuser/vuohi only)
 - **Quest Board** — Global view of all custom quests with filters, creation form, and status management
 - **Achievement & Quest CRUD** — Admin editor for managing gamification content
+- **Audit Log** — Searchable log of admin actions (role changes, permission edits, user approvals) with actor, target, and details
 
 ### Security
 - **Authentication** — NextAuth v5 with Google OAuth, GitHub OAuth, and zero-credential demo login
@@ -77,6 +80,7 @@ packages/config/ — Shared types and config (@platform/config)
 - **Content ownership** — Edit actions verify the user is the author; admin routes check role in middleware
 - **Pending user approval** — New users get zero permissions until approved by an admin
 - **guardedAction** — Server action wrapper enforcing auth, permissions, and rate limiting
+- **DM security** — Messages only between real registered users; demo user blocked from DM at UI, query, and backend levels; participant verification on every send
 - **Rate limiting** — PostgreSQL-based atomic sliding window (30 req/60s per user)
 - **Security headers** — CSP, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy
 
@@ -96,7 +100,7 @@ packages/config/ — Shared types and config (@platform/config)
 
 ### UX Polish
 - **Loading skeletons** — Skeleton loading states for all routes
-- **Keyboard shortcuts** — `g+h/b/f/c` for navigation, `?` for help dialog, `/w alias msg` for whispers
+- **Keyboard shortcuts** — `g+h/b/f/c` for navigation, `?` for help dialog, `/w alias msg` for whispers with Tab autocomplete
 - **Welcome page** — Animated landing page with "Try Demo" and "Sign In" for unauthenticated visitors
 - **Dev Log** — Live GitHub commit feed on the landing page showing recent changes with relative timestamps and CI build status
 - **Level-up celebration** — Confetti and overlay animation on XP level milestones
@@ -132,7 +136,7 @@ npx turbo run build --filter=web # Production build
 
 ## Testing
 
-1117+ tests across 131+ test suites with accessibility checks (jest-axe). Playwright E2E framework configured for critical user journeys.
+1120+ tests across 131+ test suites with accessibility checks (jest-axe). Playwright E2E framework configured for critical user journeys.
 
 ```bash
 npx turbo run test --filter=web           # All unit/integration tests
