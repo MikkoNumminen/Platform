@@ -243,6 +243,7 @@ const HINT_TEXTS: Record<string, string> = {
   nav_setup_alias: "Set your alias to get started.",
   nav_click_survey: "Take the community survey.",
   nav_report_issue: "Click your avatar to open the menu, then Report Issue.",
+  nav_click_report_issue: "Click the Report Issue button.",
   nav_click_quests: "Click your avatar to open the menu, then Quests.",
   nav_click_achievements: "Click your avatar to open the menu, then Achievements.",
   nav_click_leaderboard: "Click your avatar to open the menu, then Leaderboard.",

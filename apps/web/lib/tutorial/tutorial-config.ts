@@ -85,9 +85,14 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     xpReward: 10,
     navigationHints: [
       {
+        fromRoute: "/issues",
+        targetSelector: '[data-tutorial="report-issue-button"]',
+        hintKey: "nav_click_report_issue",
+      },
+      {
         fromRoute: /^\/issues/,
         targetSelector: '[data-tutorial="report-issue-button"]',
-        hintKey: "nav_report_issue",
+        hintKey: "nav_click_report_issue",
       },
       {
         fromRoute: /.*/,
@@ -215,6 +220,13 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     event: "tutorial:user_approved",
     tier: 4,
     xpReward: 10,
+    navigationHints: [
+      {
+        fromRoute: /.*/,
+        targetSelector: '[data-tutorial="user-menu-button"]',
+        hintKey: "nav_click_manage_users",
+      },
+    ],
   },
   {
     id: "edit_permissions",

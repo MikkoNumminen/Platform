@@ -34,6 +34,8 @@ export default function ReportIssuePage() {
   };
 
   if (success) {
+    // Auto-redirect to home after brief delay so tutorial flow continues
+    setTimeout(() => router.push("/"), 1500);
     return (
       <>
         <TopBar title="Report Issue" backHref="/" />
