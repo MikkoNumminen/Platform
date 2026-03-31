@@ -127,6 +127,11 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
     }
   }, [shouts, dmMessages, activeTab]);
 
+  // Clear local system messages when switching tabs
+  useEffect(() => {
+    setLocalSystemMsgs([]);
+  }, [activeTab]);
+
   // ── DM helpers ──────────────────────────────────────────────────────────
 
   const ensureUsersLoaded = async () => {
@@ -143,7 +148,6 @@ export default function Shoutbox({ initialShouts, initialConversations }: Shoutb
   const openConversation = async (conversationId: string) => {
     setActiveTab(conversationId);
     setShowUserPicker(false);
-    setLocalSystemMsgs([]);
     const msgs = await getConversationMessages(conversationId);
     setDmMessages(msgs);
     setConversations((prev) =>
