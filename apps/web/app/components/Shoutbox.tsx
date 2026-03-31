@@ -143,7 +143,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [shouts, dmMessages, activeTab]);
+  }, [shouts, dmMessages, activeTab, localSystemMsgs]);
 
   // Clear local system messages when switching tabs
   useEffect(() => {
