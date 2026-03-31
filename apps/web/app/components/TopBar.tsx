@@ -19,8 +19,11 @@ interface TopBarProps {
 export default function TopBar({ title, backHref }: TopBarProps) {
   const { data: session } = useSession();
   const role = String(session?.user?.role || "");
+  const isDemoUser = Boolean(
+    (session?.user as { demoSessionId?: string } | undefined)?.demoSessionId,
+  );
   const displayTitle =
-    title === "Platform" && ELEVATED_ROLES.includes(role) ? "Vuohiliitto" : title;
+    title === "Platform" && ELEVATED_ROLES.includes(role) && !isDemoUser ? "Vuohiliitto" : title;
 
   return (
     <AppBar
