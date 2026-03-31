@@ -8,6 +8,7 @@ import { rateLimit } from "@/lib/rateLimit";
 import { revalidatePath } from "next/cache";
 import { triggerGamification } from "./gamification/trigger";
 import { getDemoSessionId } from "@/lib/demo-session";
+import { autoCompleteCampaignQuest } from "@/lib/campaign-completion";
 
 const MAX_DM_LENGTH = 500;
 
@@ -57,6 +58,7 @@ export async function sendDirectMessage(
     });
 
     await triggerGamification(userId, "dm:send");
+    await autoCompleteCampaignQuest(userId, "Send your first private message");
 
     revalidatePath("/");
   });
@@ -128,6 +130,8 @@ export async function startConversation(
   });
 
   await triggerGamification(userId, "dm:send");
+  await autoCompleteCampaignQuest(userId, "Send your first private message");
+  await autoCompleteCampaignQuest(userId, "Start a conversation with someone new");
 
   revalidatePath("/");
 

@@ -34,6 +34,10 @@ jest.mock("@/lib/setting-actions", () => ({
   setMotd: jest.fn().mockResolvedValue(undefined),
 }));
 
+jest.mock("@/lib/campaign-completion", () => ({
+  completeWhisperQuest: jest.fn().mockResolvedValue(undefined),
+}));
+
 import Shoutbox from "@/app/components/Shoutbox";
 import type { ShoutData } from "@/lib/shout-queries";
 
