@@ -764,7 +764,8 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
                           sx={{
                             fontSize: 14,
                             color: colors.warning,
-                            alignSelf: "center",
+                            alignSelf: "flex-start",
+                            mt: "3px",
                             flexShrink: 0,
                           }}
                         />
@@ -884,7 +885,8 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
                               sx={{
                                 fontSize: 14,
                                 color: colors.warning,
-                                alignSelf: "center",
+                                alignSelf: "flex-start",
+                                mt: "3px",
                                 flexShrink: 0,
                               }}
                             />
@@ -909,7 +911,8 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
                               sx={{
                                 fontSize: 14,
                                 color: colors.warning,
-                                alignSelf: "center",
+                                alignSelf: "flex-start",
+                                mt: "3px",
                                 flexShrink: 0,
                               }}
                             />
@@ -941,7 +944,8 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
                               sx={{
                                 fontSize: 14,
                                 color: colors.warning,
-                                alignSelf: "center",
+                                alignSelf: "flex-start",
+                                mt: "3px",
                                 flexShrink: 0,
                               }}
                             />
