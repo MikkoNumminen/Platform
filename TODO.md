@@ -12,6 +12,8 @@
 
 - 🟣 **Ongoing:** Monitor CI pipeline and Vercel deployments, fix errors immediately — Claude 1
 
+### In Progress
+
 
 ### Private Messaging (DM System)
 > User-voted feature from survey. Also needed for GDPR compliance: privacy@vuohiliitto.com has no actual inbox — privacy emails need to land somewhere. The DM system provides a Privacy Inbox for superuser where these messages appear.

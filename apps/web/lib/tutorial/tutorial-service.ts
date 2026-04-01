@@ -101,6 +101,17 @@ export async function completeTourStep(stepId: string): Promise<{
     }
   }
 
+  // Check if ALL steps for this role are now complete → unlock demo_explorer achievement
+  const allDone = steps.every((s) => completedIds.has(s.id));
+  if (allDone) {
+    try {
+      const { checkAchievements } = await import("@/lib/gamification/achievement-service");
+      await checkAchievements(userId, "tour:complete");
+    } catch (error) {
+      console.error("[tutorial] tour:complete achievement error:", error);
+    }
+  }
+
   return { completed: true, tierCompleted, tierBonus };
 }
 

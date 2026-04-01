@@ -12,6 +12,7 @@ export const XP_AMOUNTS = {
   "streak:30day": 200,
   "quest:complete": 0,
   "dm:send": 3,
+  "tour:complete": 0,
 } as const;
 
 export type XpSource = keyof typeof XP_AMOUNTS;

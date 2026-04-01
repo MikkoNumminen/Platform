@@ -26,6 +26,14 @@ async function getActionCount(userId: string, action: string): Promise<number> {
       const streak = await prisma.loginStreak.findUnique({ where: { userId } });
       return streak?.longestStreak ?? 0;
     }
+    case "tour:complete": {
+      const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+      const role = user?.role ?? "pending";
+      const { getStepsForRole } = await import("@/lib/tutorial/tutorial-config");
+      const totalSteps = getStepsForRole(role).length;
+      const completedSteps = await prisma.userTourProgress.count({ where: { userId } });
+      return completedSteps >= totalSteps ? 1 : 0;
+    }
     default:
       return 0;
   }

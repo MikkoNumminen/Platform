@@ -26,6 +26,7 @@ const mockShoutCount = jest.fn();
 const mockIssueReportCount = jest.fn();
 const mockSurveyResponseCount = jest.fn();
 const mockUserFindUnique = jest.fn();
+const mockUserTourProgressCount = jest.fn();
 
 jest.mock("@/lib/db", () => ({
   prisma: {
@@ -64,6 +65,7 @@ jest.mock("@/lib/db", () => ({
     issueReport: { count: (...a: any[]) => mockIssueReportCount(...a) },
     surveyResponse: { count: (...a: any[]) => mockSurveyResponseCount(...a) },
     user: { findUnique: (...a: any[]) => mockUserFindUnique(...a) },
+    userTourProgress: { count: (...a: any[]) => mockUserTourProgressCount(...a) },
   },
 }));
 jest.mock("@/auth", () => ({ auth: jest.fn() }));
@@ -245,6 +247,50 @@ describe("achievement-service", () => {
       mockUserAchievementFindMany.mockResolvedValue([]);
 
       const results = await checkAchievements("u1", "thread:create");
+      expect(results).toHaveLength(0);
+    });
+
+    test("unlocks tour:complete achievement when all steps are done", async () => {
+      mockAchievementFindMany.mockResolvedValue([
+        {
+          id: "a-demo",
+          key: "demo_explorer",
+          criteria: { type: "count", action: "tour:complete", threshold: 1 },
+          xpReward: 75,
+        },
+      ]);
+      mockUserAchievementFindMany.mockResolvedValue([]);
+      // User is "pending" role → 3 steps required
+      mockUserFindUnique.mockResolvedValue({ role: "pending" });
+      mockUserTourProgressCount.mockResolvedValue(3);
+      mockUserAchievementCreate.mockResolvedValue({});
+      mockXpTransactionCreate.mockResolvedValue({});
+      mockUserLevelUpsert.mockResolvedValue({});
+
+      const results = await checkAchievements("u1", "tour:complete");
+      expect(results).toHaveLength(1);
+      expect(results[0]).toEqual({
+        achievementKey: "demo_explorer",
+        unlocked: true,
+        xpAwarded: 75,
+      });
+    });
+
+    test("does not unlock tour:complete when steps are incomplete", async () => {
+      mockAchievementFindMany.mockResolvedValue([
+        {
+          id: "a-demo",
+          key: "demo_explorer",
+          criteria: { type: "count", action: "tour:complete", threshold: 1 },
+          xpReward: 75,
+        },
+      ]);
+      mockUserAchievementFindMany.mockResolvedValue([]);
+      // User is "user" role → 8 steps required, only 5 done
+      mockUserFindUnique.mockResolvedValue({ role: "user" });
+      mockUserTourProgressCount.mockResolvedValue(5);
+
+      const results = await checkAchievements("u1", "tour:complete");
       expect(results).toHaveLength(0);
     });
 

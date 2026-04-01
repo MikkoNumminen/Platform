@@ -302,6 +302,17 @@ export const INITIAL_ACHIEVEMENTS = [
     criteria: { type: "count", action: "tour:step", threshold: 17 },
     sortOrder: 81,
   },
+  {
+    key: "demo_explorer",
+    name: "Demo Explorer",
+    description: "Complete the guided demo tutorial",
+    icon: "🧪",
+    tier: "bronze",
+    category: "onboarding",
+    xpReward: 75,
+    criteria: { type: "count", action: "tour:complete", threshold: 1 },
+    sortOrder: 82,
+  },
 ];
 
 export const INITIAL_QUESTS = [

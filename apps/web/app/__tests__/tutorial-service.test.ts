@@ -53,6 +53,11 @@ jest.mock("@/lib/gamification/trigger", () => ({
   triggerGamification: jest.fn(),
 }));
 
+const mockCheckAchievements = jest.fn();
+jest.mock("@/lib/gamification/achievement-service", () => ({
+  checkAchievements: (...a: any[]) => mockCheckAchievements(...a),
+}));
+
 import { auth } from "@/auth";
 import {
   completeTourStep,
@@ -136,6 +141,41 @@ describe("tutorial-service", () => {
       expect(result.completed).toBe(true);
       expect(result.tierCompleted).toBe(1);
       expect(result.tierBonus).toBe(50);
+    });
+
+    test("triggers tour:complete achievement when all steps are done", async () => {
+      mockAuth.mockResolvedValue({
+        user: { id: "u1", role: "pending" },
+      } as any);
+      mockUserTourProgressFindUnique.mockResolvedValue(null);
+      mockUserTourProgressCreate.mockResolvedValue({});
+      mockXpTransactionCreate.mockResolvedValue({});
+      mockUserLevelUpsert.mockResolvedValue({});
+      mockCheckAchievements.mockResolvedValue([]);
+      // All 3 tier-1 steps complete (pending role only has 3 steps total)
+      mockUserTourProgressFindMany.mockResolvedValue([
+        { stepId: "set_alias" },
+        { stepId: "complete_survey" },
+        { stepId: "report_issue" },
+      ]);
+
+      await completeTourStep("report_issue");
+      expect(mockCheckAchievements).toHaveBeenCalledWith("u1", "tour:complete");
+    });
+
+    test("does not trigger tour:complete when steps remain", async () => {
+      mockAuth.mockResolvedValue({
+        user: { id: "u1", role: "user" },
+      } as any);
+      mockUserTourProgressFindUnique.mockResolvedValue(null);
+      mockUserTourProgressCreate.mockResolvedValue({});
+      mockXpTransactionCreate.mockResolvedValue({});
+      mockUserLevelUpsert.mockResolvedValue({});
+      // Only 1 of 8 steps done for "user" role
+      mockUserTourProgressFindMany.mockResolvedValue([{ stepId: "set_alias" }]);
+
+      await completeTourStep("set_alias");
+      expect(mockCheckAchievements).not.toHaveBeenCalled();
     });
 
     test("awards tier bonus XP when tier is completed", async () => {
