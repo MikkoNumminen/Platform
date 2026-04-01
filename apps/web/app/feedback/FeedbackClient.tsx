@@ -37,8 +37,6 @@ import { colors } from "../styles";
 
 interface FeedbackClientProps {
   rounds: SurveyRoundData[];
-  legacyResults: SurveyResultsData;
-  legacyResponseCount: number;
   canManage: boolean;
   canViewResults: boolean;
   userId: string;
@@ -46,8 +44,6 @@ interface FeedbackClientProps {
 
 export default function FeedbackClient({
   rounds,
-  legacyResults,
-  legacyResponseCount,
   canManage,
   canViewResults,
   userId: _userId,
@@ -298,35 +294,10 @@ export default function FeedbackClient({
         </Box>
       )}
 
-      {rounds.length === 0 && legacyResponseCount === 0 && (
+      {rounds.length === 0 && (
         <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center", mt: 4 }}>
           No survey rounds yet.
         </Typography>
-      )}
-
-      {legacyResponseCount > 0 && (canManage || canViewResults) && (
-        <Box sx={{ mt: 3 }}>
-          <Accordion
-            expanded={expandedRound === "legacy"}
-            onChange={() => {
-              setExpandedRound(expandedRound === "legacy" ? null : "legacy");
-            }}
-            disableGutters
-            sx={{ border: `1px solid ${colors.decorBorder}` }}
-          >
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                  Initial Survey
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {legacyResponseCount} responses
-                </Typography>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails>{renderResults(legacyResults)}</AccordionDetails>
-          </Accordion>
-        </Box>
       )}
 
       {/* Survey Dialog */}
