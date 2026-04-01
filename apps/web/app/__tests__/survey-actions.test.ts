@@ -9,6 +9,9 @@ jest.mock("@/lib/db", () => ({
     surveyResponse: {
       create: (...args: unknown[]) => mockCreate(...args),
     },
+    surveyRound: {
+      findFirst: jest.fn().mockResolvedValue(null),
+    },
   },
 }));
 
