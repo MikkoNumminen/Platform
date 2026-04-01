@@ -32,6 +32,7 @@ import type { CustomQuestion } from "@/lib/custom-survey-config";
 import ResultsBarChart from "../components/survey/ResultsBarChart";
 import TextResponseList from "../components/survey/TextResponseList";
 import CreateRoundDialog from "./CreateRoundDialog";
+import FeedbackSection from "../components/feedback/FeedbackSection";
 import { colors } from "../styles";
 
 interface FeedbackClientProps {
@@ -283,6 +284,8 @@ export default function FeedbackClient({
           </Button>
         </Box>
       )}
+
+      <FeedbackSection canReply={canManage} />
 
       {activeRounds.map((round) => renderRoundCard(round, true))}
 

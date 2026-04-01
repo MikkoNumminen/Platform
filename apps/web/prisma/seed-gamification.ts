@@ -1,7 +1,17 @@
+import path from "node:path";
+import { loadEnvFile } from "node:process";
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { INITIAL_ACHIEVEMENTS, INITIAL_QUESTS } from "../lib/gamification/seed-data";
 
-const prisma = new PrismaClient();
+try {
+  loadEnvFile(path.resolve(__dirname, "..", ".env.local"));
+} catch {
+  // .env.local may not exist in CI
+}
+
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log("Seeding gamification data...");

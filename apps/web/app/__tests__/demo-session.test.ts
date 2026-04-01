@@ -121,6 +121,7 @@ jest.mock("@/lib/db", () => {
     "directMessage",
     "conversation",
     "auditLog",
+    "feedback",
   ]) {
     top[m] = {
       findMany: jest.fn().mockResolvedValue([]),

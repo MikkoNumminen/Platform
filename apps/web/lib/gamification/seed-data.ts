@@ -279,6 +279,19 @@ export const INITIAL_ACHIEVEMENTS = [
     sortOrder: 73,
   },
 
+  // Feedback achievements
+  {
+    key: "feedback_first",
+    name: "Heard!",
+    description: "Submit your first feedback",
+    icon: "💡",
+    tier: null,
+    category: "onboarding",
+    xpReward: 25,
+    criteria: { type: "count", action: "feedback:submit", threshold: 1 },
+    sortOrder: 5,
+  },
+
   // Tutorial achievements
   {
     key: "quick_learner",

@@ -47,6 +47,8 @@ model User {
   conversationsAsA    Conversation[]   @relation("ConversationParticipantA")
   conversationsAsB    Conversation[]   @relation("ConversationParticipantB")
   sentDirectMessages  DirectMessage[]  @relation("DirectMessageSender")
+  feedbacks           Feedback[]       @relation("FeedbackAuthor")
+  feedbackReplies     Feedback[]       @relation("FeedbackAdmin")
 
   sessionId      String?
 
@@ -318,6 +320,26 @@ model SurveyResponse {
   @@index([submittedAt])
   @@index([userId])
   @@index([roundId])
+  @@index([sessionId])
+}
+
+// ─── Feedback ───────────────────────────────────────────────────────────────
+
+model Feedback {
+  id             String    @id @default(uuid())
+  message        String
+  authorId       String
+  adminReply     String?
+  adminReplyById String?
+  adminRepliedAt DateTime?
+  sessionId      String?
+  createdAt      DateTime  @default(now())
+
+  author      User  @relation("FeedbackAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  adminReplyBy User? @relation("FeedbackAdmin", fields: [adminReplyById], references: [id], onDelete: SetNull)
+
+  @@index([authorId])
+  @@index([createdAt])
   @@index([sessionId])
 }
 

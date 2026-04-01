@@ -26,6 +26,8 @@ async function getActionCount(userId: string, action: string): Promise<number> {
       const streak = await prisma.loginStreak.findUnique({ where: { userId } });
       return streak?.longestStreak ?? 0;
     }
+    case "feedback:submit":
+      return prisma.feedback.count({ where: { authorId: userId } });
     case "tour:complete": {
       const user = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
       const role = user?.role ?? "pending";

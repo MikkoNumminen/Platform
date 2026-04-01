@@ -13,6 +13,7 @@ export const XP_AMOUNTS = {
   "quest:complete": 0,
   "dm:send": 3,
   "tour:complete": 0,
+  "feedback:submit": 15,
 } as const;
 
 export type XpSource = keyof typeof XP_AMOUNTS;
