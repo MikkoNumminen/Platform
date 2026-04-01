@@ -83,9 +83,10 @@ export default function UserPermissionEditor({
   const hasChanges = overrideCount > 0;
 
   return (
-    <Box data-tutorial="permission-editor">
+    <Box>
       {/* Clickable trigger bar */}
       <Box
+        data-tutorial="permission-editor"
         onClick={isSelf ? undefined : () => setOpen(!open)}
         sx={{
           display: "flex",
