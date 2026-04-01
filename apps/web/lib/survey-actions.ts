@@ -23,17 +23,6 @@ export async function submitSurvey(data: SurveyData, roundId?: string): Promise<
     const userId = session?.user?.id ?? null;
     const sessionId = await getDemoSessionId();
 
-    // Auto-link to active general survey round if no roundId specified
-    let effectiveRoundId = roundId ?? null;
-    if (!effectiveRoundId) {
-      const activeRounds = await prisma.surveyRound.findMany({
-        where: { status: "active" },
-        select: { id: true, customQuestions: true },
-      });
-      const generalRound = activeRounds.find((r) => r.customQuestions === null);
-      effectiveRoundId = generalRound?.id ?? null;
-    }
-
     await prisma.surveyResponse.create({
       data: {
         conversationStyle: data.conversationStyle,
@@ -44,7 +33,7 @@ export async function submitSurvey(data: SurveyData, roundId?: string): Promise<
         wantsToDevelop: (data.developmentSkills ?? []).length > 0,
         developmentSkills: data.developmentSkills ?? [],
         userId,
-        roundId: effectiveRoundId,
+        roundId: roundId ?? null,
         sessionId,
       },
     });

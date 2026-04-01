@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import TopBar from "../components/TopBar";
 import { auth } from "@/auth";
 import { getAllSurveyRounds } from "@/lib/survey-round-queries";
+import { getSurveyResults } from "@/lib/survey-queries";
 import FeedbackClient from "./FeedbackClient";
 
 export default async function FeedbackPage() {
@@ -18,6 +19,7 @@ export default async function FeedbackPage() {
   const canViewResults = Boolean((user.permissions as Record<string, boolean>)?.["survey:results"]);
 
   const rounds = await getAllSurveyRounds();
+  const legacyResults = await getSurveyResults(null);
 
   return (
     <>
@@ -25,6 +27,8 @@ export default async function FeedbackPage() {
       <Box data-tutorial="feedback-page" sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
         <FeedbackClient
           rounds={rounds}
+          legacyResults={legacyResults}
+          legacyResponseCount={legacyResults.totalResponses}
           canManage={canManage}
           canViewResults={canViewResults}
           userId={user.id}
