@@ -123,3 +123,40 @@ export async function getCustomQuestCounts(): Promise<{
 
   return { open, inProgress, completed, total: open + inProgress + completed };
 }
+
+/**
+ * Get recently completed quests for the public feed.
+ */
+export async function getRecentCompletedQuests(limit = 10): Promise<
+  Array<{
+    id: string;
+    title: string;
+    xpReward: number;
+    targetSkill: string | null;
+    completedAt: Date;
+    assignee: { alias: string | null; name: string | null };
+  }>
+> {
+  return prisma.customQuest.findMany({
+    where: { status: "completed", deletedAt: null, completedAt: { not: null } },
+    orderBy: { completedAt: "desc" },
+    take: limit,
+    select: {
+      id: true,
+      title: true,
+      xpReward: true,
+      targetSkill: true,
+      completedAt: true,
+      assignee: { select: { alias: true, name: true } },
+    },
+  }) as Promise<
+    Array<{
+      id: string;
+      title: string;
+      xpReward: number;
+      targetSkill: string | null;
+      completedAt: Date;
+      assignee: { alias: string | null; name: string | null };
+    }>
+  >;
+}

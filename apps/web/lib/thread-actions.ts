@@ -5,7 +5,7 @@ import { guardedAction } from "./guardedAction";
 import { ActionError } from "./actionErrors";
 import { validateUUID, createStringValidator } from "./actionUtils";
 import { revalidatePath } from "next/cache";
-import { triggerGamification } from "./gamification/trigger";
+
 import { getDemoSessionId } from "@/lib/demo-session";
 
 const validateThreadBody = createStringValidator(
@@ -64,7 +64,7 @@ export const createThread = guardedAction(
       },
     });
 
-    await triggerGamification(authorId, "thread:create");
+    // Threads don't award XP (forums feature is in backlog)
 
     if (revalidateUrl) {
       revalidatePath(revalidateUrl);

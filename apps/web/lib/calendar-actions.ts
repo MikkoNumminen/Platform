@@ -11,7 +11,6 @@ import {
   type CreateEventInput,
   type UpdateEventInput,
 } from "./calendar-schemas";
-import { triggerGamification } from "@/lib/gamification/trigger";
 import { getDemoSessionId } from "@/lib/demo-session";
 
 export async function fetchEvents(year: number, month: number): Promise<CalendarEvent[]> {
@@ -43,7 +42,7 @@ export const createEvent = guardedAction(
       },
     });
 
-    await triggerGamification(session.user.id, "event:create");
+    // Calendar events don't award XP (feature is in backlog)
   },
 );
 

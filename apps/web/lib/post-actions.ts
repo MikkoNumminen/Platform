@@ -6,7 +6,7 @@ import { ActionError } from "./actionErrors";
 import { validateUUID, createStringValidator } from "./actionUtils";
 import { revalidatePath } from "next/cache";
 import { slugify } from "./slug-utils";
-import { triggerGamification } from "./gamification/trigger";
+
 import { getDemoSessionId } from "@/lib/demo-session";
 
 const validatePostTitle = createStringValidator(
@@ -67,7 +67,7 @@ export const createPost = guardedAction(
       },
     });
 
-    await triggerGamification(authorId, "post:create");
+    // Posts don't award XP (boards feature is in backlog)
 
     revalidatePath(`/boards/${board.slug}`);
   },
