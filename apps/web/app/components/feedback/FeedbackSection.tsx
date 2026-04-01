@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Box, Paper, Typography } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Paper,
+  Typography,
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import FeedbackForm from "./FeedbackForm";
 import FeedbackList from "./FeedbackList";
@@ -15,6 +23,7 @@ interface FeedbackSectionProps {
 
 export default function FeedbackSection({ canReply }: FeedbackSectionProps) {
   const [items, setItems] = useState<FeedbackItem[]>([]);
+  const [expanded, setExpanded] = useState(false);
 
   const loadFeedback = useCallback(async () => {
     const data = await getAllFeedback();
@@ -41,11 +50,26 @@ export default function FeedbackSection({ canReply }: FeedbackSectionProps) {
         </Box>
 
         <FeedbackForm onSubmitted={loadFeedback} />
-
-        <Box sx={{ mt: 2 }}>
-          <FeedbackList items={items} canReply={canReply} onReplied={loadFeedback} />
-        </Box>
       </Box>
+
+      {items.length > 0 && (
+        <Accordion
+          expanded={expanded}
+          onChange={() => setExpanded(!expanded)}
+          disableGutters
+          elevation={0}
+          sx={{ "&::before": { display: "none" } }}
+        >
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              {expanded ? "Hide Feedback" : "View Feedback"}
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <FeedbackList items={items} canReply={canReply} onReplied={loadFeedback} />
+          </AccordionDetails>
+        </Accordion>
+      )}
     </Paper>
   );
 }
