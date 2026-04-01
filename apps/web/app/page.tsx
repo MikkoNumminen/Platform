@@ -2,11 +2,13 @@ import { Box } from "@mui/material";
 import TopBar from "./components/TopBar";
 import SurveyCTA from "./components/SurveyCTA";
 import Shoutbox from "./components/Shoutbox";
+import DevLog from "./components/DevLog";
 import WelcomeHero from "./components/WelcomeHero";
 import QuestReceivedCelebration from "./components/QuestReceivedCelebration";
 import { getRecentShouts } from "@/lib/shout-queries";
 import { getMyConversations } from "@/lib/dm-queries";
 import { getMotd } from "@/lib/setting-queries";
+import { getRecentCommits } from "@/lib/github-commits";
 import { getMyCustomQuests, getRecentCompletedQuests } from "@/lib/custom-quest-queries";
 import CompletedQuestsFeed from "./components/CompletedQuestsFeed";
 import { getUserSurveyStatus } from "@/lib/survey-user-queries";
@@ -20,6 +22,7 @@ export default async function Home() {
   const shouts = userId ? await getRecentShouts() : [];
   const conversations = userId ? await getMyConversations() : [];
   const motd = await getMotd();
+  const commits = await getRecentCommits();
 
   let surveyCompleted = false;
   if (userId) {
@@ -82,11 +85,21 @@ export default async function Home() {
       {session?.user ? (
         <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
           <Shoutbox initialShouts={shouts} initialConversations={conversations} motd={motd} />
-          <CompletedQuestsFeed quests={completedQuests} />
+          <Box sx={{ mt: 2 }}>
+            <DevLog commits={commits} />
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            <CompletedQuestsFeed quests={completedQuests} />
+          </Box>
           {!surveyCompleted && <SurveyCTA />}
         </Box>
       ) : (
-        <WelcomeHero />
+        <>
+          <WelcomeHero />
+          <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 }, mt: 2 }}>
+            <DevLog commits={commits} />
+          </Box>
+        </>
       )}
     </>
   );
