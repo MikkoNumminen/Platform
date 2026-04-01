@@ -10,10 +10,6 @@ import {
 describe("xp-config", () => {
   describe("XP_AMOUNTS", () => {
     test("defines xp for all expected sources", () => {
-      expect(XP_AMOUNTS["post:create"]).toBe(20);
-      expect(XP_AMOUNTS["thread:create"]).toBe(10);
-      expect(XP_AMOUNTS["topic:create"]).toBe(15);
-      expect(XP_AMOUNTS["event:create"]).toBe(20);
       expect(XP_AMOUNTS["shout:create"]).toBe(5);
       expect(XP_AMOUNTS["issue:create"]).toBe(15);
       expect(XP_AMOUNTS["alias:set"]).toBe(25);

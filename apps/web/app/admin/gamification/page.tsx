@@ -295,10 +295,6 @@ export default async function GamificationDashboardPage() {
 }
 
 const XP_ACTION_LABELS: Record<string, string> = {
-  "post:create": "Create a post",
-  "thread:create": "Write a comment",
-  "topic:create": "Create a topic",
-  "event:create": "Create an event",
   "shout:create": "Send a shout",
   "issue:create": "Report an issue",
   "alias:set": "Set your alias",

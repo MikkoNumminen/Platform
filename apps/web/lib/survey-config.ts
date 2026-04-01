@@ -7,7 +7,6 @@ export const CONVERSATION_STYLES = [
 ] as const;
 
 export const FEATURE_OPTIONS = [
-  "Shared calendar (events, meetups, deadlines)",
   "File sharing / resource library",
   "Polls & voting",
   "Direct messages / private chat",

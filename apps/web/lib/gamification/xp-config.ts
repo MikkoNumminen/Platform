@@ -1,8 +1,4 @@
 export const XP_AMOUNTS = {
-  "post:create": 20,
-  "thread:create": 10,
-  "topic:create": 15,
-  "event:create": 20,
   "shout:create": 5,
   "issue:create": 15,
   "alias:set": 25,

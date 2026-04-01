@@ -64,21 +64,6 @@ export default function KeyboardShortcuts() {
       action: () => router.push("/"),
     },
     {
-      keys: ["g", "b"],
-      label: "Go to Boards",
-      action: () => router.push("/boards"),
-    },
-    {
-      keys: ["g", "f"],
-      label: "Go to Forums",
-      action: () => router.push("/forums"),
-    },
-    {
-      keys: ["g", "c"],
-      label: "Go to Calendar",
-      action: () => router.push("/calendar"),
-    },
-    {
       keys: ["?"],
       label: "Show keyboard shortcuts",
       action: () => setHelpOpen(true),

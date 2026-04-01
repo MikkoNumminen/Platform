@@ -93,17 +93,17 @@ describe("xp-service", () => {
 
     test("creates xp transaction and upserts user level", async () => {
       mockXpTransactionCreate.mockResolvedValue({});
-      mockUserLevelUpsert.mockResolvedValue({ totalXp: 20, level: 1, userId: "u1" });
+      mockUserLevelUpsert.mockResolvedValue({ totalXp: 15, level: 1, userId: "u1" });
 
-      const result = await awardXp("u1", "post:create", "post-1");
+      const result = await awardXp("u1", "issue:create", "issue-1");
 
       expect(mockXpTransactionCreate).toHaveBeenCalledWith({
-        data: { userId: "u1", amount: 20, source: "post:create", sourceId: "post-1" },
+        data: { userId: "u1", amount: 15, source: "issue:create", sourceId: "issue-1" },
       });
       expect(mockUserLevelUpsert).toHaveBeenCalled();
       expect(result).toEqual({
-        xpAwarded: 20,
-        totalXp: 20,
+        xpAwarded: 15,
+        totalXp: 15,
         level: 1,
         previousLevel: 1,
         leveledUp: false,
@@ -115,7 +115,7 @@ describe("xp-service", () => {
       mockUserLevelUpsert.mockResolvedValue({ totalXp: 100, level: 1, userId: "u1" });
       mockUserLevelUpdate.mockResolvedValue({});
 
-      const result = await awardXp("u1", "post:create");
+      const result = await awardXp("u1", "issue:create");
 
       expect(result!.leveledUp).toBe(true);
       expect(result!.level).toBe(2);
@@ -204,34 +204,34 @@ describe("achievement-service", () => {
       mockAchievementFindMany.mockResolvedValue([
         {
           id: "a1",
-          key: "first_post",
-          criteria: { type: "count", action: "post:create", threshold: 1 },
+          key: "first_shout",
+          criteria: { type: "count", action: "shout:create", threshold: 1 },
           xpReward: 50,
         },
       ]);
       mockUserAchievementFindMany.mockResolvedValue([]);
-      mockPostCount.mockResolvedValue(1);
+      mockShoutCount.mockResolvedValue(1);
       mockUserAchievementCreate.mockResolvedValue({});
       mockXpTransactionCreate.mockResolvedValue({});
       mockUserLevelUpsert.mockResolvedValue({});
 
-      const results = await checkAchievements("u1", "post:create");
+      const results = await checkAchievements("u1", "shout:create");
       expect(results).toHaveLength(1);
-      expect(results[0]).toEqual({ achievementKey: "first_post", unlocked: true, xpAwarded: 50 });
+      expect(results[0]).toEqual({ achievementKey: "first_shout", unlocked: true, xpAwarded: 50 });
     });
 
     test("skips already unlocked achievements", async () => {
       mockAchievementFindMany.mockResolvedValue([
         {
           id: "a1",
-          key: "first_post",
-          criteria: { type: "count", action: "post:create", threshold: 1 },
+          key: "first_shout",
+          criteria: { type: "count", action: "shout:create", threshold: 1 },
           xpReward: 50,
         },
       ]);
       mockUserAchievementFindMany.mockResolvedValue([{ achievementId: "a1" }]);
 
-      const results = await checkAchievements("u1", "post:create");
+      const results = await checkAchievements("u1", "shout:create");
       expect(results).toHaveLength(0);
     });
 
@@ -239,14 +239,14 @@ describe("achievement-service", () => {
       mockAchievementFindMany.mockResolvedValue([
         {
           id: "a1",
-          key: "first_post",
-          criteria: { type: "count", action: "post:create", threshold: 1 },
+          key: "first_shout",
+          criteria: { type: "count", action: "shout:create", threshold: 1 },
           xpReward: 50,
         },
       ]);
       mockUserAchievementFindMany.mockResolvedValue([]);
 
-      const results = await checkAchievements("u1", "thread:create");
+      const results = await checkAchievements("u1", "issue:create");
       expect(results).toHaveLength(0);
     });
 
@@ -298,16 +298,16 @@ describe("achievement-service", () => {
       mockAchievementFindMany.mockResolvedValue([
         {
           id: "a1",
-          key: "first_post",
-          criteria: { type: "count", action: "post:create", threshold: 1 },
+          key: "first_shout_zero",
+          criteria: { type: "count", action: "shout:create", threshold: 1 },
           xpReward: 0,
         },
       ]);
       mockUserAchievementFindMany.mockResolvedValue([]);
-      mockPostCount.mockResolvedValue(1);
+      mockShoutCount.mockResolvedValue(1);
       mockUserAchievementCreate.mockResolvedValue({});
 
-      const results = await checkAchievements("u1", "post:create");
+      const results = await checkAchievements("u1", "shout:create");
       expect(results[0].xpAwarded).toBe(0);
       expect(mockXpTransactionCreate).not.toHaveBeenCalled();
     });
@@ -519,12 +519,12 @@ describe("trigger", () => {
   describe("triggerGamification", () => {
     test("calls all three gamification services", async () => {
       mockXpTransactionCreate.mockResolvedValue({});
-      mockUserLevelUpsert.mockResolvedValue({ totalXp: 20, level: 1, userId: "u1" });
+      mockUserLevelUpsert.mockResolvedValue({ totalXp: 15, level: 1, userId: "u1" });
       mockQuestFindMany.mockResolvedValue([]);
       mockAchievementFindMany.mockResolvedValue([]);
       mockUserAchievementFindMany.mockResolvedValue([]);
 
-      await triggerGamification("u1", "post:create", "post-1");
+      await triggerGamification("u1", "issue:create", "issue-1");
 
       expect(mockXpTransactionCreate).toHaveBeenCalled();
       expect(mockQuestFindMany).toHaveBeenCalled();
@@ -537,7 +537,7 @@ describe("trigger", () => {
       mockAchievementFindMany.mockRejectedValue(new Error("db error"));
 
       const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
-      await expect(triggerGamification("u1", "post:create")).resolves.toBeUndefined();
+      await expect(triggerGamification("u1", "issue:create")).resolves.toBeUndefined();
       consoleSpy.mockRestore();
     });
   });

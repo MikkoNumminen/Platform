@@ -48,9 +48,9 @@ describe("XpToastProvider", () => {
 
   test("shows xp toast after onAction", async () => {
     mockGetLatestXpGains.mockResolvedValue({
-      gains: [{ amount: 20, source: "post:create" }],
+      gains: [{ amount: 5, source: "shout:create" }],
       level: 1,
-      totalXp: 20,
+      totalXp: 5,
     });
 
     render(
@@ -64,8 +64,8 @@ describe("XpToastProvider", () => {
       fireEvent.click(screen.getByText("Do Action"));
     });
 
-    expect(screen.getByText("+20 XP")).toBeInTheDocument();
-    expect(screen.getByText("New Post")).toBeInTheDocument();
+    expect(screen.getByText("+5 XP")).toBeInTheDocument();
+    expect(screen.getByText("Shout")).toBeInTheDocument();
   });
 
   test("handles errors gracefully", async () => {

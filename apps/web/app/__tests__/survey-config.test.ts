@@ -109,7 +109,7 @@ describe("survey-config", () => {
     expect(CONVERSATION_STYLES).toHaveLength(3);
   });
 
-  test("FEATURE_OPTIONS has 8 options", () => {
-    expect(FEATURE_OPTIONS).toHaveLength(8);
+  test("FEATURE_OPTIONS has 7 options", () => {
+    expect(FEATURE_OPTIONS).toHaveLength(7);
   });
 });

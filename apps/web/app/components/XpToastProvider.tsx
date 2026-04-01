@@ -8,10 +8,6 @@ import { getLevelForXp } from "@/lib/gamification/xp-config";
 import LevelUpCelebration from "./LevelUpCelebration";
 
 const XP_SOURCE_LABELS: Record<string, string> = {
-  "post:create": "New Post",
-  "thread:create": "New Comment",
-  "topic:create": "New Topic",
-  "event:create": "New Event",
   "shout:create": "Shout",
   "issue:create": "Bug Report",
   "survey:complete": "Survey Complete",

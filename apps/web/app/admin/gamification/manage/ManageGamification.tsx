@@ -141,14 +141,12 @@ const QUEST_TYPES = ["onboarding", "daily", "weekly", "special"];
 const CRITERIA_ACTIONS = [
   "alias:set",
   "survey:complete",
-  "post:create",
-  "thread:create",
-  "topic:create",
-  "event:create",
   "shout:create",
   "issue:create",
+  "feedback:submit",
   "daily:login",
   "login:streak",
+  "tour:complete",
 ];
 
 export default function ManageGamification({
@@ -173,7 +171,7 @@ export default function ManageGamification({
     tier: null as string | null,
     category: "content",
     xpReward: 50,
-    criteriaAction: "post:create",
+    criteriaAction: "shout:create",
     criteriaThreshold: 1,
     sortOrder: 0,
   });
@@ -188,7 +186,7 @@ export default function ManageGamification({
     icon: "\u{1F4CB}",
     type: "daily",
     xpReward: 25,
-    criteriaAction: "post:create",
+    criteriaAction: "shout:create",
     criteriaCount: 1,
     repeatable: true,
     sortOrder: 0,
@@ -208,7 +206,7 @@ export default function ManageGamification({
       tier: null,
       category: "content",
       xpReward: 50,
-      criteriaAction: "post:create",
+      criteriaAction: "shout:create",
       criteriaThreshold: 1,
       sortOrder: 0,
     });
@@ -290,7 +288,7 @@ export default function ManageGamification({
       icon: "\u{1F4CB}",
       type: "daily",
       xpReward: 25,
-      criteriaAction: "post:create",
+      criteriaAction: "shout:create",
       criteriaCount: 1,
       repeatable: true,
       sortOrder: 0,

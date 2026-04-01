@@ -29,27 +29,6 @@ describe("KeyboardShortcuts", () => {
     expect(mockPush).toHaveBeenCalledWith("/");
   });
 
-  test("navigates to boards on g then b", () => {
-    render(<KeyboardShortcuts />);
-    fireEvent.keyDown(document, { key: "g" });
-    fireEvent.keyDown(document, { key: "b" });
-    expect(mockPush).toHaveBeenCalledWith("/boards");
-  });
-
-  test("navigates to forums on g then f", () => {
-    render(<KeyboardShortcuts />);
-    fireEvent.keyDown(document, { key: "g" });
-    fireEvent.keyDown(document, { key: "f" });
-    expect(mockPush).toHaveBeenCalledWith("/forums");
-  });
-
-  test("navigates to calendar on g then c", () => {
-    render(<KeyboardShortcuts />);
-    fireEvent.keyDown(document, { key: "g" });
-    fireEvent.keyDown(document, { key: "c" });
-    expect(mockPush).toHaveBeenCalledWith("/calendar");
-  });
-
   test("does not navigate when typing in input", () => {
     render(
       <div>
@@ -67,9 +46,6 @@ describe("KeyboardShortcuts", () => {
     render(<KeyboardShortcuts />);
     fireEvent.keyDown(document, { key: "?" });
     expect(screen.getByText("Go to Home")).toBeInTheDocument();
-    expect(screen.getByText("Go to Boards")).toBeInTheDocument();
-    expect(screen.getByText("Go to Forums")).toBeInTheDocument();
-    expect(screen.getByText("Go to Calendar")).toBeInTheDocument();
     expect(screen.getByText("Show keyboard shortcuts")).toBeInTheDocument();
   });
 });

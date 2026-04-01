@@ -4,14 +4,6 @@ import { prisma } from "@/lib/db";
 
 async function getActionCount(userId: string, action: string): Promise<number> {
   switch (action) {
-    case "post:create":
-      return prisma.post.count({ where: { authorId: userId, deletedAt: null } });
-    case "thread:create":
-      return prisma.thread.count({ where: { authorId: userId, deletedAt: null } });
-    case "topic:create":
-      return prisma.topic.count({ where: { authorId: userId, deletedAt: null } });
-    case "event:create":
-      return prisma.calendarEvent.count({ where: { authorId: userId, deletedAt: null } });
     case "shout:create":
       return prisma.shout.count({ where: { authorId: userId } });
     case "issue:create":
