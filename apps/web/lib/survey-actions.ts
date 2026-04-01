@@ -6,7 +6,7 @@ import { ActionError } from "@/lib/actionErrors";
 import { safe, type ActionResult } from "@/lib/actionUtils";
 import { validateSurveyData, type SurveyData } from "@/lib/survey-config";
 import type { CustomAnswers } from "@/lib/custom-survey-config";
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { triggerGamification } from "@/lib/gamification/trigger";
 import { getDemoSessionId } from "@/lib/demo-session";
 import { awardCustomXp } from "@/lib/gamification/xp-service";
@@ -26,11 +26,12 @@ export async function submitSurvey(data: SurveyData, roundId?: string): Promise<
     // Auto-link to active general survey round if no roundId specified
     let effectiveRoundId = roundId ?? null;
     if (!effectiveRoundId) {
-      const activeRound = await prisma.surveyRound.findFirst({
-        where: { status: "active", customQuestions: { equals: Prisma.DbNull } },
-        select: { id: true },
+      const activeRounds = await prisma.surveyRound.findMany({
+        where: { status: "active" },
+        select: { id: true, customQuestions: true },
       });
-      effectiveRoundId = activeRound?.id ?? null;
+      const generalRound = activeRounds.find((r) => r.customQuestions === null);
+      effectiveRoundId = generalRound?.id ?? null;
     }
 
     await prisma.surveyResponse.create({

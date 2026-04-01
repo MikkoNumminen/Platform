@@ -11,6 +11,7 @@ jest.mock("@/lib/db", () => ({
     },
     surveyRound: {
       findFirst: jest.fn().mockResolvedValue(null),
+      findMany: jest.fn().mockResolvedValue([]),
     },
   },
 }));
