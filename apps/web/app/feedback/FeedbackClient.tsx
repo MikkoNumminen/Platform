@@ -52,9 +52,7 @@ export default function FeedbackClient({
   const [isPending, startTransition] = useTransition();
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [surveyRoundId, setSurveyRoundId] = useState<string | null>(null);
-  // Auto-expand the first round so results are immediately visible
-  const firstRoundId = rounds.length > 0 ? rounds[0].id : null;
-  const [expandedRound, setExpandedRound] = useState<string | null>(firstRoundId);
+  const [expandedRound, setExpandedRound] = useState<string | null>(null);
   const [roundResults, setRoundResults] = useState<Record<string, SurveyResultsData>>({});
   const [loadingResults, setLoadingResults] = useState<string | null>(null);
   const [submittedRounds, setSubmittedRounds] = useState<Set<string>>(new Set());
@@ -74,17 +72,6 @@ export default function FeedbackClient({
     }
     setSubmittedRounds(submitted);
   }, [rounds]);
-
-  // Auto-fetch results for the initially expanded round
-  useEffect(() => {
-    if (firstRoundId && !roundResults[firstRoundId]) {
-      setLoadingResults(firstRoundId);
-      fetchRoundResults(firstRoundId).then((results) => {
-        setRoundResults((prev) => ({ ...prev, [firstRoundId]: results }));
-        setLoadingResults(null);
-      });
-    }
-  }, [firstRoundId]);
 
   const handleExpandRound = async (roundId: string) => {
     if (expandedRound === roundId) {
