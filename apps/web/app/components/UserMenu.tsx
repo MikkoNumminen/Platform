@@ -110,7 +110,6 @@ export default function UserMenu() {
   const displayName = user.alias ?? user.name;
   const permissions = (user.permissions as Record<string, boolean>) ?? {};
   const canManageUsers = Boolean(permissions["admin:users"]);
-  const canViewSurveyResults = Boolean(permissions["survey:results"]);
   const isVuohiOrSuperuser = user.role === "superuser" || user.role === "vuohi";
   const isApproved = user.role !== "pending";
   const isDemoUser = Boolean(user.demoSessionId);
@@ -181,15 +180,6 @@ export default function UserMenu() {
             {tm("manageUsers")}
           </MenuItem>
         )}
-        {canViewSurveyResults && (
-          <MenuItem
-            data-tutorial="nav-survey-results"
-            component={Link}
-            href="/admin/survey-results"
-          >
-            {tm("surveyResults")}
-          </MenuItem>
-        )}
         {isVuohiOrSuperuser && (
           <MenuItem data-tutorial="nav-gamification" component={Link} href="/admin/gamification">
             {tm("vuohiliittoDashboard")}
@@ -226,7 +216,7 @@ export default function UserMenu() {
           </MenuItem>
         )}
         <Divider />
-        <MenuItem component={Link} href="/feedback">
+        <MenuItem data-tutorial="nav-feedback" component={Link} href="/feedback">
           <ListItemIcon>
             <FeedbackIcon fontSize="small" />
           </ListItemIcon>

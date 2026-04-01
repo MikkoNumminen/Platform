@@ -168,8 +168,8 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
   // ── Tier 3: Admin (2 steps) ─────────────────────────────────────────────
   {
     id: "view_survey_results",
-    route: "/admin/survey-results",
-    targetSelector: '[data-tutorial="survey-results"]',
+    route: "/feedback",
+    targetSelector: '[data-tutorial="feedback-page"]',
     autoCompleteOnRoute: true,
     tier: 3,
     xpReward: 10,

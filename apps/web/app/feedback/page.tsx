@@ -24,7 +24,7 @@ export default async function FeedbackPage() {
   return (
     <>
       <TopBar title="Feedback" backHref="/" />
-      <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
+      <Box data-tutorial="feedback-page" sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
         <FeedbackClient
           rounds={rounds}
           legacyResults={legacyResults}

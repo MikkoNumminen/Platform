@@ -20,7 +20,7 @@ const STEP_LABELS: Record<string, string> = {
   check_quests: "Check your quest log",
   view_achievements: "View achievements",
   check_leaderboard: "Check the leaderboard",
-  view_survey_results: "View survey results",
+  view_survey_results: "View feedback & survey results",
   view_gamification_dashboard: "View Vuohiliitto dashboard",
   manage_users: "Open user management",
   approve_user: "Approve a pending user",
