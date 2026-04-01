@@ -68,7 +68,7 @@ export default async function AdminUsersPage() {
               {users.map((user) => (
                 <React.Fragment key={user.id}>
                   <TableRow>
-                    <TableCell sx={{ borderColor: colors.slate300 }}>
+                    <TableCell sx={{ borderBottom: "none" }}>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                         <Avatar
                           src={user.image ?? undefined}
@@ -89,12 +89,12 @@ export default async function AdminUsersPage() {
                         </Box>
                       </Box>
                     </TableCell>
-                    <TableCell sx={{ borderColor: colors.slate300 }}>
+                    <TableCell sx={{ borderBottom: "none" }}>
                       <Typography variant="body2" sx={{ color: colors.slate400 }}>
                         {user.email}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{ borderColor: colors.slate300 }}>
+                    <TableCell sx={{ borderBottom: "none" }}>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                         <UserRoleSelect
                           userId={user.id}
@@ -116,7 +116,7 @@ export default async function AdminUsersPage() {
                         )}
                       </Box>
                     </TableCell>
-                    <TableCell sx={{ borderColor: colors.slate300 }}>
+                    <TableCell sx={{ borderBottom: "none" }}>
                       <DeveloperTagSelect
                         userId={user.id}
                         currentTag={user.developerTag}
@@ -126,12 +126,12 @@ export default async function AdminUsersPage() {
                         targetRole={user.role}
                       />
                     </TableCell>
-                    <TableCell sx={{ borderColor: colors.slate300 }}>
+                    <TableCell sx={{ borderBottom: "none" }}>
                       <Typography variant="body2" sx={{ color: colors.slate400 }}>
                         {user.createdAt.toLocaleDateString()}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{ borderColor: colors.slate300, p: 0 }} />
+                    <TableCell sx={{ borderBottom: "none", p: 0 }} />
                   </TableRow>
                   <TableRow>
                     <TableCell colSpan={6} sx={{ borderColor: colors.slate300, py: 0, px: 2 }}>
