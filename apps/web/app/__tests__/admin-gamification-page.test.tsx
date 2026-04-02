@@ -44,11 +44,29 @@ const mockStats = {
   ],
   topAchievements: [
     {
-      achievement: { id: "a1", name: "First Post", icon: "star", description: "Create a post" },
+      achievement: {
+        id: "a1",
+        name: "First Post",
+        icon: "star",
+        description: "Create a post",
+        xpReward: 50,
+        tier: "bronze",
+      },
       count: 8,
     },
   ],
-  questCompletionRates: [{ name: "Daily Login", icon: "calendar", completionRate: 75 }],
+  questCompletionRates: [
+    {
+      name: "Daily Login",
+      icon: "calendar",
+      description: "Log in today",
+      xpReward: 10,
+      type: "daily",
+      completedCount: 3,
+      totalUsers: 4,
+      completionRate: 75,
+    },
+  ],
   recentActivity: [
     { amount: 10, user: "Alice", source: "post:create", createdAt: "2026-03-28T10:00:00Z" },
   ],

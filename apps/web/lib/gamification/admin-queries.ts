@@ -106,6 +106,8 @@ async function fetchGamificationStats() {
     name: q.name,
     icon: q.icon,
     type: q.type,
+    description: q.description,
+    xpReward: q.xpReward,
     completedCount: q._count.userProgress,
     totalUsers: totalUsersWithXp || 1,
     completionRate:

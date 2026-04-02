@@ -187,25 +187,79 @@ export default async function GamificationDashboardPage() {
               ) : (
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                   {stats.topAchievements.map((ta) => (
-                    <Box
+                    <Tooltip
                       key={ta.achievement.id}
-                      sx={{ display: "flex", alignItems: "center", gap: 1.5 }}
+                      arrow
+                      placement="left"
+                      slotProps={{
+                        tooltip: {
+                          sx: {
+                            maxWidth: 300,
+                            backgroundColor: colors.backdrop,
+                            border: `1px solid ${colors.accentBorder}`,
+                            p: 1.5,
+                          },
+                        },
+                      }}
+                      title={
+                        <Box>
+                          <Typography
+                            variant="subtitle2"
+                            sx={{ fontWeight: 700, color: colors.green400 }}
+                          >
+                            {ta.achievement.icon} {ta.achievement.name}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ color: colors.slate300, display: "block", mt: 0.5 }}
+                          >
+                            {ta.achievement.description}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ color: colors.slate400, display: "block", mt: 0.5 }}
+                          >
+                            Reward: <strong>{ta.achievement.xpReward} XP</strong>
+                            {ta.achievement.tier && ` · ${ta.achievement.tier} tier`}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ color: colors.slate400, display: "block" }}
+                          >
+                            Unlocked by {ta.count} user{ta.count !== 1 ? "s" : ""}
+                          </Typography>
+                        </Box>
+                      }
                     >
-                      <Typography sx={{ fontSize: "1.2rem" }}>{ta.achievement.icon}</Typography>
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {ta.achievement.name}
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: colors.slate400 }}>
-                          {ta.achievement.description}
-                        </Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1.5,
+                          cursor: "pointer",
+                          borderRadius: 1,
+                          px: 0.5,
+                          py: 0.25,
+                          transition: "background-color 0.15s",
+                          "&:hover": { backgroundColor: colors.hoverOverlay },
+                        }}
+                      >
+                        <Typography sx={{ fontSize: "1.2rem" }}>{ta.achievement.icon}</Typography>
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            {ta.achievement.name}
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: colors.slate400 }}>
+                            {ta.achievement.description}
+                          </Typography>
+                        </Box>
+                        <Chip
+                          label={`${ta.count} users`}
+                          size="small"
+                          sx={{ backgroundColor: colors.accentBgSubtle, color: colors.green400 }}
+                        />
                       </Box>
-                      <Chip
-                        label={`${ta.count} users`}
-                        size="small"
-                        sx={{ backgroundColor: colors.accentBgSubtle, color: colors.green400 }}
-                      />
-                    </Box>
+                    </Tooltip>
                   ))}
                 </Box>
               )}
@@ -220,32 +274,89 @@ export default async function GamificationDashboardPage() {
               </Typography>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                 {stats.questCompletionRates.map((qc) => (
-                  <Box key={qc.name} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <Typography sx={{ fontSize: "1rem" }}>{qc.icon}</Typography>
-                    <Box sx={{ flex: 1, minWidth: 0 }}>
-                      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                        <Typography variant="body2" noWrap>
-                          {qc.name}
+                  <Tooltip
+                    key={qc.name}
+                    arrow
+                    placement="left"
+                    slotProps={{
+                      tooltip: {
+                        sx: {
+                          maxWidth: 300,
+                          backgroundColor: colors.backdrop,
+                          border: `1px solid ${colors.accentBorder}`,
+                          p: 1.5,
+                        },
+                      },
+                    }}
+                    title={
+                      <Box>
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ fontWeight: 700, color: colors.green400 }}
+                        >
+                          {qc.icon} {qc.name}
                         </Typography>
-                        <Typography variant="caption" sx={{ color: colors.slate400 }}>
-                          {qc.completionRate}%
+                        <Typography
+                          variant="caption"
+                          sx={{ color: colors.slate300, display: "block", mt: 0.5 }}
+                        >
+                          {qc.description}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{ color: colors.slate400, display: "block", mt: 0.5 }}
+                        >
+                          Reward: <strong>{qc.xpReward} XP</strong> · {qc.type} quest
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{ color: colors.slate400, display: "block" }}
+                        >
+                          {qc.completedCount} of {qc.totalUsers} users completed (
+                          {qc.completionRate}%)
                         </Typography>
                       </Box>
-                      <LinearProgress
-                        variant="determinate"
-                        value={qc.completionRate}
-                        sx={{
-                          height: 4,
-                          borderRadius: 2,
-                          backgroundColor: colors.surfaceOverlay,
-                          "& .MuiLinearProgress-bar": {
+                    }
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        cursor: "pointer",
+                        borderRadius: 1,
+                        px: 0.5,
+                        py: 0.25,
+                        transition: "background-color 0.15s",
+                        "&:hover": { backgroundColor: colors.hoverOverlay },
+                      }}
+                    >
+                      <Typography sx={{ fontSize: "1rem" }}>{qc.icon}</Typography>
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                          <Typography variant="body2" noWrap>
+                            {qc.name}
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: colors.slate400 }}>
+                            {qc.completionRate}%
+                          </Typography>
+                        </Box>
+                        <LinearProgress
+                          variant="determinate"
+                          value={qc.completionRate}
+                          sx={{
+                            height: 4,
                             borderRadius: 2,
-                            backgroundColor: colors.green400,
-                          },
-                        }}
-                      />
+                            backgroundColor: colors.surfaceOverlay,
+                            "& .MuiLinearProgress-bar": {
+                              borderRadius: 2,
+                              backgroundColor: colors.green400,
+                            },
+                          }}
+                        />
+                      </Box>
                     </Box>
-                  </Box>
+                  </Tooltip>
                 ))}
               </Box>
             </CardContent>
