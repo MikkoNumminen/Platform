@@ -29,7 +29,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import TopBar from "../../../components/TopBar";
-import { colors } from "../../../styles";
+import { colors, TIER_COLORS } from "../../../styles";
 import {
   createAchievement,
   updateAchievement,
@@ -127,13 +127,6 @@ interface QuestData {
   repeatable: boolean;
   sortOrder: number;
 }
-
-const TIER_COLORS: Record<string, string> = {
-  bronze: colors.tierBronze,
-  silver: colors.tierSilver,
-  gold: colors.tierGold,
-  legendary: colors.tierLegendary,
-};
 
 const ACHIEVEMENT_CATEGORIES = ["onboarding", "content", "social", "moderation", "special"];
 const ACHIEVEMENT_TIERS = [null, "bronze", "silver", "gold", "legendary"];

@@ -1,9 +1,10 @@
 "use client";
 
-import { Avatar, Box, Card, CardContent, LinearProgress, Typography } from "@mui/material";
+import { Avatar, Box, Card, CardContent, Typography } from "@mui/material";
 import TopBar from "../components/TopBar";
+import XpProgressCard from "../components/XpProgressCard";
+import type { XpProgress } from "../components/XpProgressCard";
 import { colors } from "../styles";
-import type { LevelThreshold } from "@/lib/gamification/xp-config";
 import { LEVEL_THRESHOLDS } from "@/lib/gamification/xp-config";
 
 interface LeaderboardEntry {
@@ -15,14 +16,6 @@ interface LeaderboardEntry {
   role: string;
   totalXp: number;
   level: number;
-}
-
-interface XpProgress {
-  current: LevelThreshold;
-  next: LevelThreshold | null;
-  xpIntoLevel: number;
-  xpForNextLevel: number;
-  progressPercent: number;
 }
 
 interface LeaderboardViewProps {
@@ -50,36 +43,7 @@ export default function LeaderboardView({
     <>
       <TopBar title="Leaderboard" backHref="/" />
       <Box sx={{ maxWidth: 800, mx: "auto", px: { xs: 1, sm: 2 }, py: 2 }}>
-        {/* XP Summary */}
-        <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                Level {xpProgress.current.level} — {xpProgress.current.title}
-              </Typography>
-              {xpProgress.next && (
-                <Typography variant="body2" sx={{ color: colors.slate400 }}>
-                  {xpProgress.xpIntoLevel} / {xpProgress.xpForNextLevel} XP
-                </Typography>
-              )}
-            </Box>
-            <LinearProgress
-              variant="determinate"
-              value={xpProgress.progressPercent}
-              sx={{
-                height: 12,
-                borderRadius: 2,
-                backgroundColor: colors.surfaceOverlay,
-                "& .MuiLinearProgress-bar": {
-                  borderRadius: 2,
-                  background: colors.progressGradient,
-                },
-              }}
-            />
-          </CardContent>
-        </Card>
+        <XpProgressCard xpProgress={xpProgress} />
 
         {/* Leaderboard */}
         <Box

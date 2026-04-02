@@ -24,7 +24,13 @@ import AddIcon from "@mui/icons-material/Add";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { colors } from "../../styles";
+import {
+  colors,
+  STATUS_COLORS,
+  STATUS_LABELS,
+  PRIORITY_COLORS,
+  PRIORITY_LABELS,
+} from "../../styles";
 import { DEVELOPMENT_SKILL_OPTIONS } from "@/lib/survey-config";
 import {
   createCustomQuest,
@@ -59,32 +65,6 @@ interface QuestListClientProps {
   users: QuestUser[];
   canManage: boolean;
 }
-
-const STATUS_COLORS: Record<string, string> = {
-  open: colors.warning,
-  in_progress: colors.info,
-  completed: colors.success,
-};
-
-const STATUS_LABELS: Record<string, string> = {
-  open: "Open",
-  in_progress: "In Progress",
-  completed: "Completed",
-};
-
-const PRIORITY_LABELS: Record<string, string> = {
-  low: "Low",
-  normal: "Normal",
-  high: "High",
-  urgent: "Urgent",
-};
-
-const PRIORITY_COLORS: Record<string, string> = {
-  low: colors.slate400,
-  normal: colors.info,
-  high: colors.warning,
-  urgent: colors.error,
-};
 
 export default function QuestListClient({ initialQuests, users, canManage }: QuestListClientProps) {
   const [filter, setFilter] = useState<string>("all");

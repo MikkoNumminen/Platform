@@ -51,3 +51,38 @@ export const colors = {
   btnPrimaryHoverVia: "var(--platform-btnPrimaryHoverVia)",
   btnPrimaryHoverTo: "var(--platform-btnPrimaryHoverTo)",
 };
+
+// ─── Shared semantic color maps ──────────────────────────────────────────────
+
+export const TIER_COLORS: Record<string, string> = {
+  bronze: colors.tierBronze,
+  silver: colors.tierSilver,
+  gold: colors.tierGold,
+  legendary: colors.tierLegendary,
+};
+
+export const STATUS_COLORS: Record<string, string> = {
+  open: colors.warning,
+  in_progress: colors.info,
+  completed: colors.success,
+};
+
+export const STATUS_LABELS: Record<string, string> = {
+  open: "Open",
+  in_progress: "In Progress",
+  completed: "Completed",
+};
+
+export const PRIORITY_COLORS: Record<string, string> = {
+  low: colors.slate400,
+  normal: colors.info,
+  high: colors.warning,
+  urgent: colors.error,
+};
+
+export const PRIORITY_LABELS: Record<string, string> = {
+  low: "Low",
+  normal: "Normal",
+  high: "High",
+  urgent: "Urgent",
+};

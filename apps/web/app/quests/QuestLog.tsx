@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { Box, Card, CardContent, Chip, LinearProgress, Tab, Tabs, Typography } from "@mui/material";
 import TopBar from "../components/TopBar";
+import XpProgressCard from "../components/XpProgressCard";
+import type { XpProgress } from "../components/XpProgressCard";
 import QuestReceivedCelebration from "../components/QuestReceivedCelebration";
 import QuestListClient from "../admin/quests/QuestListClient";
-import { colors } from "../styles";
-import type { LevelThreshold } from "@/lib/gamification/xp-config";
+import { colors, STATUS_COLORS, STATUS_LABELS, PRIORITY_COLORS } from "../styles";
 
 interface QuestData {
   id: string;
@@ -21,14 +22,6 @@ interface QuestData {
   target: number;
   completed: boolean;
   completedAt: Date | null | undefined;
-}
-
-interface XpProgress {
-  current: LevelThreshold;
-  next: LevelThreshold | null;
-  xpIntoLevel: number;
-  xpForNextLevel: number;
-  progressPercent: number;
 }
 
 interface CustomQuestData {
@@ -78,25 +71,6 @@ const TAB_LABELS: Record<string, string> = {
   special: "Special",
 };
 
-const STATUS_COLORS: Record<string, string> = {
-  open: colors.warning,
-  in_progress: colors.info,
-  completed: colors.success,
-};
-
-const STATUS_LABELS: Record<string, string> = {
-  open: "Open",
-  in_progress: "In Progress",
-  completed: "Completed",
-};
-
-const PRIORITY_COLORS: Record<string, string> = {
-  low: colors.slate400,
-  normal: colors.info,
-  high: colors.warning,
-  urgent: colors.error,
-};
-
 export default function QuestLog({
   quests,
   xpProgress,
@@ -123,52 +97,7 @@ export default function QuestLog({
       />
       <TopBar title="Quest Log" backHref="/" />
       <Box sx={{ maxWidth: 800, mx: "auto", px: { xs: 1, sm: 2 }, py: 2 }}>
-        {/* XP Summary */}
-        <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                Level {xpProgress.current.level} — {xpProgress.current.title}
-              </Typography>
-              {xpProgress.next && (
-                <Typography variant="body2" sx={{ color: colors.slate400 }}>
-                  {xpProgress.xpIntoLevel} / {xpProgress.xpForNextLevel} XP
-                </Typography>
-              )}
-            </Box>
-            <LinearProgress
-              variant="determinate"
-              value={xpProgress.progressPercent}
-              sx={{
-                height: 12,
-                borderRadius: 2,
-                backgroundColor: colors.surfaceOverlay,
-                "& .MuiLinearProgress-bar": {
-                  borderRadius: 2,
-                  background: colors.progressGradient,
-                },
-              }}
-            />
-            {xpProgress.next && (
-              <Typography
-                variant="caption"
-                sx={{ color: colors.slate400, mt: 0.5, display: "block" }}
-              >
-                Next: Level {xpProgress.next.level} — {xpProgress.next.title}
-              </Typography>
-            )}
-            {!xpProgress.next && (
-              <Typography
-                variant="caption"
-                sx={{ color: colors.green400, mt: 0.5, display: "block" }}
-              >
-                Max level reached!
-              </Typography>
-            )}
-          </CardContent>
-        </Card>
+        <XpProgressCard xpProgress={xpProgress} showNextLevel />
 
         {/* Quest Board (embedded for superuser/vuohi/admin) */}
         {questBoard && (

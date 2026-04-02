@@ -1,19 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Box,
-  Card,
-  CardContent,
-  LinearProgress,
-  Tab,
-  Tabs,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Box, Card, CardContent, Tab, Tabs, Tooltip, Typography } from "@mui/material";
 import TopBar from "../components/TopBar";
-import { colors } from "../styles";
-import type { LevelThreshold } from "@/lib/gamification/xp-config";
+import XpProgressCard from "../components/XpProgressCard";
+import type { XpProgress } from "../components/XpProgressCard";
+import { colors, TIER_COLORS } from "../styles";
 
 interface AchievementData {
   id: string;
@@ -29,25 +21,10 @@ interface AchievementData {
   unlockedAt: Date | null;
 }
 
-interface XpProgress {
-  current: LevelThreshold;
-  next: LevelThreshold | null;
-  xpIntoLevel: number;
-  xpForNextLevel: number;
-  progressPercent: number;
-}
-
 interface AchievementShowcaseProps {
   achievements: AchievementData[];
   xpProgress: XpProgress;
 }
-
-const TIER_COLORS: Record<string, string> = {
-  bronze: colors.tierBronze,
-  silver: colors.tierSilver,
-  gold: colors.tierGold,
-  legendary: colors.tierLegendary,
-};
 
 const CATEGORY_TABS = ["all", "onboarding", "content", "social", "moderation", "special"] as const;
 const CATEGORY_LABELS: Record<string, string> = {
@@ -76,34 +53,14 @@ export default function AchievementShowcase({
     <>
       <TopBar title="Achievements" backHref="/" />
       <Box sx={{ maxWidth: 1000, mx: "auto", px: { xs: 1, sm: 2 }, py: 2 }}>
-        {/* XP Summary */}
-        <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                Level {xpProgress.current.level} — {xpProgress.current.title}
-              </Typography>
-              <Typography variant="body2" sx={{ color: colors.slate400 }}>
-                {unlockedCount} / {achievements.length} unlocked
-              </Typography>
-            </Box>
-            <LinearProgress
-              variant="determinate"
-              value={xpProgress.progressPercent}
-              sx={{
-                height: 12,
-                borderRadius: 2,
-                backgroundColor: colors.surfaceOverlay,
-                "& .MuiLinearProgress-bar": {
-                  borderRadius: 2,
-                  background: colors.progressGradient,
-                },
-              }}
-            />
-          </CardContent>
-        </Card>
+        <XpProgressCard
+          xpProgress={xpProgress}
+          rightLabel={
+            <Typography variant="body2" sx={{ color: colors.slate400 }}>
+              {unlockedCount} / {achievements.length} unlocked
+            </Typography>
+          }
+        />
 
         {/* Category Tabs */}
         <Tabs

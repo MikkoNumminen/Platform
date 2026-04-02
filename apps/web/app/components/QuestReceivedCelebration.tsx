@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Box, Chip, Typography } from "@mui/material";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-import { colors } from "../styles";
+import { colors, PRIORITY_COLORS, PRIORITY_LABELS } from "../styles";
 
 const LOCALSTORAGE_KEY = "platform_seen_quests";
 
@@ -20,20 +20,6 @@ interface QuestInfo {
 interface QuestReceivedCelebrationProps {
   quests: QuestInfo[];
 }
-
-const PRIORITY_LABELS: Record<string, string> = {
-  low: "Low",
-  normal: "Normal",
-  high: "High",
-  urgent: "Urgent",
-};
-
-const PRIORITY_COLORS: Record<string, string> = {
-  low: colors.slate400,
-  normal: colors.info,
-  high: colors.warning,
-  urgent: colors.error,
-};
 
 const PARTICLES = ["📜", "⚔️", "🛡️", "🏹", "🗡️", "📋"];
 
