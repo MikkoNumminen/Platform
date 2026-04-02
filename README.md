@@ -23,8 +23,9 @@ packages/config/ — Shared types and config (@platform/config)
   - **Whisper tabs** — Private DM conversations in pink WoW whisper style (`To [alias]:` / `[alias] whispers:`) with closable tabs, unread badges, developer tag icons, and superuser indicators
   - **`/w alias message`** — Slash command to whisper any user from any tab, with live autocomplete suggestions and Tab key completion as you type
   - **Privacy Inbox** — Superuser gets a special locked conversation for data protection inquiries (privacy@vuohiliitto.com)
-  - **System MOTD** — Welcome message with command help shown on every tab load
-- **Completed Quests Feed** — Shows recently completed custom quests below the shoutbox (who, what, XP earned)
+  - **`/help`** — Shows available chat commands (client-only, not sent to chat)
+  - **`/motd message`** — Superuser and architects can change the welcome message
+  - **Tab autocomplete** — Ghost text overlay shows completion as you type `/w`, Tab key accepts
 - **Dev Log** — Live GitHub commit feed with color-coded build status (green/red/pending), 10-minute cache, visible to all visitors
 - **Boards** — Categorized discussion boards with full CRUD, pinned posts, and threaded comments
 - **Forums** — Discussion forums with topics and threaded replies
@@ -46,9 +47,19 @@ packages/config/ — Shared types and config (@platform/config)
 - **Skill-targeted quests** — Quests can target a development skill; matching users earn double XP on completion
 
 ### Feedback System
-- **Survey rounds** — Superuser creates survey rounds with optional XP rewards; users take surveys from the feedback page
-- **Results dashboard** — Expandable per-round results with bar charts and text response lists
-- **Quest integration** — Survey rounds can auto-create CustomQuests for all active users; completing the survey auto-completes the quest and awards XP
+- **Survey rounds** — Superuser creates multiple simultaneous survey rounds with optional XP rewards; users take surveys from the feedback page
+- **Custom themed surveys** — Rounds can have custom questions (single select, multi select, text) defined as JSON; renders dynamically in the survey form
+- **Campaign quests** — Survey rounds with deadlines create campaign quest panels (fixed bottom-right widget) with auto-completing tasks and inline survey dialog
+- **Results dashboard** — Expandable per-round results with bar charts and text response lists; custom question results aggregate automatically
+- **Quest integration** — Survey rounds auto-create CustomQuests for all active users; completing the survey auto-completes the quest and awards XP
+- **Initial Survey** — Legacy mandatory survey responses shown separately with full results
+
+### WoW Mythic+ Integration
+- **Character tracking** — Add WoW characters by name/realm/region; stats fetched from [Raider.IO](https://raider.io) API
+- **Team roster** — Shared view at `/mythic-plus` showing all team characters sorted by M+ rating
+- **Character cards** — Avatar, name-realm, class/spec/race, item level badge, M+ rating badge color-coded by WoW quality tiers (gray → green → blue → purple → orange)
+- **Live refresh** — Refresh individual characters or all at once from Raider.IO
+- **No login required** — Uses the free Raider.IO API (no Battle.net OAuth needed)
 
 ### Demo Mode
 - **Zero-credential demo** — "Try Demo" button in TopBar for unauthenticated visitors; one-click login as superuser
@@ -71,10 +82,10 @@ packages/config/ — Shared types and config (@platform/config)
 - **Vuohiliitto Dashboard** — XP stats, level distribution with hover tooltips, achievement/quest completion rates (superuser/vuohi only)
 - **Quest Board** — Global view of all custom quests with filters, creation form, and status management
 - **Achievement & Quest CRUD** — Admin editor for managing gamification content
-- **Audit Log** — Searchable log of admin actions (role changes, permission edits, user approvals) with actor, target, and details
+- **Audit Log** — Searchable log of all admin actions (role changes, permission edits, quest management, survey rounds, GDPR operations) with actor, target, old/new values, action filter dropdown, and DataTable with pagination
 
 ### Security
-- **Authentication** — NextAuth v5 with Google OAuth, GitHub OAuth, and zero-credential demo login
+- **Authentication** — NextAuth v5 with Google OAuth, GitHub OAuth, zero-credential demo login; JWT includes role, alias, developerTag, and permissions
 - **Role-based permissions** — Superuser, vuohi, admin, user, and pending roles with 25 granular permission keys and per-user overrides
 - **Role hierarchy enforcement** — Users can only modify lower-ranked users and assign lower-ranked roles
 - **Content ownership** — Edit actions verify the user is the author; admin routes check role in middleware
@@ -136,7 +147,7 @@ npx turbo run build --filter=web # Production build
 
 ## Testing
 
-1120+ tests across 131+ test suites with accessibility checks (jest-axe). Playwright E2E framework configured for critical user journeys.
+1150+ tests across 135+ test suites with accessibility checks (jest-axe). Playwright E2E framework configured for critical user journeys.
 
 ```bash
 npx turbo run test --filter=web           # All unit/integration tests
