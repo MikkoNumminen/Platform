@@ -31,6 +31,9 @@ jest.mock("@/lib/db", () => ({
       create: (...args: unknown[]) => mockUserPermissionCreate(...args),
       findMany: (...args: unknown[]) => mockUserPermissionFindMany(...args),
     },
+    auditLog: {
+      create: jest.fn().mockResolvedValue({}),
+    },
   },
 }));
 
@@ -38,10 +41,19 @@ jest.mock("next/headers", () => ({
   headers: jest.fn().mockResolvedValue({ get: () => null }),
 }));
 
+jest.mock("@/lib/demo-session", () => ({
+  getDemoSessionId: jest.fn().mockResolvedValue(null),
+}));
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 jest.mock("@/lib/guardedAction", () => require("./helpers/mock-guarded-action"));
 
-import { updateUserRole, updateUserPermissions } from "@/lib/user-actions";
+import {
+  updateUserRole,
+  updateUserPermissions,
+  setDeveloperTag,
+  fetchUserPermissionOverrides,
+} from "@/lib/user-actions";
 
 function superuserSession() {
   return {
@@ -369,5 +381,84 @@ describe("updateUserPermissions", () => {
       where: { id: userId },
       data: { permissionsVersion: { increment: 1 } },
     });
+  });
+});
+
+describe("setDeveloperTag", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockRateLimit.mockResolvedValue(undefined);
+    mockUpdate.mockResolvedValue({});
+  });
+
+  test("allows superuser to set a valid tag", async () => {
+    mockAuth.mockResolvedValue(superuserSession());
+    mockFindFirst.mockResolvedValue({ id: userId, role: "user", developerTag: null });
+    const result = await setDeveloperTag(userId, "architect");
+    expect(result).toBeUndefined();
+    expect(mockUpdate).toHaveBeenCalledWith({
+      where: { id: userId },
+      data: { developerTag: "architect" },
+    });
+  });
+
+  test("allows superuser to clear a tag", async () => {
+    mockAuth.mockResolvedValue(superuserSession());
+    mockFindFirst.mockResolvedValue({ id: userId, role: "user", developerTag: "architect" });
+    const result = await setDeveloperTag(userId, null);
+    expect(result).toBeUndefined();
+  });
+
+  test("rejects non-superuser", async () => {
+    mockAuth.mockResolvedValue(vuohiSession());
+    const result = await setDeveloperTag(userId, "architect");
+    expect(result).toEqual(expect.objectContaining({ code: "permissionDenied" }));
+  });
+
+  test("rejects invalid tag", async () => {
+    mockAuth.mockResolvedValue(superuserSession());
+    const result = await setDeveloperTag(userId, "invalid-tag");
+    expect(result).toEqual(expect.objectContaining({ code: "invalidInput" }));
+  });
+
+  test("rejects master tag for non-superuser target", async () => {
+    mockAuth.mockResolvedValue(superuserSession());
+    mockFindFirst
+      .mockResolvedValueOnce({ role: "user" })
+      .mockResolvedValueOnce({ id: userId, role: "user" });
+    const result = await setDeveloperTag(userId, "master");
+    expect(result).toEqual(expect.objectContaining({ code: "permissionDenied" }));
+  });
+
+  test("returns error when user not found", async () => {
+    mockAuth.mockResolvedValue(superuserSession());
+    mockFindFirst.mockReset();
+    mockFindFirst.mockResolvedValue(null);
+    const result = await setDeveloperTag(userId, "architect");
+    expect(result).toEqual(expect.objectContaining({ code: "notFound" }));
+  });
+});
+
+describe("fetchUserPermissionOverrides", () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  test("returns empty without admin:users permission", async () => {
+    mockAuth.mockResolvedValue({ user: { permissions: {} } });
+    expect(await fetchUserPermissionOverrides(userId)).toEqual([]);
+  });
+
+  test("returns overrides with admin:users permission", async () => {
+    mockAuth.mockResolvedValue({ user: { permissions: { "admin:users": true } } });
+    mockUserPermissionFindMany.mockResolvedValue([
+      { permission: { key: "dm:send" }, granted: false },
+    ]);
+    const result = await fetchUserPermissionOverrides(userId);
+    expect(result).toEqual([{ key: "dm:send", granted: false }]);
+  });
+
+  test("returns empty array when no overrides exist", async () => {
+    mockAuth.mockResolvedValue({ user: { permissions: { "admin:users": true } } });
+    mockUserPermissionFindMany.mockResolvedValue([]);
+    expect(await fetchUserPermissionOverrides(userId)).toEqual([]);
   });
 });

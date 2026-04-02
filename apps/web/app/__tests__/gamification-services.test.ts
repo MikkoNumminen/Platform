@@ -27,6 +27,8 @@ const mockIssueReportCount = jest.fn();
 const mockSurveyResponseCount = jest.fn();
 const mockUserFindUnique = jest.fn();
 const mockUserTourProgressCount = jest.fn();
+const mockFeedbackCount = jest.fn();
+const mockUserQuestProgressFindMany = jest.fn();
 
 jest.mock("@/lib/db", () => ({
   prisma: {
@@ -54,6 +56,7 @@ jest.mock("@/lib/db", () => ({
     quest: { findMany: (...a: any[]) => mockQuestFindMany(...a) },
     userQuestProgress: {
       findUnique: (...a: any[]) => mockUserQuestProgressFindUnique(...a),
+      findMany: (...a: any[]) => mockUserQuestProgressFindMany(...a),
       upsert: (...a: any[]) => mockUserQuestProgressUpsert(...a),
       updateMany: (...a: any[]) => mockUserQuestProgressUpdateMany(...a),
     },
@@ -66,14 +69,29 @@ jest.mock("@/lib/db", () => ({
     surveyResponse: { count: (...a: any[]) => mockSurveyResponseCount(...a) },
     user: { findUnique: (...a: any[]) => mockUserFindUnique(...a) },
     userTourProgress: { count: (...a: any[]) => mockUserTourProgressCount(...a) },
+    feedback: { count: (...a: any[]) => mockFeedbackCount(...a) },
   },
+}));
+
+jest.mock("@/lib/demo-session", () => ({
+  getDemoSessionId: jest.fn().mockResolvedValue(null),
 }));
 jest.mock("@/auth", () => ({ auth: jest.fn() }));
 
-import { awardXp, getUserXpData, getLeaderboard } from "@/lib/gamification/xp-service";
-import { checkAchievements } from "@/lib/gamification/achievement-service";
+import {
+  awardXp,
+  awardCustomXp,
+  getUserXpData,
+  getLeaderboard,
+  getRecentXpTransactions,
+} from "@/lib/gamification/xp-service";
+import {
+  checkAchievements,
+  getAllAchievementsWithStatus,
+} from "@/lib/gamification/achievement-service";
 import {
   updateQuestProgress,
+  getActiveQuests,
   resetDailyQuests,
   resetWeeklyQuests,
 } from "@/lib/gamification/quest-service";
@@ -540,5 +558,181 @@ describe("trigger", () => {
       await expect(triggerGamification("u1", "issue:create")).resolves.toBeUndefined();
       consoleSpy.mockRestore();
     });
+  });
+});
+
+// ─── Additional coverage tests ──────────────────────────────────────────────
+
+describe("achievement-service extended", () => {
+  test("getAllAchievementsWithStatus returns achievements with unlock status", async () => {
+    mockAchievementFindMany.mockResolvedValue([
+      { id: "a1", key: "test", name: "Test", category: "onboarding", sortOrder: 1 },
+    ]);
+    mockUserAchievementFindMany.mockResolvedValue([
+      { achievementId: "a1", unlockedAt: new Date("2026-04-01") },
+    ]);
+
+    const result = await getAllAchievementsWithStatus("u1");
+    expect(result).toHaveLength(1);
+    expect(result[0].unlocked).toBe(true);
+    expect(result[0].unlockedAt).toBeDefined();
+  });
+
+  test("getAllAchievementsWithStatus marks locked achievements", async () => {
+    mockAchievementFindMany.mockResolvedValue([{ id: "a1", key: "test" }]);
+    mockUserAchievementFindMany.mockResolvedValue([]);
+
+    const result = await getAllAchievementsWithStatus("u1");
+    expect(result[0].unlocked).toBe(false);
+    expect(result[0].unlockedAt).toBeNull();
+  });
+
+  test("getAllAchievementsWithStatus returns empty on error", async () => {
+    mockAchievementFindMany.mockRejectedValue(new Error("db error"));
+    const result = await getAllAchievementsWithStatus("u1");
+    expect(result).toEqual([]);
+  });
+
+  test("checkAchievements handles feedback:submit action", async () => {
+    mockAchievementFindMany.mockResolvedValue([
+      {
+        id: "a1",
+        key: "feedback_first",
+        criteria: { type: "count", action: "feedback:submit", threshold: 1 },
+        xpReward: 25,
+      },
+    ]);
+    mockUserAchievementFindMany.mockResolvedValue([]);
+    mockFeedbackCount.mockResolvedValue(1);
+    mockUserAchievementCreate.mockResolvedValue({});
+    mockXpTransactionCreate.mockResolvedValue({});
+    mockUserLevelUpsert.mockResolvedValue({});
+
+    const results = await checkAchievements("u1", "feedback:submit");
+    expect(results).toHaveLength(1);
+    expect(results[0].achievementKey).toBe("feedback_first");
+  });
+});
+
+describe("xp-service extended", () => {
+  test("awardXp enforces daily DM XP cap", async () => {
+    mockXpTransactionAggregate.mockResolvedValue({ _sum: { amount: 15 } });
+    const result = await awardXp("u1", "dm:send");
+    expect(result).toBeNull();
+  });
+
+  test("awardXp allows DM XP below cap", async () => {
+    mockXpTransactionAggregate.mockResolvedValue({ _sum: { amount: 12 } });
+    mockXpTransactionCreate.mockResolvedValue({});
+    mockUserLevelUpsert.mockResolvedValue({ totalXp: 15, level: 1, userId: "u1" });
+    const result = await awardXp("u1", "dm:send");
+    expect(result).not.toBeNull();
+    expect(result!.xpAwarded).toBe(3);
+  });
+
+  test("awardCustomXp awards custom amount", async () => {
+    mockXpTransactionCreate.mockResolvedValue({});
+    mockUserLevelUpsert.mockResolvedValue({ totalXp: 100, level: 1, userId: "u1" });
+    mockUserLevelUpdate.mockResolvedValue({});
+    const result = await awardCustomXp("u1", 100, "custom_quest:complete", "q1");
+    expect(result).not.toBeNull();
+    expect(result!.xpAwarded).toBe(100);
+  });
+
+  test("awardCustomXp returns null for zero amount", async () => {
+    const result = await awardCustomXp("u1", 0, "custom_quest:complete");
+    expect(result).toBeNull();
+  });
+
+  test("getLeaderboard returns ranked entries", async () => {
+    mockUserLevelFindMany.mockResolvedValue([
+      {
+        userId: "u1",
+        totalXp: 500,
+        level: 3,
+        user: {
+          id: "u1",
+          alias: "Alice",
+          name: "Alice A",
+          image: null,
+          avatarUrl: "/a.png",
+          role: "user",
+        },
+      },
+    ]);
+    const lb = await getLeaderboard(10);
+    expect(lb).toHaveLength(1);
+    expect(lb[0].rank).toBe(1);
+    expect(lb[0].alias).toBe("Alice");
+  });
+
+  test("getLeaderboard returns empty on error", async () => {
+    mockUserLevelFindMany.mockRejectedValue(new Error("db error"));
+    const lb = await getLeaderboard();
+    expect(lb).toEqual([]);
+  });
+
+  test("getRecentXpTransactions returns transactions", async () => {
+    mockXpTransactionFindMany.mockResolvedValue([{ id: "t1", amount: 10 }]);
+    const txs = await getRecentXpTransactions("u1");
+    expect(txs).toHaveLength(1);
+  });
+});
+
+describe("quest-service extended", () => {
+  test("getActiveQuests returns quests with progress", async () => {
+    mockQuestFindMany.mockResolvedValue([
+      {
+        id: "q1",
+        key: "daily_login",
+        name: "Check In",
+        description: "Log in",
+        icon: "☀️",
+        type: "daily",
+        xpReward: 10,
+        repeatable: true,
+        criteria: { action: "daily:login", count: 1 },
+        sortOrder: 1,
+      },
+    ]);
+    mockUserQuestProgressFindMany.mockResolvedValue([
+      { questId: "q1", progress: 1, completed: true, completedAt: new Date(), resetAt: null },
+    ]);
+
+    const result = await getActiveQuests("u1");
+    expect(result).toHaveLength(1);
+    expect(result[0].completed).toBe(true);
+    expect(result[0].progress).toBe(1);
+  });
+
+  test("getActiveQuests resets repeatable quest after resetAt", async () => {
+    const completedAt = new Date("2026-04-01");
+    const resetAt = new Date("2026-04-02");
+    mockQuestFindMany.mockResolvedValue([
+      {
+        id: "q1",
+        key: "daily",
+        name: "Daily",
+        description: "",
+        icon: "",
+        type: "daily",
+        xpReward: 10,
+        repeatable: true,
+        criteria: { action: "daily:login", count: 1 },
+        sortOrder: 1,
+      },
+    ]);
+    mockUserQuestProgressFindMany.mockResolvedValue([
+      { questId: "q1", progress: 1, completed: true, completedAt, resetAt },
+    ]);
+
+    const result = await getActiveQuests("u1");
+    expect(result[0].completed).toBe(false);
+  });
+
+  test("getActiveQuests returns empty on error", async () => {
+    mockQuestFindMany.mockRejectedValue(new Error("db error"));
+    const result = await getActiveQuests("u1");
+    expect(result).toEqual([]);
   });
 });
