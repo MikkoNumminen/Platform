@@ -31,6 +31,10 @@ jest.mock("@/lib/demo-session", () => ({
   getDemoSessionId: jest.fn().mockResolvedValue(null),
 }));
 
+jest.mock("@/lib/rateLimit", () => ({
+  rateLimit: jest.fn().mockResolvedValue(undefined),
+}));
+
 import { auth } from "@/auth";
 import { submitFeedback, replyToFeedback, getAllFeedback } from "@/lib/feedback-actions";
 
@@ -62,7 +66,7 @@ describe("feedback-actions", () => {
 
     test("creates feedback and triggers gamification", async () => {
       mockAuth.mockResolvedValue({ user: { id: "u1" } } as any);
-      mockFeedbackCreate.mockResolvedValue({ id: "fb1" });
+      mockFeedbackCreate.mockResolvedValue({ id: "00000000-0000-0000-0000-000000000001" });
       mockTriggerGamification.mockResolvedValue(undefined);
 
       const result = await submitFeedback("Great platform!");
@@ -73,12 +77,16 @@ describe("feedback-actions", () => {
           authorId: "u1",
         }),
       });
-      expect(mockTriggerGamification).toHaveBeenCalledWith("u1", "feedback:submit", "fb1");
+      expect(mockTriggerGamification).toHaveBeenCalledWith(
+        "u1",
+        "feedback:submit",
+        "00000000-0000-0000-0000-000000000001",
+      );
     });
 
     test("succeeds even if gamification fails", async () => {
       mockAuth.mockResolvedValue({ user: { id: "u1" } } as any);
-      mockFeedbackCreate.mockResolvedValue({ id: "fb1" });
+      mockFeedbackCreate.mockResolvedValue({ id: "00000000-0000-0000-0000-000000000001" });
       mockTriggerGamification.mockRejectedValue(new Error("db error"));
 
       const result = await submitFeedback("feedback");
@@ -89,39 +97,42 @@ describe("feedback-actions", () => {
   describe("replyToFeedback", () => {
     test("returns error when not authenticated", async () => {
       mockAuth.mockResolvedValue(null as any);
-      const result = await replyToFeedback("fb1", "thanks");
+      const result = await replyToFeedback("00000000-0000-0000-0000-000000000001", "thanks");
       expect(result).toEqual(expect.objectContaining({ code: "permissionDenied" }));
     });
 
     test("returns error for non-admin users", async () => {
       mockAuth.mockResolvedValue({ user: { id: "u1", role: "user" } } as any);
-      const result = await replyToFeedback("fb1", "thanks");
+      const result = await replyToFeedback("00000000-0000-0000-0000-000000000001", "thanks");
       expect(result).toEqual(expect.objectContaining({ code: "permissionDenied" }));
     });
 
     test("returns error for empty reply", async () => {
       mockAuth.mockResolvedValue({ user: { id: "u1", role: "superuser" } } as any);
-      const result = await replyToFeedback("fb1", "   ");
+      const result = await replyToFeedback("00000000-0000-0000-0000-000000000001", "   ");
       expect(result).toEqual(expect.objectContaining({ code: "invalidInput" }));
     });
 
     test("returns error when feedback not found", async () => {
       mockAuth.mockResolvedValue({ user: { id: "u1", role: "superuser" } } as any);
       mockFeedbackFindUnique.mockResolvedValue(null);
-      const result = await replyToFeedback("fb1", "thanks");
+      const result = await replyToFeedback("00000000-0000-0000-0000-000000000001", "thanks");
       expect(result).toEqual(expect.objectContaining({ code: "notFound" }));
     });
 
     test("updates feedback with admin reply", async () => {
       mockAuth.mockResolvedValue({ user: { id: "admin1", role: "superuser" } } as any);
-      mockFeedbackFindUnique.mockResolvedValue({ id: "fb1" });
+      mockFeedbackFindUnique.mockResolvedValue({ id: "00000000-0000-0000-0000-000000000001" });
       mockFeedbackUpdate.mockResolvedValue({});
       mockAuditLogCreate.mockResolvedValue({});
 
-      const result = await replyToFeedback("fb1", "Thanks for the feedback!");
+      const result = await replyToFeedback(
+        "00000000-0000-0000-0000-000000000001",
+        "Thanks for the feedback!",
+      );
       expect(result).toBeUndefined();
       expect(mockFeedbackUpdate).toHaveBeenCalledWith({
-        where: { id: "fb1" },
+        where: { id: "00000000-0000-0000-0000-000000000001" },
         data: expect.objectContaining({
           adminReply: "Thanks for the feedback!",
           adminReplyById: "admin1",
@@ -131,21 +142,21 @@ describe("feedback-actions", () => {
 
     test("allows admin role to reply", async () => {
       mockAuth.mockResolvedValue({ user: { id: "a1", role: "admin" } } as any);
-      mockFeedbackFindUnique.mockResolvedValue({ id: "fb1" });
+      mockFeedbackFindUnique.mockResolvedValue({ id: "00000000-0000-0000-0000-000000000001" });
       mockFeedbackUpdate.mockResolvedValue({});
       mockAuditLogCreate.mockResolvedValue({});
 
-      const result = await replyToFeedback("fb1", "noted");
+      const result = await replyToFeedback("00000000-0000-0000-0000-000000000001", "noted");
       expect(result).toBeUndefined();
     });
 
     test("allows vuohi role to reply", async () => {
       mockAuth.mockResolvedValue({ user: { id: "v1", role: "vuohi" } } as any);
-      mockFeedbackFindUnique.mockResolvedValue({ id: "fb1" });
+      mockFeedbackFindUnique.mockResolvedValue({ id: "00000000-0000-0000-0000-000000000001" });
       mockFeedbackUpdate.mockResolvedValue({});
       mockAuditLogCreate.mockResolvedValue({});
 
-      const result = await replyToFeedback("fb1", "noted");
+      const result = await replyToFeedback("00000000-0000-0000-0000-000000000001", "noted");
       expect(result).toBeUndefined();
     });
   });
@@ -161,7 +172,7 @@ describe("feedback-actions", () => {
       mockAuth.mockResolvedValue({ user: { id: "u1" } } as any);
       mockFeedbackFindMany.mockResolvedValue([
         {
-          id: "fb1",
+          id: "00000000-0000-0000-0000-000000000001",
           message: "Great!",
           createdAt: new Date("2026-04-01"),
           author: { id: "u2", alias: "Bob", name: "Bob B", image: null },

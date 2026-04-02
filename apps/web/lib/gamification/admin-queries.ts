@@ -53,6 +53,7 @@ async function fetchGamificationStats() {
 
     prisma.userAchievement.groupBy({
       by: ["achievementId"],
+      where: { sessionId },
       _count: { achievementId: true },
       orderBy: { _count: { achievementId: "desc" } },
       take: 10,
@@ -63,7 +64,7 @@ async function fetchGamificationStats() {
         _count: {
           select: {
             userProgress: {
-              where: { completed: true },
+              where: { completed: true, sessionId },
             },
           },
         },

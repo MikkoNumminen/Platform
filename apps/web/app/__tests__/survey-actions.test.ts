@@ -24,6 +24,14 @@ jest.mock("@/lib/gamification/trigger", () => ({
   triggerGamification: jest.fn().mockResolvedValue(undefined),
 }));
 
+jest.mock("@/lib/rateLimit", () => ({
+  rateLimit: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock("@/lib/demo-session", () => ({
+  getDemoSessionId: jest.fn().mockResolvedValue(null),
+}));
+
 const validData = {
   conversationStyle: CONVERSATION_STYLES[0],
   features: [FEATURE_OPTIONS[0]],

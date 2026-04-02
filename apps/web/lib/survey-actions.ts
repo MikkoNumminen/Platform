@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { ActionError } from "@/lib/actionErrors";
 import { safe, type ActionResult } from "@/lib/actionUtils";
+import { rateLimit } from "@/lib/rateLimit";
 import { validateSurveyData, type SurveyData } from "@/lib/survey-config";
 import type { CustomAnswers } from "@/lib/custom-survey-config";
 import type { Prisma } from "@prisma/client";
@@ -33,6 +34,8 @@ async function completeSurveyQuest(userId: string, roundId: string): Promise<voi
 
 export async function submitSurvey(data: SurveyData, roundId?: string): Promise<ActionResult> {
   return safe(async () => {
+    await rateLimit("survey:submit");
+
     const { valid, errors } = validateSurveyData(data);
     if (!valid) {
       const firstError = Object.values(errors)[0];
@@ -78,6 +81,8 @@ export async function submitCustomSurvey(
   roundId: string,
 ): Promise<ActionResult> {
   return safe(async () => {
+    await rateLimit("survey:submit");
+
     if (!roundId) {
       throw new ActionError("invalidInput", "Round ID is required");
     }

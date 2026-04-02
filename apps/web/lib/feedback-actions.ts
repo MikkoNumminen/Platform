@@ -3,8 +3,15 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { ActionError } from "@/lib/actionErrors";
-import { safe, requireUser, requireAdmin, createStringValidator } from "@/lib/actionUtils";
+import {
+  safe,
+  requireUser,
+  requireAdmin,
+  createStringValidator,
+  validateUUID,
+} from "@/lib/actionUtils";
 import type { ActionResult } from "@/lib/actionUtils";
+import { rateLimit } from "@/lib/rateLimit";
 import { triggerGamification } from "@/lib/gamification/trigger";
 import { logAudit } from "@/lib/audit";
 
@@ -13,6 +20,7 @@ const validateFeedback = createStringValidator("Feedback", 1000, "invalidInput",
 export async function submitFeedback(message: string): Promise<ActionResult> {
   return safe(async () => {
     const user = await requireUser();
+    await rateLimit("feedback:submit");
     const trimmed = validateFeedback(message);
 
     const demoSessionId = (user as { demoSessionId?: string }).demoSessionId;
@@ -35,6 +43,7 @@ export async function submitFeedback(message: string): Promise<ActionResult> {
 
 export async function replyToFeedback(feedbackId: string, reply: string): Promise<ActionResult> {
   return safe(async () => {
+    validateUUID(feedbackId, "feedback ID");
     const user = await requireAdmin();
     const trimmed = validateFeedback(reply);
 
