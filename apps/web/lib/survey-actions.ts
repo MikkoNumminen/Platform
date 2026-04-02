@@ -11,6 +11,26 @@ import { triggerGamification } from "@/lib/gamification/trigger";
 import { getDemoSessionId } from "@/lib/demo-session";
 import { awardCustomXp } from "@/lib/gamification/xp-service";
 
+async function completeSurveyQuest(userId: string, roundId: string): Promise<void> {
+  const quest = await prisma.customQuest.findFirst({
+    where: {
+      surveyRoundId: roundId,
+      assigneeId: userId,
+      status: { not: "completed" },
+      deletedAt: null,
+    },
+  });
+  if (quest) {
+    await prisma.customQuest.update({
+      where: { id: quest.id },
+      data: { status: "completed", completedAt: new Date() },
+    });
+    if (quest.xpReward > 0) {
+      await awardCustomXp(userId, quest.xpReward, "custom_quest:complete", quest.id);
+    }
+  }
+}
+
 export async function submitSurvey(data: SurveyData, roundId?: string): Promise<ActionResult> {
   return safe(async () => {
     const { valid, errors } = validateSurveyData(data);
@@ -48,26 +68,7 @@ export async function submitSurvey(data: SurveyData, roundId?: string): Promise<
         },
       });
       await triggerGamification(userId, "survey:complete");
-
-      if (roundId) {
-        const quest = await prisma.customQuest.findFirst({
-          where: {
-            surveyRoundId: roundId,
-            assigneeId: userId,
-            status: { not: "completed" },
-            deletedAt: null,
-          },
-        });
-        if (quest) {
-          await prisma.customQuest.update({
-            where: { id: quest.id },
-            data: { status: "completed", completedAt: new Date() },
-          });
-          if (quest.xpReward > 0) {
-            await awardCustomXp(userId, quest.xpReward, "custom_quest:complete", quest.id);
-          }
-        }
-      }
+      if (roundId) await completeSurveyQuest(userId, roundId);
     }
   });
 }
@@ -99,24 +100,7 @@ export async function submitCustomSurvey(
 
     if (userId) {
       await triggerGamification(userId, "survey:complete");
-
-      const quest = await prisma.customQuest.findFirst({
-        where: {
-          surveyRoundId: roundId,
-          assigneeId: userId,
-          status: { not: "completed" },
-          deletedAt: null,
-        },
-      });
-      if (quest) {
-        await prisma.customQuest.update({
-          where: { id: quest.id },
-          data: { status: "completed", completedAt: new Date() },
-        });
-        if (quest.xpReward > 0) {
-          await awardCustomXp(userId, quest.xpReward, "custom_quest:complete", quest.id);
-        }
-      }
+      await completeSurveyQuest(userId, roundId);
     }
   });
 }
