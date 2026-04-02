@@ -75,7 +75,7 @@ async function fetchGamificationStats() {
     }),
 
     prisma.customQuest.findMany({
-      where: { deletedAt: null, sessionId },
+      where: { deletedAt: null },
       select: {
         id: true,
         title: true,
