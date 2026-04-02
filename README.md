@@ -37,7 +37,7 @@ packages/config/ — Shared types and config (@platform/config)
 ### Gamification
 - **XP System** — Earn XP for platform actions (shouts, completing surveys, submitting feedback, login streaks, sending DMs, reporting issues)
 - **10-level progression** — Newcomer through Mythic with XP thresholds and level-up celebrations
-- **Achievements** — 21 unlockable achievements across categories (onboarding, content, engagement, streaks, moderation) including "Demo Explorer" for completing the guided tutorial
+- **Achievements** — 17 unlockable achievements across categories (onboarding, social, streaks, moderation) including "Demo Explorer" for completing the guided tutorial
 - **Quest Log** — Daily, weekly, and special quests with progress tracking and XP rewards
 - **Leaderboard** — Top users ranked by XP with current user highlighting
 - **XP Toast notifications** — Real-time XP award popups after actions

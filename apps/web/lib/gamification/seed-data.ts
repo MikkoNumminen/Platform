@@ -23,52 +23,6 @@ export const INITIAL_ACHIEVEMENTS = [
     sortOrder: 2,
   },
 
-  // Content — Comments (tiered)
-  {
-    key: "commenter_bronze",
-    name: "Commenter",
-    description: "Write 10 comments",
-    icon: "💬",
-    tier: "bronze",
-    category: "content",
-    xpReward: 50,
-    criteria: { type: "count", action: "thread:create", threshold: 10 },
-    sortOrder: 20,
-  },
-  {
-    key: "commenter_silver",
-    name: "Conversationalist",
-    description: "Write 50 comments",
-    icon: "💬",
-    tier: "silver",
-    category: "content",
-    xpReward: 100,
-    criteria: { type: "count", action: "thread:create", threshold: 50 },
-    sortOrder: 21,
-  },
-  {
-    key: "commenter_gold",
-    name: "Discussion Leader",
-    description: "Write 100 comments",
-    icon: "💬",
-    tier: "gold",
-    category: "content",
-    xpReward: 250,
-    criteria: { type: "count", action: "thread:create", threshold: 100 },
-    sortOrder: 22,
-  },
-  {
-    key: "commenter_legendary",
-    name: "Voice of the Community",
-    description: "Write 500 comments",
-    icon: "💬",
-    tier: "legendary",
-    category: "content",
-    xpReward: 500,
-    criteria: { type: "count", action: "thread:create", threshold: 500 },
-    sortOrder: 23,
-  },
-
   // Social — Shouts (tiered)
   {
     key: "shouter_bronze",

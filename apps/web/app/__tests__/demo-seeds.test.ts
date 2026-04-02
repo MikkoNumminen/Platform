@@ -344,8 +344,8 @@ describe("demo-seeds — data completeness", () => {
   });
 
   describe("DEMO_QUEST_PROGRESS", () => {
-    test("has 15 entries", () => {
-      expect(DEMO_QUEST_PROGRESS).toHaveLength(15);
+    test("has 13 entries", () => {
+      expect(DEMO_QUEST_PROGRESS).toHaveLength(13);
     });
 
     test("every entry has valid user index and quest key", () => {
