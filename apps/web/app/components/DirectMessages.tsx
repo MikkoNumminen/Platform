@@ -2,39 +2,37 @@
 
 import { useRef, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import {
-  Autocomplete,
-  Badge,
-  Box,
-  IconButton,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Badge, Box, IconButton, TextField, Tooltip, Typography } from "@mui/material";
 import AddCommentIcon from "@mui/icons-material/AddComment";
 import CloseIcon from "@mui/icons-material/Close";
 import LockIcon from "@mui/icons-material/Lock";
-import StarIcon from "@mui/icons-material/Star";
 import { useTranslations } from "next-intl";
 import { colors } from "../styles";
 import { sendDirectMessage, startConversation } from "@/lib/dm-actions";
 import { getConversationMessages, getDmUsers } from "@/lib/dm-queries";
 import { useXpToast } from "./XpToastProvider";
 import type { ConversationSummary, DmMessageData } from "@/lib/dm-queries";
+import WhisperMessages from "./shoutbox/WhisperMessages";
+import UserPicker from "./shoutbox/UserPicker";
+import SystemMessages from "./shoutbox/SystemMessages";
+import type { SystemLine } from "./shoutbox/SystemMessages";
 
-// WoW whisper pink
 const WHISPER_COLOR = "#FF80FF";
-const WHISPER_LABEL = "#B880CC";
-
-function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
 
 interface DirectMessagesProps {
   initialConversations: ConversationSummary[];
 }
 
 type DmUser = { id: string; alias: string; role: string };
+
+const WELCOME_LINES: SystemLine[] = [
+  { label: "[System]", text: "Welcome to private messages." },
+  { label: "", text: "" },
+  { label: "Commands:", text: "" },
+  { label: "/w", text: "alias message — whisper a player" },
+  { label: "/whisper", text: "alias message — same as /w" },
+  { label: "", text: "" },
+];
 
 export default function DirectMessages({ initialConversations }: DirectMessagesProps) {
   const { data: session } = useSession();
@@ -57,14 +55,10 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
   useEffect(() => {
     setConversations(initialConversations);
   }, [initialConversations]);
-
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
 
-  // Load users list for /w command
   const ensureUsersLoaded = async () => {
     if (dmUsers.length === 0) {
       setLoadingUsers(true);
@@ -84,11 +78,8 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
     setConversations((prev) =>
       prev.map((c) => (c.id === conversationId ? { ...c, unreadCount: 0 } : c)),
     );
-    // Pre-fill input with /w alias for convenience
     const conv = conversations.find((c) => c.id === conversationId);
-    if (conv && !conv.isPrivacy) {
-      setMessage("");
-    }
+    if (conv && !conv.isPrivacy) setMessage("");
   };
 
   const closeTab = (e: React.MouseEvent, conversationId: string) => {
@@ -127,16 +118,13 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
     const alias = session.user.alias ?? session.user.name ?? "Unknown";
     const role = (session.user as { role?: string })?.role ?? "user";
 
-    // Parse /w command: /w alias message
     const whisperMatch = trimmed.match(/^\/w(?:hisper)?\s+(\S+)\s+(.+)$/i);
     if (whisperMatch) {
       const targetAlias = whisperMatch[1];
       const whisperMessage = whisperMatch[2];
-
       const users = await ensureUsersLoaded();
       const targetUser = users.find((u) => u.alias.toLowerCase() === targetAlias.toLowerCase());
       if (!targetUser) {
-        // Show error in chat
         setMessages((prev) => [
           ...prev,
           {
@@ -154,13 +142,11 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
         return;
       }
 
-      // Find or start conversation with target
       const existing = conversations.find((c) => c.otherUser.id === targetUser.id);
       setSending(true);
       setMessage("");
 
       if (existing) {
-        // Send to existing conversation
         setActiveConversationId(existing.id);
         const optimistic: DmMessageData = {
           id: `temp-${Date.now()}`,
@@ -172,7 +158,6 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
           isMe: true,
           createdAt: new Date().toISOString(),
         };
-        // Load messages if not in this conversation
         if (activeConversationId !== existing.id) {
           const msgs = await getConversationMessages(existing.id);
           setMessages([...msgs, optimistic]);
@@ -193,7 +178,6 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
           );
         }
       } else {
-        // Start new conversation via /w
         const result = await startConversation(targetUser.id, whisperMessage);
         if (result?.conversationId) {
           onAction();
@@ -215,7 +199,6 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
       return;
     }
 
-    // Regular message to active conversation
     if (activeConversationId?.startsWith("new:")) {
       const otherUserId = activeConversationId.slice(4);
       setSending(true);
@@ -255,11 +238,9 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
       isMe: true,
       createdAt: new Date().toISOString(),
     };
-
     setMessages((prev) => [...prev, optimistic]);
     setMessage("");
     setSending(true);
-
     const result = await sendDirectMessage(activeConversationId, trimmed);
     if (result?.error) {
       setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
@@ -276,14 +257,19 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
     setSending(false);
   };
 
-  // ── Render ──────────────────────────────────────────────────────────────
-
   const otherAlias = activeConversation?.isPrivacy
     ? t("privacy")
     : (activeConversation?.otherUser.alias ??
       (activeConversationId?.startsWith("new:")
         ? (dmUsers.find((u) => u.id === activeConversationId?.slice(4))?.alias ?? "...")
         : null));
+
+  const welcomeLines: SystemLine[] = [
+    ...WELCOME_LINES,
+    conversations.length > 0
+      ? { label: "Tip:", text: "Click a tab above to open a conversation." }
+      : { label: "Tip:", text: "Click + to start a new conversation." },
+  ];
 
   return (
     <Box
@@ -295,7 +281,7 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
         overflow: "hidden",
       }}
     >
-      {/* Header with title + new message button */}
+      {/* Header */}
       <Box
         sx={{
           px: 1.5,
@@ -409,256 +395,30 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
           px: 1.5,
           py: 1,
           "&::-webkit-scrollbar": { width: 6 },
-          "&::-webkit-scrollbar-thumb": {
-            backgroundColor: colors.slate400,
-            borderRadius: 3,
-          },
+          "&::-webkit-scrollbar-thumb": { backgroundColor: colors.slate400, borderRadius: 3 },
         }}
       >
         {showNewMessage ? (
-          <Box sx={{ py: 1 }}>
-            <Typography
-              variant="body2"
-              sx={{ color: colors.slate400, fontFamily: "inherit", mb: 1, fontSize: "0.8rem" }}
-            >
-              Type <span style={{ color: WHISPER_COLOR }}>/w alias message</span> or pick a user:
-            </Typography>
-            <Autocomplete
-              options={dmUsers}
-              getOptionLabel={(o) => o.alias}
-              loading={loadingUsers}
-              onChange={(_, val) => handleSelectUser(val)}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  placeholder={t("selectUser")}
-                  size="small"
-                  autoFocus
-                  sx={{
-                    "& .MuiInputBase-root": {
-                      fontFamily: "'Courier New', Courier, monospace",
-                      fontSize: "0.85rem",
-                      backgroundColor: colors.slate700,
-                      color: colors.slate100,
-                    },
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: colors.slate300,
-                    },
-                  }}
-                />
-              )}
-              renderOption={(props, option) => (
-                <li {...props} key={option.id}>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    {option.role === "superuser" && (
-                      <StarIcon sx={{ fontSize: 14, color: colors.warning }} />
-                    )}
-                    <Typography variant="body2">{option.alias}</Typography>
-                    <Typography variant="caption" sx={{ color: colors.slate400 }}>
-                      {option.role}
-                    </Typography>
-                  </Box>
-                </li>
-              )}
-            />
-          </Box>
+          <UserPicker
+            users={dmUsers}
+            loading={loadingUsers}
+            placeholder={t("selectUser")}
+            onSelect={handleSelectUser}
+          />
         ) : activeConversationId ? (
-          messages.length === 0 ? (
-            <Typography
-              variant="body2"
-              sx={{ color: colors.slate400, fontFamily: "inherit", fontStyle: "italic" }}
-            >
-              {t("empty")}
-            </Typography>
-          ) : (
-            messages.map((msg) => {
-              // System messages (e.g. /w errors)
-              if (msg.senderRole === "system") {
-                return (
-                  <Box key={msg.id} sx={{ lineHeight: 1.6 }}>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: colors.error, fontFamily: "inherit", fontSize: "0.8rem" }}
-                    >
-                      {msg.message}
-                    </Typography>
-                  </Box>
-                );
-              }
-
-              return (
-                <Box key={msg.id} sx={{ display: "flex", gap: 0.75, lineHeight: 1.6 }}>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    sx={{
-                      color: colors.slate400,
-                      fontFamily: "inherit",
-                      flexShrink: 0,
-                      fontSize: "0.8rem",
-                    }}
-                  >
-                    {formatTime(msg.createdAt)}
-                  </Typography>
-                  {msg.isMe ? (
-                    <>
-                      {msg.senderRole === "superuser" && (
-                        <Tooltip title="Superuser" arrow>
-                          <StarIcon
-                            sx={{
-                              fontSize: 14,
-                              color: colors.warning,
-                              alignSelf: "center",
-                              flexShrink: 0,
-                            }}
-                          />
-                        </Tooltip>
-                      )}
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        sx={{
-                          color: WHISPER_LABEL,
-                          fontFamily: "inherit",
-                          flexShrink: 0,
-                          fontSize: "0.8rem",
-                        }}
-                      >
-                        To
-                      </Typography>
-                      {activeConversation?.otherUser.role === "superuser" && (
-                        <Tooltip title="Superuser" arrow>
-                          <StarIcon
-                            sx={{
-                              fontSize: 14,
-                              color: colors.warning,
-                              alignSelf: "center",
-                              flexShrink: 0,
-                            }}
-                          />
-                        </Tooltip>
-                      )}
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        sx={{
-                          color: WHISPER_COLOR,
-                          fontFamily: "inherit",
-                          fontWeight: 700,
-                          flexShrink: 0,
-                          fontSize: "0.8rem",
-                        }}
-                      >
-                        [{otherAlias}]:
-                      </Typography>
-                    </>
-                  ) : (
-                    <>
-                      {msg.senderRole === "superuser" && (
-                        <Tooltip title="Superuser" arrow>
-                          <StarIcon
-                            sx={{
-                              fontSize: 14,
-                              color: colors.warning,
-                              alignSelf: "center",
-                              flexShrink: 0,
-                            }}
-                          />
-                        </Tooltip>
-                      )}
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        sx={{
-                          color: WHISPER_COLOR,
-                          fontFamily: "inherit",
-                          fontWeight: 700,
-                          flexShrink: 0,
-                          fontSize: "0.8rem",
-                        }}
-                      >
-                        [{msg.senderAlias}]
-                      </Typography>
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        sx={{
-                          color: WHISPER_LABEL,
-                          fontFamily: "inherit",
-                          flexShrink: 0,
-                          fontSize: "0.8rem",
-                        }}
-                      >
-                        whispers:
-                      </Typography>
-                    </>
-                  )}
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    sx={{
-                      color: WHISPER_COLOR,
-                      fontFamily: "inherit",
-                      wordBreak: "break-word",
-                      fontSize: "0.8rem",
-                    }}
-                  >
-                    {msg.message}
-                  </Typography>
-                </Box>
-              );
-            })
-          )
+          <WhisperMessages
+            messages={messages}
+            systemMessages={[]}
+            activeConversation={activeConversation}
+            otherAlias={otherAlias}
+            emptyText={t("empty")}
+          />
         ) : (
-          // No active conversation — bot help messages
-          <Box>
-            {[
-              { time: "", label: "[System]", text: "Welcome to private messages." },
-              { time: "", label: "", text: "" },
-              { time: "", label: "Commands:", text: "" },
-              { time: "", label: "/w", text: "alias message — whisper a player" },
-              { time: "", label: "/whisper", text: "alias message — same as /w" },
-              { time: "", label: "", text: "" },
-              ...(conversations.length > 0
-                ? [{ time: "", label: "Tip:", text: "Click a tab above to open a conversation." }]
-                : [{ time: "", label: "Tip:", text: "Click + to start a new conversation." }]),
-            ].map((line, i) =>
-              !line.label && !line.text ? (
-                <Box key={i} sx={{ height: 8 }} />
-              ) : (
-                <Box key={i} sx={{ display: "flex", gap: 0.75, lineHeight: 1.6 }}>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    sx={{
-                      color: line.label === "[System]" ? colors.warning : WHISPER_COLOR,
-                      fontFamily: "inherit",
-                      fontWeight: 700,
-                      flexShrink: 0,
-                      fontSize: "0.8rem",
-                    }}
-                  >
-                    {line.label}
-                  </Typography>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    sx={{
-                      color: line.label === "Tip:" ? colors.slate400 : colors.slate100,
-                      fontFamily: "inherit",
-                      fontSize: "0.8rem",
-                    }}
-                  >
-                    {line.text}
-                  </Typography>
-                </Box>
-              ),
-            )}
-          </Box>
+          <SystemMessages lines={welcomeLines} keyPrefix="welcome" />
         )}
       </Box>
 
-      {/* Input field — always visible when logged in */}
+      {/* Input */}
       {session?.user && (
         <Box
           component="form"
@@ -686,9 +446,7 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
                 backgroundColor: colors.slate700,
                 color: colors.slate100,
               },
-              "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: colors.slate300,
-              },
+              "& .MuiOutlinedInput-notchedOutline": { borderColor: colors.slate300 },
             }}
           />
         </Box>
