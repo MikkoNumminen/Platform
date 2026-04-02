@@ -438,7 +438,7 @@ function QuestGroupCard({
                     flex: 1,
                     fontWeight: 500,
                     textDecoration: isCompleted ? "line-through" : "none",
-                    color: isCompleted ? colors.slate400 : colors.slate200,
+                    color: isCompleted ? colors.slate400 : colors.slate100,
                   }}
                 >
                   {assigneeName}
