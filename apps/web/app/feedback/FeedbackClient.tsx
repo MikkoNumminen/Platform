@@ -3,34 +3,28 @@
 import { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Button,
-  Paper,
-  Typography,
-  Chip,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Dialog,
   DialogContent,
   DialogTitle,
   IconButton,
-  CircularProgress,
+  Typography,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
-import LockIcon from "@mui/icons-material/Lock";
-import StarIcon from "@mui/icons-material/Star";
 import type { SurveyRoundData } from "@/lib/survey-round-queries";
 import type { SurveyResultsData } from "@/lib/survey-queries";
-import { closeSurveyRound } from "@/lib/survey-round-actions";
-import { fetchRoundResults } from "@/lib/survey-round-actions";
+import { closeSurveyRound, fetchRoundResults } from "@/lib/survey-round-actions";
 import SurveyForm from "../components/survey/SurveyForm";
 import CustomSurveyForm from "../components/survey/CustomSurveyForm";
 import type { CustomQuestion } from "@/lib/custom-survey-config";
-import ResultsBarChart from "../components/survey/ResultsBarChart";
-import TextResponseList from "../components/survey/TextResponseList";
+import SurveyRoundCard from "./SurveyRoundCard";
+import SurveyResults from "./SurveyResults";
 import CreateRoundDialog from "./CreateRoundDialog";
 import FeedbackSection from "../components/feedback/FeedbackSection";
 import { colors } from "../styles";
@@ -70,7 +64,6 @@ export default function FeedbackClient({
       const key = `platform_survey_${round.id}`;
       if (localStorage.getItem(key)) submitted.add(round.id);
     }
-    // Also check the legacy key
     if (localStorage.getItem("platform_survey_submitted")) {
       submitted.add("legacy");
     }
@@ -83,7 +76,6 @@ export default function FeedbackClient({
       return;
     }
     setExpandedRound(roundId);
-
     if (!roundResults[roundId]) {
       setLoadingResults(roundId);
       const results = await fetchRoundResults(roundId);
@@ -106,169 +98,6 @@ export default function FeedbackClient({
     router.refresh();
   };
 
-  const renderResults = (results: SurveyResultsData) => (
-    <Box sx={{ mt: 1 }}>
-      {/* Custom question results (themed surveys) */}
-      {results.customResults?.map((item) =>
-        item.type === "text" && item.textResponses && item.textResponses.length > 0 ? (
-          <TextResponseList
-            key={item.questionId}
-            title={item.questionText}
-            responses={item.textResponses}
-          />
-        ) : item.counts && item.counts.length > 0 ? (
-          <ResultsBarChart key={item.questionId} title={item.questionText} items={item.counts} />
-        ) : null,
-      )}
-
-      {/* Standard survey results (only show if no custom questions) */}
-      {!results.customResults && (
-        <>
-          {results.conversationStyleCounts.length > 0 && (
-            <ResultsBarChart title="Conversation Style" items={results.conversationStyleCounts} />
-          )}
-          {results.featureCounts.length > 0 && (
-            <ResultsBarChart title="Feature Votes" items={results.featureCounts} />
-          )}
-          {results.mustHaveResponses.length > 0 && (
-            <TextResponseList title="Must-Have Features" responses={results.mustHaveResponses} />
-          )}
-          {results.dealbreakerResponses.length > 0 && (
-            <TextResponseList title="Dealbreakers" responses={results.dealbreakerResponses} />
-          )}
-          {results.otherFeedbackResponses.length > 0 && (
-            <TextResponseList title="Other Feedback" responses={results.otherFeedbackResponses} />
-          )}
-        </>
-      )}
-    </Box>
-  );
-
-  const renderRoundCard = (round: SurveyRoundData, isActive: boolean) => {
-    const isExpanded = expandedRound === round.id;
-    const hasSubmitted = submittedRounds.has(round.id);
-    const results = roundResults[round.id];
-    const isLoading = loadingResults === round.id;
-
-    return (
-      <Paper
-        key={round.id}
-        sx={{
-          mb: 2,
-          border: isActive ? `2px solid ${colors.success}` : `1px solid ${colors.decorBorder}`,
-          overflow: "hidden",
-        }}
-      >
-        <Box sx={{ p: 2 }}>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: 1,
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                Round {round.number}: {round.title}
-              </Typography>
-              <Chip
-                label={isActive ? "Active" : "Closed"}
-                size="small"
-                color={isActive ? "success" : "default"}
-              />
-              {round.xpReward > 0 && (
-                <Chip
-                  icon={<StarIcon sx={{ fontSize: 16 }} />}
-                  label={`${round.xpReward} XP`}
-                  size="small"
-                  sx={{ bgcolor: colors.accentBgSubtle, color: colors.cyan400 }}
-                />
-              )}
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              {isActive && !hasSubmitted && (
-                <Button variant="contained" size="small" onClick={() => setSurveyRoundId(round.id)}>
-                  Take Survey
-                </Button>
-              )}
-              {isActive && hasSubmitted && (
-                <Chip label="Submitted" size="small" color="success" variant="outlined" />
-              )}
-              {isActive && canManage && (
-                <Button
-                  variant="outlined"
-                  size="small"
-                  color="warning"
-                  startIcon={<LockIcon />}
-                  onClick={() => handleCloseRound(round.id)}
-                  disabled={isPending}
-                >
-                  Close Round
-                </Button>
-              )}
-            </Box>
-          </Box>
-
-          {round.description && (
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              {round.description}
-            </Typography>
-          )}
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 1 }}>
-            <Typography variant="caption" color="text.secondary">
-              {round.responseCount} responses
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Created {new Date(round.createdAt).toLocaleDateString()}
-            </Typography>
-            {round.deadline && (
-              <Typography variant="caption" color="text.secondary">
-                Deadline {new Date(round.deadline).toLocaleDateString()}
-              </Typography>
-            )}
-            {round.closedAt && (
-              <Typography variant="caption" color="text.secondary">
-                Closed {new Date(round.closedAt).toLocaleDateString()}
-              </Typography>
-            )}
-          </Box>
-        </Box>
-
-        {(canManage || canViewResults) && (
-          <Accordion
-            expanded={isExpanded}
-            onChange={() => handleExpandRound(round.id)}
-            disableGutters
-            elevation={0}
-            sx={{ "&::before": { display: "none" } }}
-          >
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                {isExpanded ? "Hide Results" : "View Results"}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              {isLoading && (
-                <Box sx={{ display: "flex", justifyContent: "center", py: 3 }}>
-                  <CircularProgress size={28} />
-                </Box>
-              )}
-              {results && renderResults(results)}
-              {!isLoading && results && results.totalResponses === 0 && (
-                <Typography variant="body2" color="text.secondary">
-                  No responses yet.
-                </Typography>
-              )}
-            </AccordionDetails>
-          </Accordion>
-        )}
-      </Paper>
-    );
-  };
-
   return (
     <Box sx={{ py: 2 }}>
       {canManage && (
@@ -278,7 +107,6 @@ export default function FeedbackClient({
             size="small"
             startIcon={<AddIcon />}
             onClick={() => setShowCreateDialog(true)}
-            disabled={false}
           >
             Create New Round
           </Button>
@@ -287,14 +115,46 @@ export default function FeedbackClient({
 
       <FeedbackSection canReply={canManage} />
 
-      {activeRounds.map((round) => renderRoundCard(round, true))}
+      {activeRounds.map((round) => (
+        <SurveyRoundCard
+          key={round.id}
+          round={round}
+          isActive
+          isExpanded={expandedRound === round.id}
+          hasSubmitted={submittedRounds.has(round.id)}
+          results={roundResults[round.id]}
+          isLoading={loadingResults === round.id}
+          canManage={canManage}
+          canViewResults={canViewResults}
+          isPending={isPending}
+          onExpand={handleExpandRound}
+          onTakeSurvey={setSurveyRoundId}
+          onCloseRound={handleCloseRound}
+        />
+      ))}
 
       {closedRounds.length > 0 && (
         <Box sx={{ mt: 3 }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
             Past Rounds
           </Typography>
-          {closedRounds.map((round) => renderRoundCard(round, false))}
+          {closedRounds.map((round) => (
+            <SurveyRoundCard
+              key={round.id}
+              round={round}
+              isActive={false}
+              isExpanded={expandedRound === round.id}
+              hasSubmitted={submittedRounds.has(round.id)}
+              results={roundResults[round.id]}
+              isLoading={loadingResults === round.id}
+              canManage={canManage}
+              canViewResults={canViewResults}
+              isPending={isPending}
+              onExpand={handleExpandRound}
+              onTakeSurvey={setSurveyRoundId}
+              onCloseRound={handleCloseRound}
+            />
+          ))}
         </Box>
       )}
 
@@ -308,9 +168,7 @@ export default function FeedbackClient({
         <Box sx={{ mt: 3 }}>
           <Accordion
             expanded={expandedRound === "legacy"}
-            onChange={() => {
-              setExpandedRound(expandedRound === "legacy" ? null : "legacy");
-            }}
+            onChange={() => setExpandedRound(expandedRound === "legacy" ? null : "legacy")}
             disableGutters
             sx={{ border: `1px solid ${colors.decorBorder}` }}
           >
@@ -324,12 +182,13 @@ export default function FeedbackClient({
                 </Typography>
               </Box>
             </AccordionSummary>
-            <AccordionDetails>{renderResults(legacyResults)}</AccordionDetails>
+            <AccordionDetails>
+              <SurveyResults results={legacyResults} />
+            </AccordionDetails>
           </Accordion>
         </Box>
       )}
 
-      {/* Survey Dialog */}
       {(() => {
         const selectedRound = rounds.find((r) => r.id === surveyRoundId);
         return (
@@ -363,7 +222,6 @@ export default function FeedbackClient({
         );
       })()}
 
-      {/* Create Round Dialog */}
       <CreateRoundDialog open={showCreateDialog} onClose={() => setShowCreateDialog(false)} />
     </Box>
   );
