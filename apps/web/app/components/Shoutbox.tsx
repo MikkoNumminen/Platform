@@ -2,18 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import {
-  Autocomplete,
-  Badge,
-  Box,
-  IconButton,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import AddCommentIcon from "@mui/icons-material/AddComment";
-import CloseIcon from "@mui/icons-material/Close";
-import LockIcon from "@mui/icons-material/Lock";
+import { Box, TextField, Typography } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import { useTranslations } from "next-intl";
 import { colors } from "../styles";
@@ -25,37 +14,18 @@ import type { ShoutData } from "@/lib/shout-queries";
 import type { ConversationSummary, DmMessageData } from "@/lib/dm-queries";
 import { useXpToast } from "./XpToastProvider";
 import { emitTutorialEvent } from "./TutorialProvider";
-import { DEVELOPER_TAG_ICONS, DEVELOPER_TAG_LABELS } from "@/lib/developer-config";
 import { completeWhisperQuest } from "@/lib/campaign-completion";
+import ShoutboxTabBar from "./shoutbox/ShoutboxTabBar";
+import GuildMessages from "./shoutbox/GuildMessages";
+import WhisperMessages from "./shoutbox/WhisperMessages";
+import UserPicker from "./shoutbox/UserPicker";
+import type { SystemLine } from "./shoutbox/SystemMessages";
 
-function DevTagIcon({ tag, role }: { tag: string | null; role?: string }) {
-  if (!tag || !DEVELOPER_TAG_ICONS[tag]) return null;
-  // Superuser already has the star icon — don't show a second icon
-  if (role === "superuser") return null;
-  return (
-    <Tooltip title={DEVELOPER_TAG_LABELS[tag] ?? tag} arrow>
-      <Typography
-        component="span"
-        sx={{ fontSize: "0.75rem", cursor: "help", flexShrink: 0, lineHeight: 1 }}
-      >
-        {DEVELOPER_TAG_ICONS[tag]}
-      </Typography>
-    </Tooltip>
-  );
-}
-
-// WoW channel colors
-const GUILD_COLOR = colors.green400;
 const WHISPER_COLOR = "#FF80FF";
-const WHISPER_LABEL = "#B880CC";
-
-function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
 
 const DEMO_REACTIONS: Array<{ alias: string; message: string; delayMs: number }> = [
-  { alias: "Valtava", message: "Welcome to the community! 🐐", delayMs: 1500 },
-  { alias: "Perserkki", message: "Hey! Nice to see a new face 👋", delayMs: 3000 },
+  { alias: "Valtava", message: "Welcome to the community! \uD83D\uDC10", delayMs: 1500 },
+  { alias: "Perserkki", message: "Hey! Nice to see a new face \uD83D\uDC4B", delayMs: 3000 },
   { alias: "Turo", message: "Check out the quests, you can earn XP!", delayMs: 5000 },
 ];
 
@@ -66,8 +36,9 @@ interface ShoutboxProps {
 }
 
 type DmUser = { id: string; alias: string; role: string };
+type ActiveTab = "guild" | string;
 
-const _HELP_LINES_BASE: SystemLine[] = [
+const HELP_LINES_BASE: SystemLine[] = [
   { label: "[System]", text: "Available commands:" },
   { label: "/w", text: "alias message — whisper a player" },
   { label: "/whisper", text: "alias message — same as /w" },
@@ -76,18 +47,10 @@ const _HELP_LINES_BASE: SystemLine[] = [
   { label: "Tip:", text: "Tab key autocompletes the alias when typing /w" },
 ];
 
-const _HELP_LINE_MOTD: SystemLine = {
+const HELP_LINE_MOTD: SystemLine = {
   label: "/motd",
   text: "message — change the welcome message (superuser/architect)",
 };
-
-interface SystemLine {
-  label: string;
-  text: string;
-}
-
-// "guild" = shoutbox, string ID = conversation, "new:userId" = new DM
-type ActiveTab = "guild" | string;
 
 export default function Shoutbox({ initialShouts, initialConversations, motd }: ShoutboxProps) {
   const { data: session } = useSession();
@@ -127,26 +90,17 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
 
   const [currentMotd, setCurrentMotd] = useState(motd);
 
-  const helpLines: SystemLine[] = [
-    ..._HELP_LINES_BASE,
-    ...(canChangeMotd ? [_HELP_LINE_MOTD] : []),
-  ];
+  const helpLines: SystemLine[] = [...HELP_LINES_BASE, ...(canChangeMotd ? [HELP_LINE_MOTD] : [])];
 
   useEffect(() => {
     setShouts(initialShouts);
   }, [initialShouts]);
-
   useEffect(() => {
     setConversations(initialConversations);
   }, [initialConversations]);
-
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [shouts, dmMessages, activeTab, localSystemMsgs]);
-
-  // Clear local system messages when switching tabs
   useEffect(() => {
     setLocalSystemMsgs([]);
   }, [activeTab]);
@@ -207,7 +161,6 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
 
   const handleMessageChange = async (val: string) => {
     setMessage(val);
-    // Detect /w <partial> pattern (no space after alias = still typing the name)
     const partialMatch = val.match(/^\/w(?:hisper)?\s+(\S*)$/i);
     if (partialMatch && partialMatch[1].length >= 1) {
       const partial = partialMatch[1].toLowerCase();
@@ -222,7 +175,6 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
   };
 
   const applySuggestion = (alias: string) => {
-    // Replace the partial alias with the full one and add a space
     const newMsg = message.replace(/^(\/w(?:hisper)?\s+)\S*$/i, `$1${alias} `);
     setMessage(newMsg);
     setWhisperSuggestions([]);
@@ -232,14 +184,11 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (whisperSuggestions.length === 0) return;
-
     if (e.key === "Tab") {
       e.preventDefault();
       if (e.shiftKey) {
-        // Shift+Tab cycles backwards
         setSuggestionIndex((i) => (i - 1 + whisperSuggestions.length) % whisperSuggestions.length);
       } else {
-        // Tab applies current suggestion or cycles forward
         applySuggestion(whisperSuggestions[suggestionIndex].alias);
       }
     } else if (e.key === "ArrowUp") {
@@ -264,7 +213,6 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
     const alias = session.user.alias ?? session.user.name ?? "Unknown";
     const role = (session.user as { role?: string })?.role ?? "user";
 
-    // /help — client-only, shows commands to the user
     if (/^\/help$/i.test(trimmed)) {
       setLocalSystemMsgs((prev) => [...prev, ...helpLines]);
       setMessage("");
@@ -272,7 +220,6 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
       return;
     }
 
-    // /motd message — change the MOTD (superuser/architect)
     const motdMatch = trimmed.match(/^\/motd\s+(.+)$/i);
     if (motdMatch) {
       const newMotd = motdMatch[1];
@@ -291,12 +238,10 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
       return;
     }
 
-    // Parse /w command from any tab
     const whisperMatch = trimmed.match(/^\/w(?:hisper)?\s+(\S+)\s+(.+)$/i);
     if (whisperMatch) {
       const targetAlias = whisperMatch[1];
       const whisperMessage = whisperMatch[2];
-
       const users = await ensureUsersLoaded();
       const targetUser = users.find((u) => u.alias.toLowerCase() === targetAlias.toLowerCase());
       if (!targetUser) {
@@ -315,7 +260,6 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
         ]);
         setMessage("");
         setWhisperSuggestions([]);
-        if (isGuild) setActiveTab("guild"); // stay on guild but show error won't work — switch to a temp view
         return;
       }
 
@@ -379,7 +323,6 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
       return;
     }
 
-    // Guild tab: send shout
     if (isGuild) {
       const optimistic: ShoutData = {
         id: `temp-${Date.now()}`,
@@ -393,7 +336,6 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
       setMessage("");
       setWhisperSuggestions([]);
       setSending(true);
-
       const result = await createShout(trimmed);
       if (result?.error) {
         setShouts((prev) => prev.filter((s) => s.id !== optimistic.id));
@@ -423,7 +365,6 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
       return;
     }
 
-    // New conversation
     if (activeTab.startsWith("new:")) {
       const otherUserId = activeTab.slice(4);
       setSending(true);
@@ -452,7 +393,6 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
       return;
     }
 
-    // Existing DM conversation
     const optimistic: DmMessageData = {
       id: `temp-${Date.now()}`,
       message: trimmed,
@@ -467,7 +407,6 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
     setMessage("");
     setWhisperSuggestions([]);
     setSending(true);
-
     const result = await sendDirectMessage(activeTab, trimmed);
     if (result?.error) {
       setDmMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
@@ -504,142 +443,19 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
         overflow: "hidden",
       }}
     >
-      {/* Tab bar */}
-      <Box
-        sx={{
-          display: "flex",
-          overflowX: "auto",
-          borderBottom: `1px solid ${colors.slate300}`,
-          backgroundColor: colors.slate600,
-          "&::-webkit-scrollbar": { height: 0 },
+      <ShoutboxTabBar
+        activeTab={activeTab}
+        conversations={conversations}
+        showNewWhisper={!!session?.user}
+        privacyLabel={tDm("privacy")}
+        onSelectGuild={() => {
+          setActiveTab("guild");
+          setShowUserPicker(false);
         }}
-      >
-        {/* Guild tab */}
-        <Box
-          onClick={() => {
-            setActiveTab("guild");
-            setShowUserPicker(false);
-          }}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 0.5,
-            px: 1.5,
-            py: 0.5,
-            cursor: "pointer",
-            borderRight: `1px solid ${colors.slate300}`,
-            backgroundColor: isGuild ? colors.slate700 : colors.slate600,
-            "&:hover": { backgroundColor: isGuild ? colors.slate700 : "rgba(255,255,255,0.04)" },
-            flexShrink: 0,
-          }}
-        >
-          <Typography
-            variant="caption"
-            sx={{
-              color: isGuild ? GUILD_COLOR : colors.slate400,
-              fontFamily: "inherit",
-              fontWeight: isGuild ? 700 : 600,
-              fontSize: "0.75rem",
-            }}
-          >
-            Guild
-          </Typography>
-        </Box>
-
-        {/* DM conversation tabs */}
-        {conversations.map((conv) => {
-          const isActive = conv.id === activeTab;
-          return (
-            <Box
-              key={conv.id}
-              onClick={() => openConversation(conv.id)}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 0.5,
-                px: 1.5,
-                py: 0.5,
-                cursor: "pointer",
-                borderRight: `1px solid ${colors.slate300}`,
-                backgroundColor: isActive ? colors.slate700 : colors.slate600,
-                "&:hover": {
-                  backgroundColor: isActive ? colors.slate700 : "rgba(255,255,255,0.04)",
-                },
-                flexShrink: 0,
-              }}
-            >
-              {conv.isPrivacy && <LockIcon sx={{ fontSize: 12, color: colors.warning }} />}
-              <Badge
-                color="error"
-                variant="dot"
-                invisible={conv.unreadCount === 0}
-                sx={{ "& .MuiBadge-dot": { width: 6, height: 6 } }}
-              >
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: isActive
-                      ? WHISPER_COLOR
-                      : conv.unreadCount > 0
-                        ? colors.slate100
-                        : colors.slate400,
-                    fontFamily: "inherit",
-                    fontWeight: isActive || conv.unreadCount > 0 ? 700 : 400,
-                    fontSize: "0.75rem",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {conv.isPrivacy ? tDm("privacy") : conv.otherUser.alias}
-                </Typography>
-              </Badge>
-              <IconButton
-                size="small"
-                onClick={(e) => closeConvTab(e, conv.id)}
-                sx={{
-                  color: colors.slate400,
-                  p: 0,
-                  ml: 0.25,
-                  "&:hover": { color: colors.slate100 },
-                }}
-              >
-                <CloseIcon sx={{ fontSize: 12 }} />
-              </IconButton>
-            </Box>
-          );
-        })}
-
-        {/* New whisper button */}
-        {session?.user && (
-          <Tooltip title="/w alias message">
-            <Box
-              onClick={handleNewWhisper}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 0.5,
-                px: 1.5,
-                py: 0.5,
-                cursor: "pointer",
-                flexShrink: 0,
-                "&:hover": { backgroundColor: "rgba(255,255,255,0.04)" },
-              }}
-            >
-              <AddCommentIcon sx={{ fontSize: 14, color: WHISPER_COLOR }} />
-              <Typography
-                variant="caption"
-                sx={{
-                  color: WHISPER_COLOR,
-                  fontFamily: "inherit",
-                  fontSize: "0.7rem",
-                  fontWeight: 600,
-                }}
-              >
-                /w
-              </Typography>
-            </Box>
-          </Tooltip>
-        )}
-      </Box>
+        onSelectConversation={openConversation}
+        onCloseConversation={closeConvTab}
+        onNewWhisper={handleNewWhisper}
+      />
 
       {/* Pinned MOTD */}
       <Box
@@ -685,353 +501,23 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
           "&::-webkit-scrollbar-thumb": { backgroundColor: colors.slate400, borderRadius: 3 },
         }}
       >
-        {/* User picker view */}
         {showUserPicker ? (
-          <Box sx={{ py: 1 }}>
-            <Typography
-              variant="body2"
-              sx={{ color: colors.slate400, fontFamily: "inherit", mb: 1, fontSize: "0.8rem" }}
-            >
-              Type <span style={{ color: WHISPER_COLOR }}>/w alias message</span> or pick a user:
-            </Typography>
-            <Autocomplete
-              options={dmUsers}
-              getOptionLabel={(o) => o.alias}
-              loading={loadingUsers}
-              onChange={(_, val) => handleSelectUser(val)}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  placeholder={tDm("selectUser")}
-                  size="small"
-                  autoFocus
-                  sx={{
-                    "& .MuiInputBase-root": {
-                      fontFamily: "'Courier New', Courier, monospace",
-                      fontSize: "0.85rem",
-                      backgroundColor: colors.slate700,
-                      color: colors.slate100,
-                    },
-                    "& .MuiOutlinedInput-notchedOutline": { borderColor: colors.slate300 },
-                  }}
-                />
-              )}
-              renderOption={(props, option) => (
-                <li {...props} key={option.id}>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    {option.role === "superuser" && (
-                      <StarIcon sx={{ fontSize: 14, color: colors.warning }} />
-                    )}
-                    <Typography variant="body2">{option.alias}</Typography>
-                    <Typography variant="caption" sx={{ color: colors.slate400 }}>
-                      {option.role}
-                    </Typography>
-                  </Box>
-                </li>
-              )}
-            />
-          </Box>
+          <UserPicker
+            users={dmUsers}
+            loading={loadingUsers}
+            placeholder={tDm("selectUser")}
+            onSelect={handleSelectUser}
+          />
         ) : isGuild ? (
-          /* Guild (shoutbox) content */
-          <>
-            {shouts.length === 0 ? (
-              <Typography
-                variant="body2"
-                sx={{ color: colors.slate400, fontFamily: "inherit", fontStyle: "italic" }}
-              >
-                {t("empty")}
-              </Typography>
-            ) : (
-              shouts.map((shout) => {
-                const isSuperuser = shout.role === "superuser";
-                return (
-                  <Box key={shout.id} sx={{ display: "flex", gap: 0.75, lineHeight: 1.6 }}>
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      sx={{
-                        color: colors.slate400,
-                        fontFamily: "inherit",
-                        flexShrink: 0,
-                        fontSize: "0.8rem",
-                      }}
-                    >
-                      {formatTime(shout.createdAt)}
-                    </Typography>
-                    {isSuperuser && (
-                      <Tooltip title="Superuser" arrow>
-                        <StarIcon
-                          sx={{
-                            fontSize: 14,
-                            color: colors.warning,
-                            alignSelf: "flex-start",
-                            mt: "3px",
-                            flexShrink: 0,
-                          }}
-                        />
-                      </Tooltip>
-                    )}
-                    <DevTagIcon tag={shout.developerTag} role={shout.role} />
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      sx={{
-                        color: isSuperuser ? colors.warning : GUILD_COLOR,
-                        fontFamily: "inherit",
-                        fontWeight: 700,
-                        flexShrink: 0,
-                        fontSize: "0.8rem",
-                      }}
-                    >
-                      &lt;{shout.alias}&gt;
-                    </Typography>
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      sx={{
-                        color: colors.slate100,
-                        fontFamily: "inherit",
-                        wordBreak: "break-word",
-                        fontSize: "0.8rem",
-                        fontWeight: isSuperuser ? 500 : 400,
-                      }}
-                    >
-                      {shout.message}
-                    </Typography>
-                  </Box>
-                );
-              })
-            )}
-            {/* Local system messages (e.g. /help output) — only visible to this user */}
-            {localSystemMsgs.map((line, i) =>
-              !line.label && !line.text ? (
-                <Box key={`sys-${i}`} sx={{ height: 8 }} />
-              ) : (
-                <Box key={`sys-${i}`} sx={{ display: "flex", gap: 0.75, lineHeight: 1.6 }}>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    sx={{
-                      color:
-                        line.label === "[System]" || line.label === "Tip:"
-                          ? colors.warning
-                          : WHISPER_COLOR,
-                      fontFamily: "inherit",
-                      fontWeight: 700,
-                      flexShrink: 0,
-                      fontSize: "0.75rem",
-                    }}
-                  >
-                    {line.label}
-                  </Typography>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    sx={{
-                      color: line.label === "Tip:" ? colors.slate400 : colors.slate100,
-                      fontFamily: "inherit",
-                      fontSize: "0.75rem",
-                    }}
-                  >
-                    {line.text}
-                  </Typography>
-                </Box>
-              ),
-            )}
-          </>
+          <GuildMessages shouts={shouts} systemMessages={localSystemMsgs} emptyText={t("empty")} />
         ) : isDmTab ? (
-          /* DM conversation content */
-          <>
-            {dmMessages.length === 0 ? (
-              <Typography
-                variant="body2"
-                sx={{ color: colors.slate400, fontFamily: "inherit", fontStyle: "italic" }}
-              >
-                {tDm("empty")}
-              </Typography>
-            ) : (
-              dmMessages.map((msg) => {
-                if (msg.senderRole === "system") {
-                  return (
-                    <Box key={msg.id} sx={{ lineHeight: 1.6 }}>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: colors.error, fontFamily: "inherit", fontSize: "0.8rem" }}
-                      >
-                        {msg.message}
-                      </Typography>
-                    </Box>
-                  );
-                }
-                return (
-                  <Box key={msg.id} sx={{ display: "flex", gap: 0.75, lineHeight: 1.6 }}>
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      sx={{
-                        color: colors.slate400,
-                        fontFamily: "inherit",
-                        flexShrink: 0,
-                        fontSize: "0.8rem",
-                      }}
-                    >
-                      {formatTime(msg.createdAt)}
-                    </Typography>
-                    {msg.isMe ? (
-                      <>
-                        {msg.senderRole === "superuser" && (
-                          <Tooltip title="Superuser" arrow>
-                            <StarIcon
-                              sx={{
-                                fontSize: 14,
-                                color: colors.warning,
-                                alignSelf: "flex-start",
-                                mt: "3px",
-                                flexShrink: 0,
-                              }}
-                            />
-                          </Tooltip>
-                        )}
-                        <DevTagIcon tag={msg.senderDevTag} role={msg.senderRole} />
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          sx={{
-                            color: WHISPER_LABEL,
-                            fontFamily: "inherit",
-                            flexShrink: 0,
-                            fontSize: "0.8rem",
-                          }}
-                        >
-                          To
-                        </Typography>
-                        {activeConversation?.otherUser.role === "superuser" && (
-                          <Tooltip title="Superuser" arrow>
-                            <StarIcon
-                              sx={{
-                                fontSize: 14,
-                                color: colors.warning,
-                                alignSelf: "flex-start",
-                                mt: "3px",
-                                flexShrink: 0,
-                              }}
-                            />
-                          </Tooltip>
-                        )}
-                        <DevTagIcon
-                          tag={activeConversation?.otherUser.developerTag ?? null}
-                          role={activeConversation?.otherUser.role}
-                        />
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          sx={{
-                            color: WHISPER_COLOR,
-                            fontFamily: "inherit",
-                            fontWeight: 700,
-                            flexShrink: 0,
-                            fontSize: "0.8rem",
-                          }}
-                        >
-                          [{otherAlias}]:
-                        </Typography>
-                      </>
-                    ) : (
-                      <>
-                        {msg.senderRole === "superuser" && (
-                          <Tooltip title="Superuser" arrow>
-                            <StarIcon
-                              sx={{
-                                fontSize: 14,
-                                color: colors.warning,
-                                alignSelf: "flex-start",
-                                mt: "3px",
-                                flexShrink: 0,
-                              }}
-                            />
-                          </Tooltip>
-                        )}
-                        <DevTagIcon tag={msg.senderDevTag} role={msg.senderRole} />
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          sx={{
-                            color: WHISPER_COLOR,
-                            fontFamily: "inherit",
-                            fontWeight: 700,
-                            flexShrink: 0,
-                            fontSize: "0.8rem",
-                          }}
-                        >
-                          [{msg.senderAlias}]
-                        </Typography>
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          sx={{
-                            color: WHISPER_LABEL,
-                            fontFamily: "inherit",
-                            flexShrink: 0,
-                            fontSize: "0.8rem",
-                          }}
-                        >
-                          whispers:
-                        </Typography>
-                      </>
-                    )}
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      sx={{
-                        color: WHISPER_COLOR,
-                        fontFamily: "inherit",
-                        wordBreak: "break-word",
-                        fontSize: "0.8rem",
-                      }}
-                    >
-                      {msg.message}
-                    </Typography>
-                  </Box>
-                );
-              })
-            )}
-            {/* Local system messages (e.g. /help output) */}
-            {localSystemMsgs.map((line, i) =>
-              !line.label && !line.text ? (
-                <Box key={`sys-dm-${i}`} sx={{ height: 8 }} />
-              ) : (
-                <Box key={`sys-dm-${i}`} sx={{ display: "flex", gap: 0.75, lineHeight: 1.6 }}>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    sx={{
-                      color:
-                        line.label === "[System]" || line.label === "Tip:"
-                          ? colors.warning
-                          : WHISPER_COLOR,
-                      fontFamily: "inherit",
-                      fontWeight: 700,
-                      flexShrink: 0,
-                      fontSize: "0.75rem",
-                    }}
-                  >
-                    {line.label}
-                  </Typography>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    sx={{
-                      color: line.label === "Tip:" ? colors.slate400 : colors.slate100,
-                      fontFamily: "inherit",
-                      fontSize: "0.75rem",
-                    }}
-                  >
-                    {line.text}
-                  </Typography>
-                </Box>
-              ),
-            )}
-          </>
+          <WhisperMessages
+            messages={dmMessages}
+            systemMessages={localSystemMsgs}
+            activeConversation={activeConversation}
+            otherAlias={otherAlias}
+            emptyText={tDm("empty")}
+          />
         ) : null}
       </Box>
 
@@ -1103,7 +589,6 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
           }}
         >
           <Box sx={{ position: "relative" }}>
-            {/* Ghost text showing autocomplete suggestion */}
             {whisperSuggestions.length > 0 &&
               (() => {
                 const suggestion = whisperSuggestions[suggestionIndex];
