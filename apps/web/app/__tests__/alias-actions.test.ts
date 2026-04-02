@@ -6,16 +6,23 @@ jest.mock("@/auth", () => ({
   auth: () => mockAuth(),
 }));
 
+const mockFindUnique = jest.fn();
+
 jest.mock("@/lib/db", () => ({
   prisma: {
     user: {
       findFirst: (...args: unknown[]) => mockFindFirst(...args),
+      findUnique: (...args: unknown[]) => mockFindUnique(...args),
       update: (...args: unknown[]) => mockUpdate(...args),
     },
   },
 }));
 
-import { setAlias } from "@/lib/alias-actions";
+jest.mock("@/lib/gamification/trigger", () => ({
+  triggerGamification: jest.fn().mockResolvedValue(undefined),
+}));
+
+import { setAlias, toggleWantsToDevelop, getMyDeveloperInfo } from "@/lib/alias-actions";
 
 function authenticatedSession(id = "user-1") {
   return { user: { id } };
@@ -103,5 +110,60 @@ describe("setAlias", () => {
     mockAuth.mockResolvedValue(authenticatedSession());
     const result = await setAlias("test-user_123");
     expect(result).toBeUndefined();
+  });
+});
+
+describe("toggleWantsToDevelop", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockUpdate.mockResolvedValue({});
+  });
+
+  test("sets wantsToDevelop to true", async () => {
+    mockAuth.mockResolvedValue(authenticatedSession());
+    const result = await toggleWantsToDevelop(true);
+    expect(result).toBeUndefined();
+    expect(mockUpdate).toHaveBeenCalledWith({
+      where: { id: "user-1" },
+      data: { wantsToDevelop: true },
+    });
+  });
+
+  test("sets wantsToDevelop to false", async () => {
+    mockAuth.mockResolvedValue(authenticatedSession());
+    const result = await toggleWantsToDevelop(false);
+    expect(result).toBeUndefined();
+    expect(mockUpdate).toHaveBeenCalledWith({
+      where: { id: "user-1" },
+      data: { wantsToDevelop: false },
+    });
+  });
+
+  test("returns error when not authenticated", async () => {
+    mockAuth.mockResolvedValue(null);
+    const result = await toggleWantsToDevelop(true);
+    expect(result).toEqual(expect.objectContaining({ code: "permissionDenied" }));
+  });
+});
+
+describe("getMyDeveloperInfo", () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  test("returns null when not authenticated", async () => {
+    mockAuth.mockResolvedValue(null);
+    expect(await getMyDeveloperInfo()).toBeNull();
+  });
+
+  test("returns developer info when authenticated", async () => {
+    mockAuth.mockResolvedValue(authenticatedSession());
+    mockFindUnique.mockResolvedValue({ wantsToDevelop: true, developerTag: "architect" });
+    const result = await getMyDeveloperInfo();
+    expect(result).toEqual({ wantsToDevelop: true, developerTag: "architect" });
+  });
+
+  test("returns null when user not found", async () => {
+    mockAuth.mockResolvedValue(authenticatedSession());
+    mockFindUnique.mockResolvedValue(null);
+    expect(await getMyDeveloperInfo()).toBeNull();
   });
 });

@@ -87,6 +87,7 @@ import {
 } from "@/lib/gamification/xp-service";
 import {
   checkAchievements,
+  getUserAchievements,
   getAllAchievementsWithStatus,
 } from "@/lib/gamification/achievement-service";
 import {
@@ -591,6 +592,88 @@ describe("achievement-service extended", () => {
     mockAchievementFindMany.mockRejectedValue(new Error("db error"));
     const result = await getAllAchievementsWithStatus("u1");
     expect(result).toEqual([]);
+  });
+
+  test("getUserAchievements returns unlocked achievements", async () => {
+    mockUserAchievementFindMany.mockResolvedValue([
+      { achievement: { id: "a1", name: "Test", key: "test" }, unlockedAt: new Date("2026-04-01") },
+    ]);
+    const result = await getUserAchievements("u1");
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe("Test");
+    expect(result[0].unlockedAt).toBeDefined();
+  });
+
+  test("checkAchievements handles issue:create action", async () => {
+    mockAchievementFindMany.mockResolvedValue([
+      {
+        id: "a1",
+        key: "bug_hunter",
+        criteria: { type: "count", action: "issue:create", threshold: 1 },
+        xpReward: 30,
+      },
+    ]);
+    mockUserAchievementFindMany.mockResolvedValue([]);
+    mockIssueReportCount.mockResolvedValue(1);
+    mockUserAchievementCreate.mockResolvedValue({});
+    mockXpTransactionCreate.mockResolvedValue({});
+    mockUserLevelUpsert.mockResolvedValue({});
+    const results = await checkAchievements("u1", "issue:create");
+    expect(results).toHaveLength(1);
+  });
+
+  test("checkAchievements handles survey:complete action", async () => {
+    mockAchievementFindMany.mockResolvedValue([
+      {
+        id: "a1",
+        key: "surveyor",
+        criteria: { type: "count", action: "survey:complete", threshold: 1 },
+        xpReward: 50,
+      },
+    ]);
+    mockUserAchievementFindMany.mockResolvedValue([]);
+    mockSurveyResponseCount.mockResolvedValue(1);
+    mockUserAchievementCreate.mockResolvedValue({});
+    mockXpTransactionCreate.mockResolvedValue({});
+    mockUserLevelUpsert.mockResolvedValue({});
+    const results = await checkAchievements("u1", "survey:complete");
+    expect(results).toHaveLength(1);
+  });
+
+  test("checkAchievements handles alias:set action", async () => {
+    mockAchievementFindMany.mockResolvedValue([
+      {
+        id: "a1",
+        key: "welcome",
+        criteria: { type: "count", action: "alias:set", threshold: 1 },
+        xpReward: 25,
+      },
+    ]);
+    mockUserAchievementFindMany.mockResolvedValue([]);
+    mockUserFindUnique.mockResolvedValue({ alias: "TestUser" });
+    mockUserAchievementCreate.mockResolvedValue({});
+    mockXpTransactionCreate.mockResolvedValue({});
+    mockUserLevelUpsert.mockResolvedValue({});
+    const results = await checkAchievements("u1", "alias:set");
+    expect(results).toHaveLength(1);
+  });
+
+  test("checkAchievements handles login:streak action", async () => {
+    mockAchievementFindMany.mockResolvedValue([
+      {
+        id: "a1",
+        key: "streak_bronze",
+        criteria: { type: "count", action: "login:streak", threshold: 7 },
+        xpReward: 75,
+      },
+    ]);
+    mockUserAchievementFindMany.mockResolvedValue([]);
+    mockLoginStreakFindUnique.mockResolvedValue({ longestStreak: 7 });
+    mockUserAchievementCreate.mockResolvedValue({});
+    mockXpTransactionCreate.mockResolvedValue({});
+    mockUserLevelUpsert.mockResolvedValue({});
+    const results = await checkAchievements("u1", "login:streak");
+    expect(results).toHaveLength(1);
   });
 
   test("checkAchievements handles feedback:submit action", async () => {

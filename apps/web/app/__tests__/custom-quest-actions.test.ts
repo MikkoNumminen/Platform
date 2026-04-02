@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 const mockAuth = jest.fn();
 const mockRateLimit = jest.fn();
 const mockRevalidatePath = jest.fn();
@@ -14,29 +16,29 @@ jest.mock("@/auth", () => ({
 }));
 
 jest.mock("@/lib/rateLimit", () => ({
-  rateLimit: (...args: unknown[]) => mockRateLimit(...args),
+  rateLimit: (...args: any[]) => mockRateLimit(...args),
 }));
 
 jest.mock("next/cache", () => ({
-  revalidatePath: (...args: unknown[]) => mockRevalidatePath(...args),
+  revalidatePath: (...args: any[]) => mockRevalidatePath(...args),
 }));
 
 jest.mock("@/lib/db", () => ({
   prisma: {
     customQuest: {
-      findFirst: (...args: unknown[]) => mockCustomQuestFindFirst(...args),
-      create: (...args: unknown[]) => mockCustomQuestCreate(...args),
-      update: (...args: unknown[]) => mockCustomQuestUpdate(...args),
+      findFirst: (...args: any[]) => mockCustomQuestFindFirst(...args),
+      create: (...args: any[]) => mockCustomQuestCreate(...args),
+      update: (...args: any[]) => mockCustomQuestUpdate(...args),
     },
     user: {
-      findFirst: (...args: unknown[]) => mockUserFindFirst(...args),
-      findUnique: (...args: unknown[]) => mockUserFindUnique(...args),
+      findFirst: (...args: any[]) => mockUserFindFirst(...args),
+      findUnique: (...args: any[]) => mockUserFindUnique(...args),
     },
   },
 }));
 
 jest.mock("@/lib/gamification/xp-service", () => ({
-  awardCustomXp: (...args: unknown[]) => mockAwardCustomXp(...args),
+  awardCustomXp: (...args: any[]) => mockAwardCustomXp(...args),
 }));
 
 jest.mock("next/headers", () => ({
