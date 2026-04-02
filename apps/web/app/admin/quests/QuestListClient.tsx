@@ -74,6 +74,17 @@ export default function QuestListClient({ initialQuests, users, canManage }: Que
   const filtered =
     filter === "all" ? initialQuests : initialQuests.filter((q) => q.status === filter);
 
+  // Group quests by title to avoid visual duplication
+  const grouped = new Map<string, SerializedQuest[]>();
+  for (const quest of filtered) {
+    const existing = grouped.get(quest.title);
+    if (existing) {
+      existing.push(quest);
+    } else {
+      grouped.set(quest.title, [quest]);
+    }
+  }
+
   return (
     <Box>
       {/* Filter + Create button */}
@@ -107,20 +118,29 @@ export default function QuestListClient({ initialQuests, users, canManage }: Que
       </Box>
 
       {/* Quest list */}
-      {filtered.length === 0 ? (
+      {grouped.size === 0 ? (
         <Typography sx={{ color: colors.slate400, textAlign: "center", py: 4 }}>
           No quests found.
         </Typography>
       ) : (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
-          {filtered.map((quest) => (
-            <QuestCard
-              key={quest.id}
-              quest={quest}
-              canManage={canManage}
-              onEdit={() => setEditQuest(quest)}
-            />
-          ))}
+          {[...grouped.entries()].map(([title, quests]) =>
+            quests.length === 1 ? (
+              <QuestCard
+                key={quests[0].id}
+                quest={quests[0]}
+                canManage={canManage}
+                onEdit={() => setEditQuest(quests[0])}
+              />
+            ) : (
+              <QuestGroupCard
+                key={title}
+                quests={quests}
+                canManage={canManage}
+                onEdit={(q) => setEditQuest(q)}
+              />
+            ),
+          )}
         </Box>
       )}
 
@@ -310,6 +330,170 @@ function QuestCard({
               </Tooltip>
             </Box>
           )}
+        </Box>
+      </CardContent>
+    </Card>
+  );
+}
+
+function QuestGroupCard({
+  quests,
+  canManage,
+  onEdit,
+}: {
+  quests: SerializedQuest[];
+  canManage: boolean;
+  onEdit: (q: SerializedQuest) => void;
+}) {
+  const representative = quests[0];
+  const completedCount = quests.filter((q) => q.status === "completed").length;
+  const allCompleted = completedCount === quests.length;
+
+  return (
+    <Card
+      sx={{
+        opacity: allCompleted ? 0.6 : 1,
+        borderLeft: `3px solid ${allCompleted ? STATUS_COLORS.completed : (STATUS_COLORS[representative.status] ?? colors.slate400)}`,
+      }}
+    >
+      <CardContent sx={{ py: 1.5, "&:last-child": { pb: 1.5 } }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5, flexWrap: "wrap" }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: colors.slate100 }}>
+            {representative.title}
+          </Typography>
+          <Chip
+            label={`${completedCount}/${quests.length} done`}
+            size="small"
+            sx={{
+              height: 20,
+              fontSize: "0.65rem",
+              fontWeight: 600,
+              backgroundColor: "transparent",
+              color: allCompleted ? STATUS_COLORS.completed : colors.slate400,
+              border: `1px solid ${allCompleted ? STATUS_COLORS.completed : colors.slate400}`,
+            }}
+          />
+          <Chip
+            label={PRIORITY_LABELS[representative.priority] ?? representative.priority}
+            size="small"
+            sx={{
+              height: 20,
+              fontSize: "0.65rem",
+              backgroundColor: "transparent",
+              color: PRIORITY_COLORS[representative.priority] ?? colors.slate400,
+              border: `1px solid ${PRIORITY_COLORS[representative.priority] ?? colors.slate400}`,
+            }}
+          />
+          {representative.xpReward > 0 && (
+            <Chip
+              label={`+${representative.xpReward} XP`}
+              size="small"
+              sx={{
+                height: 20,
+                fontSize: "0.65rem",
+                fontWeight: 600,
+                backgroundColor: colors.accentBgSubtle,
+                color: colors.green400,
+              }}
+            />
+          )}
+        </Box>
+        <Typography variant="body2" sx={{ color: colors.slate400, mb: 1 }}>
+          {representative.description}
+        </Typography>
+        {/* Per-assignee rows */}
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+          {quests.map((q) => {
+            const assigneeName = q.assignee.alias ?? q.assignee.name ?? "Unknown";
+            const isCompleted = q.status === "completed";
+            const isOverdue = q.deadline && !isCompleted && new Date(q.deadline) < new Date();
+            return (
+              <Box
+                key={q.id}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  pl: 1,
+                  py: 0.25,
+                  borderRadius: 0.5,
+                  "&:hover": { backgroundColor: colors.hoverOverlay },
+                }}
+              >
+                <Chip
+                  label={STATUS_LABELS[q.status] ?? q.status}
+                  size="small"
+                  sx={{
+                    height: 18,
+                    fontSize: "0.6rem",
+                    fontWeight: 600,
+                    backgroundColor: "transparent",
+                    color: STATUS_COLORS[q.status] ?? colors.slate400,
+                    border: `1px solid ${STATUS_COLORS[q.status] ?? colors.slate400}`,
+                  }}
+                />
+                <Typography
+                  variant="caption"
+                  sx={{
+                    flex: 1,
+                    fontWeight: 500,
+                    textDecoration: isCompleted ? "line-through" : "none",
+                    color: isCompleted ? colors.slate400 : colors.slate200,
+                  }}
+                >
+                  {assigneeName}
+                </Typography>
+                {q.deadline && (
+                  <Typography
+                    variant="caption"
+                    sx={{ color: isOverdue ? colors.error : colors.slate400, fontSize: "0.7rem" }}
+                  >
+                    {isOverdue ? "Overdue" : `Due ${new Date(q.deadline).toLocaleDateString()}`}
+                  </Typography>
+                )}
+                {q.completedAt && (
+                  <Typography variant="caption" sx={{ color: colors.success, fontSize: "0.7rem" }}>
+                    {new Date(q.completedAt).toLocaleDateString()}
+                  </Typography>
+                )}
+                {canManage && !isCompleted && (
+                  <Box sx={{ display: "flex", gap: 0 }}>
+                    <Tooltip title="Mark complete">
+                      <IconButton
+                        size="small"
+                        onClick={async () => {
+                          await completeCustomQuest(q.id);
+                        }}
+                        sx={{ color: colors.success, p: 0.25 }}
+                      >
+                        <CheckCircleIcon sx={{ fontSize: 16 }} />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Edit">
+                      <IconButton
+                        size="small"
+                        onClick={() => onEdit(q)}
+                        sx={{ color: colors.info, p: 0.25 }}
+                      >
+                        <EditIcon sx={{ fontSize: 16 }} />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete">
+                      <IconButton
+                        size="small"
+                        onClick={async () => {
+                          await deleteCustomQuest(q.id);
+                        }}
+                        sx={{ color: colors.error, p: 0.25 }}
+                      >
+                        <DeleteIcon sx={{ fontSize: 16 }} />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                )}
+              </Box>
+            );
+          })}
         </Box>
       </CardContent>
     </Card>
