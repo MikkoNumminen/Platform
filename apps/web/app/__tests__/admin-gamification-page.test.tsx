@@ -67,6 +67,22 @@ const mockStats = {
       completionRate: 75,
     },
   ],
+  customQuestStats: {
+    total: 1,
+    completed: 1,
+    inProgress: 0,
+    open: 0,
+    quests: [
+      {
+        id: "cq1",
+        title: "Review docs",
+        xpReward: 100,
+        status: "completed",
+        priority: "high",
+        assignee: "Alice",
+      },
+    ],
+  },
   recentActivity: [
     { amount: 10, user: "Alice", source: "post:create", createdAt: "2026-03-28T10:00:00Z" },
   ],
@@ -177,6 +193,6 @@ describe("GamificationDashboardPage", () => {
     mockGetGamificationStats.mockResolvedValue(mockStats);
     const page = await GamificationDashboardPage();
     render(page);
-    expect(screen.getByText(/Alice/)).toBeInTheDocument();
+    expect(screen.getAllByText(/Alice/).length).toBeGreaterThanOrEqual(1);
   });
 });

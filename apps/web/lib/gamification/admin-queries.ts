@@ -18,6 +18,7 @@ export async function getGamificationStats() {
       })),
       topAchievements: [],
       questCompletionRates: [],
+      customQuestStats: { total: 0, completed: 0, inProgress: 0, open: 0, quests: [] },
       recentActivity: [],
     };
   }
@@ -31,6 +32,7 @@ async function fetchGamificationStats() {
     levelDistribution,
     topAchievementsRaw,
     questsWithCounts,
+    customQuests,
     recentActivity,
   ] = await Promise.all([
     prisma.userLevel.count({
@@ -70,6 +72,19 @@ async function fetchGamificationStats() {
         },
       },
       orderBy: { sortOrder: "asc" },
+    }),
+
+    prisma.customQuest.findMany({
+      where: { deletedAt: null, sessionId },
+      select: {
+        id: true,
+        title: true,
+        xpReward: true,
+        status: true,
+        priority: true,
+        assignee: { select: { alias: true, name: true } },
+      },
+      orderBy: { createdAt: "desc" },
     }),
 
     prisma.xpTransaction.findMany({
@@ -128,6 +143,20 @@ async function fetchGamificationStats() {
     })),
     topAchievements,
     questCompletionRates,
+    customQuestStats: {
+      total: customQuests.length,
+      completed: customQuests.filter((q) => q.status === "completed").length,
+      inProgress: customQuests.filter((q) => q.status === "in_progress").length,
+      open: customQuests.filter((q) => q.status === "open").length,
+      quests: customQuests.map((q) => ({
+        id: q.id,
+        title: q.title,
+        xpReward: q.xpReward,
+        status: q.status,
+        priority: q.priority,
+        assignee: q.assignee.alias ?? q.assignee.name ?? "Unknown",
+      })),
+    },
     recentActivity: recentActivity.map((t) => ({
       user: t.user.alias ?? t.user.name ?? "Anonymous",
       amount: t.amount,

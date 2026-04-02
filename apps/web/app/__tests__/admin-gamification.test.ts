@@ -4,6 +4,7 @@ const mockUserLevelAggregate = jest.fn();
 const mockUserLevelGroupBy = jest.fn();
 const mockUserAchievementGroupBy = jest.fn();
 const mockQuestFindMany = jest.fn();
+const mockCustomQuestFindMany = jest.fn();
 const mockXpTransactionFindMany = jest.fn();
 const mockAchievementFindMany = jest.fn();
 
@@ -19,6 +20,9 @@ jest.mock("@/lib/db", () => ({
     },
     quest: {
       findMany: (...a: any[]) => mockQuestFindMany(...a),
+    },
+    customQuest: {
+      findMany: (...a: any[]) => mockCustomQuestFindMany(...a),
     },
     xpTransaction: {
       findMany: (...a: any[]) => mockXpTransactionFindMany(...a),
@@ -53,7 +57,24 @@ describe("getGamificationStats", () => {
       { achievementId: "a1", _count: { achievementId: 8 } },
     ]);
     mockQuestFindMany.mockResolvedValue([
-      { name: "Daily Post", icon: "pen", type: "daily", _count: { userProgress: 4 } },
+      {
+        name: "Daily Post",
+        icon: "pen",
+        type: "daily",
+        description: "Create a post",
+        xpReward: 15,
+        _count: { userProgress: 4 },
+      },
+    ]);
+    mockCustomQuestFindMany.mockResolvedValue([
+      {
+        id: "cq1",
+        title: "Review docs",
+        xpReward: 100,
+        status: "completed",
+        priority: "high",
+        assignee: { alias: "Bob", name: "Bob B" },
+      },
     ]);
     mockXpTransactionFindMany.mockResolvedValue([
       {
@@ -82,6 +103,9 @@ describe("getGamificationStats", () => {
     expect(stats.topAchievements[0].count).toBe(8);
     expect(stats.questCompletionRates).toHaveLength(1);
     expect(stats.questCompletionRates[0].completionRate).toBe(40);
+    expect(stats.customQuestStats.total).toBe(1);
+    expect(stats.customQuestStats.completed).toBe(1);
+    expect(stats.customQuestStats.quests[0].assignee).toBe("Bob");
     expect(stats.recentActivity).toHaveLength(1);
     expect(stats.recentActivity[0].user).toBe("Alice");
   });
@@ -96,6 +120,7 @@ describe("getGamificationStats", () => {
     mockUserLevelGroupBy.mockResolvedValue([]);
     mockUserAchievementGroupBy.mockResolvedValue([]);
     mockQuestFindMany.mockResolvedValue([]);
+    mockCustomQuestFindMany.mockResolvedValue([]);
     mockXpTransactionFindMany.mockResolvedValue([]);
     mockAchievementFindMany.mockResolvedValue([]);
 
@@ -111,6 +136,7 @@ describe("getGamificationStats", () => {
     expect(stats.levelDistribution.every((d) => d.count === 0)).toBe(true);
     expect(stats.topAchievements).toHaveLength(0);
     expect(stats.questCompletionRates).toHaveLength(0);
+    expect(stats.customQuestStats.total).toBe(0);
     expect(stats.recentActivity).toHaveLength(0);
   });
 });

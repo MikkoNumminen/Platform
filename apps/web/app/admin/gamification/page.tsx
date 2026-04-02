@@ -17,7 +17,13 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getGamificationStats } from "@/lib/gamification/admin-queries";
 import { LEVEL_THRESHOLDS, XP_AMOUNTS } from "@/lib/gamification/xp-config";
-import { colors } from "../../styles";
+import {
+  colors,
+  STATUS_COLORS,
+  STATUS_LABELS,
+  PRIORITY_COLORS,
+  PRIORITY_LABELS,
+} from "../../styles";
 
 export const dynamic = "force-dynamic";
 
@@ -362,6 +368,90 @@ export default async function GamificationDashboardPage() {
             </CardContent>
           </Card>
         </Box>
+
+        {/* Custom Quests */}
+        {stats.customQuestStats.total > 0 && (
+          <Card sx={{ mb: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Assigned Quests
+              </Typography>
+              <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+                <Chip
+                  label={`${stats.customQuestStats.completed} completed`}
+                  size="small"
+                  sx={{
+                    backgroundColor: STATUS_COLORS.completed + "22",
+                    color: STATUS_COLORS.completed,
+                  }}
+                />
+                <Chip
+                  label={`${stats.customQuestStats.inProgress} in progress`}
+                  size="small"
+                  sx={{
+                    backgroundColor: STATUS_COLORS.in_progress + "22",
+                    color: STATUS_COLORS.in_progress,
+                  }}
+                />
+                <Chip
+                  label={`${stats.customQuestStats.open} open`}
+                  size="small"
+                  sx={{ backgroundColor: STATUS_COLORS.open + "22", color: STATUS_COLORS.open }}
+                />
+              </Box>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                {stats.customQuestStats.quests.map((q) => (
+                  <Box
+                    key={q.id}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1.5,
+                      py: 0.5,
+                      px: 0.5,
+                      borderRadius: 1,
+                    }}
+                  >
+                    <Chip
+                      label={STATUS_LABELS[q.status] ?? q.status}
+                      size="small"
+                      sx={{
+                        backgroundColor: (STATUS_COLORS[q.status] ?? colors.slate400) + "22",
+                        color: STATUS_COLORS[q.status] ?? colors.slate400,
+                        fontWeight: 600,
+                        minWidth: 90,
+                      }}
+                    />
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>
+                        {q.title}
+                      </Typography>
+                    </Box>
+                    <Typography variant="caption" sx={{ color: colors.slate400 }}>
+                      {q.assignee}
+                    </Typography>
+                    {q.priority && (
+                      <Chip
+                        label={PRIORITY_LABELS[q.priority] ?? q.priority}
+                        size="small"
+                        sx={{
+                          backgroundColor: (PRIORITY_COLORS[q.priority] ?? colors.slate400) + "22",
+                          color: PRIORITY_COLORS[q.priority] ?? colors.slate400,
+                          fontSize: "0.7rem",
+                        }}
+                      />
+                    )}
+                    <Chip
+                      label={`${q.xpReward} XP`}
+                      size="small"
+                      sx={{ backgroundColor: colors.accentBgSubtle, color: colors.green400 }}
+                    />
+                  </Box>
+                ))}
+              </Box>
+            </CardContent>
+          </Card>
+        )}
 
         <Divider sx={{ my: 3 }} />
 
