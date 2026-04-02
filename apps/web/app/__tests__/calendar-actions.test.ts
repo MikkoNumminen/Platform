@@ -30,38 +30,8 @@ jest.mock("next/headers", () => ({
   }),
 }));
 
-// Re-implement guardedAction without "use server" for testing
-jest.mock("@/lib/guardedAction", () => {
-  const { ActionError } = jest.requireActual("@/lib/actionErrors");
-  const { safe } = jest.requireActual("@/lib/actionUtils");
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { rateLimit } = require("@/lib/rateLimit");
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { auth } = require("@/auth");
-
-  function guardedAction<TArgs extends unknown[]>(
-    permission: string,
-    rateLimitKey: string,
-    fn: (session: unknown, ...args: TArgs) => Promise<void>,
-  ) {
-    return async (...args: TArgs) => {
-      return safe(async () => {
-        const session = await auth();
-        if (!session?.user) {
-          throw new ActionError("permissionDenied", "Not authenticated");
-        }
-        const permissions = session.user.permissions as Record<string, boolean> | undefined;
-        if (!permissions?.[permission]) {
-          throw new ActionError("permissionDenied", `Missing permission: ${permission}`);
-        }
-        await rateLimit(rateLimitKey);
-        await fn(session, ...args);
-      });
-    };
-  }
-
-  return { guardedAction };
-});
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+jest.mock("@/lib/guardedAction", () => require("./helpers/mock-guarded-action"));
 
 import { createEvent, updateEvent, deleteEvent } from "@/lib/calendar-actions";
 

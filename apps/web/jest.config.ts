@@ -15,7 +15,7 @@ const config: Config = {
     "^next-intl$": "<rootDir>/app/__mocks__/next-intl.ts",
     "^next-intl/server$": "<rootDir>/app/__mocks__/next-intl.ts",
   },
-  testPathIgnorePatterns: ["/node_modules/", "/e2e/"],
+  testPathIgnorePatterns: ["/node_modules/", "/e2e/", "/__tests__/helpers/"],
   collectCoverageFrom: [
     "app/**/*.{ts,tsx}",
     "lib/**/*.{ts,tsx}",
