@@ -26,10 +26,8 @@ packages/config/ — Shared types and config (@platform/config)
   - **`/help`** — Shows available chat commands (client-only, not sent to chat)
   - **`/motd message`** — Superuser and architects can change the welcome message
   - **Tab autocomplete** — Ghost text overlay shows completion as you type `/w`, Tab key accepts
+- **Quick Feedback** — Users can submit short feedback (up to 1000 chars) from the feedback page; admins can reply to individual entries; collapsible accordion view
 - **Dev Log** — Live GitHub commit feed with color-coded build status (green/red/pending), 10-minute cache, visible to all visitors
-- **Boards** — Categorized discussion boards with full CRUD, pinned posts, and threaded comments
-- **Forums** — Discussion forums with topics and threaded replies
-- **Calendar** — Monthly calendar view with event creation, editing, and deletion
 - **Issue Tracker** — Report and resolve issues; superuser can manage issue status
 - **User aliases** — Public display names (callsigns) shown instead of real names, editable from account page
 - **Themes** — 8 switchable themes including Epic (WoW-inspired with Cinzel font, textured backgrounds, gold ornamental borders)
@@ -37,9 +35,9 @@ packages/config/ — Shared types and config (@platform/config)
 - **Pending user gate** — New users complete the survey, then see a "Waiting for approval" screen until an admin assigns them a role
 
 ### Gamification
-- **XP System** — Earn XP for platform actions (posting, commenting, creating events, completing surveys, login streaks, sending DMs)
+- **XP System** — Earn XP for platform actions (shouts, completing surveys, submitting feedback, login streaks, sending DMs, reporting issues)
 - **10-level progression** — Newcomer through Mythic with XP thresholds and level-up celebrations
-- **Achievements** — 31 unlockable achievements across categories (onboarding, content, engagement, streaks, moderation)
+- **Achievements** — 21 unlockable achievements across categories (onboarding, content, engagement, streaks, moderation) including "Demo Explorer" for completing the guided tutorial
 - **Quest Log** — Daily, weekly, and special quests with progress tracking and XP rewards
 - **Leaderboard** — Top users ranked by XP with current user highlighting
 - **XP Toast notifications** — Real-time XP award popups after actions
@@ -47,12 +45,12 @@ packages/config/ — Shared types and config (@platform/config)
 - **Skill-targeted quests** — Quests can target a development skill; matching users earn double XP on completion
 
 ### Feedback System
+- **Quick feedback** — Free-text feedback submissions with admin reply capability, rate limited, XP reward (15 XP) and "Heard!" achievement on first feedback
 - **Survey rounds** — Superuser creates multiple simultaneous survey rounds with optional XP rewards; users take surveys from the feedback page
 - **Custom themed surveys** — Rounds can have custom questions (single select, multi select, text) defined as JSON; renders dynamically in the survey form
 - **Campaign quests** — Survey rounds with deadlines create campaign quest panels (fixed bottom-right widget) with auto-completing tasks and inline survey dialog
 - **Results dashboard** — Expandable per-round results with bar charts and text response lists; custom question results aggregate automatically
 - **Quest integration** — Survey rounds auto-create CustomQuests for all active users; completing the survey auto-completes the quest and awards XP
-- **Initial Survey** — Legacy mandatory survey responses shown separately with full results
 
 ### WoW Mythic+ Integration
 - **Character tracking** — Add WoW characters by name/realm/region; stats fetched from [Raider.IO](https://raider.io) API
@@ -70,18 +68,18 @@ packages/config/ — Shared types and config (@platform/config)
 - **Tutorial integration** — Guided tour auto-activates for demo users with fresh state
 
 ### Guided Tour
-- **Role-based tutorial** — 14-step guided tour with 4 tiers (Getting Started, Community Explorer, Admin Basics, Team Leader)
+- **Role-based tutorial** — 13-step guided tour with 4 tiers (Getting Started, Community Explorer, Admin Basics, Team Leader)
 - **Spotlight overlay** — Highlights target elements with pulsing border and tooltip; clicking the tooltip scrolls the target into view
 - **Progress checklist** — Fixed bottom-right panel showing completion status with XP rewards per step
-- **Gamification integration** — Tutorial quests and achievements seeded, XP awarded on step completion
+- **Gamification integration** — Tutorial quests and achievements seeded, XP awarded on step completion, "Demo Explorer" achievement on full completion
 - **Auto-sync** — Detects actions completed before the tutorial existed (alias, survey, issues, shoutbox) and backfills progress
 
 ### Admin
-- **User management** — Role assignment via approval dropdown (no separate approve button), hierarchy enforcement, permission overrides, survey completion status
+- **User management** — Role assignment via approval dropdown (no separate approve button), hierarchy enforcement, permission overrides, survey completion status, collapsible permission editor inside user row
 - **Developer team** — Users indicate skills via survey and account page; superuser assigns team roles (Master 👑, Coder 💻, Artist 🎨, Storyteller 📖, Architect 🏗️, Scout 🔭, Advisor 🧠); only one Master allowed; tag icons shown in chat
 - **Vuohiliitto Dashboard** — XP stats, level distribution with hover tooltips, achievement/quest completion rates (superuser/vuohi only)
 - **Quest Board** — Global view of all custom quests with filters, creation form, and status management
-- **Achievement & Quest CRUD** — Admin editor for managing gamification content
+- **Achievement & Quest CRUD** — Split admin editor with separate AchievementEditor and QuestEditor components, shared IconPicker
 - **Audit Log** — Searchable log of all admin actions (role changes, permission edits, quest management, survey rounds, GDPR operations) with actor, target, old/new values, action filter dropdown, and DataTable with pagination
 
 ### Security
@@ -91,8 +89,10 @@ packages/config/ — Shared types and config (@platform/config)
 - **Content ownership** — Edit actions verify the user is the author; admin routes check role in middleware
 - **Pending user approval** — New users get zero permissions until approved by an admin
 - **guardedAction** — Server action wrapper enforcing auth, permissions, and rate limiting
+- **requireUser / requireAdmin** — Shared auth helpers for consistent authentication checks across all server actions
 - **DM security** — Messages only between real registered users; demo user blocked from DM at UI, query, and backend levels; participant verification on every send
-- **Rate limiting** — PostgreSQL-based atomic sliding window (30 req/60s per user)
+- **Rate limiting** — PostgreSQL-based atomic sliding window (30 req/60s per user) on all user-facing creation actions (shouts, DMs, issues, feedback, surveys)
+- **Input validation** — UUID validation on all ID parameters, string length limits on all text inputs, enum whitelisting
 - **Security headers** — CSP, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy
 
 ### GDPR Compliance
@@ -102,16 +102,24 @@ packages/config/ — Shared types and config (@platform/config)
 - **Privacy policy** — Full policy at `/privacy` covering data collection, cookies, retention, private messaging, user rights, breach notification, data processing legal bases, demo mode handling, and contact email
 - **Soft-delete cleanup** — Weekly cron job purges records deleted more than 30 days ago
 
+### Code Quality
+- **Component architecture** — Large components split into focused subcomponents (Shoutbox → 6 subcomponents, ManageGamification → 3, FeedbackClient → 3, DirectMessages reuses shared shoutbox components)
+- **Shared components** — XpProgressCard, SurveyRoundCard, SurveyResults, IconPicker, SystemMessages, WhisperMessages, UserPicker, DevTagIcon
+- **Centralized constants** — TIER_COLORS, STATUS_COLORS, PRIORITY_COLORS, STATUS_LABELS, PRIORITY_LABELS in `styles.ts` — single source of truth used by 5+ components
+- **Standardized server actions** — All actions use `safe()` + `ActionError` pattern with `requireUser()`/`requireAdmin()` auth helpers and `createStringValidator()` for input validation
+- **Deduplicated logic** — Shared `applyXp()` core, `completeSurveyQuest()` helper, `guardedAction` test mock helper
+
 ### Shared Components
 - **DataTable** — Generic sortable, paginated, searchable table with column configuration
+- **XpProgressCard** — Reusable level/XP progress card with configurable right label and optional next-level display
 - **EmptyState** — Reusable empty state with icon, description, and action button
 - **SnackbarProvider** — Context-based notification system with `useSnackbar()` hook
 - **ConfirmDeleteDialog** — Reusable delete confirmation dialog
-- **Centralized color system** — 48 theme-aware color tokens in `styles.ts`, all components reference centralized tokens
+- **Centralized color system** — 48+ theme-aware color tokens in `styles.ts`, all components reference centralized tokens
 
 ### UX Polish
 - **Loading skeletons** — Skeleton loading states for all routes
-- **Keyboard shortcuts** — `g+h/b/f/c` for navigation, `?` for help dialog, `/w alias msg` for whispers with Tab autocomplete
+- **Keyboard shortcuts** — `g+h` for home, `?` for help dialog, `/w alias msg` for whispers with Tab autocomplete
 - **Welcome page** — Animated landing page with "Try Demo" and "Sign In" for unauthenticated visitors
 - **Dev Log** — Live GitHub commit feed on the landing page showing recent changes with relative timestamps and CI build status
 - **Level-up celebration** — Confetti and overlay animation on XP level milestones
@@ -147,7 +155,7 @@ npx turbo run build --filter=web # Production build
 
 ## Testing
 
-1150+ tests across 135+ test suites with accessibility checks (jest-axe). Playwright E2E framework configured for critical user journeys.
+1260+ tests across 143 test suites covering all server actions, query functions, gamification services, and UI components. Pre-push hooks enforce 100% test pass rate.
 
 ```bash
 npx turbo run test --filter=web           # All unit/integration tests
@@ -161,7 +169,7 @@ cd apps/web && npm run test:e2e           # Playwright E2E tests
 
 Platform and HRM are **separate applications with separate databases**. They are both portfolio showpieces:
 
-- **Platform** — the production community app with boards, forums, calendar, gamification, user management
+- **Platform** — the production community app with chat, feedback, gamification, user management
 - **HRM** — a standalone HR management showpiece (git submodule at `apps/hrm/`)
 
 New features are developed in the HRM repo first, then ported to Platform as needed using the same patterns but fresh code. HRM is never modified from within this repo.
