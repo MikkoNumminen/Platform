@@ -32,6 +32,32 @@ export function createStringValidator(
   };
 }
 
+/**
+ * Returns the authenticated user or throws ActionError.
+ * Use inside safe() blocks in server actions.
+ */
+export async function requireUser() {
+  const { auth } = await import("@/auth");
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new ActionError("permissionDenied", "Not authenticated");
+  }
+  return session.user as typeof session.user & { id: string };
+}
+
+/**
+ * Returns the authenticated user if they have an admin-level role,
+ * or throws ActionError. Accepts superuser, vuohi, and admin.
+ */
+export async function requireAdmin() {
+  const user = await requireUser();
+  const role = (user as { role?: string }).role;
+  if (role !== "superuser" && role !== "vuohi" && role !== "admin") {
+    throw new ActionError("permissionDenied", "Admin access required");
+  }
+  return user;
+}
+
 export async function safe(fn: () => Promise<void>): Promise<ActionResult> {
   try {
     await fn();

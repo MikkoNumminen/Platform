@@ -21,7 +21,7 @@ export default function FeedbackList({ items, canReply, onReplied }: FeedbackLis
   const handleReply = (feedbackId: string) => {
     startTransition(async () => {
       const result = await replyToFeedback(feedbackId, replyText);
-      if (result.success) {
+      if (!result) {
         setReplyingTo(null);
         setReplyText("");
         onReplied();

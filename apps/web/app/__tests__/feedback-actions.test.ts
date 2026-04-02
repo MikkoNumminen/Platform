@@ -45,20 +45,19 @@ describe("feedback-actions", () => {
     test("returns error when not authenticated", async () => {
       mockAuth.mockResolvedValue(null as any);
       const result = await submitFeedback("test");
-      expect(result).toEqual({ success: false, error: "Not authenticated" });
+      expect(result).toEqual(expect.objectContaining({ code: "permissionDenied" }));
     });
 
     test("returns error for empty message", async () => {
       mockAuth.mockResolvedValue({ user: { id: "u1" } } as any);
       const result = await submitFeedback("   ");
-      expect(result).toEqual({ success: false, error: "Feedback cannot be empty" });
+      expect(result).toEqual(expect.objectContaining({ code: "invalidInput" }));
     });
 
     test("returns error for message exceeding max length", async () => {
       mockAuth.mockResolvedValue({ user: { id: "u1" } } as any);
       const result = await submitFeedback("a".repeat(1001));
-      expect(result.success).toBe(false);
-      expect(result.error).toContain("under");
+      expect(result).toEqual(expect.objectContaining({ code: "invalidInput" }));
     });
 
     test("creates feedback and triggers gamification", async () => {
@@ -67,7 +66,7 @@ describe("feedback-actions", () => {
       mockTriggerGamification.mockResolvedValue(undefined);
 
       const result = await submitFeedback("Great platform!");
-      expect(result).toEqual({ success: true });
+      expect(result).toBeUndefined();
       expect(mockFeedbackCreate).toHaveBeenCalledWith({
         data: expect.objectContaining({
           message: "Great platform!",
@@ -83,7 +82,7 @@ describe("feedback-actions", () => {
       mockTriggerGamification.mockRejectedValue(new Error("db error"));
 
       const result = await submitFeedback("feedback");
-      expect(result).toEqual({ success: true });
+      expect(result).toBeUndefined();
     });
   });
 
@@ -91,26 +90,26 @@ describe("feedback-actions", () => {
     test("returns error when not authenticated", async () => {
       mockAuth.mockResolvedValue(null as any);
       const result = await replyToFeedback("fb1", "thanks");
-      expect(result).toEqual({ success: false, error: "Not authenticated" });
+      expect(result).toEqual(expect.objectContaining({ code: "permissionDenied" }));
     });
 
     test("returns error for non-admin users", async () => {
       mockAuth.mockResolvedValue({ user: { id: "u1", role: "user" } } as any);
       const result = await replyToFeedback("fb1", "thanks");
-      expect(result).toEqual({ success: false, error: "Not authorized" });
+      expect(result).toEqual(expect.objectContaining({ code: "permissionDenied" }));
     });
 
     test("returns error for empty reply", async () => {
       mockAuth.mockResolvedValue({ user: { id: "u1", role: "superuser" } } as any);
       const result = await replyToFeedback("fb1", "   ");
-      expect(result).toEqual({ success: false, error: "Reply cannot be empty" });
+      expect(result).toEqual(expect.objectContaining({ code: "invalidInput" }));
     });
 
     test("returns error when feedback not found", async () => {
       mockAuth.mockResolvedValue({ user: { id: "u1", role: "superuser" } } as any);
       mockFeedbackFindUnique.mockResolvedValue(null);
       const result = await replyToFeedback("fb1", "thanks");
-      expect(result).toEqual({ success: false, error: "Feedback not found" });
+      expect(result).toEqual(expect.objectContaining({ code: "notFound" }));
     });
 
     test("updates feedback with admin reply", async () => {
@@ -120,7 +119,7 @@ describe("feedback-actions", () => {
       mockAuditLogCreate.mockResolvedValue({});
 
       const result = await replyToFeedback("fb1", "Thanks for the feedback!");
-      expect(result).toEqual({ success: true });
+      expect(result).toBeUndefined();
       expect(mockFeedbackUpdate).toHaveBeenCalledWith({
         where: { id: "fb1" },
         data: expect.objectContaining({
@@ -137,7 +136,7 @@ describe("feedback-actions", () => {
       mockAuditLogCreate.mockResolvedValue({});
 
       const result = await replyToFeedback("fb1", "noted");
-      expect(result).toEqual({ success: true });
+      expect(result).toBeUndefined();
     });
 
     test("allows vuohi role to reply", async () => {
@@ -147,7 +146,7 @@ describe("feedback-actions", () => {
       mockAuditLogCreate.mockResolvedValue({});
 
       const result = await replyToFeedback("fb1", "noted");
-      expect(result).toEqual({ success: true });
+      expect(result).toBeUndefined();
     });
   });
 

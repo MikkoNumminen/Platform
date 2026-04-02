@@ -20,11 +20,11 @@ export default function FeedbackForm({ onSubmitted }: FeedbackFormProps) {
     setError(null);
     startTransition(async () => {
       const result = await submitFeedback(message);
-      if (result.success) {
+      if (!result) {
         setMessage("");
         onSubmitted();
       } else {
-        setError(result.error ?? "Something went wrong");
+        setError(result.error);
       }
     });
   };

@@ -2,80 +2,62 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { ActionError } from "@/lib/actionErrors";
+import { safe, requireUser, requireAdmin, createStringValidator } from "@/lib/actionUtils";
+import type { ActionResult } from "@/lib/actionUtils";
 import { triggerGamification } from "@/lib/gamification/trigger";
 import { logAudit } from "@/lib/audit";
 
-const MAX_FEEDBACK_LENGTH = 1000;
+const validateFeedback = createStringValidator("Feedback", 1000, "invalidInput", "invalidInput");
 
-export async function submitFeedback(
-  message: string,
-): Promise<{ success: boolean; error?: string }> {
-  const session = await auth();
-  if (!session?.user?.id) return { success: false, error: "Not authenticated" };
+export async function submitFeedback(message: string): Promise<ActionResult> {
+  return safe(async () => {
+    const user = await requireUser();
+    const trimmed = validateFeedback(message);
 
-  const trimmed = message.trim();
-  if (!trimmed) return { success: false, error: "Feedback cannot be empty" };
-  if (trimmed.length > MAX_FEEDBACK_LENGTH)
-    return { success: false, error: `Feedback must be under ${MAX_FEEDBACK_LENGTH} characters` };
+    const demoSessionId = (user as { demoSessionId?: string }).demoSessionId;
 
-  const userId = session.user.id;
-  const demoSessionId = (session.user as { demoSessionId?: string }).demoSessionId;
+    const feedback = await prisma.feedback.create({
+      data: {
+        message: trimmed,
+        authorId: user.id,
+        sessionId: demoSessionId ?? undefined,
+      },
+    });
 
-  const feedback = await prisma.feedback.create({
-    data: {
-      message: trimmed,
-      authorId: userId,
-      sessionId: demoSessionId ?? undefined,
-    },
+    try {
+      await triggerGamification(user.id, "feedback:submit", feedback.id);
+    } catch {
+      // Non-critical
+    }
   });
-
-  try {
-    await triggerGamification(userId, "feedback:submit", feedback.id);
-  } catch {
-    // Non-critical — don't fail the submission
-  }
-
-  return { success: true };
 }
 
-export async function replyToFeedback(
-  feedbackId: string,
-  reply: string,
-): Promise<{ success: boolean; error?: string }> {
-  const session = await auth();
-  if (!session?.user?.id) return { success: false, error: "Not authenticated" };
+export async function replyToFeedback(feedbackId: string, reply: string): Promise<ActionResult> {
+  return safe(async () => {
+    const user = await requireAdmin();
+    const trimmed = validateFeedback(reply);
 
-  const role = (session.user as { role?: string }).role;
-  if (role !== "superuser" && role !== "vuohi" && role !== "admin") {
-    return { success: false, error: "Not authorized" };
-  }
+    const feedback = await prisma.feedback.findUnique({ where: { id: feedbackId } });
+    if (!feedback) throw new ActionError("notFound", "Feedback not found");
 
-  const trimmed = reply.trim();
-  if (!trimmed) return { success: false, error: "Reply cannot be empty" };
-  if (trimmed.length > MAX_FEEDBACK_LENGTH)
-    return { success: false, error: `Reply must be under ${MAX_FEEDBACK_LENGTH} characters` };
+    await prisma.feedback.update({
+      where: { id: feedbackId },
+      data: {
+        adminReply: trimmed,
+        adminReplyById: user.id,
+        adminRepliedAt: new Date(),
+      },
+    });
 
-  const feedback = await prisma.feedback.findUnique({ where: { id: feedbackId } });
-  if (!feedback) return { success: false, error: "Feedback not found" };
-
-  await prisma.feedback.update({
-    where: { id: feedbackId },
-    data: {
-      adminReply: trimmed,
-      adminReplyById: session.user.id,
-      adminRepliedAt: new Date(),
-    },
+    await logAudit({
+      action: "feedback:reply",
+      entityType: "feedback",
+      entityId: feedbackId,
+      actorId: user.id,
+      details: { replyLength: trimmed.length },
+    });
   });
-
-  await logAudit({
-    action: "feedback:reply",
-    entityType: "feedback",
-    entityId: feedbackId,
-    actorId: session.user.id,
-    details: { replyLength: trimmed.length },
-  });
-
-  return { success: true };
 }
 
 export interface FeedbackItem {

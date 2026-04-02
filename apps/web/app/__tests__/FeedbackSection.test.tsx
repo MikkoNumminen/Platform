@@ -49,7 +49,7 @@ describe("FeedbackSection", () => {
   });
 
   test("submits feedback and shows accordion", async () => {
-    mockSubmitFeedback.mockResolvedValue({ success: true });
+    mockSubmitFeedback.mockResolvedValue(undefined);
     mockGetAllFeedback.mockResolvedValueOnce([]).mockResolvedValueOnce([FEEDBACK_ITEM]);
 
     render(<FeedbackSection canReply={false} />);
@@ -155,7 +155,7 @@ describe("FeedbackSection", () => {
   });
 
   test("admin can submit a reply", async () => {
-    mockReplyToFeedback.mockResolvedValue({ success: true });
+    mockReplyToFeedback.mockResolvedValue(undefined);
     mockGetAllFeedback.mockResolvedValue([
       {
         ...FEEDBACK_ITEM,
