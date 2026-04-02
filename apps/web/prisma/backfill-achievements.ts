@@ -121,7 +121,90 @@ async function main() {
     }
   }
 
-  console.log(`\nDone! Backfilled ${totalAwarded} achievement(s) for ${users.length} user(s).`);
+  console.log(`Backfilled ${totalAwarded} achievement(s) for ${users.length} user(s).\n`);
+
+  // --- Quest progress backfill ---
+  console.log("Backfilling quest progress...\n");
+
+  const quests = await prisma.quest.findMany();
+  let questsAwarded = 0;
+
+  for (const user of users) {
+    const displayName = user.alias ?? user.name ?? user.id;
+    const existingProgress = await prisma.userQuestProgress.findMany({
+      where: { userId: user.id },
+      select: { questId: true, completed: true },
+    });
+    const completedQuestIds = new Set(
+      existingProgress.filter((p) => p.completed).map((p) => p.questId),
+    );
+
+    for (const quest of quests) {
+      if (completedQuestIds.has(quest.id)) continue;
+      if (quest.repeatable) continue; // Only backfill one-time quests
+
+      const criteria = quest.criteria as { action: string; count: number };
+      const count = await getActionCount(user.id, criteria.action);
+      if (count < criteria.count) continue;
+
+      // Mark quest as completed
+      await prisma.userQuestProgress.upsert({
+        where: { userId_questId: { userId: user.id, questId: quest.id } },
+        create: {
+          userId: user.id,
+          questId: quest.id,
+          progress: criteria.count,
+          completed: true,
+          completedAt: new Date(),
+        },
+        update: {
+          progress: criteria.count,
+          completed: true,
+          completedAt: new Date(),
+        },
+      });
+
+      // Award XP if applicable
+      if (quest.xpReward > 0) {
+        // Check if XP was already awarded for this quest
+        const existingXp = await prisma.xpTransaction.findFirst({
+          where: { userId: user.id, source: "quest:complete", sourceId: quest.id },
+        });
+        if (!existingXp) {
+          await prisma.xpTransaction.create({
+            data: {
+              userId: user.id,
+              amount: quest.xpReward,
+              source: "quest:complete",
+              sourceId: quest.id,
+            },
+          });
+          await prisma.userLevel.upsert({
+            where: { userId: user.id },
+            create: { userId: user.id, totalXp: quest.xpReward, level: 1 },
+            update: { totalXp: { increment: quest.xpReward } },
+          });
+          const userLevel = await prisma.userLevel.findUnique({ where: { userId: user.id } });
+          if (userLevel) {
+            const newLevel = getLevelForXp(userLevel.totalXp).level;
+            if (newLevel !== userLevel.level) {
+              await prisma.userLevel.update({
+                where: { userId: user.id },
+                data: { level: newLevel },
+              });
+            }
+          }
+        }
+      }
+
+      console.log(`  ✓ ${displayName}: completed "${quest.name}" (+${quest.xpReward} XP)`);
+      questsAwarded++;
+    }
+  }
+
+  console.log(
+    `\nDone! Backfilled ${totalAwarded} achievement(s) and ${questsAwarded} quest(s) for ${users.length} user(s).`,
+  );
 }
 
 main()
