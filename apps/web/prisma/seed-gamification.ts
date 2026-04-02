@@ -55,6 +55,36 @@ async function main() {
   }
 
   console.log(`Seeded ${INITIAL_QUESTS.length} quests`);
+
+  // Clean up stale achievements/quests no longer in seed data
+  const validAchievementKeys = INITIAL_ACHIEVEMENTS.map((a) => a.key);
+  const staleAchievements = await prisma.achievement.findMany({
+    where: { key: { notIn: validAchievementKeys } },
+    select: { id: true, key: true },
+  });
+  if (staleAchievements.length > 0) {
+    const staleIds = staleAchievements.map((a) => a.id);
+    await prisma.userAchievement.deleteMany({ where: { achievementId: { in: staleIds } } });
+    await prisma.achievement.deleteMany({ where: { id: { in: staleIds } } });
+    console.log(
+      `Removed ${staleAchievements.length} stale achievements: ${staleAchievements.map((a) => a.key).join(", ")}`,
+    );
+  }
+
+  const validQuestKeys = INITIAL_QUESTS.map((q) => q.key);
+  const staleQuests = await prisma.quest.findMany({
+    where: { key: { notIn: validQuestKeys } },
+    select: { id: true, key: true },
+  });
+  if (staleQuests.length > 0) {
+    const staleIds = staleQuests.map((q) => q.id);
+    await prisma.userQuestProgress.deleteMany({ where: { questId: { in: staleIds } } });
+    await prisma.quest.deleteMany({ where: { id: { in: staleIds } } });
+    console.log(
+      `Removed ${staleQuests.length} stale quests: ${staleQuests.map((q) => q.key).join(", ")}`,
+    );
+  }
+
   console.log("Done!");
 }
 
