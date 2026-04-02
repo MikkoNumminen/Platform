@@ -330,6 +330,7 @@ export async function cleanupStaleDemoSessions(): Promise<number> {
       await prisma.surveyRound.deleteMany({ where: { id: { in: roundIds } } });
     }
 
+    await prisma.mythicPlusTeam.deleteMany({ where: { sessionId: sid } });
     await prisma.wowCharacter.deleteMany({ where: { sessionId: sid } });
     await prisma.feedback.deleteMany({ where: { sessionId: sid } });
     await prisma.auditLog.deleteMany({ where: { sessionId: sid } });

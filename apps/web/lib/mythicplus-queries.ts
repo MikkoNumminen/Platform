@@ -46,3 +46,65 @@ export async function getTeamCharacters(): Promise<WowCharacterData[]> {
     createdAt: c.createdAt.toISOString(),
   }));
 }
+
+export interface TeamSlotData {
+  id: string | null;
+  characterName: string | null;
+  className: string | null;
+  spec: string | null;
+  specRole: string | null;
+  itemLevel: number | null;
+  mythicPlusRating: number | null;
+  thumbnailUrl: string | null;
+}
+
+export interface MythicPlusTeamData {
+  id: string;
+  name: string;
+  tank: TeamSlotData | null;
+  healer: TeamSlotData | null;
+  dps1: TeamSlotData | null;
+  dps2: TeamSlotData | null;
+  dps3: TeamSlotData | null;
+  createdAt: string;
+}
+
+const SLOT_SELECT = {
+  select: {
+    id: true,
+    characterName: true,
+    className: true,
+    spec: true,
+    specRole: true,
+    itemLevel: true,
+    mythicPlusRating: true,
+    thumbnailUrl: true,
+  },
+};
+
+export async function getTeams(): Promise<MythicPlusTeamData[]> {
+  const sessionId = await getDemoSessionId();
+
+  const teams = await prisma.mythicPlusTeam.findMany({
+    where: { sessionId },
+    include: {
+      tank: SLOT_SELECT,
+      healer: SLOT_SELECT,
+      dps1: SLOT_SELECT,
+      dps2: SLOT_SELECT,
+      dps3: SLOT_SELECT,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return teams.map((t) => ({
+    id: t.id,
+    name: t.name,
+    tank: t.tank,
+    healer: t.healer,
+    dps1: t.dps1,
+    dps2: t.dps2,
+    dps3: t.dps3,
+    createdAt: t.createdAt.toISOString(),
+  }));
+}

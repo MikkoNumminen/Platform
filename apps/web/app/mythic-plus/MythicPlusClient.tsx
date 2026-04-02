@@ -7,15 +7,17 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
 import { colors } from "../styles";
 import { refreshAllCharacters } from "@/lib/mythicplus-actions";
-import type { WowCharacterData } from "@/lib/mythicplus-queries";
+import type { WowCharacterData, MythicPlusTeamData } from "@/lib/mythicplus-queries";
 import CharacterCard from "./CharacterCard";
 import AddCharacterDialog from "./AddCharacterDialog";
+import TeamComposition from "./TeamComposition";
 
 interface MythicPlusClientProps {
   characters: WowCharacterData[];
+  teams: MythicPlusTeamData[];
 }
 
-export default function MythicPlusClient({ characters }: MythicPlusClientProps) {
+export default function MythicPlusClient({ characters, teams }: MythicPlusClientProps) {
   const [showAdd, setShowAdd] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -74,6 +76,9 @@ export default function MythicPlusClient({ characters }: MythicPlusClientProps) 
           ))}
         </Box>
       )}
+
+      {/* Teams section */}
+      {characters.length > 0 && <TeamComposition teams={teams} characters={characters} />}
 
       <AddCharacterDialog open={showAdd} onClose={() => setShowAdd(false)} />
     </Box>

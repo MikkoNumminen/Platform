@@ -50,6 +50,7 @@ model User {
   feedbacks           Feedback[]       @relation("FeedbackAuthor")
   feedbackReplies     Feedback[]       @relation("FeedbackAdmin")
   wowCharacters       WowCharacter[]
+  mythicPlusTeams     MythicPlusTeam[]
 
   sessionId      String?
 
@@ -367,8 +368,38 @@ model WowCharacter {
 
   addedBy User @relation(fields: [addedById], references: [id], onDelete: Cascade)
 
+  teamTank    MythicPlusTeam[] @relation("TeamTank")
+  teamHealer  MythicPlusTeam[] @relation("TeamHealer")
+  teamDps1    MythicPlusTeam[] @relation("TeamDps1")
+  teamDps2    MythicPlusTeam[] @relation("TeamDps2")
+  teamDps3    MythicPlusTeam[] @relation("TeamDps3")
+
   @@unique([characterName, realm, region, sessionId])
   @@index([addedById])
+  @@index([sessionId])
+}
+
+model MythicPlusTeam {
+  id        String   @id @default(uuid())
+  name      String
+  tankId    String?
+  healerId  String?
+  dps1Id    String?
+  dps2Id    String?
+  dps3Id    String?
+  creatorId String
+  sessionId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tank    WowCharacter? @relation("TeamTank", fields: [tankId], references: [id], onDelete: SetNull)
+  healer  WowCharacter? @relation("TeamHealer", fields: [healerId], references: [id], onDelete: SetNull)
+  dps1    WowCharacter? @relation("TeamDps1", fields: [dps1Id], references: [id], onDelete: SetNull)
+  dps2    WowCharacter? @relation("TeamDps2", fields: [dps2Id], references: [id], onDelete: SetNull)
+  dps3    WowCharacter? @relation("TeamDps3", fields: [dps3Id], references: [id], onDelete: SetNull)
+  creator User          @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@index([creatorId])
   @@index([sessionId])
 }
 

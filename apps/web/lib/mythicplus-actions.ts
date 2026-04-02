@@ -185,3 +185,93 @@ export async function refreshAllCharacters(): Promise<ActionResult> {
     revalidatePath("/mythic-plus");
   });
 }
+
+// ── Team actions ──────────────────────────────────────────────────────────
+
+const VALID_SLOTS = ["tankId", "healerId", "dps1Id", "dps2Id", "dps3Id"] as const;
+type TeamSlot = (typeof VALID_SLOTS)[number];
+
+export async function createTeam(name: string): Promise<ActionResult> {
+  return safe(async () => {
+    const session = await auth();
+    if (!session?.user?.id) {
+      throw new ActionError("permissionDenied", "Not authenticated");
+    }
+
+    const trimmed = name.trim();
+    if (!trimmed || trimmed.length > 50) {
+      throw new ActionError("invalidInput", "Team name is required (max 50 characters)");
+    }
+
+    const sessionId = await getDemoSessionId();
+
+    await prisma.mythicPlusTeam.create({
+      data: {
+        name: trimmed,
+        creatorId: session.user.id,
+        sessionId,
+      },
+    });
+
+    revalidatePath("/mythic-plus");
+  });
+}
+
+export async function updateTeamSlot(
+  teamId: string,
+  slot: string,
+  characterId: string | null,
+): Promise<ActionResult> {
+  return safe(async () => {
+    const session = await auth();
+    if (!session?.user?.id) {
+      throw new ActionError("permissionDenied", "Not authenticated");
+    }
+
+    validateUUID(teamId, "team ID");
+    if (characterId) validateUUID(characterId, "character ID");
+
+    if (!VALID_SLOTS.includes(slot as TeamSlot)) {
+      throw new ActionError("invalidInput", `Invalid slot: ${slot}`);
+    }
+
+    const sessionId = await getDemoSessionId();
+
+    const team = await prisma.mythicPlusTeam.findFirst({
+      where: { id: teamId, sessionId },
+    });
+    if (!team) {
+      throw new ActionError("notFound", "Team not found");
+    }
+
+    await prisma.mythicPlusTeam.update({
+      where: { id: teamId },
+      data: { [slot]: characterId },
+    });
+
+    revalidatePath("/mythic-plus");
+  });
+}
+
+export async function deleteTeam(teamId: string): Promise<ActionResult> {
+  return safe(async () => {
+    const session = await auth();
+    if (!session?.user?.id) {
+      throw new ActionError("permissionDenied", "Not authenticated");
+    }
+
+    validateUUID(teamId, "team ID");
+    const sessionId = await getDemoSessionId();
+
+    const team = await prisma.mythicPlusTeam.findFirst({
+      where: { id: teamId, sessionId },
+    });
+    if (!team) {
+      throw new ActionError("notFound", "Team not found");
+    }
+
+    await prisma.mythicPlusTeam.delete({ where: { id: teamId } });
+
+    revalidatePath("/mythic-plus");
+  });
+}

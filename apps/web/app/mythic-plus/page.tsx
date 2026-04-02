@@ -4,7 +4,7 @@ import { Box } from "@mui/material";
 import TopBar from "../components/TopBar";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { getTeamCharacters } from "@/lib/mythicplus-queries";
+import { getTeamCharacters, getTeams } from "@/lib/mythicplus-queries";
 import MythicPlusClient from "./MythicPlusClient";
 
 export default async function MythicPlusPage() {
@@ -14,13 +14,13 @@ export default async function MythicPlusPage() {
   const role = (session.user as { role?: string })?.role;
   if (role === "pending") redirect("/");
 
-  const characters = await getTeamCharacters();
+  const [characters, teams] = await Promise.all([getTeamCharacters(), getTeams()]);
 
   return (
     <>
       <TopBar title="Mythic+ Team" backHref="/" />
       <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
-        <MythicPlusClient characters={characters} />
+        <MythicPlusClient characters={characters} teams={teams} />
       </Box>
     </>
   );
