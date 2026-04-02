@@ -45,6 +45,9 @@
 - [ ] 🔵 Add repo icon/social preview image and fix GitHub OAuth app visibility
 
 
+### WoW Mythic+ Integration
+- [ ] 🟣 Character profiles + Raider.IO lookup + M+ team view — Claude 1
+
 ### Vuohi Exclusive Features
 - [ ] 🟣 Exclusive vuohi view/dashboard (separate from regular user view)
 

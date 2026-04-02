@@ -43,6 +43,10 @@ export type ErrorCode =
   // Alias
   | "invalidInput"
   | "conflict"
+  // WoW Character
+  | "characterNotFound"
+  | "characterAlreadyAdded"
+  | "raiderIoError"
   // General
   | "notFound"
   | "invalidId"

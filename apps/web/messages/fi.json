@@ -57,7 +57,8 @@
     "achievements": "Saavutukset",
     "leaderboard": "Tulostaulukko",
     "myQuests": "Omat tehtävät",
-    "auditLog": "Tapahtumaloki"
+    "auditLog": "Tapahtumaloki",
+    "mythicPlus": "Mythic+"
   },
   "admin": {
     "users": {

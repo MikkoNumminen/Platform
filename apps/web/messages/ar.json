@@ -57,7 +57,8 @@
     "achievements": "الإنجازات",
     "leaderboard": "لوحة المتصدرين",
     "myQuests": "مهامي",
-    "auditLog": "سجل التدقيق"
+    "auditLog": "سجل التدقيق",
+    "mythicPlus": "Mythic+"
   },
   "admin": {
     "users": {

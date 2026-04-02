@@ -57,7 +57,8 @@
     "achievements": "Achievements",
     "leaderboard": "Leaderboard",
     "myQuests": "My Quests",
-    "auditLog": "Audit Log"
+    "auditLog": "Audit Log",
+    "mythicPlus": "Mythic+"
   },
   "admin": {
     "users": {

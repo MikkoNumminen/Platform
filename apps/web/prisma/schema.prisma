@@ -49,6 +49,7 @@ model User {
   sentDirectMessages  DirectMessage[]  @relation("DirectMessageSender")
   feedbacks           Feedback[]       @relation("FeedbackAuthor")
   feedbackReplies     Feedback[]       @relation("FeedbackAdmin")
+  wowCharacters       WowCharacter[]
 
   sessionId      String?
 
@@ -340,6 +341,34 @@ model Feedback {
 
   @@index([authorId])
   @@index([createdAt])
+  @@index([sessionId])
+}
+
+// ─── WoW Mythic+ Tracking ─────────────────────────────────────────────────
+
+model WowCharacter {
+  id               String    @id @default(uuid())
+  characterName    String
+  realm            String
+  region           String
+  className        String?
+  spec             String?
+  specRole         String?
+  race             String?
+  itemLevel        Float?
+  mythicPlusRating Float?
+  thumbnailUrl     String?
+  profileUrl       String?
+  lastFetchedAt    DateTime?
+  addedById        String
+  sessionId        String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  addedBy User @relation(fields: [addedById], references: [id], onDelete: Cascade)
+
+  @@unique([characterName, realm, region, sessionId])
+  @@index([addedById])
   @@index([sessionId])
 }
 

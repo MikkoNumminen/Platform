@@ -20,6 +20,7 @@ import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import ScienceIcon from "@mui/icons-material/Science";
+import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { colors } from "../styles";
@@ -213,6 +214,14 @@ export default function UserMenu() {
               <LeaderboardIcon fontSize="small" />
             </ListItemIcon>
             {tm("leaderboard")}
+          </MenuItem>
+        )}
+        {isApproved && (
+          <MenuItem component={Link} href="/mythic-plus" onClick={() => setAnchorEl(null)}>
+            <ListItemIcon>
+              <SportsEsportsIcon fontSize="small" />
+            </ListItemIcon>
+            {tm("mythicPlus")}
           </MenuItem>
         )}
         <Divider />
