@@ -101,8 +101,10 @@ describe("getGamificationStats", () => {
     expect(stats.levelDistribution[1]).toEqual({ level: 2, title: "Member", count: 3 });
     expect(stats.topAchievements).toHaveLength(1);
     expect(stats.topAchievements[0].count).toBe(8);
-    expect(stats.questCompletionRates).toHaveLength(1);
+    expect(stats.questCompletionRates).toHaveLength(2);
     expect(stats.questCompletionRates[0].completionRate).toBe(40);
+    expect(stats.questCompletionRates[1].type).toBe("assigned");
+    expect(stats.questCompletionRates[1].completionRate).toBe(100);
     expect(stats.customQuestStats.total).toBe(1);
     expect(stats.customQuestStats.completed).toBe(1);
     expect(stats.customQuestStats.quests[0].assignee).toBe("Bob");

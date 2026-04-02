@@ -117,7 +117,7 @@ async function fetchGamificationStats() {
     count: number;
   }>;
 
-  const questCompletionRates = questsWithCounts.map((q) => ({
+  const systemQuestRates = questsWithCounts.map((q) => ({
     name: q.name,
     icon: q.icon,
     type: q.type,
@@ -128,6 +128,39 @@ async function fetchGamificationStats() {
     completionRate:
       totalUsersWithXp > 0 ? Math.round((q._count.userProgress / totalUsersWithXp) * 100) : 0,
   }));
+
+  // Group custom quests by title and compute completion rates
+  const customQuestGroups = new Map<
+    string,
+    { title: string; xpReward: number; total: number; completed: number }
+  >();
+  for (const cq of customQuests) {
+    const existing = customQuestGroups.get(cq.title);
+    if (existing) {
+      existing.total++;
+      if (cq.status === "completed") existing.completed++;
+    } else {
+      customQuestGroups.set(cq.title, {
+        title: cq.title,
+        xpReward: cq.xpReward,
+        total: 1,
+        completed: cq.status === "completed" ? 1 : 0,
+      });
+    }
+  }
+
+  const customQuestRates = [...customQuestGroups.values()].map((g) => ({
+    name: g.title,
+    icon: "📋",
+    type: "assigned",
+    description: `Assigned to ${g.total} user${g.total !== 1 ? "s" : ""}`,
+    xpReward: g.xpReward,
+    completedCount: g.completed,
+    totalUsers: g.total,
+    completionRate: Math.round((g.completed / g.total) * 100),
+  }));
+
+  const questCompletionRates = [...systemQuestRates, ...customQuestRates];
 
   return {
     summary: {
