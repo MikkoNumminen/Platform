@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { ActionError } from "@/lib/actionErrors";
-import { safe, type ActionResult } from "@/lib/actionUtils";
+import { safe, requireUser, type ActionResult } from "@/lib/actionUtils";
 import { triggerGamification } from "./gamification/trigger";
 
 const ALIAS_MIN_LENGTH = 2;
@@ -30,16 +30,12 @@ function validateAlias(alias: string): void {
 
 export async function setAlias(alias: string): Promise<ActionResult> {
   return safe(async () => {
-    const session = await auth();
-    if (!session?.user?.id) {
-      throw new ActionError("permissionDenied", "Not authenticated");
-    }
-
+    const user = await requireUser();
     const trimmed = alias.trim();
     validateAlias(trimmed);
 
     const existing = await prisma.user.findFirst({
-      where: { alias: trimmed, id: { not: session.user.id } },
+      where: { alias: trimmed, id: { not: user.id } },
     });
 
     if (existing) {
@@ -47,23 +43,19 @@ export async function setAlias(alias: string): Promise<ActionResult> {
     }
 
     await prisma.user.update({
-      where: { id: session.user.id },
+      where: { id: user.id },
       data: { alias: trimmed },
     });
 
-    await triggerGamification(session.user.id, "alias:set");
+    await triggerGamification(user.id, "alias:set");
   });
 }
 
 export async function toggleWantsToDevelop(value: boolean): Promise<ActionResult> {
   return safe(async () => {
-    const session = await auth();
-    if (!session?.user?.id) {
-      throw new ActionError("permissionDenied", "Not authenticated");
-    }
-
+    const user = await requireUser();
     await prisma.user.update({
-      where: { id: session.user.id },
+      where: { id: user.id },
       data: { wantsToDevelop: value },
     });
   });

@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { ActionError } from "@/lib/actionErrors";
-import { safe, type ActionResult } from "@/lib/actionUtils";
+import { safe, requireUser, type ActionResult } from "@/lib/actionUtils";
 import { rateLimit } from "@/lib/rateLimit";
 import { revalidatePath } from "next/cache";
 import { triggerGamification } from "./gamification/trigger";
@@ -17,11 +17,8 @@ export async function sendDirectMessage(
   message: string,
 ): Promise<ActionResult> {
   return safe(async () => {
-    const session = await auth();
-    if (!session?.user?.id) {
-      throw new ActionError("permissionDenied", "Not authenticated");
-    }
-    const userId = session.user.id;
+    const user = await requireUser();
+    const userId = user.id;
 
     const trimmed = message.trim();
     if (!trimmed || trimmed.length > MAX_DM_LENGTH) {

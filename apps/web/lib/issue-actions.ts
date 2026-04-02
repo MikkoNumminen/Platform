@@ -1,9 +1,8 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { auth } from "@/auth";
 import { ActionError } from "@/lib/actionErrors";
-import { safe, validateUUID, type ActionResult } from "@/lib/actionUtils";
+import { safe, requireUser, validateUUID, type ActionResult } from "@/lib/actionUtils";
 import { rateLimit } from "@/lib/rateLimit";
 import { revalidatePath } from "next/cache";
 import { guardedAction } from "@/lib/guardedAction";
@@ -20,10 +19,7 @@ export async function createIssueReport(
   url?: string,
 ): Promise<ActionResult> {
   return safe(async () => {
-    const session = await auth();
-    if (!session?.user?.id) {
-      throw new ActionError("permissionDenied", "Not authenticated");
-    }
+    const user = await requireUser();
 
     const trimmedTitle = title.trim();
     const trimmedDesc = description.trim();
@@ -48,12 +44,12 @@ export async function createIssueReport(
         title: trimmedTitle,
         description: trimmedDesc,
         url: url?.trim() || null,
-        authorId: session.user.id,
+        authorId: user.id,
         sessionId,
       },
     });
 
-    await triggerGamification(session.user.id, "issue:create");
+    await triggerGamification(user.id, "issue:create");
 
     revalidatePath("/issues");
   });
