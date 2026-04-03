@@ -35,78 +35,105 @@ jest.mock("@/auth", () => ({ auth: jest.fn() }));
 
 import { getGamificationStats } from "@/lib/gamification/admin-queries";
 
+function setupMockData() {
+  mockUserLevelCount.mockResolvedValue(10);
+  mockUserLevelAggregate.mockResolvedValue({
+    _sum: { totalXp: 5000 },
+    _avg: { totalXp: 500 },
+    _max: { totalXp: 2000 },
+  });
+  mockUserLevelGroupBy.mockResolvedValue([
+    { level: 1, _count: { level: 5 } },
+    { level: 2, _count: { level: 3 } },
+    { level: 3, _count: { level: 2 } },
+  ]);
+  mockUserAchievementGroupBy.mockResolvedValue([
+    { achievementId: "a1", _count: { achievementId: 8 } },
+  ]);
+  mockQuestFindMany.mockResolvedValue([
+    {
+      name: "Daily Post",
+      icon: "pen",
+      type: "daily",
+      description: "Create a post",
+      xpReward: 15,
+      _count: { userProgress: 4 },
+    },
+  ]);
+  mockCustomQuestFindMany.mockResolvedValue([
+    {
+      id: "cq1",
+      title: "Review docs",
+      xpReward: 100,
+      status: "completed",
+      priority: "high",
+      assignee: { alias: "Bob", name: "Bob B" },
+    },
+  ]);
+  mockXpTransactionFindMany.mockResolvedValue([
+    {
+      user: { alias: "Alice", name: "Alice A" },
+      amount: 20,
+      source: "post:create",
+      createdAt: new Date(),
+    },
+  ]);
+  mockAchievementFindMany.mockResolvedValue([
+    { id: "a1", name: "First Post", key: "first_post", icon: "star" },
+  ]);
+}
+
 beforeEach(() => {
   jest.clearAllMocks();
 });
 
 describe("getGamificationStats", () => {
-  test("returns correct structure with data", async () => {
-    mockUserLevelCount.mockResolvedValue(10);
-    mockUserLevelAggregate.mockResolvedValue({
-      _sum: { totalXp: 5000 },
-      _avg: { totalXp: 500 },
-      _max: { totalXp: 2000 },
-    });
-    mockUserLevelGroupBy.mockResolvedValue([
-      { level: 1, _count: { level: 5 } },
-      { level: 2, _count: { level: 3 } },
-      { level: 3, _count: { level: 2 } },
-    ]);
-    mockUserAchievementGroupBy.mockResolvedValue([
-      { achievementId: "a1", _count: { achievementId: 8 } },
-    ]);
-    mockQuestFindMany.mockResolvedValue([
-      {
-        name: "Daily Post",
-        icon: "pen",
-        type: "daily",
-        description: "Create a post",
-        xpReward: 15,
-        _count: { userProgress: 4 },
-      },
-    ]);
-    mockCustomQuestFindMany.mockResolvedValue([
-      {
-        id: "cq1",
-        title: "Review docs",
-        xpReward: 100,
-        status: "completed",
-        priority: "high",
-        assignee: { alias: "Bob", name: "Bob B" },
-      },
-    ]);
-    mockXpTransactionFindMany.mockResolvedValue([
-      {
-        user: { alias: "Alice", name: "Alice A" },
-        amount: 20,
-        source: "post:create",
-        createdAt: new Date(),
-      },
-    ]);
-    mockAchievementFindMany.mockResolvedValue([
-      { id: "a1", name: "First Post", key: "first_post", icon: "star" },
-    ]);
-
+  test("returns correct summary stats", async () => {
+    setupMockData();
     const stats = await getGamificationStats();
-
     expect(stats.summary).toEqual({
       totalUsersWithXp: 10,
       totalXpAwarded: 5000,
       averageXp: 500,
       highestXp: 2000,
     });
+  });
+
+  test("maps level distribution correctly", async () => {
+    setupMockData();
+    const stats = await getGamificationStats();
     expect(stats.levelDistribution).toHaveLength(10);
     expect(stats.levelDistribution[0]).toEqual({ level: 1, title: "Newcomer", count: 5 });
     expect(stats.levelDistribution[1]).toEqual({ level: 2, title: "Member", count: 3 });
+  });
+
+  test("resolves top achievements with counts", async () => {
+    setupMockData();
+    const stats = await getGamificationStats();
     expect(stats.topAchievements).toHaveLength(1);
     expect(stats.topAchievements[0].count).toBe(8);
+  });
+
+  test("calculates quest completion rates", async () => {
+    setupMockData();
+    const stats = await getGamificationStats();
     expect(stats.questCompletionRates).toHaveLength(2);
     expect(stats.questCompletionRates[0].completionRate).toBe(40);
     expect(stats.questCompletionRates[1].type).toBe("assigned");
     expect(stats.questCompletionRates[1].completionRate).toBe(100);
+  });
+
+  test("includes custom quest stats", async () => {
+    setupMockData();
+    const stats = await getGamificationStats();
     expect(stats.customQuestStats.total).toBe(1);
     expect(stats.customQuestStats.completed).toBe(1);
     expect(stats.customQuestStats.quests[0].assignee).toBe("Bob");
+  });
+
+  test("maps recent activity with user names", async () => {
+    setupMockData();
+    const stats = await getGamificationStats();
     expect(stats.recentActivity).toHaveLength(1);
     expect(stats.recentActivity[0].user).toBe("Alice");
   });
