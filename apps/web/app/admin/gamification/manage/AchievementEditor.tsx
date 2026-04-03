@@ -30,6 +30,7 @@ import {
   updateAchievement,
   deleteAchievement,
 } from "@/lib/gamification/admin-actions";
+import { CRITERIA_ACTIONS } from "@/lib/gamification/xp-config";
 import { useRouter } from "next/navigation";
 
 export interface AchievementData {
@@ -47,17 +48,6 @@ export interface AchievementData {
 
 const ACHIEVEMENT_CATEGORIES = ["onboarding", "content", "social", "moderation", "special"];
 const ACHIEVEMENT_TIERS = [null, "bronze", "silver", "gold", "legendary"];
-const CRITERIA_ACTIONS = [
-  "alias:set",
-  "survey:complete",
-  "shout:create",
-  "issue:create",
-  "feedback:submit",
-  "daily:login",
-  "login:streak",
-  "tour:complete",
-];
-
 const DEFAULT_FORM = {
   key: "",
   name: "",

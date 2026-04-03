@@ -2,8 +2,6 @@ import { Autocomplete, Box, TextField, Typography } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import { colors } from "../../styles";
 
-const WHISPER_COLOR = "#FF80FF";
-
 type DmUser = {
   id: string;
   alias: string;
@@ -25,7 +23,7 @@ export default function UserPicker({ users, loading, placeholder, onSelect }: Us
         variant="body2"
         sx={{ color: colors.slate400, fontFamily: "inherit", mb: 1, fontSize: "0.8rem" }}
       >
-        Type <span style={{ color: WHISPER_COLOR }}>/w alias message</span> or pick a user:
+        Type <span style={{ color: colors.whisper }}>/w alias message</span> or pick a user:
       </Typography>
       <Autocomplete
         options={users}

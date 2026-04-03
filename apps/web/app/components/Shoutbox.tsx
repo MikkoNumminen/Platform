@@ -22,8 +22,6 @@ import WhisperMessages from "./shoutbox/WhisperMessages";
 import UserPicker from "./shoutbox/UserPicker";
 import type { SystemLine } from "./shoutbox/SystemMessages";
 
-const WHISPER_COLOR = "#FF80FF";
-
 const DEMO_REACTIONS: Array<{ alias: string; message: string; delayMs: number }> = [
   { alias: "Valtava", message: "Welcome to the community! \uD83D\uDC10", delayMs: 1500 },
   { alias: "Perserkki", message: "Hey! Nice to see a new face \uD83D\uDC4B", delayMs: 3000 },
@@ -596,7 +594,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
                 borderRadius: 1,
                 backgroundColor:
                   i === suggestionIndex ? "rgba(255,128,255,0.25)" : "rgba(255,128,255,0.08)",
-                border: `1px solid ${i === suggestionIndex ? WHISPER_COLOR : `${WHISPER_COLOR}40`}`,
+                border: `1px solid ${i === suggestionIndex ? colors.whisper : `${colors.whisper}40`}`,
                 "&:hover": { backgroundColor: "rgba(255,128,255,0.18)" },
               }}
             >
@@ -604,7 +602,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
               <Typography
                 variant="caption"
                 sx={{
-                  color: WHISPER_COLOR,
+                  color: colors.whisper,
                   fontFamily: "inherit",
                   fontWeight: 600,
                   fontSize: "0.75rem",
@@ -649,7 +647,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
                       transform: "translateY(-50%)",
                       fontFamily: "'Courier New', Courier, monospace",
                       fontSize: "0.85rem",
-                      color: `${WHISPER_COLOR}50`,
+                      color: `${colors.whisper}50`,
                       pointerEvents: "none",
                       zIndex: 1,
                       whiteSpace: "pre",

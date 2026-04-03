@@ -39,6 +39,10 @@ export const colors = {
   tierGold: "var(--platform-tierGold)",
   tierLegendary: "var(--platform-tierLegendary)",
 
+  // Whisper / DM
+  whisper: "#FF80FF",
+  whisperLabel: "#B880CC",
+
   // Decorative
   decorBorder: "var(--platform-decorBorder)",
   decorAccent: "var(--platform-decorAccent)",

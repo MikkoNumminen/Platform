@@ -1,8 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import { colors } from "../../styles";
 
-const WHISPER_COLOR = "#FF80FF";
-
 export interface SystemLine {
   label: string;
   text: string;
@@ -28,7 +26,7 @@ export default function SystemMessages({ lines, keyPrefix = "sys" }: SystemMessa
                 color:
                   line.label === "[System]" || line.label === "Tip:"
                     ? colors.warning
-                    : WHISPER_COLOR,
+                    : colors.whisper,
                 fontFamily: "inherit",
                 fontWeight: 700,
                 flexShrink: 0,

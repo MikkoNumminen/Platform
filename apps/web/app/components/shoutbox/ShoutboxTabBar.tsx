@@ -6,7 +6,6 @@ import { colors } from "../../styles";
 import type { ConversationSummary } from "@/lib/dm-queries";
 
 const GUILD_COLOR = colors.green400;
-const WHISPER_COLOR = "#FF80FF";
 
 interface ShoutboxTabBarProps {
   activeTab: string;
@@ -99,7 +98,7 @@ export default function ShoutboxTabBar({
                 variant="caption"
                 sx={{
                   color: isActive
-                    ? WHISPER_COLOR
+                    ? colors.whisper
                     : conv.unreadCount > 0
                       ? colors.slate100
                       : colors.slate400,
@@ -139,11 +138,11 @@ export default function ShoutboxTabBar({
               "&:hover": { backgroundColor: "rgba(255,255,255,0.04)" },
             }}
           >
-            <AddCommentIcon sx={{ fontSize: 14, color: WHISPER_COLOR }} />
+            <AddCommentIcon sx={{ fontSize: 14, color: colors.whisper }} />
             <Typography
               variant="caption"
               sx={{
-                color: WHISPER_COLOR,
+                color: colors.whisper,
                 fontFamily: "inherit",
                 fontSize: "0.7rem",
                 fontWeight: 600,

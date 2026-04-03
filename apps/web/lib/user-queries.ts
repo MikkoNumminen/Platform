@@ -1,7 +1,5 @@
 import { prisma } from "@/lib/db";
-import { getDemoSessionId } from "@/lib/demo-session";
-
-const DEMO_EMAIL = "demo@platform.app";
+import { getDemoSessionId, DEMO_EMAIL } from "@/lib/demo-session";
 
 export async function getUsers() {
   const sessionId = await getDemoSessionId();

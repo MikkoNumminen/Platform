@@ -17,8 +17,6 @@ import UserPicker from "./shoutbox/UserPicker";
 import SystemMessages from "./shoutbox/SystemMessages";
 import type { SystemLine } from "./shoutbox/SystemMessages";
 
-const WHISPER_COLOR = "#FF80FF";
-
 interface DirectMessagesProps {
   initialConversations: ConversationSummary[];
 }
@@ -361,7 +359,7 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
                     variant="caption"
                     sx={{
                       color: isActive
-                        ? WHISPER_COLOR
+                        ? colors.whisper
                         : conv.unreadCount > 0
                           ? colors.slate100
                           : colors.slate400,

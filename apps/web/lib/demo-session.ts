@@ -20,7 +20,7 @@ import {
 } from "./demo-seeds";
 
 // Used by auth.ts signIn callback to identify demo users
-const _DEMO_EMAIL = "demo@platform.app";
+export const DEMO_EMAIL = "demo@platform.app";
 const DEMO_SESSION_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 export async function getDemoSessionId(): Promise<string | null> {

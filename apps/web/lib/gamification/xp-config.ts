@@ -68,3 +68,14 @@ export function getXpProgress(totalXp: number): {
 
 export const DAILY_SHOUT_XP_CAP = 25;
 export const DAILY_DM_XP_CAP = 15;
+
+export const CRITERIA_ACTIONS = [
+  "alias:set",
+  "survey:complete",
+  "shout:create",
+  "issue:create",
+  "feedback:submit",
+  "daily:login",
+  "login:streak",
+  "tour:complete",
+] as const;

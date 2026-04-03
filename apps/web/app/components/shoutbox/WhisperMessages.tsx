@@ -6,9 +6,6 @@ import SystemMessages from "./SystemMessages";
 import type { SystemLine } from "./SystemMessages";
 import type { DmMessageData, ConversationSummary } from "@/lib/dm-queries";
 
-const WHISPER_COLOR = "#FF80FF";
-const WHISPER_LABEL = "#B880CC";
-
 function formatTime(iso: string): string {
   return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
@@ -85,7 +82,7 @@ export default function WhisperMessages({
                     component="span"
                     variant="body2"
                     sx={{
-                      color: WHISPER_LABEL,
+                      color: colors.whisperLabel,
                       fontFamily: "inherit",
                       flexShrink: 0,
                       fontSize: "0.8rem",
@@ -114,7 +111,7 @@ export default function WhisperMessages({
                     component="span"
                     variant="body2"
                     sx={{
-                      color: WHISPER_COLOR,
+                      color: colors.whisper,
                       fontFamily: "inherit",
                       fontWeight: 700,
                       flexShrink: 0,
@@ -144,7 +141,7 @@ export default function WhisperMessages({
                     component="span"
                     variant="body2"
                     sx={{
-                      color: WHISPER_COLOR,
+                      color: colors.whisper,
                       fontFamily: "inherit",
                       fontWeight: 700,
                       flexShrink: 0,
@@ -157,7 +154,7 @@ export default function WhisperMessages({
                     component="span"
                     variant="body2"
                     sx={{
-                      color: WHISPER_LABEL,
+                      color: colors.whisperLabel,
                       fontFamily: "inherit",
                       flexShrink: 0,
                       fontSize: "0.8rem",
@@ -171,7 +168,7 @@ export default function WhisperMessages({
                 component="span"
                 variant="body2"
                 sx={{
-                  color: WHISPER_COLOR,
+                  color: colors.whisper,
                   fontFamily: "inherit",
                   wordBreak: "break-word",
                   fontSize: "0.8rem",

@@ -28,6 +28,7 @@ import AddIcon from "@mui/icons-material/Add";
 import IconPicker from "./IconPicker";
 import { colors } from "../../../styles";
 import { createQuest, updateQuest, deleteQuest } from "@/lib/gamification/admin-actions";
+import { CRITERIA_ACTIONS } from "@/lib/gamification/xp-config";
 import { useRouter } from "next/navigation";
 
 export interface QuestData {
@@ -44,16 +45,6 @@ export interface QuestData {
 }
 
 const QUEST_TYPES = ["onboarding", "daily", "weekly", "special"];
-const CRITERIA_ACTIONS = [
-  "alias:set",
-  "survey:complete",
-  "shout:create",
-  "issue:create",
-  "feedback:submit",
-  "daily:login",
-  "login:streak",
-  "tour:complete",
-];
 
 const DEFAULT_FORM = {
   key: "",
