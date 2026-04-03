@@ -110,6 +110,6 @@ describe("getDmUsers", () => {
     ]);
 
     const result = await getDmUsers();
-    expect(result).toEqual([{ id: "u2", alias: "Alice", role: "user" }]);
+    expect(result).toEqual([{ id: "u2", alias: "Alice", role: "user", developerTag: null }]);
   });
 });

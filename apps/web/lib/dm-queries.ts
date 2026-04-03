@@ -125,7 +125,9 @@ export async function getConversationMessages(conversationId: string): Promise<D
   }));
 }
 
-export async function getDmUsers(): Promise<Array<{ id: string; alias: string; role: string }>> {
+export async function getDmUsers(): Promise<
+  Array<{ id: string; alias: string; role: string; developerTag: string | null }>
+> {
   const session = await auth();
   if (!session?.user?.id) return [];
   const sessionId = await getDemoSessionId();
@@ -146,5 +148,6 @@ export async function getDmUsers(): Promise<Array<{ id: string; alias: string; r
     id: u.id,
     alias: u.alias ?? u.name ?? "Unknown",
     role: u.role,
+    developerTag: u.developerTag,
   }));
 }

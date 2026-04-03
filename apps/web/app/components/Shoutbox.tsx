@@ -6,6 +6,7 @@ import { Box, TextField, Typography } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import { useTranslations } from "next-intl";
 import { colors } from "../styles";
+import { DEVELOPER_TAG_LABELS, DEVELOPER_TAG_ICONS } from "@/lib/developer-config";
 import { createShout } from "@/lib/shout-actions";
 import { setMotd as setMotdAction } from "@/lib/setting-actions";
 import { sendDirectMessage, startConversation } from "@/lib/dm-actions";
@@ -35,13 +36,14 @@ interface ShoutboxProps {
   motd: string;
 }
 
-type DmUser = { id: string; alias: string; role: string };
+type DmUser = { id: string; alias: string; role: string; developerTag: string | null };
 type ActiveTab = "guild" | string;
 
 const HELP_LINES_BASE: SystemLine[] = [
   { label: "[System]", text: "Available commands:" },
   { label: "/w", text: "alias message — whisper a player" },
   { label: "/whisper", text: "alias message — same as /w" },
+  { label: "/who", text: "alias — show info about a player" },
   { label: "/help", text: "— show this help (only you can see this)" },
   { label: "", text: "" },
   { label: "Tip:", text: "Tab key autocompletes the alias when typing /w" },
@@ -217,6 +219,33 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
       setLocalSystemMsgs((prev) => [...prev, ...helpLines]);
       setMessage("");
       setWhisperSuggestions([]);
+      return;
+    }
+
+    const whoMatch = trimmed.match(/^\/who\s+(\S+)$/i);
+    if (whoMatch) {
+      const targetAlias = whoMatch[1];
+      setMessage("");
+      setWhisperSuggestions([]);
+      const users = await ensureUsersLoaded();
+      const target = users.find((u) => u.alias.toLowerCase() === targetAlias.toLowerCase());
+      if (!target) {
+        setLocalSystemMsgs((prev) => [
+          ...prev,
+          { label: "[System]", text: `No player named "${targetAlias}" found.` },
+        ]);
+      } else {
+        const tagIcon = target.developerTag ? DEVELOPER_TAG_ICONS[target.developerTag] : null;
+        const tagLabel = target.developerTag ? DEVELOPER_TAG_LABELS[target.developerTag] : null;
+        const roleLabel = target.role === "superuser" ? "⭐ Superuser" : target.role;
+        const lines: SystemLine[] = [
+          {
+            label: "[Who]",
+            text: `${target.alias}${tagIcon ? ` ${tagIcon}` : ""} — ${roleLabel}${tagLabel ? ` · ${tagLabel}` : ""}`,
+          },
+        ];
+        setLocalSystemMsgs((prev) => [...prev, ...lines]);
+      }
       return;
     }
 
