@@ -42,7 +42,7 @@ export async function getMyGamificationProfile(): Promise<{
   recentAchievements: Array<{
     name: string;
     icon: string | null;
-    tier: string;
+    tier: string | null;
     unlockedAt: Date;
   }>;
 } | null> {
