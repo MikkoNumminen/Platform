@@ -2,6 +2,7 @@
 
 import { prisma } from "./db";
 import { auth } from "@/auth";
+import { getDemoSessionId } from "@/lib/demo-session";
 
 export type CustomQuestData = {
   id: string;
@@ -51,7 +52,8 @@ export async function getAllCustomQuests(filters?: {
     return [];
   }
 
-  const where: Record<string, unknown> = { deletedAt: null };
+  const sessionId = await getDemoSessionId();
+  const where: Record<string, unknown> = { deletedAt: null, sessionId };
   if (filters?.status) where.status = filters.status;
   if (filters?.assigneeId) where.assigneeId = filters.assigneeId;
 
@@ -69,8 +71,10 @@ export async function getMyCustomQuests(): Promise<CustomQuestData[]> {
   const session = await auth();
   if (!session?.user?.id) return [];
 
+  const sessionId = await getDemoSessionId();
+
   return prisma.customQuest.findMany({
-    where: { assigneeId: session.user.id, deletedAt: null },
+    where: { assigneeId: session.user.id, deletedAt: null, sessionId },
     select: QUEST_SELECT,
     orderBy: [{ status: "asc" }, { priority: "desc" }, { createdAt: "desc" }],
   }) as Promise<CustomQuestData[]>;
@@ -84,8 +88,10 @@ export async function getCustomQuestById(questId: string): Promise<CustomQuestDa
   const session = await auth();
   if (!session?.user?.id) return null;
 
+  const sessionId = await getDemoSessionId();
+
   const quest = (await prisma.customQuest.findFirst({
-    where: { id: questId, deletedAt: null },
+    where: { id: questId, deletedAt: null, sessionId },
     select: QUEST_SELECT,
   })) as CustomQuestData | null;
 
@@ -115,10 +121,12 @@ export async function getCustomQuestCounts(): Promise<{
     return { open: 0, inProgress: 0, completed: 0, total: 0 };
   }
 
+  const sessionId = await getDemoSessionId();
+
   const [open, inProgress, completed] = await Promise.all([
-    prisma.customQuest.count({ where: { status: "open", deletedAt: null } }),
-    prisma.customQuest.count({ where: { status: "in_progress", deletedAt: null } }),
-    prisma.customQuest.count({ where: { status: "completed", deletedAt: null } }),
+    prisma.customQuest.count({ where: { status: "open", deletedAt: null, sessionId } }),
+    prisma.customQuest.count({ where: { status: "in_progress", deletedAt: null, sessionId } }),
+    prisma.customQuest.count({ where: { status: "completed", deletedAt: null, sessionId } }),
   ]);
 
   return { open, inProgress, completed, total: open + inProgress + completed };
@@ -137,8 +145,10 @@ export async function getRecentCompletedQuests(limit = 10): Promise<
     assignee: { alias: string | null; name: string | null };
   }>
 > {
+  const sessionId = await getDemoSessionId();
+
   return prisma.customQuest.findMany({
-    where: { status: "completed", deletedAt: null, completedAt: { not: null } },
+    where: { status: "completed", deletedAt: null, completedAt: { not: null }, sessionId },
     orderBy: { completedAt: "desc" },
     take: limit,
     select: {

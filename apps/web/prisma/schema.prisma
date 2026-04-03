@@ -534,6 +534,7 @@ model CustomQuest {
   deadline      DateTime?
   completedAt DateTime?
   deletedAt   DateTime?
+  sessionId   String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -547,6 +548,7 @@ model CustomQuest {
   @@index([deletedAt])
   @@index([deadline])
   @@index([surveyRoundId])
+  @@index([sessionId])
 }
 
 // ─── Demo Mode ────────────────────────────────────────────────────────────

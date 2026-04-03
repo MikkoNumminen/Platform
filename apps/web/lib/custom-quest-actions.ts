@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 import { awardCustomXp } from "./gamification/xp-service";
 import { DEVELOPMENT_SKILL_OPTIONS } from "./survey-config";
 import { logAudit } from "./audit";
+import { getDemoSessionId } from "@/lib/demo-session";
 
 const VALID_STATUSES = ["open", "in_progress", "completed"] as const;
 const VALID_PRIORITIES = ["low", "normal", "high", "urgent"] as const;
@@ -67,6 +68,8 @@ export const createCustomQuest = guardedAction(
       if (isNaN(d.getTime())) throw new ActionError("invalidInput", "Invalid deadline date");
     }
 
+    const sessionId = await getDemoSessionId();
+
     const created = await prisma.customQuest.create({
       data: {
         title: validTitle,
@@ -77,6 +80,7 @@ export const createCustomQuest = guardedAction(
         assigneeId,
         creatorId: session.user.id,
         deadline: deadline ? new Date(deadline) : null,
+        sessionId,
       },
     });
 

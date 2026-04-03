@@ -207,6 +207,7 @@ export async function seedDemoData(sessionId: string): Promise<void> {
           assigneeId: userMap.get(seed.assigneeIndex)!,
           creatorId: userMap.get(seed.creatorIndex)!,
           completedAt: seed.completed ? new Date() : null,
+          sessionId,
         },
       });
     }
@@ -311,6 +312,7 @@ export async function cleanupStaleDemoSessions(): Promise<number> {
     });
     const demoUserIds = demoUsers.map((u) => u.id);
 
+    await prisma.customQuest.deleteMany({ where: { sessionId: sid } });
     if (demoUserIds.length > 0) {
       await prisma.customQuest.deleteMany({ where: { creatorId: { in: demoUserIds } } });
     }
