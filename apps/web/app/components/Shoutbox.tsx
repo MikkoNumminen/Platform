@@ -7,9 +7,9 @@ import StarIcon from "@mui/icons-material/Star";
 import { useTranslations } from "next-intl";
 import { colors } from "../styles";
 import { DEVELOPER_TAG_LABELS, DEVELOPER_TAG_ICONS } from "@/lib/developer-config";
-import { createShout, MAX_SHOUT_LENGTH } from "@/lib/shout-actions";
+import { createShout } from "@/lib/shout-actions";
 import { setMotd as setMotdAction } from "@/lib/setting-actions";
-import { sendDirectMessage, startConversation, MAX_DM_LENGTH } from "@/lib/dm-actions";
+import { sendDirectMessage, startConversation } from "@/lib/dm-actions";
 import { getConversationMessages, getDmUsers, getDmUserDetails } from "@/lib/dm-queries";
 import type { ShoutData } from "@/lib/shout-queries";
 import type { ConversationSummary, DmMessageData } from "@/lib/dm-queries";
@@ -23,6 +23,8 @@ import UserPicker from "./shoutbox/UserPicker";
 import type { SystemLine } from "./shoutbox/SystemMessages";
 
 const CHAT_HEIGHT = 300;
+const MAX_SHOUT_LENGTH = 280;
+const MAX_DM_LENGTH = 500;
 
 const DEMO_REACTIONS: Array<{ alias: string; message: string; delayMs: number }> = [
   { alias: "Valtava", message: "Welcome to the community! \uD83D\uDC10", delayMs: 1500 },

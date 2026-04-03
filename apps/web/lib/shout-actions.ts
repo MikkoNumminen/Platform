@@ -8,7 +8,7 @@ import { revalidatePath } from "next/cache";
 import { triggerGamification } from "./gamification/trigger";
 import { getDemoSessionId } from "@/lib/demo-session";
 
-export const MAX_SHOUT_LENGTH = 280;
+const MAX_SHOUT_LENGTH = 280;
 
 export async function createShout(message: string): Promise<ActionResult> {
   return safe(async () => {
