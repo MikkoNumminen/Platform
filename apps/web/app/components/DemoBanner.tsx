@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useTranslations } from "next-intl";
+import { colors } from "../styles";
 import { LOCALSTORAGE_KEY } from "@/lib/survey-config";
 
 export default function DemoBanner() {
@@ -26,8 +27,8 @@ export default function DemoBanner() {
         gap: 2,
         px: 2,
         py: 0.75,
-        backgroundColor: "#fbbf24",
-        color: "#1a1a1a",
+        backgroundColor: colors.warning,
+        color: colors.slate700,
       }}
     >
       <Typography variant="body2" sx={{ fontWeight: 500 }}>
@@ -43,8 +44,8 @@ export default function DemoBanner() {
           signOut();
         }}
         sx={{
-          color: "#1a1a1a",
-          borderColor: "#1a1a1a",
+          color: colors.slate700,
+          borderColor: colors.slate700,
           fontWeight: 600,
           fontSize: "0.75rem",
           py: 0.25,

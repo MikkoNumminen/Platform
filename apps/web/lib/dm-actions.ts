@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { ActionError } from "@/lib/actionErrors";
-import { safe, requireUser, type ActionResult } from "@/lib/actionUtils";
+import { safe, requireUser, validateUUID, type ActionResult } from "@/lib/actionUtils";
 import { rateLimit } from "@/lib/rateLimit";
 import { revalidatePath } from "next/cache";
 import { triggerGamification } from "./gamification/trigger";
@@ -77,6 +77,11 @@ export async function startConversation(
   const permissions = (session.user as { permissions?: Record<string, boolean> }).permissions ?? {};
   if (!permissions["dm:send"]) {
     return { error: "Missing permission: dm:send", code: "permissionDenied" };
+  }
+  try {
+    validateUUID(otherUserId, "user ID");
+  } catch {
+    return { error: "Invalid user ID", code: "invalidInput" };
   }
 
   const trimmed = message.trim();

@@ -133,7 +133,7 @@ export default function UserMenu() {
             fontSize: "0.7rem",
             cursor: "pointer",
             "&:hover": {
-              backgroundColor: "#dc2626",
+              backgroundColor: colors.error,
             },
           }}
         />

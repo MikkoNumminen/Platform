@@ -62,6 +62,11 @@ export const createCustomQuest = guardedAction(
       throw new ActionError("notFound", "Assignee not found");
     }
 
+    if (deadline) {
+      const d = new Date(deadline);
+      if (isNaN(d.getTime())) throw new ActionError("invalidInput", "Invalid deadline date");
+    }
+
     const created = await prisma.customQuest.create({
       data: {
         title: validTitle,
@@ -156,6 +161,10 @@ export const updateCustomQuest = guardedAction(
       updateData.assigneeId = data.assigneeId;
     }
     if (data.deadline !== undefined) {
+      if (data.deadline) {
+        const d = new Date(data.deadline);
+        if (isNaN(d.getTime())) throw new ActionError("invalidInput", "Invalid deadline date");
+      }
       updateData.deadline = data.deadline ? new Date(data.deadline) : null;
     }
     if (data.targetSkill !== undefined) {

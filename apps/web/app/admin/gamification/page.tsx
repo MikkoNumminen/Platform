@@ -82,14 +82,16 @@ export default async function GamificationDashboardPage() {
               Level Distribution
             </Typography>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-              {stats.levelDistribution.map((ld) => {
-                const threshold = LEVEL_THRESHOLDS.find((t) => t.level === ld.level);
-                const nextThreshold = LEVEL_THRESHOLDS.find((t) => t.level === ld.level + 1);
-                const hasUsers = ld.count > 0;
+              {stats.levelDistribution.map((levelEntry) => {
+                const threshold = LEVEL_THRESHOLDS.find((t) => t.level === levelEntry.level);
+                const nextThreshold = LEVEL_THRESHOLDS.find(
+                  (t) => t.level === levelEntry.level + 1,
+                );
+                const hasUsers = levelEntry.count > 0;
 
                 return (
                   <Tooltip
-                    key={ld.level}
+                    key={levelEntry.level}
                     arrow
                     placement="top"
                     slotProps={{
@@ -104,11 +106,11 @@ export default async function GamificationDashboardPage() {
                     }}
                     title={
                       <LevelTooltip
-                        level={ld.level}
-                        title={ld.title}
+                        level={levelEntry.level}
+                        title={levelEntry.title}
                         xpRequired={threshold?.xpRequired ?? 0}
                         nextXp={nextThreshold?.xpRequired ?? null}
-                        userCount={ld.count}
+                        userCount={levelEntry.count}
                       />
                     }
                   >
@@ -135,14 +137,14 @@ export default async function GamificationDashboardPage() {
                         />
                       )}
                       <Typography variant="body2" sx={{ minWidth: 140, color: colors.slate300 }}>
-                        Lvl {ld.level} — {ld.title}
+                        Lvl {levelEntry.level} — {levelEntry.title}
                       </Typography>
                       <Box sx={{ flex: 1 }}>
                         <LinearProgress
                           variant="determinate"
                           value={
                             stats.summary.totalUsersWithXp > 0
-                              ? (ld.count / stats.summary.totalUsersWithXp) * 100
+                              ? (levelEntry.count / stats.summary.totalUsersWithXp) * 100
                               : 0
                           }
                           sx={{
@@ -162,7 +164,7 @@ export default async function GamificationDashboardPage() {
                         variant="body2"
                         sx={{ minWidth: 30, textAlign: "right", fontWeight: 600 }}
                       >
-                        {ld.count}
+                        {levelEntry.count}
                       </Typography>
                     </Box>
                   </Tooltip>
@@ -192,9 +194,9 @@ export default async function GamificationDashboardPage() {
                 </Typography>
               ) : (
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                  {stats.topAchievements.map((ta) => (
+                  {stats.topAchievements.map((topAchievement) => (
                     <Tooltip
-                      key={ta.achievement.id}
+                      key={topAchievement.achievement.id}
                       arrow
                       placement="left"
                       slotProps={{
@@ -213,26 +215,28 @@ export default async function GamificationDashboardPage() {
                             variant="subtitle2"
                             sx={{ fontWeight: 700, color: colors.green400 }}
                           >
-                            {ta.achievement.icon} {ta.achievement.name}
+                            {topAchievement.achievement.icon} {topAchievement.achievement.name}
                           </Typography>
                           <Typography
                             variant="caption"
                             sx={{ color: colors.slate300, display: "block", mt: 0.5 }}
                           >
-                            {ta.achievement.description}
+                            {topAchievement.achievement.description}
                           </Typography>
                           <Typography
                             variant="caption"
                             sx={{ color: colors.slate400, display: "block", mt: 0.5 }}
                           >
-                            Reward: <strong>{ta.achievement.xpReward} XP</strong>
-                            {ta.achievement.tier && ` · ${ta.achievement.tier} tier`}
+                            Reward: <strong>{topAchievement.achievement.xpReward} XP</strong>
+                            {topAchievement.achievement.tier &&
+                              ` · ${topAchievement.achievement.tier} tier`}
                           </Typography>
                           <Typography
                             variant="caption"
                             sx={{ color: colors.slate400, display: "block" }}
                           >
-                            Unlocked by {ta.count} user{ta.count !== 1 ? "s" : ""}
+                            Unlocked by {topAchievement.count} user
+                            {topAchievement.count !== 1 ? "s" : ""}
                           </Typography>
                         </Box>
                       }
@@ -250,17 +254,19 @@ export default async function GamificationDashboardPage() {
                           "&:hover": { backgroundColor: colors.hoverOverlay },
                         }}
                       >
-                        <Typography sx={{ fontSize: "1.2rem" }}>{ta.achievement.icon}</Typography>
+                        <Typography sx={{ fontSize: "1.2rem" }}>
+                          {topAchievement.achievement.icon}
+                        </Typography>
                         <Box sx={{ flex: 1 }}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {ta.achievement.name}
+                            {topAchievement.achievement.name}
                           </Typography>
                           <Typography variant="caption" sx={{ color: colors.slate400 }}>
-                            {ta.achievement.description}
+                            {topAchievement.achievement.description}
                           </Typography>
                         </Box>
                         <Chip
-                          label={`${ta.count} users`}
+                          label={`${topAchievement.count} users`}
                           size="small"
                           sx={{ backgroundColor: colors.accentBgSubtle, color: colors.green400 }}
                         />
@@ -279,9 +285,9 @@ export default async function GamificationDashboardPage() {
                 Quest Completion Rates
               </Typography>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                {stats.questCompletionRates.map((qc) => (
+                {stats.questCompletionRates.map((questRate) => (
                   <Tooltip
-                    key={qc.name}
+                    key={questRate.name}
                     arrow
                     placement="left"
                     slotProps={{
@@ -300,26 +306,26 @@ export default async function GamificationDashboardPage() {
                           variant="subtitle2"
                           sx={{ fontWeight: 700, color: colors.green400 }}
                         >
-                          {qc.icon} {qc.name}
+                          {questRate.icon} {questRate.name}
                         </Typography>
                         <Typography
                           variant="caption"
                           sx={{ color: colors.slate300, display: "block", mt: 0.5 }}
                         >
-                          {qc.description}
+                          {questRate.description}
                         </Typography>
                         <Typography
                           variant="caption"
                           sx={{ color: colors.slate400, display: "block", mt: 0.5 }}
                         >
-                          Reward: <strong>{qc.xpReward} XP</strong> · {qc.type} quest
+                          Reward: <strong>{questRate.xpReward} XP</strong> · {questRate.type} quest
                         </Typography>
                         <Typography
                           variant="caption"
                           sx={{ color: colors.slate400, display: "block" }}
                         >
-                          {qc.completedCount} of {qc.totalUsers} users completed (
-                          {qc.completionRate}%)
+                          {questRate.completedCount} of {questRate.totalUsers} users completed (
+                          {questRate.completionRate}%)
                         </Typography>
                       </Box>
                     }
@@ -337,19 +343,19 @@ export default async function GamificationDashboardPage() {
                         "&:hover": { backgroundColor: colors.hoverOverlay },
                       }}
                     >
-                      <Typography sx={{ fontSize: "1rem" }}>{qc.icon}</Typography>
+                      <Typography sx={{ fontSize: "1rem" }}>{questRate.icon}</Typography>
                       <Box sx={{ flex: 1, minWidth: 0 }}>
                         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                           <Typography variant="body2" noWrap>
-                            {qc.name}
+                            {questRate.name}
                           </Typography>
                           <Typography variant="caption" sx={{ color: colors.slate400 }}>
-                            {qc.completionRate}%
+                            {questRate.completionRate}%
                           </Typography>
                         </Box>
                         <LinearProgress
                           variant="determinate"
-                          value={qc.completionRate}
+                          value={questRate.completionRate}
                           sx={{
                             height: 4,
                             borderRadius: 2,

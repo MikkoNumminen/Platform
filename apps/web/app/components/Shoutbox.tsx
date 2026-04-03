@@ -137,7 +137,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
     );
   };
 
-  const closeConvTab = (e: React.MouseEvent, conversationId: string) => {
+  const handleCloseConversationTab = (e: React.MouseEvent, conversationId: string) => {
     e.stopPropagation();
     if (activeTab === conversationId) {
       setActiveTab("guild");
@@ -468,6 +468,12 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
 
   // ── Render ──────────────────────────────────────────────────────────────
 
+  const inputPlaceholder = isGuild
+    ? t("placeholder")
+    : isDmTab
+      ? tDm("placeholder")
+      : "/w alias message";
+
   const otherAlias = activeConversation?.isPrivacy
     ? tDm("privacy")
     : (activeConversation?.otherUser.alias ??
@@ -496,7 +502,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
           setShowUserPicker(false);
         }}
         onSelectConversation={openConversation}
-        onCloseConversation={closeConvTab}
+        onCloseConversation={handleCloseConversationTab}
         onNewWhisper={handleNewWhisper}
       />
 
@@ -667,9 +673,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
               value={message}
               onChange={(e) => handleMessageChange(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={
-                isGuild ? t("placeholder") : isDmTab ? tDm("placeholder") : "/w alias message"
-              }
+              placeholder={inputPlaceholder}
               size="small"
               fullWidth
               autoComplete="off"

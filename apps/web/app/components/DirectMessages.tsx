@@ -87,7 +87,7 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
     if (conv && !conv.isPrivacy) setMessage("");
   };
 
-  const closeTab = (e: React.MouseEvent, conversationId: string) => {
+  const handleCloseTab = (e: React.MouseEvent, conversationId: string) => {
     e.stopPropagation();
     if (activeConversationId === conversationId) {
       setActiveConversationId(null);
@@ -376,7 +376,7 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
                 </Badge>
                 <IconButton
                   size="small"
-                  onClick={(e) => closeTab(e, conv.id)}
+                  onClick={(e) => handleCloseTab(e, conv.id)}
                   aria-label={`Close ${conv.isPrivacy ? t("privacy") : conv.otherUser.alias} tab`}
                   sx={{
                     color: colors.slate400,

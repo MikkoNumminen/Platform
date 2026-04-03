@@ -16,6 +16,8 @@ export const securityHeaders: Header[] = [
       "img-src 'self' data: https://lh3.googleusercontent.com https://avatars.githubusercontent.com",
       "font-src 'self' data: https://fonts.gstatic.com",
       "connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com https://github.com https://api.github.com",
+      "object-src 'none'",
+      "media-src 'self'",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",

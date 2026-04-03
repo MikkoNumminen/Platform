@@ -96,6 +96,8 @@ describe("sendDirectMessage", () => {
   });
 });
 
+const VALID_OTHER_USER_ID = "00000000-0000-0000-0000-000000000002";
+
 describe("startConversation", () => {
   test("returns error when not authenticated", async () => {
     mockAuth.mockResolvedValue(null as any);
@@ -109,27 +111,33 @@ describe("startConversation", () => {
     expect(result).toEqual(expect.objectContaining({ code: "permissionDenied" }));
   });
 
+  test("returns error for invalid user ID format", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "u1", permissions: { "dm:send": true } } } as any);
+    const result = await startConversation("u2", "hello");
+    expect(result).toEqual(expect.objectContaining({ code: "invalidInput" }));
+  });
+
   test("returns error for empty message", async () => {
     mockAuth.mockResolvedValue({ user: { id: "u1", permissions: { "dm:send": true } } } as any);
-    const result = await startConversation("u2", "");
+    const result = await startConversation(VALID_OTHER_USER_ID, "");
     expect(result).toEqual(expect.objectContaining({ code: "invalidInput" }));
   });
 
   test("returns error when other user not found", async () => {
     mockAuth.mockResolvedValue({ user: { id: "u1", permissions: { "dm:send": true } } } as any);
     mockUserFindFirst.mockResolvedValue(null);
-    const result = await startConversation("u2", "hello");
+    const result = await startConversation(VALID_OTHER_USER_ID, "hello");
     expect(result).toEqual(expect.objectContaining({ code: "invalidInput" }));
   });
 
   test("creates new conversation and sends message", async () => {
     mockAuth.mockResolvedValue({ user: { id: "u1", permissions: { "dm:send": true } } } as any);
-    mockUserFindFirst.mockResolvedValue({ id: "u2" });
+    mockUserFindFirst.mockResolvedValue({ id: VALID_OTHER_USER_ID });
     mockConversationFindFirst.mockResolvedValue(null);
     mockConversationCreate.mockResolvedValue({ id: "new-conv" });
     mockDirectMessageCreate.mockResolvedValue({});
 
-    const result = await startConversation("u2", "hello");
+    const result = await startConversation(VALID_OTHER_USER_ID, "hello");
     expect(result).toEqual(expect.objectContaining({ conversationId: "new-conv" }));
     expect(mockConversationCreate).toHaveBeenCalled();
     expect(mockDirectMessageCreate).toHaveBeenCalled();
@@ -137,12 +145,12 @@ describe("startConversation", () => {
 
   test("reuses existing conversation", async () => {
     mockAuth.mockResolvedValue({ user: { id: "u1", permissions: { "dm:send": true } } } as any);
-    mockUserFindFirst.mockResolvedValue({ id: "u2" });
+    mockUserFindFirst.mockResolvedValue({ id: VALID_OTHER_USER_ID });
     mockConversationFindFirst.mockResolvedValue({ id: "existing-conv" });
     mockConversationUpdate.mockResolvedValue({});
     mockDirectMessageCreate.mockResolvedValue({});
 
-    const result = await startConversation("u2", "hello");
+    const result = await startConversation(VALID_OTHER_USER_ID, "hello");
     expect(result).toEqual(expect.objectContaining({ conversationId: "existing-conv" }));
     expect(mockConversationCreate).not.toHaveBeenCalled();
     expect(mockConversationUpdate).toHaveBeenCalled();
@@ -151,7 +159,7 @@ describe("startConversation", () => {
   test("handles rate limit error", async () => {
     mockAuth.mockResolvedValue({ user: { id: "u1", permissions: { "dm:send": true } } } as any);
     (rateLimit as jest.Mock).mockRejectedValueOnce(new Error("rate limited"));
-    const result = await startConversation("u2", "hello");
+    const result = await startConversation(VALID_OTHER_USER_ID, "hello");
     expect(result).toEqual(expect.objectContaining({ code: "rateLimited" }));
   });
 });
