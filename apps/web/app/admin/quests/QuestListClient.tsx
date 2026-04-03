@@ -24,13 +24,8 @@ import AddIcon from "@mui/icons-material/Add";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import {
-  colors,
-  STATUS_COLORS,
-  STATUS_LABELS,
-  PRIORITY_COLORS,
-  PRIORITY_LABELS,
-} from "../../styles";
+import { colors, STATUS_COLORS, STATUS_LABELS } from "../../styles";
+import { StatusChip, PriorityChip, XpChip } from "@/app/components/QuestChips";
 import { DEVELOPMENT_SKILL_OPTIONS } from "@/lib/survey-config";
 import {
   createCustomQuest,
@@ -216,42 +211,9 @@ function QuestCard({
               >
                 {quest.title}
               </Typography>
-              <Chip
-                label={STATUS_LABELS[quest.status] ?? quest.status}
-                size="small"
-                sx={{
-                  height: 20,
-                  fontSize: "0.65rem",
-                  fontWeight: 600,
-                  backgroundColor: "transparent",
-                  color: STATUS_COLORS[quest.status] ?? colors.slate400,
-                  border: `1px solid ${STATUS_COLORS[quest.status] ?? colors.slate400}`,
-                }}
-              />
-              <Chip
-                label={PRIORITY_LABELS[quest.priority] ?? quest.priority}
-                size="small"
-                sx={{
-                  height: 20,
-                  fontSize: "0.65rem",
-                  backgroundColor: "transparent",
-                  color: PRIORITY_COLORS[quest.priority] ?? colors.slate400,
-                  border: `1px solid ${PRIORITY_COLORS[quest.priority] ?? colors.slate400}`,
-                }}
-              />
-              {quest.xpReward > 0 && (
-                <Chip
-                  label={`+${quest.xpReward} XP`}
-                  size="small"
-                  sx={{
-                    height: 20,
-                    fontSize: "0.65rem",
-                    fontWeight: 600,
-                    backgroundColor: colors.accentBgSubtle,
-                    color: colors.green400,
-                  }}
-                />
-              )}
+              <StatusChip status={quest.status} />
+              <PriorityChip priority={quest.priority} />
+              {quest.xpReward > 0 && <XpChip xp={quest.xpReward} />}
               {quest.targetSkill && (
                 <Tooltip title="Skill match = 2x XP">
                   <Chip
@@ -376,30 +338,8 @@ function QuestGroupCard({
               border: `1px solid ${allCompleted ? STATUS_COLORS.completed : colors.slate400}`,
             }}
           />
-          <Chip
-            label={PRIORITY_LABELS[representative.priority] ?? representative.priority}
-            size="small"
-            sx={{
-              height: 20,
-              fontSize: "0.65rem",
-              backgroundColor: "transparent",
-              color: PRIORITY_COLORS[representative.priority] ?? colors.slate400,
-              border: `1px solid ${PRIORITY_COLORS[representative.priority] ?? colors.slate400}`,
-            }}
-          />
-          {representative.xpReward > 0 && (
-            <Chip
-              label={`+${representative.xpReward} XP`}
-              size="small"
-              sx={{
-                height: 20,
-                fontSize: "0.65rem",
-                fontWeight: 600,
-                backgroundColor: colors.accentBgSubtle,
-                color: colors.green400,
-              }}
-            />
-          )}
+          <PriorityChip priority={representative.priority} />
+          {representative.xpReward > 0 && <XpChip xp={representative.xpReward} />}
         </Box>
         <Typography variant="body2" sx={{ color: colors.slate400, mb: 1 }}>
           {representative.description}

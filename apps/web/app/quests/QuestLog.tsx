@@ -5,9 +5,13 @@ import { Box, Card, CardContent, Chip, LinearProgress, Tab, Tabs, Typography } f
 import TopBar from "../components/TopBar";
 import XpProgressCard from "../components/XpProgressCard";
 import type { XpProgress } from "../components/XpProgressCard";
-import QuestReceivedCelebration from "../components/QuestReceivedCelebration";
+import dynamic from "next/dynamic";
+const QuestReceivedCelebration = dynamic(() => import("../components/QuestReceivedCelebration"), {
+  ssr: false,
+});
 import QuestListClient from "../admin/quests/QuestListClient";
-import { colors, STATUS_COLORS, STATUS_LABELS, PRIORITY_COLORS } from "../styles";
+import { colors, STATUS_COLORS } from "../styles";
+import { StatusChip, PriorityChip, XpChip } from "@/app/components/QuestChips";
 
 interface QuestData {
   id: string;
@@ -156,42 +160,9 @@ export default function QuestLog({
                         >
                           {cq.title}
                         </Typography>
-                        <Chip
-                          label={STATUS_LABELS[cq.status] ?? cq.status}
-                          size="small"
-                          sx={{
-                            height: 20,
-                            fontSize: "0.65rem",
-                            fontWeight: 600,
-                            backgroundColor: "transparent",
-                            color: STATUS_COLORS[cq.status],
-                            border: `1px solid ${STATUS_COLORS[cq.status]}`,
-                          }}
-                        />
-                        <Chip
-                          label={cq.priority}
-                          size="small"
-                          sx={{
-                            height: 20,
-                            fontSize: "0.65rem",
-                            backgroundColor: "transparent",
-                            color: PRIORITY_COLORS[cq.priority] ?? colors.slate400,
-                            border: `1px solid ${PRIORITY_COLORS[cq.priority] ?? colors.slate400}`,
-                          }}
-                        />
-                        {cq.xpReward > 0 && (
-                          <Chip
-                            label={`+${cq.xpReward} XP`}
-                            size="small"
-                            sx={{
-                              height: 20,
-                              fontSize: "0.65rem",
-                              fontWeight: 600,
-                              backgroundColor: colors.accentBgSubtle,
-                              color: colors.green400,
-                            }}
-                          />
-                        )}
+                        <StatusChip status={cq.status} />
+                        <PriorityChip priority={cq.priority} />
+                        {cq.xpReward > 0 && <XpChip xp={cq.xpReward} />}
                         {cq.targetSkill && (
                           <Chip
                             label={`${cq.targetSkill} · 2x XP`}
