@@ -23,6 +23,14 @@ const config: Config = {
     "!app/**/layout.tsx",
     "!lib/db.ts",
   ],
+  coverageThreshold: {
+    global: {
+      lines: 70,
+      branches: 60,
+      functions: 70,
+      statements: 70,
+    },
+  },
 };
 
 export default createJestConfig(config);

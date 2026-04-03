@@ -32,6 +32,14 @@ interface TeamCompositionProps {
   characters: WowCharacterData[];
 }
 
+const RATING_THRESHOLDS = {
+  mythic: 3000,
+  heroic: 2500,
+  champion: 2000,
+  challenger: 1500,
+  apprentice: 750,
+} as const;
+
 const SLOTS = [
   { key: "tankId", label: "Tank", icon: <ShieldIcon sx={{ fontSize: 16 }} />, role: "Tank" },
   { key: "healerId", label: "Healer", icon: <HealingIcon sx={{ fontSize: 16 }} />, role: "Healer" },
@@ -41,11 +49,11 @@ const SLOTS = [
 ] as const;
 
 function getRatingColor(rating: number): string {
-  if (rating >= 3000) return "#ff8000";
-  if (rating >= 2500) return "#a335ee";
-  if (rating >= 2000) return "#0070dd";
-  if (rating >= 1500) return "#1eff00";
-  if (rating >= 750) return "#ffffff";
+  if (rating >= RATING_THRESHOLDS.mythic) return "#ff8000";
+  if (rating >= RATING_THRESHOLDS.heroic) return "#a335ee";
+  if (rating >= RATING_THRESHOLDS.champion) return "#0070dd";
+  if (rating >= RATING_THRESHOLDS.challenger) return "#1eff00";
+  if (rating >= RATING_THRESHOLDS.apprentice) return "#ffffff";
   return colors.slate400;
 }
 

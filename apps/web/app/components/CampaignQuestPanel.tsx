@@ -124,6 +124,7 @@ export default function CampaignQuestPanel() {
             <IconButton
               size="small"
               aria-label={expanded ? "Collapse" : "Expand"}
+              onClick={() => setExpanded(!expanded)}
               sx={{ color: colors.slate400 }}
             >
               {expanded ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
