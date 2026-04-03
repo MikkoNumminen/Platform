@@ -4,7 +4,11 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { getLevelForXp } from "./xp-config";
 
-export async function getLatestXpGains(since: Date) {
+export async function getLatestXpGains(since: Date): Promise<{
+  gains: Array<{ amount: number; source: string }>;
+  level: number;
+  totalXp: number;
+}> {
   const session = await auth();
   if (!session?.user?.id) return { gains: [], level: 1, totalXp: 0 };
   const userId = session.user.id;
@@ -30,7 +34,18 @@ export async function getLatestXpGains(since: Date) {
   }
 }
 
-export async function getMyGamificationProfile() {
+export async function getMyGamificationProfile(): Promise<{
+  totalXp: number;
+  level: number;
+  currentStreak: number;
+  longestStreak: number;
+  recentAchievements: Array<{
+    name: string;
+    icon: string | null;
+    tier: string;
+    unlockedAt: Date;
+  }>;
+} | null> {
   const session = await auth();
   if (!session?.user?.id) return null;
   const userId = session.user.id;

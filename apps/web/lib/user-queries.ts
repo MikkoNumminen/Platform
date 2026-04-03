@@ -2,7 +2,20 @@ import { prisma } from "@/lib/db";
 import { getDemoSessionId } from "@/lib/demo-session";
 import { DEMO_EMAIL } from "@/lib/demo-constants";
 
-export async function getUsers() {
+export async function getUsers(): Promise<
+  Array<{
+    id: string;
+    email: string;
+    name: string | null;
+    alias: string | null;
+    image: string | null;
+    role: string;
+    wantsToDevelop: boolean;
+    developerTag: string | null;
+    developmentSkills: string[];
+    createdAt: Date;
+  }>
+> {
   const sessionId = await getDemoSessionId();
   return prisma.user.findMany({
     where: { deletedAt: null, sessionId, email: { not: DEMO_EMAIL } },
@@ -44,7 +57,18 @@ export async function getUsersWithOverrides(userIds: string[]): Promise<Set<stri
   return new Set(overrides.map((o) => o.userId));
 }
 
-export async function getUserById(id: string) {
+export async function getUserById(id: string): Promise<{
+  id: string;
+  email: string;
+  name: string | null;
+  alias: string | null;
+  image: string | null;
+  role: string;
+  wantsToDevelop: boolean;
+  developerTag: string | null;
+  developmentSkills: string[];
+  createdAt: Date;
+} | null> {
   const sessionId = await getDemoSessionId();
   return prisma.user.findFirst({
     where: { id, deletedAt: null, sessionId },

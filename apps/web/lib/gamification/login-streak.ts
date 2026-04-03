@@ -5,7 +5,9 @@ import { awardXp } from "./xp-service";
 import { updateQuestProgress } from "./quest-service";
 import { checkAchievements } from "./achievement-service";
 
-export async function recordLogin(userId: string) {
+export async function recordLogin(
+  userId: string,
+): Promise<{ streak: number; xpAwarded: number; isNewDay: boolean }> {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const existing = await prisma.loginStreak.findUnique({ where: { userId } });
@@ -51,7 +53,11 @@ export async function recordLogin(userId: string) {
   return { streak: newStreak, xpAwarded: totalXp, isNewDay: true };
 }
 
-export async function getLoginStreak(userId: string) {
+export async function getLoginStreak(userId: string): Promise<{
+  currentStreak: number;
+  longestStreak: number;
+  lastLoginDate: Date | null;
+}> {
   const streak = await prisma.loginStreak.findUnique({ where: { userId } });
   return {
     currentStreak: streak?.currentStreak ?? 0,

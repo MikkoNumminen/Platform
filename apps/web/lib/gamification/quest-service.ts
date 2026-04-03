@@ -2,7 +2,18 @@
 
 import { prisma } from "@/lib/db";
 
-export async function updateQuestProgress(userId: string, action: string) {
+export async function updateQuestProgress(
+  userId: string,
+  action: string,
+): Promise<
+  Array<{
+    questKey: string;
+    completed: boolean;
+    progress: number;
+    target: number;
+    xpAwarded: number;
+  }>
+> {
   const quests = await prisma.quest.findMany();
   const results: Array<{
     questKey: string;
@@ -66,7 +77,22 @@ export async function updateQuestProgress(userId: string, action: string) {
   return results;
 }
 
-export async function getActiveQuests(userId: string) {
+export async function getActiveQuests(userId: string): Promise<
+  Array<{
+    id: string;
+    key: string;
+    name: string;
+    description: string | null;
+    icon: string | null;
+    type: string;
+    xpReward: number;
+    repeatable: boolean;
+    progress: number;
+    target: number;
+    completed: boolean;
+    completedAt: Date | null | undefined;
+  }>
+> {
   try {
     const quests = await prisma.quest.findMany({
       orderBy: [{ type: "asc" }, { sortOrder: "asc" }],
@@ -100,7 +126,7 @@ export async function getActiveQuests(userId: string) {
   }
 }
 
-export async function resetDailyQuests() {
+export async function resetDailyQuests(): Promise<number> {
   const result = await prisma.userQuestProgress.updateMany({
     where: { quest: { type: "daily", repeatable: true }, completed: true },
     data: { progress: 0, completed: false, resetAt: new Date() },
@@ -108,7 +134,7 @@ export async function resetDailyQuests() {
   return result.count;
 }
 
-export async function resetWeeklyQuests() {
+export async function resetWeeklyQuests(): Promise<number> {
   const result = await prisma.userQuestProgress.updateMany({
     where: { quest: { type: "weekly", repeatable: true }, completed: true },
     data: { progress: 0, completed: false, resetAt: new Date() },
