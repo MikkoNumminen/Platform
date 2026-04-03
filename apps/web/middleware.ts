@@ -17,10 +17,14 @@ export async function middleware(request: NextRequest) {
 
   // For admin routes, verify the user has an admin-level role
   if (request.nextUrl.pathname.startsWith("/admin")) {
+    if (!process.env.AUTH_SECRET) {
+      return NextResponse.redirect(new URL("/auth/signin", request.url));
+    }
+
     try {
       const token = await decode({
         token: tokenValue,
-        secret: process.env.AUTH_SECRET!,
+        secret: process.env.AUTH_SECRET,
         salt:
           request.cookies.get("__Secure-authjs.session-token") != null
             ? "__Secure-authjs.session-token"
