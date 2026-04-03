@@ -16,6 +16,9 @@ jest.mock("@/lib/db", () => ({
 
 jest.mock("@/lib/demo-session", () => ({
   getDemoSessionId: jest.fn().mockResolvedValue(null),
+}));
+
+jest.mock("@/lib/demo-constants", () => ({
   DEMO_EMAIL: "demo@platform.app",
 }));
 

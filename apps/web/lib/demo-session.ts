@@ -19,8 +19,7 @@ import {
   DEMO_DM_CONVERSATIONS,
 } from "./demo-seeds";
 
-// Used by auth.ts signIn callback to identify demo users
-export const DEMO_EMAIL = "demo@platform.app";
+// DEMO_EMAIL moved to demo-constants.ts (can't export constants from "use server" files)
 const DEMO_SESSION_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 export async function getDemoSessionId(): Promise<string | null> {

@@ -2,7 +2,8 @@
 
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
-import { getDemoSessionId, DEMO_EMAIL } from "@/lib/demo-session";
+import { getDemoSessionId } from "@/lib/demo-session";
+import { DEMO_EMAIL } from "@/lib/demo-constants";
 
 export interface ConversationSummary {
   id: string;

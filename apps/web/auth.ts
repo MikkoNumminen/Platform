@@ -6,8 +6,7 @@ import { prisma } from "@/lib/db";
 import { resolvePermissions } from "@/lib/permissions";
 import { logger } from "@/lib/logger";
 import { seedDemoData, cleanupStaleDemoSessions } from "@/lib/demo-session";
-
-const DEMO_EMAIL = "demo@platform.app";
+import { DEMO_EMAIL } from "@/lib/demo-constants";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
