@@ -419,6 +419,7 @@ model XpTransaction {
   @@index([userId])
   @@index([createdAt])
   @@index([source])
+  @@index([userId, source])
   @@index([sessionId])
 }
 
@@ -432,6 +433,8 @@ model UserLevel {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([level])
+  @@index([totalXp])
   @@index([sessionId])
 }
 
