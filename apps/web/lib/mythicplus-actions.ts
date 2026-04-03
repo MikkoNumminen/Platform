@@ -32,6 +32,7 @@ export async function addCharacter(
     if (!trimmedRealm) {
       throw new ActionError("invalidInput", "Realm is required");
     }
+    if (trimmedRealm.length > 100) throw new ActionError("invalidInput", "Realm name is too long");
     if (!VALID_REGIONS.includes(region as (typeof VALID_REGIONS)[number])) {
       throw new ActionError("invalidInput", `Invalid region: ${region}. Use us, eu, kr, or tw.`);
     }
@@ -152,7 +153,7 @@ export async function refreshAllCharacters(): Promise<ActionResult> {
     const sessionId = await getDemoSessionId();
 
     const characters = await prisma.wowCharacter.findMany({
-      where: { sessionId },
+      where: { sessionId, addedById: session.user.id },
     });
 
     for (const character of characters) {

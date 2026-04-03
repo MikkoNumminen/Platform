@@ -144,6 +144,7 @@ describe("submitSurvey", () => {
 
 describe("submitCustomSurvey", () => {
   test("returns error when roundId is empty", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "u1" } });
     const result = await submitCustomSurvey({ q1: "answer" }, "");
     expect(result).toEqual(expect.objectContaining({ code: "invalidInput" }));
   });
@@ -175,12 +176,10 @@ describe("submitCustomSurvey", () => {
     expect(awardCustomXp).toHaveBeenCalledWith("u1", 50, "custom_quest:complete", "q1");
   });
 
-  test("works for anonymous user", async () => {
+  test("returns error for unauthenticated user", async () => {
     mockAuth.mockResolvedValue(null);
     const result = await submitCustomSurvey({ q1: "answer" }, "round-1");
-    expect(result).toBeUndefined();
-    expect(mockCreate).toHaveBeenCalledWith({
-      data: expect.objectContaining({ userId: null }),
-    });
+    expect(result).toEqual({ error: "Not authenticated", code: "permissionDenied" });
+    expect(mockCreate).not.toHaveBeenCalled();
   });
 });

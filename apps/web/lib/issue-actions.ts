@@ -35,6 +35,11 @@ export async function createIssueReport(
       );
     }
 
+    const trimmedUrl = url?.trim() || null;
+    if (trimmedUrl && trimmedUrl.length > 500) {
+      throw new ActionError("invalidInput", "URL must be 500 characters or less");
+    }
+
     await rateLimit("issue:create");
 
     const sessionId = await getDemoSessionId();
@@ -43,7 +48,7 @@ export async function createIssueReport(
       data: {
         title: trimmedTitle,
         description: trimmedDesc,
-        url: url?.trim() || null,
+        url: trimmedUrl,
         authorId: user.id,
         sessionId,
       },

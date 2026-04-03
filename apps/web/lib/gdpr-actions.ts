@@ -44,7 +44,7 @@ export async function deleteMyAccount(confirmation: string): Promise<ActionResul
       entityId: userId,
       actorId: userId,
       actorName: user.alias ?? user.name,
-      details: { email: user.email },
+      details: { deletedUserId: userId },
     });
 
     await prisma.$transaction(async (tx) => {

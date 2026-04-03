@@ -8,12 +8,18 @@ jest.mock("@/auth", () => ({
 
 const mockFindUnique = jest.fn();
 
+const mockQueryRaw = jest.fn().mockResolvedValue([{ count: 0 }]);
+
 jest.mock("@/lib/db", () => ({
   prisma: {
+    $queryRaw: (...args: unknown[]) => mockQueryRaw(...args),
     user: {
       findFirst: (...args: unknown[]) => mockFindFirst(...args),
       findUnique: (...args: unknown[]) => mockFindUnique(...args),
       update: (...args: unknown[]) => mockUpdate(...args),
+    },
+    rateLimit: {
+      deleteMany: jest.fn().mockResolvedValue({}),
     },
   },
 }));

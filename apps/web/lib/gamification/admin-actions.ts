@@ -17,7 +17,7 @@ async function requireAdmin(): Promise<{ id: string; name: string | null }> {
     where: { id: session.user.id },
     select: { role: true, alias: true, name: true },
   });
-  if (!user || (user.role !== "admin" && user.role !== "superuser")) {
+  if (!user || (user.role !== "admin" && user.role !== "superuser" && user.role !== "vuohi")) {
     throw new ActionError("permissionDenied", "Admin access required");
   }
   return { id: session.user.id, name: user.alias ?? user.name };
@@ -90,7 +90,7 @@ export async function createAchievement(data: {
         tier: data.tier ?? null,
         category: data.category.trim(),
         xpReward: data.xpReward ?? 0,
-        criteria: data.criteria as Prisma.InputJsonValue as Prisma.InputJsonValue,
+        criteria: data.criteria as Prisma.InputJsonValue,
         sortOrder: data.sortOrder ?? 0,
       },
     });

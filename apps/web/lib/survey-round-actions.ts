@@ -3,7 +3,7 @@
 import { prisma } from "./db";
 import { guardedAction } from "./guardedAction";
 import { ActionError } from "./actionErrors";
-import { validateUUID, createStringValidator } from "./actionUtils";
+import { validateUUID, createStringValidator, requireUser } from "./actionUtils";
 import { revalidatePath } from "next/cache";
 import { getSurveyResults } from "./survey-queries";
 import type { SurveyResultsData } from "./survey-queries";
@@ -105,5 +105,7 @@ export const closeSurveyRound = guardedAction(
 );
 
 export async function fetchRoundResults(roundId: string | null): Promise<SurveyResultsData> {
+  await requireUser();
+  if (roundId) validateUUID(roundId, "roundId");
   return getSurveyResults(roundId);
 }

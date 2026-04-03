@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { ActionError } from "@/lib/actionErrors";
 import { safe, requireUser, type ActionResult } from "@/lib/actionUtils";
+import { rateLimit } from "@/lib/rateLimit";
 import { triggerGamification } from "./gamification/trigger";
 
 const ALIAS_MIN_LENGTH = 2;
@@ -31,6 +32,7 @@ function validateAlias(alias: string): void {
 export async function setAlias(alias: string): Promise<ActionResult> {
   return safe(async () => {
     const user = await requireUser();
+    await rateLimit("alias:set");
     const trimmed = alias.trim();
     validateAlias(trimmed);
 

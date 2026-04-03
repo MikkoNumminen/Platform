@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { ActionError } from "@/lib/actionErrors";
-import { safe, type ActionResult } from "@/lib/actionUtils";
+import { safe, requireUser, type ActionResult } from "@/lib/actionUtils";
 import { rateLimit } from "@/lib/rateLimit";
 import { validateSurveyData, type SurveyData } from "@/lib/survey-config";
 import type { CustomAnswers } from "@/lib/custom-survey-config";
@@ -81,14 +81,14 @@ export async function submitCustomSurvey(
   roundId: string,
 ): Promise<ActionResult> {
   return safe(async () => {
+    const authUser = await requireUser();
     await rateLimit("survey:submit");
 
     if (!roundId) {
       throw new ActionError("invalidInput", "Round ID is required");
     }
 
-    const session = await auth();
-    const userId = session?.user?.id ?? null;
+    const userId = authUser.id;
     const sessionId = await getDemoSessionId();
 
     await prisma.surveyResponse.create({
