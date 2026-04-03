@@ -14,9 +14,7 @@ export default function DemoWelcomeOverlay() {
   const t = useTranslations("demo");
   const [visible, setVisible] = useState(false);
 
-  const isDemoUser = Boolean(
-    (session?.user as { demoSessionId?: string } | undefined)?.demoSessionId,
-  );
+  const isDemoUser = Boolean(session?.user?.demoSessionId);
 
   useEffect(() => {
     if (isDemoUser && !localStorage.getItem(STORAGE_KEY)) {

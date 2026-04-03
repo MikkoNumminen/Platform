@@ -11,7 +11,7 @@ export default async function MythicPlusPage() {
   const session = await auth();
   if (!session?.user) redirect("/auth/signin");
 
-  const role = (session.user as { role?: string })?.role;
+  const role = session.user?.role;
   if (role === "pending") redirect("/");
 
   const [characters, teams] = await Promise.all([getTeamCharacters(), getTeams()]);

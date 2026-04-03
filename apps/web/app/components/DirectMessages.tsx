@@ -28,6 +28,8 @@ type DmUser = {
   developerTag: string | null;
 };
 
+const CHAT_HEIGHT = 300;
+
 const WELCOME_LINES: SystemLine[] = [
   { label: "[System]", text: "Welcome to private messages." },
   { label: "", text: "" },
@@ -119,7 +121,7 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
 
     const trimmed = message.trim();
     const alias = session.user.alias ?? session.user.name ?? "Unknown";
-    const role = (session.user as { role?: string })?.role ?? "user";
+    const role = session.user?.role ?? "user";
 
     const whisperMatch = trimmed.match(/^\/w(?:hisper)?\s+(\S+)\s+(.+)$/i);
     if (whisperMatch) {
@@ -395,7 +397,7 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
       <Box
         ref={scrollRef}
         sx={{
-          height: 300,
+          height: CHAT_HEIGHT,
           overflowY: "auto",
           px: 1.5,
           py: 1,

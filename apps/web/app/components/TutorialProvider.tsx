@@ -59,10 +59,8 @@ export default function TutorialProvider({ children }: { children: ReactNode }) 
   } | null>(null);
   const completingRef = useRef<Set<string>>(new Set());
 
-  const role = (session?.user as { role?: string } | undefined)?.role ?? "pending";
-  const isDemoUser = Boolean(
-    (session?.user as { demoSessionId?: string } | undefined)?.demoSessionId,
-  );
+  const role = session?.user?.role ?? "pending";
+  const isDemoUser = Boolean(session?.user?.demoSessionId);
   const isActive = !!session?.user && (role !== "pending" || isDemoUser);
 
   const steps = useMemo(() => getStepsForRole(role), [role]);

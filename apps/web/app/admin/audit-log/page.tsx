@@ -9,7 +9,7 @@ import AuditLogTable from "./AuditLogTable";
 
 export default async function AuditLogPage() {
   const session = await auth();
-  const role = (session?.user as { role?: string })?.role;
+  const role = session?.user?.role;
 
   if (role !== "superuser") {
     redirect("/");

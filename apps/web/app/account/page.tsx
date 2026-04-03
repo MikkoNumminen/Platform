@@ -66,7 +66,7 @@ export default function AccountPage() {
   }
 
   const user = session.user;
-  const currentAlias = (user as { alias?: string }).alias ?? "";
+  const currentAlias = user.alias ?? "";
 
   const handleAliasEdit = () => {
     setAliasValue(currentAlias);
@@ -201,7 +201,7 @@ export default function AccountPage() {
                   </Button>
                 </Box>
               )}
-              <ProfileField label="Role" value={(user as { role?: string }).role ?? "—"} />
+              <ProfileField label="Role" value={user.role ?? "—"} />
               {developerTag && (
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                   <Typography variant="body2" sx={{ color: colors.slate400, minWidth: 60 }}>

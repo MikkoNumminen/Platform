@@ -15,7 +15,7 @@ export async function setMotd(message: string): Promise<ActionResult> {
       throw new ActionError("permissionDenied", "Not authenticated");
     }
 
-    const role = (session.user as { role?: string })?.role;
+    const role = session.user?.role;
 
     // Only superuser and architects can change MOTD
     if (role !== "superuser") {

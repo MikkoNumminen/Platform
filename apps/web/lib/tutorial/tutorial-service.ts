@@ -13,7 +13,7 @@ export async function completeTourStep(stepId: string): Promise<{
   if (!session?.user?.id) return { completed: false, tierCompleted: null, tierBonus: 0 };
 
   const userId = session.user.id;
-  const role = (session.user as { role?: string }).role ?? "pending";
+  const role = session.user.role ?? "pending";
   const steps = getStepsForRole(role);
 
   // Verify step is valid for this role
@@ -133,7 +133,7 @@ export async function getMyTourProgress(): Promise<{
 } | null> {
   const session = await auth();
   if (!session?.user?.id) return null;
-  const role = (session.user as { role?: string }).role ?? "pending";
+  const role = session.user.role ?? "pending";
 
   // Sync progress with actual user data (backfill steps done before tutorial existed)
   try {

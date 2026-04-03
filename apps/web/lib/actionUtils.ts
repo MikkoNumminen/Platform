@@ -51,7 +51,7 @@ export async function requireUser() {
  */
 export async function requireAdmin() {
   const user = await requireUser();
-  const role = (user as { role?: string }).role;
+  const role = user.role;
   if (role !== "superuser" && role !== "vuohi" && role !== "admin") {
     throw new ActionError("permissionDenied", "Admin access required");
   }

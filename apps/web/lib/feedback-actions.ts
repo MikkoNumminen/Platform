@@ -83,7 +83,7 @@ export async function getAllFeedback(): Promise<FeedbackItem[]> {
   const session = await auth();
   if (!session?.user?.id) return [];
 
-  const demoSessionId = (session.user as { demoSessionId?: string }).demoSessionId;
+  const demoSessionId = session.user.demoSessionId;
 
   const feedbacks = await prisma.feedback.findMany({
     where: demoSessionId ? { sessionId: demoSessionId } : { sessionId: null },

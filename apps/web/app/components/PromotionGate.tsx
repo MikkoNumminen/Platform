@@ -12,8 +12,8 @@ import PromotionCelebration from "./PromotionCelebration";
  */
 export default function PromotionGate() {
   const { data: session } = useSession();
-  const role = (session?.user as { role?: string })?.role;
-  const hasSeenPromotion = (session?.user as { hasSeenPromotion?: boolean })?.hasSeenPromotion;
+  const role = session?.user?.role;
+  const hasSeenPromotion = session?.user?.hasSeenPromotion;
 
   // Scenario A: real-time polling while pending
   const { shouldCelebrate, clearCelebration } = usePromotionPolling(role);

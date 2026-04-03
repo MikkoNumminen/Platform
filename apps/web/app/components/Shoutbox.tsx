@@ -7,9 +7,9 @@ import StarIcon from "@mui/icons-material/Star";
 import { useTranslations } from "next-intl";
 import { colors } from "../styles";
 import { DEVELOPER_TAG_LABELS, DEVELOPER_TAG_ICONS } from "@/lib/developer-config";
-import { createShout } from "@/lib/shout-actions";
+import { createShout, MAX_SHOUT_LENGTH } from "@/lib/shout-actions";
 import { setMotd as setMotdAction } from "@/lib/setting-actions";
-import { sendDirectMessage, startConversation } from "@/lib/dm-actions";
+import { sendDirectMessage, startConversation, MAX_DM_LENGTH } from "@/lib/dm-actions";
 import { getConversationMessages, getDmUsers, getDmUserDetails } from "@/lib/dm-queries";
 import type { ShoutData } from "@/lib/shout-queries";
 import type { ConversationSummary, DmMessageData } from "@/lib/dm-queries";
@@ -21,6 +21,8 @@ import GuildMessages from "./shoutbox/GuildMessages";
 import WhisperMessages from "./shoutbox/WhisperMessages";
 import UserPicker from "./shoutbox/UserPicker";
 import type { SystemLine } from "./shoutbox/SystemMessages";
+
+const CHAT_HEIGHT = 300;
 
 const DEMO_REACTIONS: Array<{ alias: string; message: string; delayMs: number }> = [
   { alias: "Valtava", message: "Welcome to the community! \uD83D\uDC10", delayMs: 1500 },
@@ -66,8 +68,8 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
 
   // Guild state
   const [shouts, setShouts] = useState(initialShouts);
-  const [demoReacted, setDemoReacted] = useState(false);
-  const isDemo = Boolean((session?.user as { demoSessionId?: string })?.demoSessionId);
+  const [hasDemoReacted, setHasDemoReacted] = useState(false);
+  const isDemo = Boolean(session?.user?.demoSessionId);
 
   // DM state
   const [conversations, setConversations] = useState(initialConversations);
@@ -89,8 +91,8 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
   const isGuild = activeTab === "guild";
   const isDmTab = !isGuild && activeTab !== "picker";
 
-  const userRole = (session?.user as { role?: string })?.role;
-  const userDevTag = (session?.user as { developerTag?: string | null })?.developerTag;
+  const userRole = session?.user?.role;
+  const userDevTag = session?.user?.developerTag;
   const canChangeMotd = userRole === "superuser" || userDevTag === "architect";
 
   const [currentMotd, setCurrentMotd] = useState(motd);
@@ -216,7 +218,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
 
     const trimmed = message.trim();
     const alias = session.user.alias ?? session.user.name ?? "Unknown";
-    const role = (session.user as { role?: string })?.role ?? "user";
+    const role = session.user?.role ?? "user";
 
     if (/^\/help$/i.test(trimmed)) {
       setLocalSystemMsgs((prev) => [...prev, ...helpLines]);
@@ -381,8 +383,8 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
       } else {
         onAction();
         emitTutorialEvent("write_comment");
-        if (isDemo && !demoReacted) {
-          setDemoReacted(true);
+        if (isDemo && !hasDemoReacted) {
+          setHasDemoReacted(true);
           for (const reaction of DEMO_REACTIONS) {
             setTimeout(() => {
               setShouts((prev) => [
@@ -532,7 +534,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
       <Box
         ref={scrollRef}
         sx={{
-          height: 300,
+          height: CHAT_HEIGHT,
           overflowY: "auto",
           px: 1.5,
           py: 1,
@@ -669,7 +671,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
               size="small"
               fullWidth
               autoComplete="off"
-              inputProps={{ maxLength: isGuild ? 280 : 500 }}
+              inputProps={{ maxLength: isGuild ? MAX_SHOUT_LENGTH : MAX_DM_LENGTH }}
               sx={{
                 "& .MuiInputBase-root": {
                   fontFamily: "'Courier New', Courier, monospace",

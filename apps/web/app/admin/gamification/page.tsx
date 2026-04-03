@@ -31,7 +31,7 @@ const ALLOWED_ROLES = ["superuser", "vuohi"];
 
 export default async function GamificationDashboardPage() {
   const session = await auth();
-  const role = (session?.user as { role?: string })?.role;
+  const role = session?.user?.role;
   if (!role || !ALLOWED_ROLES.includes(role)) {
     redirect("/");
   }

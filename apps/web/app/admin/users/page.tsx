@@ -100,7 +100,7 @@ export default async function AdminUsersPage() {
                           userId={user.id}
                           currentRole={user.role}
                           isSelf={user.id === session?.user?.id}
-                          actorRole={(session?.user as { role?: string })?.role ?? "pending"}
+                          actorRole={session?.user?.role ?? "pending"}
                         />
                         {!surveyStatus[user.id] && (
                           <Chip
@@ -122,7 +122,7 @@ export default async function AdminUsersPage() {
                         currentTag={user.developerTag}
                         skills={user.developmentSkills}
                         wantsToDevelop={user.wantsToDevelop}
-                        isSuperuser={(session?.user as { role?: string })?.role === "superuser"}
+                        isSuperuser={session?.user?.role === "superuser"}
                         targetRole={user.role}
                       />
                     </TableCell>
