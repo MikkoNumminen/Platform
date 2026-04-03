@@ -68,7 +68,7 @@ export async function sendDirectMessage(
 export async function startConversation(
   otherUserId: string,
   message: string,
-): Promise<{ error: string; code: string } | { conversationId: string }> {
+): Promise<{ error?: string; code?: string; conversationId?: string }> {
   const session = await auth();
   if (!session?.user?.id) {
     return { error: "Not authenticated", code: "permissionDenied" };
