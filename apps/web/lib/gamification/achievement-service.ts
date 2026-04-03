@@ -41,14 +41,14 @@ export async function checkAchievements(userId: string, action: string) {
   });
   const unlockedIds = new Set(userAchievements.map((ua) => ua.achievementId));
   const results: Array<{ achievementKey: string; unlocked: boolean; xpAwarded: number }> = [];
+  const actionCount = await getActionCount(userId, action);
 
   for (const achievement of allAchievements) {
     if (unlockedIds.has(achievement.id)) continue;
     const criteria = achievement.criteria as { type: string; action: string; threshold: number };
     if (criteria.action !== action) continue;
     if (criteria.type === "count") {
-      const count = await getActionCount(userId, criteria.action);
-      if (count >= criteria.threshold) {
+      if (actionCount >= criteria.threshold) {
         await prisma.userAchievement.create({ data: { userId, achievementId: achievement.id } });
         let xpAwarded = 0;
         if (achievement.xpReward > 0) {
@@ -98,7 +98,8 @@ export async function getAllAchievementsWithStatus(userId: string) {
       unlocked: unlockedMap.has(a.id),
       unlockedAt: unlockedMap.get(a.id) ?? null,
     }));
-  } catch {
+  } catch (error) {
+    console.error("[achievements] getAllAchievementsWithStatus failed:", error);
     return [];
   }
 }

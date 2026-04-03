@@ -345,7 +345,7 @@ describe("quest-service", () => {
           xpReward: 30,
         },
       ]);
-      mockUserQuestProgressFindUnique.mockResolvedValue(null);
+      mockUserQuestProgressFindMany.mockResolvedValue([]);
       mockUserQuestProgressUpsert.mockResolvedValue({});
 
       const results = await updateQuestProgress("u1", "post:create");
@@ -368,7 +368,9 @@ describe("quest-service", () => {
           xpReward: 30,
         },
       ]);
-      mockUserQuestProgressFindUnique.mockResolvedValue({ progress: 1, completed: false });
+      mockUserQuestProgressFindMany.mockResolvedValue([
+        { questId: "q1", progress: 1, completed: false, resetAt: null, completedAt: null },
+      ]);
       mockUserQuestProgressUpsert.mockResolvedValue({});
       mockXpTransactionCreate.mockResolvedValue({});
       mockUserLevelUpsert.mockResolvedValue({});
@@ -388,7 +390,9 @@ describe("quest-service", () => {
           xpReward: 30,
         },
       ]);
-      mockUserQuestProgressFindUnique.mockResolvedValue({ progress: 1, completed: true });
+      mockUserQuestProgressFindMany.mockResolvedValue([
+        { questId: "q1", progress: 1, completed: true, resetAt: null, completedAt: new Date() },
+      ]);
 
       const results = await updateQuestProgress("u1", "post:create");
       expect(results).toHaveLength(0);

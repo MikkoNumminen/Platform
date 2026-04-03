@@ -2,7 +2,7 @@
 
 const mockConversationFindMany = jest.fn();
 const mockConversationFindFirst = jest.fn();
-const mockDirectMessageCount = jest.fn();
+const mockDirectMessageGroupBy = jest.fn();
 const mockDirectMessageUpdateMany = jest.fn();
 const mockDirectMessageFindMany = jest.fn();
 const mockUserFindMany = jest.fn();
@@ -14,7 +14,7 @@ jest.mock("@/lib/db", () => ({
       findFirst: (...a: any[]) => mockConversationFindFirst(...a),
     },
     directMessage: {
-      count: (...a: any[]) => mockDirectMessageCount(...a),
+      groupBy: (...a: any[]) => mockDirectMessageGroupBy(...a),
       updateMany: (...a: any[]) => mockDirectMessageUpdateMany(...a),
       findMany: (...a: any[]) => mockDirectMessageFindMany(...a),
     },
@@ -54,7 +54,7 @@ describe("getMyConversations", () => {
         messages: [{ message: "hello" }],
       },
     ]);
-    mockDirectMessageCount.mockResolvedValue(2);
+    mockDirectMessageGroupBy.mockResolvedValue([{ conversationId: "conv-1", _count: { _all: 2 } }]);
 
     const result = await getMyConversations();
     expect(result).toHaveLength(1);

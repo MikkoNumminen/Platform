@@ -12,12 +12,15 @@ export async function updateQuestProgress(userId: string, action: string) {
     xpAwarded: number;
   }> = [];
 
+  const allProgress = await prisma.userQuestProgress.findMany({
+    where: { userId },
+  });
+  const progressMap = new Map(allProgress.map((p) => [p.questId, p]));
+
   for (const quest of quests) {
     const criteria = quest.criteria as { action: string; count: number };
     if (criteria.action !== action) continue;
-    const existing = await prisma.userQuestProgress.findUnique({
-      where: { userId_questId: { userId, questId: quest.id } },
-    });
+    const existing = progressMap.get(quest.id);
     if (existing?.completed && !quest.repeatable) continue;
     if (existing?.completed && quest.repeatable) {
       if (!existing.resetAt || existing.completedAt! > existing.resetAt) continue;
@@ -91,7 +94,8 @@ export async function getActiveQuests(userId: string) {
         completedAt: isComplete ? p?.completedAt : null,
       };
     });
-  } catch {
+  } catch (error) {
+    console.error("[quests] getActiveQuests failed:", error);
     return [];
   }
 }

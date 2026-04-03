@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getDemoSessionId, DEMO_EMAIL } from "@/lib/demo-session";
 
 export interface ConversationSummary {
   id: string;
@@ -49,18 +49,21 @@ export async function getMyConversations(): Promise<ConversationSummary[]> {
     },
   });
 
+  const unreadCounts = await prisma.directMessage.groupBy({
+    by: ["conversationId"],
+    where: {
+      conversationId: { in: conversations.map((c) => c.id) },
+      senderId: { not: userId },
+      readAt: null,
+    },
+    _count: { _all: true },
+  });
+  const unreadMap = new Map(unreadCounts.map((r) => [r.conversationId, r._count._all]));
+
   const results: ConversationSummary[] = [];
 
   for (const conv of conversations) {
     const otherUser = conv.participantA === userId ? conv.userB : conv.userA;
-
-    const unreadCount = await prisma.directMessage.count({
-      where: {
-        conversationId: conv.id,
-        senderId: { not: userId },
-        readAt: null,
-      },
-    });
 
     results.push({
       id: conv.id,
@@ -72,7 +75,7 @@ export async function getMyConversations(): Promise<ConversationSummary[]> {
       },
       lastMessage: conv.messages[0]?.message ?? null,
       lastMessageAt: conv.lastMessageAt.toISOString(),
-      unreadCount,
+      unreadCount: unreadMap.get(conv.id) ?? 0,
       isPrivacy: conv.isPrivacy,
     });
   }
@@ -143,7 +146,7 @@ export async function getDmUsers(): Promise<
       deletedAt: null,
       id: { not: session.user.id },
       role: { not: "pending" },
-      email: { not: "demo@platform.app" },
+      email: { not: DEMO_EMAIL },
     },
     select: { id: true, alias: true, name: true, role: true, developerTag: true },
     orderBy: { alias: "asc" },
@@ -157,9 +160,7 @@ export async function getDmUsers(): Promise<
   }));
 }
 
-export async function getDmUserDetails(
-  userId: string,
-): Promise<{
+export async function getDmUserDetails(userId: string): Promise<{
   id: string;
   alias: string;
   name: string | null;
