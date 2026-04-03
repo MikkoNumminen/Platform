@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { ActionError } from "@/lib/actionErrors";
 import { safe, type ActionResult } from "@/lib/actionUtils";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 const MAX_MOTD_LENGTH = 300;
 
@@ -42,6 +42,7 @@ export async function setMotd(message: string): Promise<ActionResult> {
       update: { value: trimmed },
     });
 
+    revalidateTag("motd");
     revalidatePath("/");
   });
 }

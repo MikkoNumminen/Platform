@@ -25,16 +25,23 @@ export async function GET(request: Request) {
     const rateLimitCutoff = new Date();
     rateLimitCutoff.setHours(rateLimitCutoff.getHours() - RATE_LIMIT_MAX_AGE_HOURS);
 
-    const [posts, topics, threads, boards, forums, users, events, rateLimits] = await Promise.all([
-      prisma.post.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
-      prisma.topic.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
-      prisma.thread.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
-      prisma.board.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
-      prisma.forum.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
-      prisma.user.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
-      prisma.calendarEvent.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
-      prisma.rateLimit.deleteMany({ where: { windowStart: { lt: rateLimitCutoff } } }),
-    ]);
+    const auditCutoff = new Date();
+    auditCutoff.setFullYear(auditCutoff.getFullYear() - 1);
+
+    const [posts, topics, threads, boards, forums, users, events, rateLimits, purgedAuditLogs] =
+      await Promise.all([
+        prisma.post.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
+        prisma.topic.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
+        prisma.thread.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
+        prisma.board.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
+        prisma.forum.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
+        prisma.user.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
+        prisma.calendarEvent.deleteMany({ where: { deletedAt: { lt: cutoff } } }),
+        prisma.rateLimit.deleteMany({ where: { windowStart: { lt: rateLimitCutoff } } }),
+        prisma.auditLog.deleteMany({
+          where: { createdAt: { lt: auditCutoff }, sessionId: null },
+        }),
+      ]);
 
     const summary = {
       purgedBefore: cutoff.toISOString(),
@@ -47,6 +54,7 @@ export async function GET(request: Request) {
         users: users.count,
         calendarEvents: events.count,
         rateLimitEntries: rateLimits.count,
+        auditLogs: purgedAuditLogs.count,
       },
     };
 

@@ -177,7 +177,7 @@ export const THEME_PALETTES: Record<ThemeName, ThemeColors> = {
   retro: {
     slate100: "#4ADE80",
     slate300: "#22C55E",
-    slate400: "#16A34A",
+    slate400: "#22C55E",
     slate500: "#15803D",
     slate600: "#0A0F0A",
     slate700: "#000000",
@@ -285,7 +285,7 @@ export const THEME_PALETTES: Record<ThemeName, ThemeColors> = {
   fantasy: {
     slate100: "#F2D899",
     slate300: "#C9A94E",
-    slate400: "#8B7340",
+    slate400: "#A8894D",
     slate500: "#6B5930",
     slate600: "#1E1608",
     slate700: "#0D0A05",

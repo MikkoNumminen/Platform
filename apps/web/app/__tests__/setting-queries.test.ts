@@ -12,6 +12,10 @@ jest.mock("@/auth", () => ({ auth: jest.fn() }));
 jest.mock("@/lib/demo-session", () => ({
   getDemoSessionId: jest.fn().mockResolvedValue(null),
 }));
+jest.mock("next/cache", () => ({
+  unstable_cache: (fn: (...args: unknown[]) => unknown) => fn,
+  revalidateTag: jest.fn(),
+}));
 
 import { getMotd } from "@/lib/setting-queries";
 

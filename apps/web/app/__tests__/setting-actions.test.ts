@@ -13,7 +13,7 @@ jest.mock("@/lib/db", () => ({
 }));
 
 jest.mock("@/auth", () => ({ auth: jest.fn() }));
-jest.mock("next/cache", () => ({ revalidatePath: jest.fn() }));
+jest.mock("next/cache", () => ({ revalidatePath: jest.fn(), revalidateTag: jest.fn() }));
 
 import { auth } from "@/auth";
 import { setMotd } from "@/lib/setting-actions";

@@ -15,6 +15,7 @@ const mockForumDeleteMany = jest.fn();
 const mockUserDeleteMany = jest.fn();
 const mockEventDeleteMany = jest.fn();
 const mockRateLimitDeleteMany = jest.fn();
+const mockAuditLogDeleteMany = jest.fn();
 
 jest.mock("@/lib/db", () => ({
   prisma: {
@@ -26,6 +27,7 @@ jest.mock("@/lib/db", () => ({
     user: { deleteMany: (...a: unknown[]) => mockUserDeleteMany(...a) },
     calendarEvent: { deleteMany: (...a: unknown[]) => mockEventDeleteMany(...a) },
     rateLimit: { deleteMany: (...a: unknown[]) => mockRateLimitDeleteMany(...a) },
+    auditLog: { deleteMany: (...a: unknown[]) => mockAuditLogDeleteMany(...a) },
   },
 }));
 
@@ -54,6 +56,7 @@ describe("purge-deleted cron", () => {
     mockUserDeleteMany.mockResolvedValue(result);
     mockEventDeleteMany.mockResolvedValue(result);
     mockRateLimitDeleteMany.mockResolvedValue(result);
+    mockAuditLogDeleteMany.mockResolvedValue(result);
   });
 
   test("returns 401 without valid CRON_SECRET", async () => {
@@ -113,6 +116,27 @@ describe("purge-deleted cron", () => {
     const hoursAgo = (Date.now() - cutoff.getTime()) / (1000 * 60 * 60);
     expect(hoursAgo).toBeGreaterThan(22);
     expect(hoursAgo).toBeLessThan(26);
+  });
+
+  test("purges audit logs older than 1 year with no session", async () => {
+    mockAuditLogDeleteMany.mockResolvedValue({ count: 3 });
+
+    const res = await GET(makeRequest("test-secret"));
+    expect(res.status).toBe(200);
+
+    const body = await res.json();
+    expect(body.deleted.auditLogs).toBe(3);
+
+    expect(mockAuditLogDeleteMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ sessionId: null }),
+      }),
+    );
+
+    const call = mockAuditLogDeleteMany.mock.calls[0][0];
+    const cutoff = new Date(call.where.createdAt.lt);
+    const daysAgo = (Date.now() - cutoff.getTime()) / (1000 * 60 * 60 * 24);
+    expect(daysAgo).toBeCloseTo(365, 0);
   });
 
   test("returns 500 on database error", async () => {
