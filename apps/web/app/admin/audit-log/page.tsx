@@ -16,7 +16,7 @@ export default async function AuditLogPage() {
   }
 
   const [{ logs, total }, actionTypes] = await Promise.all([
-    getAuditLogs({ page: 0, pageSize: 500 }),
+    getAuditLogs({ page: 0, pageSize: 50 }),
     getAuditActionTypes(),
   ]);
 
