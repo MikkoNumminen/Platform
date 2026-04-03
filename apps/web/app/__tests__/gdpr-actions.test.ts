@@ -196,7 +196,7 @@ describe("deleteMyAccount", () => {
   test("calls rate limit", async () => {
     mocks.auth.mockResolvedValue(authedSession());
     await deleteMyAccount("DELETE");
-    expect(mocks.rateLimit).toHaveBeenCalledWith("gdpr:deleteAccount");
+    expect(mocks.rateLimit).toHaveBeenCalledWith("gdpr:deleteAccount", 3);
   });
 });
 

@@ -4,7 +4,6 @@ import { auth } from "@/auth";
 import { headers } from "next/headers";
 
 const RATE_LIMIT_WINDOW_MS = 60_000; // 60 seconds
-const MAX_REQUESTS_PER_WINDOW = 30;
 
 async function getClientIp(): Promise<string> {
   const headerList = await headers();
@@ -21,10 +20,10 @@ async function getClientIp(): Promise<string> {
   return "anonymous";
 }
 
-export async function rateLimit(action: string): Promise<void> {
+export async function rateLimit(action: string, maxRequests = 30): Promise<void> {
   const session = await auth();
   const identifier = session?.user?.id ?? `ip:${await getClientIp()}`;
-  await checkRateLimit(identifier, action, MAX_REQUESTS_PER_WINDOW);
+  await checkRateLimit(identifier, action, maxRequests);
 }
 
 async function checkRateLimit(

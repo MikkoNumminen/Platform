@@ -26,7 +26,7 @@ export async function deleteMyAccount(confirmation: string): Promise<ActionResul
       throw new ActionError("permissionDenied", "Not authenticated");
     }
 
-    await rateLimit("gdpr:deleteAccount");
+    await rateLimit("gdpr:deleteAccount", 3);
 
     const userId = session.user.id;
 

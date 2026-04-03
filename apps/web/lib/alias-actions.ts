@@ -32,7 +32,7 @@ function validateAlias(alias: string): void {
 export async function setAlias(alias: string): Promise<ActionResult> {
   return safe(async () => {
     const user = await requireUser();
-    await rateLimit("alias:set");
+    await rateLimit("alias:set", 10);
     const trimmed = alias.trim();
     validateAlias(trimmed);
 

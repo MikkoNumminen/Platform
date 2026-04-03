@@ -114,4 +114,20 @@ describe("rateLimit", () => {
     // count defaults to 0, which is under limit
     await expect(rateLimit("action")).resolves.toBeUndefined();
   });
+
+  test("respects custom maxRequests parameter", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } });
+    mockQueryRaw.mockResolvedValue([{ count: 4 }]);
+
+    // Limit of 3 means count=4 exceeds it
+    await expect(rateLimit("gdpr:deleteAccount", 3)).rejects.toThrow(RateLimitError);
+  });
+
+  test("allows request at exactly the custom limit", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1" } });
+    mockQueryRaw.mockResolvedValue([{ count: 10 }]);
+
+    // count=10 is exactly at limit=10, should pass
+    await expect(rateLimit("alias:set", 10)).resolves.toBeUndefined();
+  });
 });
