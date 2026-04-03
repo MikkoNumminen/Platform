@@ -10,7 +10,7 @@ import { triggerGamification } from "./gamification/trigger";
 import { getDemoSessionId } from "@/lib/demo-session";
 import { autoCompleteCampaignQuest } from "@/lib/campaign-completion";
 
-const MAX_DM_LENGTH = 500;
+export const MAX_DM_LENGTH = 500;
 
 export async function sendDirectMessage(
   conversationId: string,

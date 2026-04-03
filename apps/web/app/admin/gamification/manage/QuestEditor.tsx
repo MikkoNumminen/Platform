@@ -61,13 +61,12 @@ const DEFAULT_FORM = {
 
 interface QuestEditorProps {
   quests: QuestData[];
-  error: string | null;
   setError: (error: string | null) => void;
 }
 
-export default function QuestEditor({ quests, error: _error, setError }: QuestEditorProps) {
+export default function QuestEditor({ quests, setError }: QuestEditorProps) {
   const router = useRouter();
-  const [dialog, setDialog] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editing, setEditing] = useState<QuestData | null>(null);
   const [form, setForm] = useState(DEFAULT_FORM);
   const [saving, setSaving] = useState(false);
@@ -75,7 +74,7 @@ export default function QuestEditor({ quests, error: _error, setError }: QuestEd
   function openNew() {
     setEditing(null);
     setForm(DEFAULT_FORM);
-    setDialog(true);
+    setIsDialogOpen(true);
     setError(null);
   }
 
@@ -94,7 +93,7 @@ export default function QuestEditor({ quests, error: _error, setError }: QuestEd
       repeatable: q.repeatable,
       sortOrder: q.sortOrder,
     });
-    setDialog(true);
+    setIsDialogOpen(true);
     setError(null);
   }
 
@@ -121,7 +120,7 @@ export default function QuestEditor({ quests, error: _error, setError }: QuestEd
       return;
     }
 
-    setDialog(false);
+    setIsDialogOpen(false);
     setSaving(false);
     router.refresh();
   }
@@ -209,7 +208,7 @@ export default function QuestEditor({ quests, error: _error, setError }: QuestEd
         )}
       </Box>
 
-      <Dialog open={dialog} onClose={() => setDialog(false)} maxWidth="sm" fullWidth>
+      <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editing ? "Edit Quest" : "New Quest"}</DialogTitle>
         <DialogContent>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
@@ -312,7 +311,7 @@ export default function QuestEditor({ quests, error: _error, setError }: QuestEd
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialog(false)} disabled={saving}>
+          <Button onClick={() => setIsDialogOpen(false)} disabled={saving}>
             Cancel
           </Button>
           <Button

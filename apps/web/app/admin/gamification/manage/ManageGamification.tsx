@@ -33,10 +33,8 @@ export default function ManageGamification({
           <Tab label={`Quests (${quests.length})`} />
         </Tabs>
 
-        {tab === 0 && (
-          <AchievementEditor achievements={achievements} error={error} setError={setError} />
-        )}
-        {tab === 1 && <QuestEditor quests={quests} error={error} setError={setError} />}
+        {tab === 0 && <AchievementEditor achievements={achievements} setError={setError} />}
+        {tab === 1 && <QuestEditor quests={quests} setError={setError} />}
       </Box>
     </>
   );
