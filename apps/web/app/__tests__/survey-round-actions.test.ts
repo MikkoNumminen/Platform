@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 const mockSurveyRoundCreate = jest.fn();
 const mockSurveyRoundAggregate = jest.fn();
 const mockSurveyRoundFindFirst = jest.fn();

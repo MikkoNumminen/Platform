@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 const mockWowCharacterFindMany = jest.fn();
 
 jest.mock("@/lib/db", () => ({

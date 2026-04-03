@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 const mockFeedbackCreate = jest.fn();
 const mockFeedbackFindUnique = jest.fn();
 const mockFeedbackUpdate = jest.fn();

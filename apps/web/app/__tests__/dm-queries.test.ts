@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 const mockConversationFindMany = jest.fn();
 const mockConversationFindFirst = jest.fn();
 const mockDirectMessageGroupBy = jest.fn();

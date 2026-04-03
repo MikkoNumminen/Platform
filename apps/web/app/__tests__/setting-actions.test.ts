@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 const mockPlatformSettingUpsert = jest.fn();
 const mockUserFindUnique = jest.fn();
 

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 const mockCustomQuestFindMany = jest.fn();
 const mockCustomQuestFindFirst = jest.fn();
 const mockCustomQuestCount = jest.fn();

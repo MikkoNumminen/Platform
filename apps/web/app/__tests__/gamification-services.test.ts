@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 // --- Mock function declarations (hoisted by jest) ---
 const mockXpTransactionAggregate = jest.fn();
 const mockXpTransactionCreate = jest.fn();

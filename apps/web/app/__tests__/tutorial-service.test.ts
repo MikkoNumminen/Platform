@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 // --- Mock function declarations (hoisted by jest) ---
 const mockUserTourProgressFindUnique = jest.fn();
 const mockUserTourProgressFindMany = jest.fn();

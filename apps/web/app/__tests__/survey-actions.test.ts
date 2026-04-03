@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { CONVERSATION_STYLES, FEATURE_OPTIONS } from "@/lib/survey-config";
 
 const mockCreate = jest.fn();

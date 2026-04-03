@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 const mockUserLevelCount = jest.fn();
 const mockUserLevelAggregate = jest.fn();
 const mockUserLevelGroupBy = jest.fn();

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 /**
  * Tests for query files: setting-queries, audit-queries, survey-round-queries
  */

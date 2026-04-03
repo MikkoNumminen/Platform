@@ -55,7 +55,6 @@ describe("GET /api/cron/reset-quests", () => {
     // Use a non-Monday date: Tuesday March 31, 2026
     const realDate = Date;
     const mockDate = new realDate("2026-03-31T12:00:00Z");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     jest.spyOn(globalThis, "Date").mockImplementation((() => mockDate) as any);
 
     const res = await GET(makeRequest("Bearer test-secret"));
@@ -75,7 +74,6 @@ describe("GET /api/cron/reset-quests", () => {
 
     const realDate = Date;
     const monday = new realDate("2026-03-30T12:00:00Z"); // Monday
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     jest.spyOn(globalThis, "Date").mockImplementation((() => monday) as any);
 
     const res = await GET(makeRequest("Bearer test-secret"));
@@ -94,7 +92,6 @@ describe("GET /api/cron/reset-quests", () => {
 
     const realDate = Date;
     const wednesday = new realDate("2026-04-01T12:00:00Z"); // Wednesday
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     jest.spyOn(globalThis, "Date").mockImplementation((() => wednesday) as any);
 
     const res = await GET(makeRequest("Bearer test-secret"));
