@@ -24,7 +24,8 @@ export async function getLatestXpGains(since: Date) {
       level: level.level,
       totalXp,
     };
-  } catch {
+  } catch (error) {
+    console.error("[xp] getLatestXpGains failed:", error);
     return { gains: [], level: 1, totalXp: 0 };
   }
 }
@@ -57,7 +58,8 @@ export async function getMyGamificationProfile() {
         unlockedAt: ua.unlockedAt,
       })),
     };
-  } catch {
+  } catch (error) {
+    console.error("[xp] getMyGamificationProfile failed:", error);
     return null;
   }
 }

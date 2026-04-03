@@ -97,7 +97,8 @@ export async function getUserXpData(userId: string) {
   try {
     const userLevel = await prisma.userLevel.findUnique({ where: { userId } });
     return { totalXp: userLevel?.totalXp ?? 0, level: userLevel?.level ?? 1 };
-  } catch {
+  } catch (error) {
+    console.error("[xp] getUserXpData failed:", error);
     return { totalXp: 0, level: 1 };
   }
 }
@@ -125,7 +126,8 @@ export async function getLeaderboard(limit = 20) {
       totalXp: e.totalXp,
       level: e.level,
     }));
-  } catch {
+  } catch (error) {
+    console.error("[xp] getLeaderboard failed:", error);
     return [];
   }
 }

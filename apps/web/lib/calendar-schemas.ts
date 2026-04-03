@@ -39,7 +39,7 @@ export function validateEventInput(input: CreateEventInput): {
   const description = input.description?.trim() || null;
   if (description && description.length > MAX_DESCRIPTION_LENGTH) {
     throw new ActionError(
-      "invalidEventTitle",
+      "invalidInput",
       `Description must be ${MAX_DESCRIPTION_LENGTH} characters or less`,
     );
   }
@@ -47,7 +47,7 @@ export function validateEventInput(input: CreateEventInput): {
   const location = input.location?.trim() || null;
   if (location && location.length > MAX_LOCATION_LENGTH) {
     throw new ActionError(
-      "invalidEventTitle",
+      "invalidInput",
       `Location must be ${MAX_LOCATION_LENGTH} characters or less`,
     );
   }
@@ -56,10 +56,10 @@ export function validateEventInput(input: CreateEventInput): {
   const endTime = new Date(input.endTime);
 
   if (isNaN(startTime.getTime())) {
-    throw new ActionError("invalidEventTitle", "Invalid start time");
+    throw new ActionError("invalidInput", "Invalid start time");
   }
   if (isNaN(endTime.getTime())) {
-    throw new ActionError("invalidEventTitle", "Invalid end time");
+    throw new ActionError("invalidInput", "Invalid end time");
   }
   if (endTime < startTime) {
     throw new ActionError("eventEndBeforeStart", "End time must be after start time");

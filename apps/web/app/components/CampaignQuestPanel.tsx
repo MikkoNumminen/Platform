@@ -49,7 +49,7 @@ export default function CampaignQuestPanel() {
     }
     getActiveCampaign()
       .then(setCampaign)
-      .catch(() => {})
+      .catch((e) => console.error("[campaign] fetch failed:", e))
       .finally(() => setLoaded(true));
   }, [session?.user]);
 
@@ -243,7 +243,7 @@ export default function CampaignQuestPanel() {
                 // Refresh campaign state
                 getActiveCampaign()
                   .then(setCampaign)
-                  .catch(() => {});
+                  .catch((e) => console.error("[campaign] fetch failed:", e));
               }}
             />
           </DialogContent>
