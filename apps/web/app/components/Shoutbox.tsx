@@ -6,13 +6,11 @@ import { Box, TextField, Typography } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import { useTranslations } from "next-intl";
 import { colors } from "../styles";
-import { DEVELOPER_TAG_LABELS, DEVELOPER_TAG_ICONS } from "@/lib/developer-config";
 import { createShout } from "@/lib/shout-actions";
-import { setMotd as setMotdAction } from "@/lib/setting-actions";
 import { sendDirectMessage, startConversation } from "@/lib/dm-actions";
-import { getConversationMessages, getDmUsers, getDmUserDetails } from "@/lib/dm-queries";
+import { getConversationMessages } from "@/lib/dm-queries";
 import type { ShoutData } from "@/lib/shout-queries";
-import type { ConversationSummary, DmMessageData } from "@/lib/dm-queries";
+import type { ConversationSummary } from "@/lib/dm-queries";
 import { useXpToast } from "./XpToastProvider";
 import { emitTutorialEvent } from "./TutorialProvider";
 import { completeWhisperQuest } from "@/lib/campaign-completion";
@@ -21,6 +19,8 @@ import GuildMessages from "./shoutbox/GuildMessages";
 import WhisperMessages from "./shoutbox/WhisperMessages";
 import UserPicker from "./shoutbox/UserPicker";
 import type { SystemLine } from "./shoutbox/SystemMessages";
+import { useDmConversations } from "./shoutbox/useDmConversations";
+import { useShoutboxCommands } from "./shoutbox/useShoutboxCommands";
 
 const CHAT_HEIGHT = 300;
 const MAX_SHOUT_LENGTH = 280;
@@ -38,12 +38,6 @@ interface ShoutboxProps {
   motd: string;
 }
 
-type DmUser = {
-  id: string;
-  alias: string;
-  role: string;
-  developerTag: string | null;
-};
 type ActiveTab = "guild" | string;
 
 const HELP_LINES_BASE: SystemLine[] = [
@@ -73,18 +67,27 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
   const [hasDemoReacted, setHasDemoReacted] = useState(false);
   const isDemo = Boolean(session?.user?.demoSessionId);
 
-  // DM state
-  const [conversations, setConversations] = useState(initialConversations);
-  const [dmMessages, setDmMessages] = useState<DmMessageData[]>([]);
-  const [dmUsers, setDmUsers] = useState<DmUser[]>([]);
-  const [loadingUsers, setLoadingUsers] = useState(false);
-  const [showUserPicker, setShowUserPicker] = useState(false);
+  // DM state (managed by hook)
+  const {
+    conversations,
+    setConversations,
+    dmMessages,
+    setDmMessages,
+    dmUsers,
+    loadingUsers,
+    showUserPicker,
+    setShowUserPicker,
+    ensureUsersLoaded,
+    openConversation: openConversationBase,
+  } = useDmConversations(initialConversations);
 
   // Shared state
   const [activeTab, setActiveTab] = useState<ActiveTab>("guild");
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
-  const [whisperSuggestions, setWhisperSuggestions] = useState<DmUser[]>([]);
+  const [whisperSuggestions, setWhisperSuggestions] = useState<
+    { id: string; alias: string; role: string; developerTag: string | null }[]
+  >([]);
   const [localSystemMsgs, setLocalSystemMsgs] = useState<SystemLine[]>([]);
   const [suggestionIndex, setSuggestionIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -101,12 +104,26 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
 
   const helpLines: SystemLine[] = [...HELP_LINES_BASE, ...(canChangeMotd ? [HELP_LINE_MOTD] : [])];
 
+  // Command handlers (managed by hook)
+  const { handleHelpCommand, handleWhoCommand, handleMotdCommand } = useShoutboxCommands({
+    ensureUsersLoaded,
+    setLocalSystemMsgs,
+    helpLines,
+    canChangeMotd,
+    setCurrentMotd,
+    userRole,
+  });
+
+  // Wrap openConversation to pass setActiveTab
+  const openConversation = (conversationId: string) =>
+    openConversationBase(conversationId, setActiveTab);
+
   useEffect(() => {
     setShouts(initialShouts);
   }, [initialShouts]);
   useEffect(() => {
     setConversations(initialConversations);
-  }, [initialConversations]);
+  }, [initialConversations, setConversations]);
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [shouts, dmMessages, activeTab, localSystemMsgs]);
@@ -115,27 +132,6 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
   }, [activeTab]);
 
   // ── DM helpers ──────────────────────────────────────────────────────────
-
-  const ensureUsersLoaded = async () => {
-    if (dmUsers.length === 0) {
-      setLoadingUsers(true);
-      const users = await getDmUsers();
-      setDmUsers(users);
-      setLoadingUsers(false);
-      return users;
-    }
-    return dmUsers;
-  };
-
-  const openConversation = async (conversationId: string) => {
-    setActiveTab(conversationId);
-    setShowUserPicker(false);
-    const msgs = await getConversationMessages(conversationId);
-    setDmMessages(msgs);
-    setConversations((prev) =>
-      prev.map((c) => (c.id === conversationId ? { ...c, unreadCount: 0 } : c)),
-    );
-  };
 
   const handleCloseConversationTab = (e: React.MouseEvent, conversationId: string) => {
     e.stopPropagation();
@@ -152,7 +148,14 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
     await ensureUsersLoaded();
   };
 
-  const handleSelectUser = async (user: DmUser | null) => {
+  const handleSelectUser = async (
+    user: {
+      id: string;
+      alias: string;
+      role: string;
+      developerTag: string | null;
+    } | null,
+  ) => {
     if (!user) return;
     const existing = conversations.find((c) => c.otherUser.id === user.id);
     if (existing) {
@@ -223,7 +226,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
     const role = session.user?.role ?? "user";
 
     if (/^\/help$/i.test(trimmed)) {
-      setLocalSystemMsgs((prev) => [...prev, ...helpLines]);
+      handleHelpCommand();
       setMessage("");
       setWhisperSuggestions([]);
       return;
@@ -231,53 +234,17 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
 
     const whoMatch = trimmed.match(/^\/who\s+(\S+)$/i);
     if (whoMatch) {
-      const targetAlias = whoMatch[1];
       setMessage("");
       setWhisperSuggestions([]);
-      const users = await ensureUsersLoaded();
-      const target = users.find((u) => u.alias.toLowerCase() === targetAlias.toLowerCase());
-      if (!target) {
-        setLocalSystemMsgs((prev) => [
-          ...prev,
-          { label: "[System]", text: `No player named "${targetAlias}" found.` },
-        ]);
-      } else {
-        const tagIcon = target.developerTag ? DEVELOPER_TAG_ICONS[target.developerTag] : null;
-        const tagLabel = target.developerTag ? DEVELOPER_TAG_LABELS[target.developerTag] : null;
-        const roleLabel = target.role === "superuser" ? "⭐ Superuser" : target.role;
-        const infoParts = [roleLabel];
-        if (tagLabel) infoParts.push(tagLabel);
-        if (userRole === "superuser") {
-          const details = await getDmUserDetails(target.id);
-          if (details?.name) infoParts.push(`Name: ${details.name}`);
-          if (details?.email) infoParts.push(details.email);
-        }
-        const lines: SystemLine[] = [
-          {
-            label: "[Who]",
-            text: `${target.alias}${tagIcon ? ` ${tagIcon}` : ""} — ${infoParts.join(" · ")}`,
-          },
-        ];
-        setLocalSystemMsgs((prev) => [...prev, ...lines]);
-      }
+      await handleWhoCommand(whoMatch[1]);
       return;
     }
 
     const motdMatch = trimmed.match(/^\/motd\s+(.+)$/i);
     if (motdMatch) {
-      const newMotd = motdMatch[1];
       setMessage("");
       setWhisperSuggestions([]);
-      const result = await setMotdAction(newMotd);
-      if (result?.error) {
-        setLocalSystemMsgs((prev) => [...prev, { label: "[System]", text: result.error }]);
-      } else {
-        setCurrentMotd(newMotd);
-        setLocalSystemMsgs((prev) => [
-          ...prev,
-          { label: "[System]", text: `MOTD updated: ${newMotd}` },
-        ]);
-      }
+      await handleMotdCommand(motdMatch[1]);
       return;
     }
 
@@ -313,7 +280,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
 
       if (existing) {
         setActiveTab(existing.id);
-        const optimistic: DmMessageData = {
+        const optimistic = {
           id: `temp-${Date.now()}`,
           message: whisperMessage,
           senderId: session.user.id,
@@ -436,7 +403,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
       return;
     }
 
-    const optimistic: DmMessageData = {
+    const optimistic = {
       id: `temp-${Date.now()}`,
       message: trimmed,
       senderId: session.user.id,
