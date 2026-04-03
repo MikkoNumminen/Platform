@@ -19,6 +19,10 @@ export async function sendDirectMessage(
   return safe(async () => {
     const user = await requireUser();
     const userId = user.id;
+    const permissions = (user as { permissions?: Record<string, boolean> }).permissions ?? {};
+    if (!permissions["dm:send"]) {
+      throw new ActionError("permissionDenied", "Missing permission: dm:send");
+    }
 
     const trimmed = message.trim();
     if (!trimmed || trimmed.length > MAX_DM_LENGTH) {
@@ -70,6 +74,10 @@ export async function startConversation(
     return { error: "Not authenticated", code: "permissionDenied" };
   }
   const userId = session.user.id;
+  const permissions = (session.user as { permissions?: Record<string, boolean> }).permissions ?? {};
+  if (!permissions["dm:send"]) {
+    return { error: "Missing permission: dm:send", code: "permissionDenied" };
+  }
 
   const trimmed = message.trim();
   if (!trimmed || trimmed.length > MAX_DM_LENGTH) {

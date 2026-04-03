@@ -129,8 +129,6 @@ export async function getDmUsers(): Promise<
   Array<{
     id: string;
     alias: string;
-    name: string | null;
-    email: string | null;
     role: string;
     developerTag: string | null;
   }>
@@ -147,16 +145,43 @@ export async function getDmUsers(): Promise<
       role: { not: "pending" },
       email: { not: "demo@platform.app" },
     },
-    select: { id: true, alias: true, name: true, email: true, role: true, developerTag: true },
+    select: { id: true, alias: true, name: true, role: true, developerTag: true },
     orderBy: { alias: "asc" },
   });
 
   return users.map((u) => ({
     id: u.id,
     alias: u.alias ?? u.name ?? "Unknown",
-    name: u.name,
-    email: u.email,
     role: u.role,
     developerTag: u.developerTag,
   }));
+}
+
+export async function getDmUserDetails(
+  userId: string,
+): Promise<{
+  id: string;
+  alias: string;
+  name: string | null;
+  email: string | null;
+  role: string;
+  developerTag: string | null;
+} | null> {
+  const session = await auth();
+  if (!session?.user?.id) return null;
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, alias: true, name: true, email: true, role: true, developerTag: true },
+  });
+  if (!user) return null;
+
+  return {
+    id: user.id,
+    alias: user.alias ?? user.name ?? "Unknown",
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    developerTag: user.developerTag,
+  };
 }

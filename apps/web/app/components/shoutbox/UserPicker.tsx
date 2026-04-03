@@ -7,8 +7,6 @@ const WHISPER_COLOR = "#FF80FF";
 type DmUser = {
   id: string;
   alias: string;
-  name: string | null;
-  email: string | null;
   role: string;
   developerTag: string | null;
 };

@@ -18,6 +18,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       name: "Demo",
       credentials: {},
       async authorize() {
+        if (process.env.NEXT_PUBLIC_DEMO_LOGIN === "false") return null;
+
         const user = await prisma.user.upsert({
           where: { email: DEMO_EMAIL },
           update: {},

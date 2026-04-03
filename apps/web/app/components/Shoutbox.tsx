@@ -10,7 +10,7 @@ import { DEVELOPER_TAG_LABELS, DEVELOPER_TAG_ICONS } from "@/lib/developer-confi
 import { createShout } from "@/lib/shout-actions";
 import { setMotd as setMotdAction } from "@/lib/setting-actions";
 import { sendDirectMessage, startConversation } from "@/lib/dm-actions";
-import { getConversationMessages, getDmUsers } from "@/lib/dm-queries";
+import { getConversationMessages, getDmUsers, getDmUserDetails } from "@/lib/dm-queries";
 import type { ShoutData } from "@/lib/shout-queries";
 import type { ConversationSummary, DmMessageData } from "@/lib/dm-queries";
 import { useXpToast } from "./XpToastProvider";
@@ -39,8 +39,6 @@ interface ShoutboxProps {
 type DmUser = {
   id: string;
   alias: string;
-  name: string | null;
-  email: string | null;
   role: string;
   developerTag: string | null;
 };
@@ -247,8 +245,11 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
         const roleLabel = target.role === "superuser" ? "⭐ Superuser" : target.role;
         const infoParts = [roleLabel];
         if (tagLabel) infoParts.push(tagLabel);
-        if (target.name) infoParts.push(`Name: ${target.name}`);
-        if (target.email) infoParts.push(target.email);
+        if (userRole === "superuser") {
+          const details = await getDmUserDetails(target.id);
+          if (details?.name) infoParts.push(`Name: ${details.name}`);
+          if (details?.email) infoParts.push(details.email);
+        }
         const lines: SystemLine[] = [
           {
             label: "[Who]",

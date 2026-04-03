@@ -48,27 +48,33 @@ describe("sendDirectMessage", () => {
     expect(result).toEqual(expect.objectContaining({ code: "permissionDenied" }));
   });
 
+  test("returns error when dm:send permission is missing", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "u1", permissions: {} } } as any);
+    const result = await sendDirectMessage("conv-1", "hello");
+    expect(result).toEqual(expect.objectContaining({ code: "permissionDenied" }));
+  });
+
   test("returns error for empty message", async () => {
-    mockAuth.mockResolvedValue({ user: { id: "u1" } } as any);
+    mockAuth.mockResolvedValue({ user: { id: "u1", permissions: { "dm:send": true } } } as any);
     const result = await sendDirectMessage("conv-1", "   ");
     expect(result).toEqual(expect.objectContaining({ code: "invalidInput" }));
   });
 
   test("returns error for message exceeding 500 chars", async () => {
-    mockAuth.mockResolvedValue({ user: { id: "u1" } } as any);
+    mockAuth.mockResolvedValue({ user: { id: "u1", permissions: { "dm:send": true } } } as any);
     const result = await sendDirectMessage("conv-1", "a".repeat(501));
     expect(result).toEqual(expect.objectContaining({ code: "invalidInput" }));
   });
 
   test("returns error when user is not a participant", async () => {
-    mockAuth.mockResolvedValue({ user: { id: "u1" } } as any);
+    mockAuth.mockResolvedValue({ user: { id: "u1", permissions: { "dm:send": true } } } as any);
     mockConversationFindFirst.mockResolvedValue(null);
     const result = await sendDirectMessage("conv-1", "hello");
     expect(result).toEqual(expect.objectContaining({ code: "permissionDenied" }));
   });
 
   test("sends message to existing conversation", async () => {
-    mockAuth.mockResolvedValue({ user: { id: "u1" } } as any);
+    mockAuth.mockResolvedValue({ user: { id: "u1", permissions: { "dm:send": true } } } as any);
     mockConversationFindFirst.mockResolvedValue({
       id: "conv-1",
       participantA: "u1",
@@ -86,7 +92,7 @@ describe("sendDirectMessage", () => {
   });
 
   test("enforces rate limiting", async () => {
-    mockAuth.mockResolvedValue({ user: { id: "u1" } } as any);
+    mockAuth.mockResolvedValue({ user: { id: "u1", permissions: { "dm:send": true } } } as any);
     await sendDirectMessage("conv-1", "hello");
     expect(rateLimit).toHaveBeenCalledWith("dm:send");
   });
@@ -99,21 +105,27 @@ describe("startConversation", () => {
     expect(result).toEqual(expect.objectContaining({ code: "permissionDenied" }));
   });
 
+  test("returns error when dm:send permission is missing", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "u1", permissions: {} } } as any);
+    const result = await startConversation("u2", "hello");
+    expect(result).toEqual(expect.objectContaining({ code: "permissionDenied" }));
+  });
+
   test("returns error for empty message", async () => {
-    mockAuth.mockResolvedValue({ user: { id: "u1" } } as any);
+    mockAuth.mockResolvedValue({ user: { id: "u1", permissions: { "dm:send": true } } } as any);
     const result = await startConversation("u2", "");
     expect(result).toEqual(expect.objectContaining({ code: "invalidInput" }));
   });
 
   test("returns error when other user not found", async () => {
-    mockAuth.mockResolvedValue({ user: { id: "u1" } } as any);
+    mockAuth.mockResolvedValue({ user: { id: "u1", permissions: { "dm:send": true } } } as any);
     mockUserFindFirst.mockResolvedValue(null);
     const result = await startConversation("u2", "hello");
     expect(result).toEqual(expect.objectContaining({ code: "invalidInput" }));
   });
 
   test("creates new conversation and sends message", async () => {
-    mockAuth.mockResolvedValue({ user: { id: "u1" } } as any);
+    mockAuth.mockResolvedValue({ user: { id: "u1", permissions: { "dm:send": true } } } as any);
     mockUserFindFirst.mockResolvedValue({ id: "u2" });
     mockConversationFindFirst.mockResolvedValue(null);
     mockConversationCreate.mockResolvedValue({ id: "new-conv" });
@@ -126,7 +138,7 @@ describe("startConversation", () => {
   });
 
   test("reuses existing conversation", async () => {
-    mockAuth.mockResolvedValue({ user: { id: "u1" } } as any);
+    mockAuth.mockResolvedValue({ user: { id: "u1", permissions: { "dm:send": true } } } as any);
     mockUserFindFirst.mockResolvedValue({ id: "u2" });
     mockConversationFindFirst.mockResolvedValue({ id: "existing-conv" });
     mockConversationUpdate.mockResolvedValue({});
@@ -139,7 +151,7 @@ describe("startConversation", () => {
   });
 
   test("handles rate limit error", async () => {
-    mockAuth.mockResolvedValue({ user: { id: "u1" } } as any);
+    mockAuth.mockResolvedValue({ user: { id: "u1", permissions: { "dm:send": true } } } as any);
     (rateLimit as jest.Mock).mockRejectedValueOnce(new Error("rate limited"));
     const result = await startConversation("u2", "hello");
     expect(result).toEqual(expect.objectContaining({ code: "rateLimited" }));

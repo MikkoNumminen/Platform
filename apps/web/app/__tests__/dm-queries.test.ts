@@ -110,7 +110,6 @@ describe("getDmUsers", () => {
         id: "u2",
         alias: "Alice",
         name: "Alice A",
-        email: "alice@test.com",
         role: "user",
         developerTag: null,
       },
@@ -121,8 +120,6 @@ describe("getDmUsers", () => {
       {
         id: "u2",
         alias: "Alice",
-        name: "Alice A",
-        email: "alice@test.com",
         role: "user",
         developerTag: null,
       },

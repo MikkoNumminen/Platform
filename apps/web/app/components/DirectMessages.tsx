@@ -26,8 +26,6 @@ interface DirectMessagesProps {
 type DmUser = {
   id: string;
   alias: string;
-  name: string | null;
-  email: string | null;
   role: string;
   developerTag: string | null;
 };
@@ -311,6 +309,7 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
             <IconButton
               size="small"
               onClick={handleNewMessage}
+              aria-label="New message"
               sx={{ color: colors.slate400, p: 0.25 }}
             >
               <AddCommentIcon sx={{ fontSize: 16 }} />
@@ -378,6 +377,7 @@ export default function DirectMessages({ initialConversations }: DirectMessagesP
                 <IconButton
                   size="small"
                   onClick={(e) => closeTab(e, conv.id)}
+                  aria-label={`Close ${conv.isPrivacy ? t("privacy") : conv.otherUser.alias} tab`}
                   sx={{
                     color: colors.slate400,
                     p: 0,
