@@ -13,8 +13,8 @@ interface QuestData {
   id: string;
   key: string;
   name: string;
-  description: string;
-  icon: string;
+  description: string | null;
+  icon: string | null;
   type: string;
   xpReward: number;
   repeatable: boolean;
