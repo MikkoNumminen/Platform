@@ -60,6 +60,7 @@ describe("getUsers", () => {
     expect(mockUserFindMany).toHaveBeenCalledWith({
       where: { deletedAt: null, sessionId: null, email: { not: "demo@platform.app" } },
       orderBy: { createdAt: "desc" },
+      take: 500,
       select: {
         id: true,
         email: true,

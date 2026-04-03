@@ -20,6 +20,7 @@ export async function getUsers(): Promise<
   return prisma.user.findMany({
     where: { deletedAt: null, sessionId, email: { not: DEMO_EMAIL } },
     orderBy: { createdAt: "desc" },
+    take: 500,
     select: {
       id: true,
       email: true,

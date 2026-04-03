@@ -16,6 +16,7 @@ export async function getIssueReports(): Promise<IssueData[]> {
   const issues = await prisma.issueReport.findMany({
     where: { sessionId },
     orderBy: [{ resolvedAt: "asc" }, { createdAt: "desc" }],
+    take: 200,
     include: { author: { select: { alias: true, name: true } } },
   });
 

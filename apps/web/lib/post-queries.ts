@@ -15,6 +15,7 @@ export async function getPostsByBoard(boardId: string): Promise<PostListItem[]> 
   const posts = await prisma.post.findMany({
     where: { boardId, deletedAt: null, sessionId },
     orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
+    take: 100,
     include: { author: { select: { alias: true, name: true } } },
   });
 
