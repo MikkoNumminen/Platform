@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
+import { AchievementCriteriaSchema } from "@/lib/gamification/schemas";
 
 async function getActionCount(userId: string, action: string): Promise<number> {
   switch (action) {
@@ -45,7 +46,9 @@ export async function checkAchievements(userId: string, action: string) {
 
   for (const achievement of allAchievements) {
     if (unlockedIds.has(achievement.id)) continue;
-    const criteria = achievement.criteria as { type: string; action: string; threshold: number };
+    const parsed = AchievementCriteriaSchema.safeParse(achievement.criteria);
+    if (!parsed.success) continue;
+    const criteria = parsed.data;
     if (criteria.action !== action) continue;
     if (criteria.type === "count") {
       if (actionCount >= criteria.threshold) {

@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
+import { QuestCriteriaSchema } from "@/lib/gamification/schemas";
 
 export async function updateQuestProgress(
   userId: string,
@@ -29,7 +30,9 @@ export async function updateQuestProgress(
   const progressMap = new Map(allProgress.map((p) => [p.questId, p]));
 
   for (const quest of quests) {
-    const criteria = quest.criteria as { action: string; count: number };
+    const parsed = QuestCriteriaSchema.safeParse(quest.criteria);
+    if (!parsed.success) continue;
+    const criteria = parsed.data;
     if (criteria.action !== action) continue;
     const existing = progressMap.get(quest.id);
     if (existing?.completed && !quest.repeatable) continue;
@@ -99,9 +102,11 @@ export async function getActiveQuests(userId: string): Promise<
     });
     const progress = await prisma.userQuestProgress.findMany({ where: { userId } });
     const progressMap = new Map(progress.map((p) => [p.questId, p]));
-    return quests.map((quest) => {
+    return quests.flatMap((quest) => {
       const p = progressMap.get(quest.id);
-      const criteria = quest.criteria as { action: string; count: number };
+      const parsedCriteria = QuestCriteriaSchema.safeParse(quest.criteria);
+      if (!parsedCriteria.success) return [];
+      const criteria = parsedCriteria.data;
       let isComplete = p?.completed ?? false;
       if (quest.repeatable && p?.resetAt && p?.completedAt && p.completedAt < p.resetAt)
         isComplete = false;
