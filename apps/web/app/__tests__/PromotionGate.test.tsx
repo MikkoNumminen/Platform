@@ -3,6 +3,22 @@ import PromotionGate from "../components/PromotionGate";
 
 const mockSession = jest.fn();
 
+jest.mock("next/dynamic", () => ({
+  __esModule: true,
+  default: (fn: () => Promise<{ default: React.ComponentType }>) => {
+    const mod = { default: null as React.ComponentType | null };
+    fn().then((m) => {
+      mod.default = m.default;
+    });
+    const DynamicComponent = (props: Record<string, unknown>) => {
+      if (!mod.default) return null;
+      const Comp = mod.default;
+      return <Comp {...props} />;
+    };
+    return DynamicComponent;
+  },
+}));
+
 jest.mock("next-auth/react", () => ({
   useSession: () => mockSession(),
 }));
@@ -11,7 +27,7 @@ jest.mock("@/app/hooks/usePromotionPolling", () => ({
   usePromotionPolling: () => ({ shouldCelebrate: false, clearCelebration: jest.fn() }),
 }));
 
-jest.mock("@/app/components/PromotionCelebration", () => {
+jest.mock("../components/PromotionCelebration", () => {
   return function MockCelebration() {
     return <div data-testid="celebration">CELEBRATION</div>;
   };

@@ -1,10 +1,10 @@
+import QuestReceivedCelebration from "./components/QuestReceivedCelebration";
 import { Box } from "@mui/material";
 import TopBar from "./components/TopBar";
 import SurveyCTA from "./components/SurveyCTA";
 import Shoutbox from "./components/Shoutbox";
 import DevLog from "./components/DevLog";
 import WelcomeHero from "./components/WelcomeHero";
-import QuestReceivedCelebration from "./components/QuestReceivedCelebration";
 import { getRecentShouts } from "@/lib/shout-queries";
 import { getMyConversations } from "@/lib/dm-queries";
 import { getMotd } from "@/lib/setting-queries";
@@ -14,7 +14,6 @@ import { getUserSurveyStatus } from "@/lib/survey-user-queries";
 import { auth } from "@/auth";
 
 export const dynamic = "force-dynamic";
-
 export default async function Home() {
   const session = await auth();
   const userId = session?.user?.id;

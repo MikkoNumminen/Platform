@@ -5,7 +5,8 @@ import { Snackbar, Box, Typography } from "@mui/material";
 import { colors } from "../styles";
 import { getLatestXpGains } from "@/lib/gamification/xp-actions";
 import { getLevelForXp } from "@/lib/gamification/xp-config";
-import LevelUpCelebration from "./LevelUpCelebration";
+import dynamic from "next/dynamic";
+const LevelUpCelebration = dynamic(() => import("./LevelUpCelebration"), { ssr: false });
 
 const XP_SOURCE_LABELS: Record<string, string> = {
   "shout:create": "Shout",

@@ -481,6 +481,36 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
         ? (dmUsers.find((u) => u.id === activeTab.slice(4))?.alias ?? "...")
         : null));
 
+  const renderGhostText = () => {
+    if (whisperSuggestions.length === 0) return null;
+    const suggestion = whisperSuggestions[suggestionIndex];
+    const partialMatch = message.match(/^(\/w(?:hisper)?\s+)(\S*)$/i);
+    if (!partialMatch || !suggestion) return null;
+    const prefix = partialMatch[1];
+    const partial = partialMatch[2];
+    const fullAlias = suggestion.alias;
+    if (!fullAlias.toLowerCase().startsWith(partial.toLowerCase())) return null;
+    const ghost = prefix + partial + fullAlias.slice(partial.length) + " ";
+    return (
+      <Typography
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: 14,
+          transform: "translateY(-50%)",
+          fontFamily: "'Courier New', Courier, monospace",
+          fontSize: "0.85rem",
+          color: `${colors.whisper}50`,
+          pointerEvents: "none",
+          zIndex: 1,
+          whiteSpace: "pre",
+        }}
+      >
+        {ghost}
+      </Typography>
+    );
+  };
+
   return (
     <Box
       data-tutorial="shoutbox"
@@ -638,35 +668,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
           }}
         >
           <Box sx={{ position: "relative" }}>
-            {whisperSuggestions.length > 0 &&
-              (() => {
-                const suggestion = whisperSuggestions[suggestionIndex];
-                const partialMatch = message.match(/^(\/w(?:hisper)?\s+)(\S*)$/i);
-                if (!partialMatch || !suggestion) return null;
-                const prefix = partialMatch[1];
-                const partial = partialMatch[2];
-                const fullAlias = suggestion.alias;
-                if (!fullAlias.toLowerCase().startsWith(partial.toLowerCase())) return null;
-                const ghost = prefix + partial + fullAlias.slice(partial.length) + " ";
-                return (
-                  <Typography
-                    sx={{
-                      position: "absolute",
-                      top: "50%",
-                      left: 14,
-                      transform: "translateY(-50%)",
-                      fontFamily: "'Courier New', Courier, monospace",
-                      fontSize: "0.85rem",
-                      color: `${colors.whisper}50`,
-                      pointerEvents: "none",
-                      zIndex: 1,
-                      whiteSpace: "pre",
-                    }}
-                  >
-                    {ghost}
-                  </Typography>
-                );
-              })()}
+            {renderGhostText()}
             <TextField
               data-tutorial="shoutbox-input"
               inputRef={inputRef}

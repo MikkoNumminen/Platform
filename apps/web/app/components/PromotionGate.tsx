@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { usePromotionPolling } from "@/app/hooks/usePromotionPolling";
-import PromotionCelebration from "./PromotionCelebration";
+import dynamic from "next/dynamic";
+const PromotionCelebration = dynamic(() => import("./PromotionCelebration"), { ssr: false });
 
 /**
  * Renders the promotion celebration overlay when:

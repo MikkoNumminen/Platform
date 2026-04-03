@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
-import PromotionCelebration from "../components/PromotionCelebration";
+import dynamic from "next/dynamic";
+const PromotionCelebration = dynamic(() => import("../components/PromotionCelebration"), {
+  ssr: false,
+});
 
 function DevOnly({ children }: { children: React.ReactNode }) {
   if (process.env.NODE_ENV === "production") return null;
