@@ -1,5 +1,16 @@
 /**
- * Shared guardedAction mock for tests.
+ * Shared mock for guardedAction. Use this when testing server actions that
+ * wrap their logic in guardedAction() — it bypasses the real guardedAction
+ * and directly invokes the action function, letting tests focus on the
+ * action's own logic rather than the permission/auth pipeline.
+ *
+ * Alternative approach: Some test files (board-actions, issue-actions,
+ * post-actions, thread-actions) test through the real guardedAction by
+ * mocking @/auth and @/lib/rateLimit separately. This exercises the full
+ * permission pipeline but couples tests to guardedAction internals.
+ *
+ * Both approaches are valid. Use this mock helper for new action tests
+ * unless you specifically need to test guardedAction behavior.
  *
  * Usage in test files:
  * ```
