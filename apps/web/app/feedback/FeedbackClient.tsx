@@ -202,7 +202,11 @@ export default function FeedbackClient({
               sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
             >
               {selectedRound?.title ?? "Survey"}
-              <IconButton size="small" onClick={() => setSurveyRoundId(null)}>
+              <IconButton
+                size="small"
+                aria-label="Close survey dialog"
+                onClick={() => setSurveyRoundId(null)}
+              >
                 <CloseIcon />
               </IconButton>
             </DialogTitle>

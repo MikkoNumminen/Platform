@@ -55,6 +55,28 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} className={cinzel.variable}>
       <body>
+        <Box
+          component="a"
+          href="#main-content"
+          sx={{
+            position: "absolute",
+            left: "-9999px",
+            top: "auto",
+            width: "1px",
+            height: "1px",
+            overflow: "hidden",
+            "&:focus": {
+              position: "static",
+              width: "auto",
+              height: "auto",
+              p: 1,
+              bgcolor: "background.paper",
+              zIndex: 9999,
+            },
+          }}
+        >
+          Skip to content
+        </Box>
         <SessionProvider>
           <NextIntlClientProvider locale={locale} messages={messages}>
             <AppRouterCacheProvider>
@@ -65,7 +87,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                       <AliasGuard />
                       <PendingGate />
                       <PromotionGate />
-                      <Box sx={{ pt: 2 }}>
+                      <Box id="main-content" component="main" sx={{ pt: 2 }}>
                         <Box sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 } }}>
                           <PendingBanner />
                         </Box>

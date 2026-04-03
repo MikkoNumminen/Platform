@@ -217,12 +217,17 @@ export default function AchievementEditor({
                     sx={{ fontSize: "0.65rem", borderColor: colors.slate600 }}
                   />
                   <Tooltip title="Edit">
-                    <IconButton size="small" onClick={() => openEdit(a)}>
+                    <IconButton size="small" aria-label="Edit" onClick={() => openEdit(a)}>
                       <EditIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Delete">
-                    <IconButton size="small" color="error" onClick={() => handleDelete(a.id)}>
+                    <IconButton
+                      size="small"
+                      color="error"
+                      aria-label="Delete"
+                      onClick={() => handleDelete(a.id)}
+                    >
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>

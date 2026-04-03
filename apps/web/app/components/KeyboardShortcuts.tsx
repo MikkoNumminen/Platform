@@ -152,7 +152,12 @@ export default function KeyboardShortcuts() {
         }}
       >
         Keyboard Shortcuts
-        <IconButton onClick={() => setHelpOpen(false)} size="small" sx={{ color: colors.slate400 }}>
+        <IconButton
+          onClick={() => setHelpOpen(false)}
+          size="small"
+          aria-label="Close help dialog"
+          sx={{ color: colors.slate400 }}
+        >
           <CloseIcon fontSize="small" />
         </IconButton>
       </DialogTitle>

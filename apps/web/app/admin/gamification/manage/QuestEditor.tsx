@@ -192,12 +192,17 @@ export default function QuestEditor({ quests, error: _error, setError }: QuestEd
                     sx={{ fontSize: "0.65rem", borderColor: colors.slate600 }}
                   />
                   <Tooltip title="Edit">
-                    <IconButton size="small" onClick={() => openEdit(q)}>
+                    <IconButton size="small" aria-label="Edit" onClick={() => openEdit(q)}>
                       <EditIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Delete">
-                    <IconButton size="small" color="error" onClick={() => handleDelete(q.id)}>
+                    <IconButton
+                      size="small"
+                      color="error"
+                      aria-label="Delete"
+                      onClick={() => handleDelete(q.id)}
+                    >
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>

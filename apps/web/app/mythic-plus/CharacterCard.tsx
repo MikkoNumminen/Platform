@@ -94,6 +94,7 @@ export default function CharacterCard({ character }: CharacterCardProps) {
                 href={character.profileUrl}
                 target="_blank"
                 rel="noopener"
+                aria-label="Open on Raider.IO"
                 sx={{ color: colors.slate400, p: 0.25 }}
               >
                 <OpenInNewIcon sx={{ fontSize: 14 }} />
@@ -152,6 +153,7 @@ export default function CharacterCard({ character }: CharacterCardProps) {
           size="small"
           onClick={handleRefresh}
           disabled={isPending}
+          aria-label="Refresh stats"
           sx={{ color: colors.slate400 }}
         >
           <RefreshIcon fontSize="small" />
@@ -162,6 +164,7 @@ export default function CharacterCard({ character }: CharacterCardProps) {
           size="small"
           onClick={handleRemove}
           disabled={isPending}
+          aria-label="Remove character"
           sx={{ color: colors.slate400 }}
         >
           <DeleteIcon fontSize="small" />

@@ -54,7 +54,7 @@ export default function AddCharacterDialog({ open, onClose }: AddCharacterDialog
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
       <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         Add Character
-        <IconButton size="small" onClick={onClose}>
+        <IconButton size="small" aria-label="Close dialog" onClick={onClose}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>

@@ -303,6 +303,7 @@ function QuestCard({
                   size="small"
                   onClick={handleComplete}
                   disabled={acting}
+                  aria-label="Mark complete"
                   sx={{ color: colors.success }}
                 >
                   <CheckCircleIcon fontSize="small" />
@@ -313,6 +314,7 @@ function QuestCard({
                   size="small"
                   onClick={onEdit}
                   disabled={acting}
+                  aria-label="Edit"
                   sx={{ color: colors.info }}
                 >
                   <EditIcon fontSize="small" />
@@ -323,6 +325,7 @@ function QuestCard({
                   size="small"
                   onClick={handleDelete}
                   disabled={acting}
+                  aria-label="Delete"
                   sx={{ color: colors.error }}
                 >
                   <DeleteIcon fontSize="small" />
@@ -464,6 +467,7 @@ function QuestGroupCard({
                         onClick={async () => {
                           await completeCustomQuest(q.id);
                         }}
+                        aria-label="Mark complete"
                         sx={{ color: colors.success, p: 0.25 }}
                       >
                         <CheckCircleIcon sx={{ fontSize: 16 }} />
@@ -473,6 +477,7 @@ function QuestGroupCard({
                       <IconButton
                         size="small"
                         onClick={() => onEdit(q)}
+                        aria-label="Edit"
                         sx={{ color: colors.info, p: 0.25 }}
                       >
                         <EditIcon sx={{ fontSize: 16 }} />
@@ -484,6 +489,7 @@ function QuestGroupCard({
                         onClick={async () => {
                           await deleteCustomQuest(q.id);
                         }}
+                        aria-label="Delete"
                         sx={{ color: colors.error, p: 0.25 }}
                       >
                         <DeleteIcon sx={{ fontSize: 16 }} />

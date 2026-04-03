@@ -136,6 +136,7 @@ function SlotCard({
                 await updateTeamSlot(teamId, slot.key, null);
               })
             }
+            aria-label={`Remove ${slot.label} slot`}
             sx={{ color: colors.slate400, p: 0.25 }}
           >
             <CloseIcon sx={{ fontSize: 14 }} />
@@ -300,6 +301,7 @@ export default function TeamComposition({ teams, characters }: TeamCompositionPr
                 size="small"
                 onClick={() => handleDelete(team.id)}
                 disabled={isPending}
+                aria-label="Delete team"
                 sx={{ color: colors.slate400 }}
               >
                 <DeleteIcon fontSize="small" />

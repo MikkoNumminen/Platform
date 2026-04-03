@@ -115,6 +115,7 @@ export default function ShoutboxTabBar({
             <IconButton
               size="small"
               onClick={(e) => onCloseConversation(e, conv.id)}
+              aria-label={`Close ${conv.isPrivacy ? privacyLabel : conv.otherUser.alias} tab`}
               sx={{ color: colors.slate400, p: 0, ml: 0.25, "&:hover": { color: colors.slate100 } }}
             >
               <CloseIcon sx={{ fontSize: 12 }} />

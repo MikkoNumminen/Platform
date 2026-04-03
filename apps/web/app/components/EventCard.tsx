@@ -121,7 +121,12 @@ export function EventDetailDialog({
         }}
       >
         {event.title}
-        <IconButton onClick={onClose} size="small" sx={{ color: colors.slate400 }}>
+        <IconButton
+          onClick={onClose}
+          size="small"
+          aria-label="Close event detail"
+          sx={{ color: colors.slate400 }}
+        >
           <CloseIcon fontSize="small" />
         </IconButton>
       </DialogTitle>

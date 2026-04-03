@@ -142,6 +142,8 @@ export default function UserMenu() {
         data-tutorial="user-menu-button"
         onClick={(e) => setAnchorEl(e.currentTarget)}
         size="small"
+        aria-label={`User menu for ${displayName}`}
+        aria-haspopup="true"
       >
         <Avatar
           src={user.image ?? undefined}

@@ -100,7 +100,11 @@ export default function TutorialChecklist() {
               color: colors.green400,
             }}
           />
-          <IconButton size="small" sx={{ color: colors.slate400 }}>
+          <IconButton
+            size="small"
+            aria-label={expanded ? "Collapse" : "Expand"}
+            sx={{ color: colors.slate400 }}
+          >
             {expanded ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
           </IconButton>
         </Box>
