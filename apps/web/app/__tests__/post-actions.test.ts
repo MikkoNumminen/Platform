@@ -40,8 +40,9 @@ function authedSession(
     "post:edit": true,
     "post:delete": true,
   },
+  role = "member",
 ) {
-  return { user: { id: "user-1", permissions } };
+  return { user: { id: "user-1", role, permissions } };
 }
 
 const boardId = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11";
@@ -163,6 +164,27 @@ describe("updatePost", () => {
       code: "permissionDenied",
     });
     expect(mockPostUpdate).not.toHaveBeenCalled();
+  });
+
+  test("admin can edit another user's post", async () => {
+    mockAuth.mockResolvedValue(authedSession(undefined, "admin"));
+    mockPostFindFirst.mockReset();
+    mockPostFindFirst
+      .mockResolvedValueOnce({
+        id: postId,
+        boardId,
+        authorId: "other-user",
+        board: { slug: "general" },
+      })
+      .mockResolvedValue(null); // no slug conflict
+    const result = await updatePost(postId, "Admin Edit", "Admin body");
+    expect(result).toBeUndefined();
+    expect(mockPostUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: postId },
+        data: expect.objectContaining({ title: "Admin Edit", body: "Admin body" }),
+      }),
+    );
   });
 });
 

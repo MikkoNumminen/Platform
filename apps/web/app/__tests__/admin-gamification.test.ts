@@ -112,6 +112,15 @@ describe("getGamificationStats", () => {
     expect(stats.recentActivity[0].user).toBe("Alice");
   });
 
+  test("returns empty fallback when DB throws", async () => {
+    mockUserLevelCount.mockRejectedValue(new Error("relation does not exist"));
+    const stats = await getGamificationStats();
+    expect(stats.summary.totalUsersWithXp).toBe(0);
+    expect(stats.levelDistribution).toHaveLength(10);
+    expect(stats.topAchievements).toHaveLength(0);
+    expect(stats.questCompletionRates).toHaveLength(0);
+  });
+
   test("handles empty data", async () => {
     mockUserLevelCount.mockResolvedValue(0);
     mockUserLevelAggregate.mockResolvedValue({

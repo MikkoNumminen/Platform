@@ -90,7 +90,9 @@ export const updatePost = guardedAction(
       throw new ActionError("postNotFound", "Post not found");
     }
 
-    if (post.authorId !== session.user.id) {
+    const role = session.user.role ?? "pending";
+    const isAdmin = ["superuser", "vuohi", "admin"].includes(role);
+    if (post.authorId !== session.user.id && !isAdmin) {
       throw new ActionError("permissionDenied", "You can only edit your own posts");
     }
 

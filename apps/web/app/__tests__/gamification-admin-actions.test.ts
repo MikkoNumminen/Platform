@@ -290,4 +290,10 @@ describe("deleteQuest", () => {
     const result = await deleteQuest(validUUID);
     expect(result).toEqual({ error: "Quest not found", code: "notFound" });
   });
+
+  test("returns error when not admin", async () => {
+    mockAuth.mockResolvedValue({ user: { id: "user-1", role: "user" } });
+    const result = await deleteQuest("some-uuid");
+    expect(result).toEqual(expect.objectContaining({ error: expect.any(String) }));
+  });
 });

@@ -35,10 +35,11 @@ jest.mock("@/lib/guardedAction", () => require("./helpers/mock-guarded-action"))
 
 import { createEvent, updateEvent, deleteEvent } from "@/lib/calendar-actions";
 
-function authenticatedSession(perms: Record<string, boolean> = {}) {
+function authenticatedSession(perms: Record<string, boolean> = {}, role = "member") {
   return {
     user: {
       id: "user-1",
+      role,
       permissions: {
         "event:create": true,
         "event:edit": true,
@@ -166,6 +167,14 @@ describe("updateEvent", () => {
       code: "permissionDenied",
     });
     expect(mockUpdate).not.toHaveBeenCalled();
+  });
+
+  test("admin can edit another user's event", async () => {
+    mockAuth.mockResolvedValue(authenticatedSession({}, "admin"));
+    mockFindFirst.mockResolvedValue({ id: eventId, authorId: "other-user" });
+    const result = await updateEvent({ ...validInput, id: eventId });
+    expect(result).toBeUndefined();
+    expect(mockUpdate).toHaveBeenCalledTimes(1);
   });
 });
 

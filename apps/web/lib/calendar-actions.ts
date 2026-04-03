@@ -61,7 +61,9 @@ export const updateEvent = guardedAction(
       throw new ActionError("eventNotFound", "Event not found");
     }
 
-    if (existing.authorId !== session.user.id) {
+    const role = session.user.role ?? "pending";
+    const isAdmin = ["superuser", "vuohi", "admin"].includes(role);
+    if (existing.authorId !== session.user.id && !isAdmin) {
       throw new ActionError("permissionDenied", "You can only edit your own events");
     }
 

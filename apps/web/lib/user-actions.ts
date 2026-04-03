@@ -123,11 +123,15 @@ export async function fetchUserPermissionOverrides(
   const permissions = (session?.user as { permissions?: Record<string, boolean> })?.permissions;
   if (!permissions?.["admin:users"]) return [];
 
-  const overrides = await prisma.userPermission.findMany({
-    where: { userId },
-    include: { permission: true },
-  });
-  return overrides.map((o) => ({ key: o.permission.key, granted: o.granted }));
+  try {
+    const overrides = await prisma.userPermission.findMany({
+      where: { userId },
+      include: { permission: true },
+    });
+    return overrides.map((o) => ({ key: o.permission.key, granted: o.granted }));
+  } catch {
+    return [];
+  }
 }
 
 export const updateUserPermissions = guardedAction(
