@@ -19,6 +19,13 @@ const eslintConfig = [
         "error",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
+      "@typescript-eslint/no-explicit-any": "error",
+    },
+  },
+  {
+    files: ["**/__tests__/**", "**/*.test.*"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
     },
   },
 ];

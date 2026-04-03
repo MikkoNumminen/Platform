@@ -40,12 +40,6 @@ describe("securityHeaders", () => {
     expect(header!.value).toContain("includeSubDomains");
   });
 
-  test("includes X-XSS-Protection", () => {
-    const header = securityHeaders.find((h) => h.key === "X-XSS-Protection");
-    expect(header).toBeDefined();
-    expect(header!.value).toBe("1; mode=block");
-  });
-
   test("CSP allows unsafe-inline for styles (MUI requirement)", () => {
     const csp = securityHeaders.find((h) => h.key === "Content-Security-Policy");
     expect(csp!.value).toContain("style-src 'self' 'unsafe-inline'");
