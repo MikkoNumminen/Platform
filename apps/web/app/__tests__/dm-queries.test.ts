@@ -106,10 +106,26 @@ describe("getDmUsers", () => {
   test("returns formatted user list", async () => {
     mockAuth.mockResolvedValue({ user: { id: "u1" } } as any);
     mockUserFindMany.mockResolvedValue([
-      { id: "u2", alias: "Alice", name: "Alice A", role: "user", developerTag: null },
+      {
+        id: "u2",
+        alias: "Alice",
+        name: "Alice A",
+        email: "alice@test.com",
+        role: "user",
+        developerTag: null,
+      },
     ]);
 
     const result = await getDmUsers();
-    expect(result).toEqual([{ id: "u2", alias: "Alice", role: "user", developerTag: null }]);
+    expect(result).toEqual([
+      {
+        id: "u2",
+        alias: "Alice",
+        name: "Alice A",
+        email: "alice@test.com",
+        role: "user",
+        developerTag: null,
+      },
+    ]);
   });
 });

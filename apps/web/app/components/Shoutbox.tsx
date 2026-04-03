@@ -36,7 +36,14 @@ interface ShoutboxProps {
   motd: string;
 }
 
-type DmUser = { id: string; alias: string; role: string; developerTag: string | null };
+type DmUser = {
+  id: string;
+  alias: string;
+  name: string | null;
+  email: string | null;
+  role: string;
+  developerTag: string | null;
+};
 type ActiveTab = "guild" | string;
 
 const HELP_LINES_BASE: SystemLine[] = [
@@ -163,7 +170,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
 
   const handleMessageChange = async (val: string) => {
     setMessage(val);
-    const partialMatch = val.match(/^\/w(?:hisper)?\s+(\S*)$/i);
+    const partialMatch = val.match(/^\/(?:w(?:hisper)?|who)\s+(\S*)$/i);
     if (partialMatch && partialMatch[1].length >= 1) {
       const partial = partialMatch[1].toLowerCase();
       const users = await ensureUsersLoaded();
@@ -177,7 +184,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
   };
 
   const applySuggestion = (alias: string) => {
-    const newMsg = message.replace(/^(\/w(?:hisper)?\s+)\S*$/i, `$1${alias} `);
+    const newMsg = message.replace(/^(\/(?:w(?:hisper)?|who)\s+)\S*$/i, `$1${alias} `);
     setMessage(newMsg);
     setWhisperSuggestions([]);
     setSuggestionIndex(0);
@@ -238,10 +245,14 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
         const tagIcon = target.developerTag ? DEVELOPER_TAG_ICONS[target.developerTag] : null;
         const tagLabel = target.developerTag ? DEVELOPER_TAG_LABELS[target.developerTag] : null;
         const roleLabel = target.role === "superuser" ? "⭐ Superuser" : target.role;
+        const infoParts = [roleLabel];
+        if (tagLabel) infoParts.push(tagLabel);
+        if (target.name) infoParts.push(`Name: ${target.name}`);
+        if (target.email) infoParts.push(target.email);
         const lines: SystemLine[] = [
           {
             label: "[Who]",
-            text: `${target.alias}${tagIcon ? ` ${tagIcon}` : ""} — ${roleLabel}${tagLabel ? ` · ${tagLabel}` : ""}`,
+            text: `${target.alias}${tagIcon ? ` ${tagIcon}` : ""} — ${infoParts.join(" · ")}`,
           },
         ];
         setLocalSystemMsgs((prev) => [...prev, ...lines]);

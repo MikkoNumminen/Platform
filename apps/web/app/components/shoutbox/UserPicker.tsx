@@ -4,7 +4,14 @@ import { colors } from "../../styles";
 
 const WHISPER_COLOR = "#FF80FF";
 
-type DmUser = { id: string; alias: string; role: string; developerTag: string | null };
+type DmUser = {
+  id: string;
+  alias: string;
+  name: string | null;
+  email: string | null;
+  role: string;
+  developerTag: string | null;
+};
 
 interface UserPickerProps {
   users: DmUser[];

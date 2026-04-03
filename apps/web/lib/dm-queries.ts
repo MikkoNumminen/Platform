@@ -126,7 +126,14 @@ export async function getConversationMessages(conversationId: string): Promise<D
 }
 
 export async function getDmUsers(): Promise<
-  Array<{ id: string; alias: string; role: string; developerTag: string | null }>
+  Array<{
+    id: string;
+    alias: string;
+    name: string | null;
+    email: string | null;
+    role: string;
+    developerTag: string | null;
+  }>
 > {
   const session = await auth();
   if (!session?.user?.id) return [];
@@ -140,13 +147,15 @@ export async function getDmUsers(): Promise<
       role: { not: "pending" },
       email: { not: "demo@platform.app" },
     },
-    select: { id: true, alias: true, name: true, role: true, developerTag: true },
+    select: { id: true, alias: true, name: true, email: true, role: true, developerTag: true },
     orderBy: { alias: "asc" },
   });
 
   return users.map((u) => ({
     id: u.id,
     alias: u.alias ?? u.name ?? "Unknown",
+    name: u.name,
+    email: u.email,
     role: u.role,
     developerTag: u.developerTag,
   }));

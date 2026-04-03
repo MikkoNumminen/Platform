@@ -23,7 +23,14 @@ interface DirectMessagesProps {
   initialConversations: ConversationSummary[];
 }
 
-type DmUser = { id: string; alias: string; role: string; developerTag: string | null };
+type DmUser = {
+  id: string;
+  alias: string;
+  name: string | null;
+  email: string | null;
+  role: string;
+  developerTag: string | null;
+};
 
 const WELCOME_LINES: SystemLine[] = [
   { label: "[System]", text: "Welcome to private messages." },
