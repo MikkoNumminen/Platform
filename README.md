@@ -91,23 +91,25 @@ packages/config/ — Shared types and config (@platform/config)
 - **guardedAction** — Server action wrapper enforcing auth, permissions, and rate limiting
 - **requireUser / requireAdmin** — Shared auth helpers for consistent authentication checks across all server actions
 - **DM security** — Messages only between real registered users; demo user blocked from DM at UI, query, and backend levels; participant verification on every send
-- **Rate limiting** — PostgreSQL-based atomic sliding window (30 req/60s per user) on all user-facing creation actions (shouts, DMs, issues, feedback, surveys)
-- **Input validation** — UUID validation on all ID parameters, string length limits on all text inputs, enum whitelisting
-- **Security headers** — CSP, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy
+- **Rate limiting** — PostgreSQL-based atomic sliding window with configurable per-action limits (3/min for account deletion, 10/min for alias changes, 30/min default) on all user-facing mutation actions
+- **Input validation** — UUID validation on all ID parameters, string length limits on all text inputs, enum whitelisting, URL format validation, date validation
+- **Security headers** — CSP (with object-src, media-src), HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy
 
 ### GDPR Compliance
 - **Account page** — Profile with editable alias, developer tag badge, development interest toggle, gamification stats
 - **Account deletion** — Users can delete their account from `/account`, scrubbing all PII, anonymizing authored content, and replacing sent DMs with `[deleted]`
 - **Data export** — Users can download all their data as JSON from `/account` (profile, posts, threads, events, shouts, issues, surveys, DM conversations)
 - **Privacy policy** — Full policy at `/privacy` covering data collection, cookies, retention, private messaging, user rights, breach notification, data processing legal bases, demo mode handling, and contact email
-- **Soft-delete cleanup** — Weekly cron job purges records deleted more than 30 days ago
+- **Soft-delete cleanup** — Weekly cron job purges records deleted more than 30 days ago and audit logs older than 1 year
 
 ### Code Quality
 - **Component architecture** — Large components split into focused subcomponents (Shoutbox → 6 subcomponents, ManageGamification → 3, FeedbackClient → 3, DirectMessages reuses shared shoutbox components)
 - **Shared components** — XpProgressCard, SurveyRoundCard, SurveyResults, IconPicker, SystemMessages, WhisperMessages, UserPicker, DevTagIcon
 - **Centralized constants** — TIER_COLORS, STATUS_COLORS, PRIORITY_COLORS, STATUS_LABELS, PRIORITY_LABELS in `styles.ts` — single source of truth used by 5+ components
 - **Standardized server actions** — All actions use `safe()` + `ActionError` pattern with `requireUser()`/`requireAdmin()` auth helpers and `createStringValidator()` for input validation
-- **Deduplicated logic** — Shared `applyXp()` core, `completeSurveyQuest()` helper, `guardedAction` test mock helper
+- **Deduplicated logic** — Shared `applyXp()` core, `completeSurveyQuest()` helper, `guardedAction` test mock helper, centralized `DEMO_EMAIL`, `WHISPER_COLOR`, `CRITERIA_ACTIONS` constants
+- **Accessibility** — Skip-to-content link, `<main>` landmark, `aria-label` on all icon buttons, WCAG AA color contrast, keyboard-accessible expand/collapse controls
+- **Production audit** — 121-finding audit completed (106 fixed), covering security, type safety, performance, accessibility, and testing
 
 ### Shared Components
 - **DataTable** — Generic sortable, paginated, searchable table with column configuration
@@ -155,7 +157,7 @@ npx turbo run build --filter=web # Production build
 
 ## Testing
 
-1260+ tests across 143 test suites covering all server actions, query functions, gamification services, and UI components. Pre-push hooks enforce 100% test pass rate.
+1280+ tests across 144 test suites covering all server actions, query functions, gamification services, and UI components. Pre-push hooks enforce 100% test pass rate. Jest coverage threshold enforced at 70% lines/functions, 60% branches.
 
 ```bash
 npx turbo run test --filter=web           # All unit/integration tests

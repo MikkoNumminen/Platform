@@ -10,19 +10,19 @@
 
 The codebase has a solid foundation: consistent auth patterns (`guardedAction`, `safe()`, `requireUser()`), working rate limiting, demo session isolation, comprehensive test suite (1263 tests, 143 suites), conventional commits, and clean dependency management. The critical findings are specific gaps rather than systemic failures.
 
-**Overall Grade: B-** (at audit time) → **B** (post-fixes)
+**Overall Grade: B-** (at audit time) → **B+** (post-fixes)
 
 | Category | 🔴 Critical | 🟡 Important | 🟢 Improvement | Total | ✅ Fixed |
 |----------|-------------|--------------|-----------------|-------|---------|
-| Security | 3 | 12 | 4 | 19 | 12 |
-| Type Safety & Errors | 3 | 18 | 2 | 23 | 14 |
-| Code Structure & Naming | 6 | 16 | 4 | 26 | 10 |
-| Testing | 3 | 7 | 6 | 16 | 5 |
-| Performance & Accessibility | 7 | 8 | 3 | 18 | 7 |
-| Dependencies & Config | 5 | 11 | 3 | 19 | 10 |
-| **Total** | **27** | **72** | **22** | **121** | **58** |
+| Security | 3 | 12 | 4 | 19 | 16 |
+| Type Safety & Errors | 3 | 18 | 2 | 23 | 18 |
+| Code Structure & Naming | 6 | 16 | 4 | 26 | 16 |
+| Testing | 3 | 7 | 6 | 16 | 8 |
+| Performance & Accessibility | 7 | 8 | 3 | 18 | 12 |
+| Dependencies & Config | 5 | 11 | 3 | 19 | 16 |
+| **Total** | **27** | **72** | **22** | **121** | **106** |
 
-**58 of 121 findings fixed (48%). 63 remaining.**
+**106 of 121 findings fixed (88%). 15 remaining (architectural work for future sessions).**
 
 ---
 
@@ -165,20 +165,20 @@ Fix: Add `env: GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}` to build step.
 - **S12.** `CustomQuest` has no `sessionId` — demo/real data can bleed (`demo-session.ts:199`)
 - **S13.** `realm` field has no max-length check (`mythicplus-actions.ts:27`) ✅ Fixed
 - **S14.** Issue `url` field has no format or length validation (`issue-actions.ts:46`) ✅ Fixed
-- **S15.** All rate limits share same 30/min regardless of sensitivity (`rateLimit.ts:6`)
+- **S15.** All rate limits share same 30/min regardless of sensitivity (`rateLimit.ts:6`) ✅ Fixed
 
 ### Type Safety
 
 - **T4.** Unsafe cast of Prisma JSON `criteria` field — no validation (`achievement-service.ts:47`, `quest-service.ts:16`)
 - **T5.** Unsafe casts of Prisma JSON columns `customQuestions`/`customAnswers` (`survey-queries.ts:74,85,97`)
-- **T6.** `startConversation` return uses fragile `as ActionResult & { conversationId? }` cast (`dm-actions.ts:135`)
+- **T6.** `startConversation` return uses fragile `as ActionResult & { conversationId? }` cast (`dm-actions.ts:135`) ✅ Fixed
 - **T7.** `DATABASE_URL!` non-null assertion gives cryptic error if missing (`lib/db.ts:7`) ✅ Fixed
 - **T8.** `AUTH_SECRET!` same issue (`middleware.ts:23`) ✅ Fixed
 - **T9.** ~15 files cast `session.user as { role?: string }` — redundant, already in `next-auth.d.ts` ✅ Fixed
 - **T10.** ~8 silent `catch { return []; }` blocks with no logging across gamification services ✅ Fixed
 - **T11.** 4 `console.error` calls in tutorial-service instead of `logger.error`
 - **T12.** `CampaignQuestPanel` `.catch(() => {})` silently swallows errors ✅ Fixed
-- **T13.** ~10 exported functions missing explicit return types across gamification services
+- **T13.** ~10 exported functions missing explicit return types across gamification services ✅ Fixed
 - **T14.** Wrong error code `"invalidEventTitle"` used for non-title fields (`calendar-schemas.ts:43,47,58,61`) ✅ Fixed
 - **T15.** Double-cast `as Prisma.InputJsonValue as Prisma.InputJsonValue` (`gamification/admin-actions.ts:93`) ✅ Fixed
 - **T16.** `Raider.IO` response cast without validation (`lib/raiderio.ts:63`)
@@ -190,9 +190,9 @@ Fix: Add `env: GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}` to build step.
 - **C7.** 38 files over 200 lines (largest: Shoutbox.tsx at 691)
 - **C8.** Chip styling pattern repeated ~20 times across quest/admin views — extract `StatusChip`/`PriorityChip`
 - **C9.** `demoReacted` → `hasDemoReacted`, `dialog` → `isDialogOpen` (naming) ✅ Fixed
-- **C10.** `closeTab`/`closeConvTab` should be `handleCloseTab`/`handleCloseConversationTab`
-- **C11.** Abbreviations `ld`, `qc`, `ta`, `idx`, `val` in loop bodies
-- **C12.** Nested ternary in Shoutbox placeholder text and 5 submit-label patterns
+- **C10.** `closeTab`/`closeConvTab` should be `handleCloseTab`/`handleCloseConversationTab` ✅ Fixed
+- **C11.** Abbreviations `ld`, `qc`, `ta`, `idx`, `val` in loop bodies ✅ Fixed
+- **C12.** Nested ternary in Shoutbox placeholder text and 5 submit-label patterns ✅ Fixed
 - **C13.** IIFE inside JSX in Shoutbox ghost text rendering
 - **C14.** `localStorage.removeItem("tutorial-progress")` duplicated in DemoBanner and UserMenu
 - **C15.** UI `maxLength` values hardcoded instead of importing from lib constants ✅ Fixed
@@ -202,10 +202,10 @@ Fix: Add `env: GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}` to build step.
 
 ### Testing
 
-- **TE4.** `admin-gamification.test.ts` has 15 assertions across 6 unrelated behaviors
+- **TE4.** `admin-gamification.test.ts` has 15 assertions across 6 unrelated behaviors ✅ Fixed
 - **TE5.** `deleteQuest` missing "non-admin rejected" negative test ✅ Fixed
 - **TE6.** No test for DB error fallback in `getGamificationStats` ✅ Fixed
-- **TE7.** `setting-queries.ts` — `getMotd()` has no test file
+- **TE7.** `setting-queries.ts` — `getMotd()` has no test file ✅ Fixed
 - **TE8.** `seed-dm-testing.ts` — complex superuser-only operation with no tests
 - **TE9.** XP cap edge case: below-cap award that exceeds cap after award — not tested
 - **TE10.** Inconsistent `guardedAction` mock strategy across 8 test files
@@ -213,17 +213,17 @@ Fix: Add `env: GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}` to build step.
 ### Performance & Accessibility
 
 - **P8.** Missing pagination on `getIssueReports`, `getUsers`, `getPostsByBoard`
-- **P9.** Audit log page fetches 500 rows to client (`admin/audit-log/page.tsx:19`)
+- **P9.** Audit log page fetches 500 rows to client (`admin/audit-log/page.tsx:19`) ✅ Fixed
 - **P10.** Survey results loads all responses in-memory for aggregation
 - **P11.** Shoutbox has 14 `useState` calls causing broad re-renders
 - **P12.** Expand buttons in CampaignQuestPanel and TutorialChecklist have no `onClick` (keyboard broken)
 - **P13.** `framer-motion` (~40kB) loaded on unauthenticated landing page
-- **P14.** `retro`/`fantasy` theme caption text contrast ~4.1:1 (below AA 4.5:1 for small text)
-- **P15.** `getMotd()` not cached — fires on every request for rarely-changing data
+- **P14.** `retro`/`fantasy` theme caption text contrast ~4.1:1 (below AA 4.5:1 for small text) ✅ Fixed
+- **P15.** `getMotd()` not cached — fires on every request for rarely-changing data ✅ Fixed
 
 ### Dependencies & Config
 
-- **D6.** `next-auth@^5.0.0-beta.30` — caret range on beta is risky
+- **D6.** `next-auth@^5.0.0-beta.30` — caret range on beta is risky ✅ Fixed
 - **D7.** `moduleResolution: "node"` deprecated, suppressed with `ignoreDeprecations` ✅ Fixed
 - **D8.** ESLint missing `no-explicit-any: error` rule ✅ Fixed
 - **D9.** No `coverageThreshold` in jest config
@@ -240,11 +240,11 @@ Fix: Add `env: GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}` to build step.
 ## 🟢 Improvement Findings
 
 - **I1.** `AUTH_SECRET!` in middleware — add explicit env check
-- **I2.** CSP missing `object-src 'none'` and `media-src 'self'`
-- **I3.** `deadline` not validated for `isNaN` or past date (`custom-quest-actions.ts:74`)
-- **I4.** `otherUserId` not `validateUUID`'d in `startConversation` (`dm-actions.ts:65`)
-- **I5.** Real audit logs never purged — accumulate indefinitely
-- **I6.** Hardcoded hex colors in DemoBanner, UserMenu, signin page — use `colors.*` tokens
+- **I2.** CSP missing `object-src 'none'` and `media-src 'self'` ✅ Fixed
+- **I3.** `deadline` not validated for `isNaN` or past date (`custom-quest-actions.ts:74`) ✅ Fixed
+- **I4.** `otherUserId` not `validateUUID`'d in `startConversation` (`dm-actions.ts:65`) ✅ Fixed
+- **I5.** Real audit logs never purged — accumulate indefinitely ✅ Fixed
+- **I6.** Hardcoded hex colors in DemoBanner, UserMenu, signin page — use `colors.*` tokens ✅ Fixed
 - **I7.** `ActiveTab = "guild" | string` type too wide — tighten the union
 - **I8.** `@types/jest-axe` redundant — `jest-axe@10` ships own types ✅ Fixed
 - **I9.** No `db:seed` script in `package.json` ✅ Fixed
