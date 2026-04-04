@@ -115,7 +115,7 @@ describe("getActiveCampaign", () => {
       customQuestions: null,
     });
     mockQuestFindMany.mockResolvedValue([
-      { id: "q1", title: "Quest 1", xpReward: 50, status: "open", completedAt: null },
+      { id: "q1", name: "Quest 1", xpReward: 50, status: "open", completedAt: null },
     ]);
 
     const result = await getActiveCampaign();

@@ -56,7 +56,7 @@ export async function getActiveCampaign(): Promise<ActiveCampaign | null> {
     },
     select: {
       id: true,
-      title: true,
+      name: true,
       xpReward: true,
       status: true,
       completedAt: true,
@@ -74,7 +74,7 @@ export async function getActiveCampaign(): Promise<ActiveCampaign | null> {
     customQuestions: round.customQuestions as unknown[] | null,
     quests: quests.map((q) => ({
       id: q.id,
-      title: q.title,
+      title: q.name,
       xpReward: q.xpReward,
       status: q.status,
       completedAt: q.completedAt?.toISOString() ?? null,
