@@ -45,10 +45,11 @@ export async function getActiveCampaign(): Promise<ActiveCampaign | null> {
 
   if (!round) return null;
 
-  // Get user's quests for this campaign (survey-linked or same deadline)
-  const quests = await prisma.customQuest.findMany({
+  // Get user's campaign quests for this round (survey-linked or same deadline)
+  const quests = await prisma.quest.findMany({
     where: {
       assigneeId: userId,
+      type: "campaign",
       deletedAt: null,
       OR: [{ surveyRoundId: round.id }, { deadline: round.deadline }],
       ...(sessionId ? {} : { assignee: { sessionId: null } }),

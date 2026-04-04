@@ -85,8 +85,7 @@ async function fetchGamificationStats() {
     }),
   ]);
 
-  // Custom quests — separate query with own error handling to prevent
-  // schema mismatches (e.g. pending migrations) from crashing the entire dashboard
+  // Assigned quests — filtered from the unified Quest table
   let customQuests: Array<{
     id: string;
     title: string;
@@ -96,11 +95,11 @@ async function fetchGamificationStats() {
     assignee: { alias: string | null; name: string | null };
   }> = [];
   try {
-    customQuests = await prisma.customQuest.findMany({
-      where: { deletedAt: null, sessionId },
+    const rawCustomQuests = await prisma.quest.findMany({
+      where: { type: { in: ["assigned", "campaign"] }, deletedAt: null, sessionId },
       select: {
         id: true,
-        title: true,
+        name: true,
         xpReward: true,
         status: true,
         priority: true,
@@ -108,8 +107,13 @@ async function fetchGamificationStats() {
       },
       orderBy: { createdAt: "desc" },
     });
+    customQuests = rawCustomQuests.map((q) => ({
+      ...q,
+      title: q.name,
+      assignee: q.assignee ?? { alias: null, name: null },
+    }));
   } catch (error) {
-    console.error("[gamification] customQuest query failed:", error);
+    console.error("[gamification] assigned quest query failed:", error);
   }
 
   // Resolve achievement names

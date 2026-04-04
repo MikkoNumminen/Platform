@@ -13,7 +13,7 @@ import { getDemoSessionId } from "@/lib/demo-session";
 import { awardCustomXp } from "@/lib/gamification/xp-service";
 
 async function completeSurveyQuest(userId: string, roundId: string): Promise<void> {
-  const quest = await prisma.customQuest.findFirst({
+  const quest = await prisma.quest.findFirst({
     where: {
       surveyRoundId: roundId,
       assigneeId: userId,
@@ -22,7 +22,7 @@ async function completeSurveyQuest(userId: string, roundId: string): Promise<voi
     },
   });
   if (quest) {
-    await prisma.customQuest.update({
+    await prisma.quest.update({
       where: { id: quest.id },
       data: { status: "completed", completedAt: new Date() },
     });

@@ -33,13 +33,13 @@ import { useRouter } from "next/navigation";
 
 export interface QuestData {
   id: string;
-  key: string;
+  key: string | null;
   name: string;
-  description: string;
-  icon: string;
+  description: string | null;
+  icon: string | null;
   type: string;
   xpReward: number;
-  criteria: Record<string, unknown>;
+  criteria: Record<string, unknown> | null;
   repeatable: boolean;
   sortOrder: number;
 }
@@ -82,10 +82,10 @@ export default function QuestEditor({ quests, setError }: QuestEditorProps) {
     setEditing(q);
     const criteria = q.criteria as { action?: string; count?: number };
     setForm({
-      key: q.key,
+      key: q.key ?? "",
       name: q.name,
-      description: q.description,
-      icon: q.icon,
+      description: q.description ?? "",
+      icon: q.icon ?? "📋",
       type: q.type,
       xpReward: q.xpReward,
       criteriaAction: criteria.action ?? "shout:create",

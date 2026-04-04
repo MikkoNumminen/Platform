@@ -1,14 +1,14 @@
-const mockCustomQuestFindFirst = jest.fn();
-const mockCustomQuestFindMany = jest.fn();
-const mockCustomQuestUpdate = jest.fn();
+const mockQuestFindFirst = jest.fn();
+const mockQuestFindMany = jest.fn();
+const mockQuestUpdate = jest.fn();
 const mockSurveyRoundFindFirst = jest.fn();
 
 jest.mock("@/lib/db", () => ({
   prisma: {
-    customQuest: {
-      findFirst: (...a: any[]) => mockCustomQuestFindFirst(...a),
-      findMany: (...a: any[]) => mockCustomQuestFindMany(...a),
-      update: (...a: any[]) => mockCustomQuestUpdate(...a),
+    quest: {
+      findFirst: (...a: any[]) => mockQuestFindFirst(...a),
+      findMany: (...a: any[]) => mockQuestFindMany(...a),
+      update: (...a: any[]) => mockQuestUpdate(...a),
     },
     surveyRound: {
       findFirst: (...a: any[]) => mockSurveyRoundFindFirst(...a),
@@ -34,17 +34,17 @@ beforeEach(() => jest.clearAllMocks());
 
 describe("autoCompleteCampaignQuest", () => {
   test("does nothing when no matching quest exists", async () => {
-    mockCustomQuestFindFirst.mockResolvedValue(null);
+    mockQuestFindFirst.mockResolvedValue(null);
     await autoCompleteCampaignQuest("u1", "Some Quest");
-    expect(mockCustomQuestUpdate).not.toHaveBeenCalled();
+    expect(mockQuestUpdate).not.toHaveBeenCalled();
   });
 
   test("completes matching quest and awards XP", async () => {
-    mockCustomQuestFindFirst.mockResolvedValue({ id: "q1", xpReward: 50 });
-    mockCustomQuestUpdate.mockResolvedValue({});
+    mockQuestFindFirst.mockResolvedValue({ id: "q1", xpReward: 50 });
+    mockQuestUpdate.mockResolvedValue({});
 
     await autoCompleteCampaignQuest("u1", "Send your first");
-    expect(mockCustomQuestUpdate).toHaveBeenCalledWith({
+    expect(mockQuestUpdate).toHaveBeenCalledWith({
       where: { id: "q1" },
       data: expect.objectContaining({ status: "completed" }),
     });
@@ -52,15 +52,15 @@ describe("autoCompleteCampaignQuest", () => {
   });
 
   test("skips XP award when xpReward is 0", async () => {
-    mockCustomQuestFindFirst.mockResolvedValue({ id: "q1", xpReward: 0 });
-    mockCustomQuestUpdate.mockResolvedValue({});
+    mockQuestFindFirst.mockResolvedValue({ id: "q1", xpReward: 0 });
+    mockQuestUpdate.mockResolvedValue({});
 
     await autoCompleteCampaignQuest("u1", "Test");
     expect(mockAwardCustomXp).not.toHaveBeenCalled();
   });
 
   test("silently catches errors", async () => {
-    mockCustomQuestFindFirst.mockRejectedValue(new Error("db error"));
+    mockQuestFindFirst.mockRejectedValue(new Error("db error"));
     await expect(autoCompleteCampaignQuest("u1", "Test")).resolves.toBeUndefined();
   });
 });
@@ -69,14 +69,14 @@ describe("completeWhisperQuest", () => {
   test("does nothing when not authenticated", async () => {
     mockAuth.mockResolvedValue(null as any);
     await completeWhisperQuest();
-    expect(mockCustomQuestFindFirst).not.toHaveBeenCalled();
+    expect(mockQuestFindFirst).not.toHaveBeenCalled();
   });
 
   test("auto-completes whisper quest for authenticated user", async () => {
     mockAuth.mockResolvedValue({ user: { id: "u1" } } as any);
-    mockCustomQuestFindFirst.mockResolvedValue(null);
+    mockQuestFindFirst.mockResolvedValue(null);
     await completeWhisperQuest();
-    expect(mockCustomQuestFindFirst).toHaveBeenCalled();
+    expect(mockQuestFindFirst).toHaveBeenCalled();
   });
 });
 
@@ -101,7 +101,7 @@ describe("getActiveCampaign", () => {
       deadline: new Date(),
       customQuestions: null,
     });
-    mockCustomQuestFindMany.mockResolvedValue([]);
+    mockQuestFindMany.mockResolvedValue([]);
     expect(await getActiveCampaign()).toBeNull();
   });
 
@@ -114,7 +114,7 @@ describe("getActiveCampaign", () => {
       deadline: new Date("2026-04-10"),
       customQuestions: null,
     });
-    mockCustomQuestFindMany.mockResolvedValue([
+    mockQuestFindMany.mockResolvedValue([
       { id: "q1", title: "Quest 1", xpReward: 50, status: "open", completedAt: null },
     ]);
 

@@ -8,16 +8,18 @@ export async function updateQuestProgress(
   action: string,
 ): Promise<
   Array<{
-    questKey: string;
+    questKey: string | null;
     completed: boolean;
     progress: number;
     target: number;
     xpAwarded: number;
   }>
 > {
-  const quests = await prisma.quest.findMany();
+  const quests = await prisma.quest.findMany({
+    where: { deletedAt: null },
+  });
   const results: Array<{
-    questKey: string;
+    questKey: string | null;
     completed: boolean;
     progress: number;
     target: number;
@@ -83,7 +85,7 @@ export async function updateQuestProgress(
 export async function getActiveQuests(userId: string): Promise<
   Array<{
     id: string;
-    key: string;
+    key: string | null;
     name: string;
     description: string | null;
     icon: string | null;
@@ -98,12 +100,42 @@ export async function getActiveQuests(userId: string): Promise<
 > {
   try {
     const quests = await prisma.quest.findMany({
+      where: {
+        deletedAt: null,
+        OR: [
+          // System quests: onboarding, daily, weekly, special
+          { type: { in: ["onboarding", "daily", "weekly", "special"] } },
+          // Assigned quests for this user
+          { type: "assigned", assigneeId: userId },
+        ],
+      },
       orderBy: [{ type: "asc" }, { sortOrder: "asc" }],
     });
     const progress = await prisma.userQuestProgress.findMany({ where: { userId } });
     const progressMap = new Map(progress.map((p) => [p.questId, p]));
     return quests.flatMap((quest) => {
       const p = progressMap.get(quest.id);
+
+      // Assigned quests have no criteria — use status-based completion
+      if (quest.type === "assigned") {
+        const isComplete = quest.status === "completed";
+        return {
+          id: quest.id,
+          key: quest.key,
+          name: quest.name,
+          description: quest.description,
+          icon: quest.icon,
+          type: quest.type,
+          xpReward: quest.xpReward,
+          repeatable: quest.repeatable,
+          progress: isComplete ? 1 : 0,
+          target: 1,
+          completed: isComplete,
+          completedAt: isComplete ? quest.completedAt : null,
+        };
+      }
+
+      // System quests require valid criteria
       const parsedCriteria = QuestCriteriaSchema.safeParse(quest.criteria);
       if (!parsedCriteria.success) return [];
       const criteria = parsedCriteria.data;

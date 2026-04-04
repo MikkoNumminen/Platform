@@ -3,7 +3,6 @@ const mockUserLevelAggregate = jest.fn();
 const mockUserLevelGroupBy = jest.fn();
 const mockUserAchievementGroupBy = jest.fn();
 const mockQuestFindMany = jest.fn();
-const mockCustomQuestFindMany = jest.fn();
 const mockXpTransactionFindMany = jest.fn();
 const mockAchievementFindMany = jest.fn();
 
@@ -19,9 +18,6 @@ jest.mock("@/lib/db", () => ({
     },
     quest: {
       findMany: (...a: any[]) => mockQuestFindMany(...a),
-    },
-    customQuest: {
-      findMany: (...a: any[]) => mockCustomQuestFindMany(...a),
     },
     xpTransaction: {
       findMany: (...a: any[]) => mockXpTransactionFindMany(...a),
@@ -50,7 +46,8 @@ function setupMockData() {
   mockUserAchievementGroupBy.mockResolvedValue([
     { achievementId: "a1", _count: { achievementId: 8 } },
   ]);
-  mockQuestFindMany.mockResolvedValue([
+  // First call: system quests (from Promise.all)
+  mockQuestFindMany.mockResolvedValueOnce([
     {
       name: "Daily Post",
       icon: "pen",
@@ -60,10 +57,11 @@ function setupMockData() {
       _count: { userProgress: 4 },
     },
   ]);
-  mockCustomQuestFindMany.mockResolvedValue([
+  // Second call: assigned/campaign quests
+  mockQuestFindMany.mockResolvedValueOnce([
     {
       id: "cq1",
-      title: "Review docs",
+      name: "Review docs",
       xpReward: 100,
       status: "completed",
       priority: "high",
@@ -157,7 +155,6 @@ describe("getGamificationStats", () => {
     mockUserLevelGroupBy.mockResolvedValue([]);
     mockUserAchievementGroupBy.mockResolvedValue([]);
     mockQuestFindMany.mockResolvedValue([]);
-    mockCustomQuestFindMany.mockResolvedValue([]);
     mockXpTransactionFindMany.mockResolvedValue([]);
     mockAchievementFindMany.mockResolvedValue([]);
 

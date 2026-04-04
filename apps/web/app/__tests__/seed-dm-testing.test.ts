@@ -1,7 +1,7 @@
 const mockSurveyRoundAggregate = jest.fn();
 const mockSurveyRoundCreate = jest.fn();
 const mockUserFindMany = jest.fn();
-const mockCustomQuestCreateMany = jest.fn();
+const mockQuestCreateMany = jest.fn();
 const mockAuditLogCreate = jest.fn();
 
 jest.mock("@/lib/db", () => ({
@@ -13,8 +13,8 @@ jest.mock("@/lib/db", () => ({
     user: {
       findMany: (...a: any[]) => mockUserFindMany(...a),
     },
-    customQuest: {
-      createMany: (...a: any[]) => mockCustomQuestCreateMany(...a),
+    quest: {
+      createMany: (...a: any[]) => mockQuestCreateMany(...a),
     },
     auditLog: {
       create: (...a: any[]) => mockAuditLogCreate(...a),
@@ -48,7 +48,7 @@ beforeEach(() => {
   mockSurveyRoundAggregate.mockResolvedValue({ _max: { number: 0 } });
   mockSurveyRoundCreate.mockResolvedValue({ id: "round-1" });
   mockUserFindMany.mockResolvedValue([{ id: "user1" }, { id: "user2" }]);
-  mockCustomQuestCreateMany.mockResolvedValue({ count: 2 });
+  mockQuestCreateMany.mockResolvedValue({ count: 2 });
   mockAuditLogCreate.mockResolvedValue({});
 });
 
@@ -110,7 +110,7 @@ describe("seedDmTestingRound", () => {
     await seedDmTestingRound();
 
     // First createMany call is the survey quest
-    expect(mockCustomQuestCreateMany).toHaveBeenCalledWith(
+    expect(mockQuestCreateMany).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.arrayContaining([
           expect.objectContaining({
@@ -122,7 +122,7 @@ describe("seedDmTestingRound", () => {
       }),
     );
     // 3 users × 1 survey quest + 3 DM quests = 4 createMany calls
-    expect(mockCustomQuestCreateMany).toHaveBeenCalledTimes(4);
+    expect(mockQuestCreateMany).toHaveBeenCalledTimes(4);
   });
 
   test("creates three DM testing quests for each active user", async () => {
@@ -132,10 +132,10 @@ describe("seedDmTestingRound", () => {
     await seedDmTestingRound();
 
     // 1 survey quest + 3 DM quests
-    expect(mockCustomQuestCreateMany).toHaveBeenCalledTimes(4);
+    expect(mockQuestCreateMany).toHaveBeenCalledTimes(4);
 
-    // Verify DM quest titles are present
-    const allCalls = mockCustomQuestCreateMany.mock.calls.map((c) => c[0].data[0]?.title);
+    // Verify DM quest names are present (unified Quest uses `name` field)
+    const allCalls = mockQuestCreateMany.mock.calls.map((c) => c[0].data[0]?.name);
     expect(allCalls).toContain("Send your first private message");
     expect(allCalls).toContain("Start a conversation with someone new");
     expect(allCalls).toContain("Use the /w whisper command");
@@ -151,8 +151,8 @@ describe("seedDmTestingRound", () => {
     expect(mockSurveyRoundCreate).toHaveBeenCalledTimes(1);
     // Survey quest is skipped (guarded by activeUsers.length > 0)
     // but the 3 DM quest loops still run (each with an empty data array)
-    expect(mockCustomQuestCreateMany).toHaveBeenCalledTimes(3);
-    for (const call of mockCustomQuestCreateMany.mock.calls) {
+    expect(mockQuestCreateMany).toHaveBeenCalledTimes(3);
+    for (const call of mockQuestCreateMany.mock.calls) {
       expect(call[0].data).toHaveLength(0);
     }
   });

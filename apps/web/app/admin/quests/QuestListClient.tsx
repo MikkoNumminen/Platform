@@ -43,7 +43,7 @@ interface QuestUser {
 interface SerializedQuest {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   xpReward: number;
   status: string;
   priority: string;

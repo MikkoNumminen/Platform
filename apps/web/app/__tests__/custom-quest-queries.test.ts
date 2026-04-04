@@ -1,13 +1,13 @@
-const mockCustomQuestFindMany = jest.fn();
-const mockCustomQuestFindFirst = jest.fn();
-const mockCustomQuestCount = jest.fn();
+const mockQuestFindMany = jest.fn();
+const mockQuestFindFirst = jest.fn();
+const mockQuestCount = jest.fn();
 
 jest.mock("@/lib/db", () => ({
   prisma: {
-    customQuest: {
-      findMany: (...a: any[]) => mockCustomQuestFindMany(...a),
-      findFirst: (...a: any[]) => mockCustomQuestFindFirst(...a),
-      count: (...a: any[]) => mockCustomQuestCount(...a),
+    quest: {
+      findMany: (...a: any[]) => mockQuestFindMany(...a),
+      findFirst: (...a: any[]) => mockQuestFindFirst(...a),
+      count: (...a: any[]) => mockQuestCount(...a),
     },
   },
 }));
@@ -35,16 +35,24 @@ describe("getAllCustomQuests", () => {
 
   test("returns quests with quest:view permission", async () => {
     mockAuth.mockResolvedValue({ user: { permissions: { "quest:view": true } } } as any);
-    mockCustomQuestFindMany.mockResolvedValue([{ id: "q1", title: "Quest 1" }]);
+    mockQuestFindMany.mockResolvedValue([
+      {
+        id: "q1",
+        name: "Quest 1",
+        assignee: { id: "u1", alias: null, name: null, image: null },
+        creator: { id: "u2", alias: null, name: null },
+      },
+    ]);
     const result = await getAllCustomQuests();
     expect(result).toHaveLength(1);
+    expect(result[0].title).toBe("Quest 1");
   });
 
   test("filters by status", async () => {
     mockAuth.mockResolvedValue({ user: { permissions: { "quest:manage": true } } } as any);
-    mockCustomQuestFindMany.mockResolvedValue([]);
+    mockQuestFindMany.mockResolvedValue([]);
     await getAllCustomQuests({ status: "open" });
-    expect(mockCustomQuestFindMany).toHaveBeenCalledWith(
+    expect(mockQuestFindMany).toHaveBeenCalledWith(
       expect.objectContaining({ where: expect.objectContaining({ status: "open" }) }),
     );
   });
@@ -58,7 +66,14 @@ describe("getMyCustomQuests", () => {
 
   test("returns user's quests", async () => {
     mockAuth.mockResolvedValue({ user: { id: "u1" } } as any);
-    mockCustomQuestFindMany.mockResolvedValue([{ id: "q1" }]);
+    mockQuestFindMany.mockResolvedValue([
+      {
+        id: "q1",
+        name: "Quest",
+        assignee: { id: "u1", alias: null, name: null, image: null },
+        creator: { id: "u2", alias: null, name: null },
+      },
+    ]);
     const result = await getMyCustomQuests();
     expect(result).toHaveLength(1);
   });
@@ -72,26 +87,41 @@ describe("getCustomQuestById", () => {
 
   test("returns null when quest not found", async () => {
     mockAuth.mockResolvedValue({ user: { id: "u1", permissions: {} } } as any);
-    mockCustomQuestFindFirst.mockResolvedValue(null);
+    mockQuestFindFirst.mockResolvedValue(null);
     expect(await getCustomQuestById("q1")).toBeNull();
   });
 
   test("returns quest for assignee", async () => {
     mockAuth.mockResolvedValue({ user: { id: "u1", permissions: {} } } as any);
-    mockCustomQuestFindFirst.mockResolvedValue({ id: "q1", assignee: { id: "u1" } });
+    mockQuestFindFirst.mockResolvedValue({
+      id: "q1",
+      name: "Quest",
+      assignee: { id: "u1", alias: null, name: null, image: null },
+      creator: { id: "u2", alias: null, name: null },
+    });
     const result = await getCustomQuestById("q1");
     expect(result?.id).toBe("q1");
   });
 
   test("returns null for non-assignee without permission", async () => {
     mockAuth.mockResolvedValue({ user: { id: "u1", permissions: {} } } as any);
-    mockCustomQuestFindFirst.mockResolvedValue({ id: "q1", assignee: { id: "u2" } });
+    mockQuestFindFirst.mockResolvedValue({
+      id: "q1",
+      name: "Quest",
+      assignee: { id: "u2", alias: null, name: null, image: null },
+      creator: { id: "u3", alias: null, name: null },
+    });
     expect(await getCustomQuestById("q1")).toBeNull();
   });
 
   test("returns quest for admin with quest:view", async () => {
     mockAuth.mockResolvedValue({ user: { id: "u1", permissions: { "quest:view": true } } } as any);
-    mockCustomQuestFindFirst.mockResolvedValue({ id: "q1", assignee: { id: "u2" } });
+    mockQuestFindFirst.mockResolvedValue({
+      id: "q1",
+      name: "Quest",
+      assignee: { id: "u2", alias: null, name: null, image: null },
+      creator: { id: "u3", alias: null, name: null },
+    });
     const result = await getCustomQuestById("q1");
     expect(result?.id).toBe("q1");
   });
@@ -110,7 +140,7 @@ describe("getCustomQuestCounts", () => {
 
   test("returns counts with permission", async () => {
     mockAuth.mockResolvedValue({ user: { permissions: { "quest:view": true } } } as any);
-    mockCustomQuestCount.mockResolvedValueOnce(3).mockResolvedValueOnce(2).mockResolvedValueOnce(5);
+    mockQuestCount.mockResolvedValueOnce(3).mockResolvedValueOnce(2).mockResolvedValueOnce(5);
     const result = await getCustomQuestCounts();
     expect(result).toEqual({ open: 3, inProgress: 2, completed: 5, total: 10 });
   });
@@ -118,10 +148,10 @@ describe("getCustomQuestCounts", () => {
 
 describe("getRecentCompletedQuests", () => {
   test("returns completed quests", async () => {
-    mockCustomQuestFindMany.mockResolvedValue([
+    mockQuestFindMany.mockResolvedValue([
       {
         id: "q1",
-        title: "Done",
+        name: "Done",
         xpReward: 50,
         targetSkill: null,
         completedAt: new Date(),
@@ -130,5 +160,6 @@ describe("getRecentCompletedQuests", () => {
     ]);
     const result = await getRecentCompletedQuests();
     expect(result).toHaveLength(1);
+    expect(result[0].title).toBe("Done");
   });
 });

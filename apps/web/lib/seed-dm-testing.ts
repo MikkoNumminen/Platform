@@ -51,12 +51,13 @@ export async function seedDmTestingRound(): Promise<ActionResult> {
 
     // Create the survey completion quest for all users
     if (activeUsers.length > 0) {
-      await prisma.customQuest.createMany({
+      await prisma.quest.createMany({
         data: activeUsers.map((u) => ({
-          title: "Complete Survey: Private Messaging Feedback",
+          name: "Complete Survey: Private Messaging Feedback",
           description:
             "Complete the DM feedback survey to share your thoughts on the messaging system.",
           xpReward: 20,
+          type: "campaign",
           assigneeId: u.id,
           creatorId,
           surveyRoundId: round.id,
@@ -68,18 +69,18 @@ export async function seedDmTestingRound(): Promise<ActionResult> {
     // Create individual DM testing quests
     const dmQuests = [
       {
-        title: "Send your first private message",
+        name: "Send your first private message",
         description: "Open a conversation with any community member and send them a message.",
         xpReward: 15,
       },
       {
-        title: "Start a conversation with someone new",
+        name: "Start a conversation with someone new",
         description:
           "Use the new message button to start a DM with a member you haven't messaged before.",
         xpReward: 15,
       },
       {
-        title: "Use the /w whisper command",
+        name: "Use the /w whisper command",
         description:
           "Type /w <username> <message> in the shoutbox to send a whisper (private message).",
         xpReward: 15,
@@ -87,11 +88,12 @@ export async function seedDmTestingRound(): Promise<ActionResult> {
     ];
 
     for (const quest of dmQuests) {
-      await prisma.customQuest.createMany({
+      await prisma.quest.createMany({
         data: activeUsers.map((u) => ({
-          title: quest.title,
+          name: quest.name,
           description: quest.description,
           xpReward: quest.xpReward,
+          type: "assigned",
           priority: "high",
           assigneeId: u.id,
           creatorId,
@@ -109,7 +111,7 @@ export async function seedDmTestingRound(): Promise<ActionResult> {
       details: {
         roundNumber: nextNumber,
         userCount: activeUsers.length,
-        questTypes: ["survey", ...dmQuests.map((q) => q.title)],
+        questTypes: ["survey", ...dmQuests.map((q) => q.name)],
       },
     });
   });

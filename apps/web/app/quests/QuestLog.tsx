@@ -10,12 +10,11 @@ const QuestReceivedCelebration = dynamic(() => import("../components/QuestReceiv
   ssr: false,
 });
 import QuestListClient from "../admin/quests/QuestListClient";
-import { colors, STATUS_COLORS } from "../styles";
-import { StatusChip, PriorityChip, XpChip } from "@/app/components/QuestChips";
+import { colors } from "../styles";
 
 interface QuestData {
   id: string;
-  key: string;
+  key: string | null;
   name: string;
   description: string | null;
   icon: string | null;
@@ -31,7 +30,7 @@ interface QuestData {
 interface CustomQuestData {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   xpReward: number;
   status: string;
   priority: string;
@@ -67,12 +66,13 @@ interface QuestLogProps {
   questBoard?: QuestBoardData;
 }
 
-const QUEST_TABS = ["onboarding", "daily", "weekly", "special"] as const;
+const QUEST_TABS = ["onboarding", "daily", "weekly", "special", "assigned"] as const;
 const TAB_LABELS: Record<string, string> = {
   onboarding: "Onboarding",
   daily: "Daily",
   weekly: "Weekly",
   special: "Special",
+  assigned: "Assigned",
 };
 
 export default function QuestLog({
@@ -93,7 +93,7 @@ export default function QuestLog({
         quests={activeCustomQuests.map((q) => ({
           id: q.id,
           title: q.title,
-          description: q.description,
+          description: q.description ?? "",
           xpReward: q.xpReward,
           priority: q.priority,
           creator: q.creator,
@@ -117,88 +117,6 @@ export default function QuestLog({
               users={questBoard.users}
               canManage={questBoard.canManage}
             />
-          </Box>
-        )}
-
-        {/* Assigned Quests for regular users (no quest board access) */}
-        {!questBoard && customQuests.length > 0 && (
-          <Box sx={{ mb: 3 }}>
-            <Typography
-              variant="overline"
-              sx={{ color: colors.green400, fontWeight: 600, mb: 1, display: "block" }}
-            >
-              Assigned Quests
-            </Typography>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-              {customQuests.map((cq) => {
-                const isCompleted = cq.status === "completed";
-                const isOverdue = cq.deadline && !isCompleted && new Date(cq.deadline) < new Date();
-                return (
-                  <Card
-                    key={cq.id}
-                    sx={{
-                      opacity: isCompleted ? 0.6 : 1,
-                      borderLeft: `3px solid ${STATUS_COLORS[cq.status] ?? colors.slate400}`,
-                    }}
-                  >
-                    <CardContent sx={{ py: 1.5, "&:last-child": { pb: 1.5 } }}>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 1,
-                          mb: 0.5,
-                          flexWrap: "wrap",
-                        }}
-                      >
-                        <Typography
-                          variant="subtitle2"
-                          sx={{
-                            fontWeight: 600,
-                            textDecoration: isCompleted ? "line-through" : "none",
-                          }}
-                        >
-                          {cq.title}
-                        </Typography>
-                        <StatusChip status={cq.status} />
-                        <PriorityChip priority={cq.priority} />
-                        {cq.xpReward > 0 && <XpChip xp={cq.xpReward} />}
-                        {cq.targetSkill && (
-                          <Chip
-                            label={`${cq.targetSkill} · 2x XP`}
-                            size="small"
-                            sx={{
-                              height: 20,
-                              fontSize: "0.6rem",
-                              backgroundColor: "rgba(34,211,238,0.12)",
-                              color: colors.info,
-                              border: `1px solid ${colors.info}`,
-                            }}
-                          />
-                        )}
-                      </Box>
-                      <Typography variant="body2" sx={{ color: colors.slate400 }}>
-                        {cq.description}
-                      </Typography>
-                      <Box sx={{ display: "flex", gap: 2, mt: 0.5 }}>
-                        <Typography variant="caption" sx={{ color: colors.slate400 }}>
-                          From {cq.creator}
-                        </Typography>
-                        {cq.deadline && (
-                          <Typography
-                            variant="caption"
-                            sx={{ color: isOverdue ? colors.error : colors.slate400 }}
-                          >
-                            {isOverdue ? "Overdue: " : "Due: "}
-                            {new Date(cq.deadline).toLocaleDateString()}
-                          </Typography>
-                        )}
-                      </Box>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </Box>
           </Box>
         )}
 

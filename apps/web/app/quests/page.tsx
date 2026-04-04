@@ -41,7 +41,7 @@ export default async function QuestsPage() {
   const serializeQuest = (q: (typeof allQuests)[0]) => ({
     id: q.id,
     title: q.title,
-    description: q.description,
+    description: q.description ?? "",
     xpReward: q.xpReward,
     status: q.status,
     priority: q.priority,

@@ -11,7 +11,7 @@ const LOCALSTORAGE_KEY = "platform_seen_quests";
 interface QuestInfo {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   xpReward: number;
   priority: string;
   creator: string;

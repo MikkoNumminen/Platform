@@ -13,10 +13,10 @@ export async function autoCompleteCampaignQuest(
   titlePrefix: string,
 ): Promise<void> {
   try {
-    const quest = await prisma.customQuest.findFirst({
+    const quest = await prisma.quest.findFirst({
       where: {
         assigneeId: userId,
-        title: { startsWith: titlePrefix },
+        name: { startsWith: titlePrefix },
         status: { not: "completed" },
         deletedAt: null,
         deadline: { not: null },
@@ -26,7 +26,7 @@ export async function autoCompleteCampaignQuest(
 
     if (!quest) return;
 
-    await prisma.customQuest.update({
+    await prisma.quest.update({
       where: { id: quest.id },
       data: { status: "completed", completedAt: new Date() },
     });

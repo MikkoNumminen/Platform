@@ -70,11 +70,12 @@ export const createCustomQuest = guardedAction(
 
     const sessionId = await getDemoSessionId();
 
-    const created = await prisma.customQuest.create({
+    const created = await prisma.quest.create({
       data: {
-        title: validTitle,
+        name: validTitle,
         description: validDescription,
         xpReward: Math.round(xpReward),
+        type: "assigned",
         priority: priority ?? "normal",
         targetSkill: targetSkill ?? null,
         assigneeId,
@@ -86,7 +87,7 @@ export const createCustomQuest = guardedAction(
 
     await logAudit({
       action: "customQuest.create",
-      entityType: "CustomQuest",
+      entityType: "Quest",
       entityId: created.id,
       actorId: session.user.id,
       actorName: session.user.alias ?? session.user.name,
@@ -117,7 +118,7 @@ export const updateCustomQuest = guardedAction(
   ) => {
     validateUUID(questId, "questId");
 
-    const quest = await prisma.customQuest.findFirst({
+    const quest = await prisma.quest.findFirst({
       where: { id: questId, deletedAt: null },
     });
     if (!quest) {
@@ -131,7 +132,7 @@ export const updateCustomQuest = guardedAction(
     const updateData: Record<string, unknown> = {};
 
     if (data.title !== undefined) {
-      updateData.title = validateTitle(data.title);
+      updateData.name = validateTitle(data.title);
     }
     if (data.description !== undefined) {
       updateData.description = validateDescription(data.description);
@@ -178,18 +179,18 @@ export const updateCustomQuest = guardedAction(
       updateData.targetSkill = data.targetSkill || null;
     }
 
-    await prisma.customQuest.update({
+    await prisma.quest.update({
       where: { id: questId },
       data: updateData,
     });
 
     await logAudit({
       action: "customQuest.update",
-      entityType: "CustomQuest",
+      entityType: "Quest",
       entityId: questId,
       actorId: session.user.id,
       actorName: session.user.alias ?? session.user.name,
-      details: { title: quest.title, changes: data },
+      details: { title: quest.name, changes: data },
     });
 
     revalidatePath("/admin/quests");
@@ -203,7 +204,7 @@ export const completeCustomQuest = guardedAction(
   async (session, questId: string) => {
     validateUUID(questId, "questId");
 
-    const quest = await prisma.customQuest.findFirst({
+    const quest = await prisma.quest.findFirst({
       where: { id: questId, deletedAt: null },
     });
     if (!quest) {
@@ -213,14 +214,14 @@ export const completeCustomQuest = guardedAction(
       throw new ActionError("questAlreadyCompleted", "Quest is already completed");
     }
 
-    await prisma.customQuest.update({
+    await prisma.quest.update({
       where: { id: questId },
       data: { status: "completed", completedAt: new Date() },
     });
 
     // Award custom XP — double if assignee's skills match the quest's target skill
     let xpAwarded = 0;
-    if (quest.xpReward > 0) {
+    if (quest.xpReward > 0 && quest.assigneeId) {
       let xpAmount = quest.xpReward;
 
       if (quest.targetSkill) {
@@ -237,13 +238,26 @@ export const completeCustomQuest = guardedAction(
       await awardCustomXp(quest.assigneeId, xpAmount, "custom_quest:complete", quest.id);
     }
 
+    // Also create a UserQuestProgress record marking the quest as completed
+    if (quest.assigneeId) {
+      await prisma.userQuestProgress.create({
+        data: {
+          userId: quest.assigneeId,
+          questId: quest.id,
+          progress: 1,
+          completed: true,
+          completedAt: new Date(),
+        },
+      });
+    }
+
     await logAudit({
       action: "customQuest.complete",
-      entityType: "CustomQuest",
+      entityType: "Quest",
       entityId: questId,
       actorId: session.user.id,
       actorName: session.user.alias ?? session.user.name,
-      details: { title: quest.title, assigneeId: quest.assigneeId, xpAwarded },
+      details: { title: quest.name, assigneeId: quest.assigneeId, xpAwarded },
     });
 
     revalidatePath("/admin/quests");
@@ -257,25 +271,25 @@ export const deleteCustomQuest = guardedAction(
   async (session, questId: string) => {
     validateUUID(questId, "questId");
 
-    const quest = await prisma.customQuest.findFirst({
+    const quest = await prisma.quest.findFirst({
       where: { id: questId, deletedAt: null },
     });
     if (!quest) {
       throw new ActionError("questNotFound", "Quest not found");
     }
 
-    await prisma.customQuest.update({
+    await prisma.quest.update({
       where: { id: questId },
       data: { deletedAt: new Date() },
     });
 
     await logAudit({
       action: "customQuest.delete",
-      entityType: "CustomQuest",
+      entityType: "Quest",
       entityId: questId,
       actorId: session.user.id,
       actorName: session.user.alias ?? session.user.name,
-      details: { title: quest.title },
+      details: { title: quest.name },
     });
 
     revalidatePath("/admin/quests");

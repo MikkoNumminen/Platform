@@ -197,11 +197,12 @@ export async function seedDemoData(sessionId: string): Promise<void> {
 
     // Seed custom quests
     for (const seed of DEMO_CUSTOM_QUESTS) {
-      await tx.customQuest.create({
+      await tx.quest.create({
         data: {
-          title: seed.title,
+          name: seed.title,
           description: seed.description,
           xpReward: seed.xpReward,
+          type: "assigned",
           status: seed.status,
           priority: seed.priority,
           assigneeId: userMap.get(seed.assigneeIndex)!,
@@ -312,9 +313,13 @@ export async function cleanupStaleDemoSessions(): Promise<number> {
     });
     const demoUserIds = demoUsers.map((u) => u.id);
 
-    await prisma.customQuest.deleteMany({ where: { sessionId: sid } });
+    await prisma.quest.deleteMany({
+      where: { sessionId: sid, type: { in: ["assigned", "campaign"] } },
+    });
     if (demoUserIds.length > 0) {
-      await prisma.customQuest.deleteMany({ where: { creatorId: { in: demoUserIds } } });
+      await prisma.quest.deleteMany({
+        where: { creatorId: { in: demoUserIds }, type: { in: ["assigned", "campaign"] } },
+      });
     }
 
     // Clean up survey rounds created by demo users

@@ -200,6 +200,8 @@ export const INITIAL_QUESTS = [
     criteria: { action: "alias:set", count: 1 },
     repeatable: false,
     sortOrder: 1,
+    priority: "normal",
+    status: "active",
   },
   {
     key: "onboarding_survey",
@@ -211,6 +213,8 @@ export const INITIAL_QUESTS = [
     criteria: { action: "survey:complete", count: 1 },
     repeatable: false,
     sortOrder: 2,
+    priority: "normal",
+    status: "active",
   },
   {
     key: "onboarding_first_shout",
@@ -222,6 +226,8 @@ export const INITIAL_QUESTS = [
     criteria: { action: "shout:create", count: 1 },
     repeatable: false,
     sortOrder: 3,
+    priority: "normal",
+    status: "active",
   },
   // Daily quests (repeatable)
   {
@@ -234,6 +240,8 @@ export const INITIAL_QUESTS = [
     criteria: { action: "daily:login", count: 1 },
     repeatable: true,
     sortOrder: 10,
+    priority: "normal",
+    status: "active",
   },
   {
     key: "daily_shout",
@@ -245,5 +253,7 @@ export const INITIAL_QUESTS = [
     criteria: { action: "shout:create", count: 3 },
     repeatable: true,
     sortOrder: 11,
+    priority: "normal",
+    status: "active",
   },
 ];

@@ -66,7 +66,6 @@ jest.mock("@/lib/db", () => {
     "userLevel",
     "xpTransaction",
     "loginStreak",
-    "customQuest",
     "userAchievement",
     "userQuestProgress",
     "surveyRound",
@@ -110,13 +109,13 @@ jest.mock("@/lib/db", () => {
     "userLevel",
     "xpTransaction",
     "loginStreak",
-    "customQuest",
     "userAchievement",
     "userQuestProgress",
     "surveyRound",
     "userTourProgress",
     "topic",
     "forum",
+    "quest",
     "demoSession",
     "directMessage",
     "conversation",
@@ -286,9 +285,9 @@ describe("demo-session — seedDemoData", () => {
     for (const r of dm().created["loginStreak"]) expect(r.sessionId).toBe(SID);
   });
 
-  test("creates custom quests", async () => {
+  test("creates assigned quests", async () => {
     await seedDemoData(SID);
-    expect(dm().created["customQuest"]).toHaveLength(DEMO_CUSTOM_QUESTS.length);
+    expect(dm().created["quest"]).toHaveLength(DEMO_CUSTOM_QUESTS.length);
   });
 
   test("creates achievement unlocks with sessionId", async () => {

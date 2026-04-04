@@ -2,9 +2,10 @@ const mockAuth = jest.fn();
 const mockRateLimit = jest.fn();
 const mockRevalidatePath = jest.fn();
 
-const mockCustomQuestFindFirst = jest.fn();
-const mockCustomQuestCreate = jest.fn();
-const mockCustomQuestUpdate = jest.fn();
+const mockQuestFindFirst = jest.fn();
+const mockQuestCreate = jest.fn();
+const mockQuestUpdate = jest.fn();
+const mockUserQuestProgressCreate = jest.fn();
 const mockUserFindFirst = jest.fn();
 const mockUserFindUnique = jest.fn();
 const mockAwardCustomXp = jest.fn();
@@ -23,10 +24,13 @@ jest.mock("next/cache", () => ({
 
 jest.mock("@/lib/db", () => ({
   prisma: {
-    customQuest: {
-      findFirst: (...args: any[]) => mockCustomQuestFindFirst(...args),
-      create: (...args: any[]) => mockCustomQuestCreate(...args),
-      update: (...args: any[]) => mockCustomQuestUpdate(...args),
+    quest: {
+      findFirst: (...args: any[]) => mockQuestFindFirst(...args),
+      create: (...args: any[]) => mockQuestCreate(...args),
+      update: (...args: any[]) => mockQuestUpdate(...args),
+    },
+    userQuestProgress: {
+      create: (...args: any[]) => mockUserQuestProgressCreate(...args),
     },
     user: {
       findFirst: (...args: any[]) => mockUserFindFirst(...args),
@@ -74,7 +78,7 @@ describe("createCustomQuest", () => {
   test("superuser can create a quest", async () => {
     mockAuth.mockResolvedValue(superuserSession());
     mockUserFindFirst.mockResolvedValue({ id: assigneeId });
-    mockCustomQuestCreate.mockResolvedValue({ id: questId });
+    mockQuestCreate.mockResolvedValue({ id: questId });
 
     const result = await createCustomQuest(
       "Check GDPR",
@@ -87,12 +91,13 @@ describe("createCustomQuest", () => {
     );
 
     expect(result).toBeUndefined();
-    expect(mockCustomQuestCreate).toHaveBeenCalledWith(
+    expect(mockQuestCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          title: "Check GDPR",
+          name: "Check GDPR",
           description: "Review GDPR compliance",
           xpReward: 100,
+          type: "assigned",
           priority: "high",
           assigneeId,
           creatorId: "superuser-1",
@@ -110,7 +115,7 @@ describe("createCustomQuest", () => {
       error: expect.stringContaining("Missing permission"),
       code: "permissionDenied",
     });
-    expect(mockCustomQuestCreate).not.toHaveBeenCalled();
+    expect(mockQuestCreate).not.toHaveBeenCalled();
   });
 
   test("rejects invalid assignee", async () => {
@@ -142,19 +147,19 @@ describe("completeCustomQuest", () => {
 
   test("superuser can complete a quest and XP is awarded", async () => {
     mockAuth.mockResolvedValue(superuserSession());
-    mockCustomQuestFindFirst.mockResolvedValue({
+    mockQuestFindFirst.mockResolvedValue({
       id: questId,
       status: "in_progress",
       xpReward: 200,
       assigneeId,
     });
-    mockCustomQuestUpdate.mockResolvedValue({});
+    mockQuestUpdate.mockResolvedValue({});
     mockAwardCustomXp.mockResolvedValue(null);
 
     const result = await completeCustomQuest(questId);
 
     expect(result).toBeUndefined();
-    expect(mockCustomQuestUpdate).toHaveBeenCalledWith(
+    expect(mockQuestUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: { status: "completed", completedAt: expect.any(Date) },
       }),
@@ -169,7 +174,7 @@ describe("completeCustomQuest", () => {
 
   test("cannot complete already completed quest", async () => {
     mockAuth.mockResolvedValue(superuserSession());
-    mockCustomQuestFindFirst.mockResolvedValue({
+    mockQuestFindFirst.mockResolvedValue({
       id: questId,
       status: "completed",
       xpReward: 100,
@@ -186,13 +191,13 @@ describe("completeCustomQuest", () => {
 
   test("skips XP award when reward is 0", async () => {
     mockAuth.mockResolvedValue(superuserSession());
-    mockCustomQuestFindFirst.mockResolvedValue({
+    mockQuestFindFirst.mockResolvedValue({
       id: questId,
       status: "open",
       xpReward: 0,
       assigneeId,
     });
-    mockCustomQuestUpdate.mockResolvedValue({});
+    mockQuestUpdate.mockResolvedValue({});
 
     await completeCustomQuest(questId);
 
@@ -201,14 +206,14 @@ describe("completeCustomQuest", () => {
 
   test("awards double XP when assignee skill matches quest targetSkill", async () => {
     mockAuth.mockResolvedValue(superuserSession());
-    mockCustomQuestFindFirst.mockResolvedValue({
+    mockQuestFindFirst.mockResolvedValue({
       id: questId,
       status: "open",
       xpReward: 100,
       assigneeId,
       targetSkill: "Coding (frontend)",
     });
-    mockCustomQuestUpdate.mockResolvedValue({});
+    mockQuestUpdate.mockResolvedValue({});
     mockUserFindUnique.mockResolvedValue({
       developmentSkills: ["Coding (frontend)", "Testing / QA"],
     });
@@ -226,14 +231,14 @@ describe("completeCustomQuest", () => {
 
   test("awards normal XP when assignee skill does not match quest targetSkill", async () => {
     mockAuth.mockResolvedValue(superuserSession());
-    mockCustomQuestFindFirst.mockResolvedValue({
+    mockQuestFindFirst.mockResolvedValue({
       id: questId,
       status: "open",
       xpReward: 100,
       assigneeId,
       targetSkill: "Graphic art / illustrations",
     });
-    mockCustomQuestUpdate.mockResolvedValue({});
+    mockQuestUpdate.mockResolvedValue({});
     mockUserFindUnique.mockResolvedValue({
       developmentSkills: ["Coding (frontend)"],
     });
@@ -258,22 +263,22 @@ describe("updateCustomQuest", () => {
 
   test("superuser can update quest title and priority", async () => {
     mockAuth.mockResolvedValue(superuserSession());
-    mockCustomQuestFindFirst.mockResolvedValue({ id: questId, status: "open" });
-    mockCustomQuestUpdate.mockResolvedValue({});
+    mockQuestFindFirst.mockResolvedValue({ id: questId, status: "open" });
+    mockQuestUpdate.mockResolvedValue({});
 
     const result = await updateCustomQuest(questId, { title: "Updated", priority: "urgent" });
 
     expect(result).toBeUndefined();
-    expect(mockCustomQuestUpdate).toHaveBeenCalledWith(
+    expect(mockQuestUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: expect.objectContaining({ title: "Updated", priority: "urgent" }),
+        data: expect.objectContaining({ name: "Updated", priority: "urgent" }),
       }),
     );
   });
 
   test("cannot edit completed quest", async () => {
     mockAuth.mockResolvedValue(superuserSession());
-    mockCustomQuestFindFirst.mockResolvedValue({ id: questId, status: "completed" });
+    mockQuestFindFirst.mockResolvedValue({ id: questId, status: "completed" });
 
     const result = await updateCustomQuest(questId, { title: "Nope" });
 
@@ -292,13 +297,13 @@ describe("deleteCustomQuest", () => {
 
   test("superuser can soft-delete a quest", async () => {
     mockAuth.mockResolvedValue(superuserSession());
-    mockCustomQuestFindFirst.mockResolvedValue({ id: questId });
-    mockCustomQuestUpdate.mockResolvedValue({});
+    mockQuestFindFirst.mockResolvedValue({ id: questId });
+    mockQuestUpdate.mockResolvedValue({});
 
     const result = await deleteCustomQuest(questId);
 
     expect(result).toBeUndefined();
-    expect(mockCustomQuestUpdate).toHaveBeenCalledWith(
+    expect(mockQuestUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: { deletedAt: expect.any(Date) },
       }),
@@ -307,7 +312,7 @@ describe("deleteCustomQuest", () => {
 
   test("returns error for non-existent quest", async () => {
     mockAuth.mockResolvedValue(superuserSession());
-    mockCustomQuestFindFirst.mockResolvedValue(null);
+    mockQuestFindFirst.mockResolvedValue(null);
 
     const result = await deleteCustomQuest(questId);
 

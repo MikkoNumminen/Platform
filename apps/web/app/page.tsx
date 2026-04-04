@@ -31,7 +31,7 @@ export default async function Home() {
   let customQuests: {
     id: string;
     title: string;
-    description: string;
+    description: string | null;
     xpReward: number;
     priority: string;
     creator: string;

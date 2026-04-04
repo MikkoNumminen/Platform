@@ -45,11 +45,12 @@ export const createSurveyRound = guardedAction(
       });
 
       if (activeUsers.length > 0) {
-        await prisma.customQuest.createMany({
+        await prisma.quest.createMany({
           data: activeUsers.map((u) => ({
-            title: `Complete Survey: ${validTitle}`,
+            name: `Complete Survey: ${validTitle}`,
             description: `Complete the "${validTitle}" feedback survey to earn ${reward} XP.`,
             xpReward: reward,
+            type: "campaign",
             assigneeId: u.id,
             creatorId: session.user.id,
             surveyRoundId: round.id,

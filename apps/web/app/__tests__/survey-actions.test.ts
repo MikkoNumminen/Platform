@@ -3,8 +3,8 @@ import { CONVERSATION_STYLES, FEATURE_OPTIONS } from "@/lib/survey-config";
 const mockCreate = jest.fn();
 const mockAuth = jest.fn();
 const mockUserUpdate = jest.fn();
-const mockCustomQuestFindFirst = jest.fn();
-const mockCustomQuestUpdate = jest.fn();
+const mockQuestFindFirst = jest.fn();
+const mockQuestUpdate = jest.fn();
 
 jest.mock("@/lib/db", () => ({
   prisma: {
@@ -14,9 +14,9 @@ jest.mock("@/lib/db", () => ({
     user: {
       update: (...args: any[]) => mockUserUpdate(...args),
     },
-    customQuest: {
-      findFirst: (...args: any[]) => mockCustomQuestFindFirst(...args),
-      update: (...args: any[]) => mockCustomQuestUpdate(...args),
+    quest: {
+      findFirst: (...args: any[]) => mockQuestFindFirst(...args),
+      update: (...args: any[]) => mockQuestUpdate(...args),
     },
   },
 }));
@@ -115,16 +115,16 @@ describe("submitSurvey", () => {
   test("completes survey quest when roundId provided", async () => {
     mockAuth.mockResolvedValue({ user: { id: "u1" } });
     mockUserUpdate.mockResolvedValue({});
-    mockCustomQuestFindFirst.mockResolvedValue({ id: "q1", xpReward: 100 });
-    mockCustomQuestUpdate.mockResolvedValue({});
+    mockQuestFindFirst.mockResolvedValue({ id: "q1", xpReward: 100 });
+    mockQuestUpdate.mockResolvedValue({});
 
     await submitSurvey(validData, "round-1");
-    expect(mockCustomQuestFindFirst).toHaveBeenCalledWith(
+    expect(mockQuestFindFirst).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({ surveyRoundId: "round-1", assigneeId: "u1" }),
       }),
     );
-    expect(mockCustomQuestUpdate).toHaveBeenCalledWith({
+    expect(mockQuestUpdate).toHaveBeenCalledWith({
       where: { id: "q1" },
       data: expect.objectContaining({ status: "completed" }),
     });
@@ -149,7 +149,7 @@ describe("submitCustomSurvey", () => {
 
   test("creates response with custom answers", async () => {
     mockAuth.mockResolvedValue({ user: { id: "u1" } });
-    mockCustomQuestFindFirst.mockResolvedValue(null);
+    mockQuestFindFirst.mockResolvedValue(null);
 
     const result = await submitCustomSurvey({ q1: "answer1", q2: ["a", "b"] }, "round-1");
     expect(result).toBeUndefined();
@@ -166,11 +166,11 @@ describe("submitCustomSurvey", () => {
 
   test("completes survey quest for custom survey", async () => {
     mockAuth.mockResolvedValue({ user: { id: "u1" } });
-    mockCustomQuestFindFirst.mockResolvedValue({ id: "q1", xpReward: 50 });
-    mockCustomQuestUpdate.mockResolvedValue({});
+    mockQuestFindFirst.mockResolvedValue({ id: "q1", xpReward: 50 });
+    mockQuestUpdate.mockResolvedValue({});
 
     await submitCustomSurvey({ q1: "answer" }, "round-1");
-    expect(mockCustomQuestUpdate).toHaveBeenCalled();
+    expect(mockQuestUpdate).toHaveBeenCalled();
     expect(awardCustomXp).toHaveBeenCalledWith("u1", 50, "custom_quest:complete", "q1");
   });
 

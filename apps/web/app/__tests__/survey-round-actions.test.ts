@@ -3,7 +3,7 @@ const mockSurveyRoundAggregate = jest.fn();
 const mockSurveyRoundFindFirst = jest.fn();
 const mockSurveyRoundUpdate = jest.fn();
 const mockUserFindMany = jest.fn();
-const mockCustomQuestCreateMany = jest.fn();
+const mockQuestCreateMany = jest.fn();
 const mockAuditLogCreate = jest.fn();
 
 jest.mock("@/lib/db", () => ({
@@ -17,8 +17,8 @@ jest.mock("@/lib/db", () => ({
     user: {
       findMany: (...a: any[]) => mockUserFindMany(...a),
     },
-    customQuest: {
-      createMany: (...a: any[]) => mockCustomQuestCreateMany(...a),
+    quest: {
+      createMany: (...a: any[]) => mockQuestCreateMany(...a),
     },
     auditLog: {
       create: (...a: any[]) => mockAuditLogCreate(...a),
@@ -95,12 +95,12 @@ describe("createSurveyRound", () => {
     mockSurveyRoundAggregate.mockResolvedValue({ _max: { number: 0 } });
     mockSurveyRoundCreate.mockResolvedValue({ id: "round-1" });
     mockUserFindMany.mockResolvedValue([{ id: "u1" }, { id: "u2" }]);
-    mockCustomQuestCreateMany.mockResolvedValue({ count: 2 });
+    mockQuestCreateMany.mockResolvedValue({ count: 2 });
     mockAuditLogCreate.mockResolvedValue({});
 
     const result = await createSurveyRound("Survey", undefined, 100);
     expect(result).toBeUndefined();
-    expect(mockCustomQuestCreateMany).toHaveBeenCalled();
+    expect(mockQuestCreateMany).toHaveBeenCalled();
   });
 
   test("clamps xpReward to 0-10000", async () => {

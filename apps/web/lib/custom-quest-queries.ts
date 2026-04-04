@@ -7,7 +7,7 @@ import { getDemoSessionId } from "@/lib/demo-session";
 export type CustomQuestData = {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   xpReward: number;
   status: string;
   priority: string;
@@ -21,7 +21,7 @@ export type CustomQuestData = {
 
 const QUEST_SELECT = {
   id: true,
-  title: true,
+  name: true,
   description: true,
   xpReward: true,
   status: true,
@@ -38,6 +38,39 @@ const QUEST_SELECT = {
   },
 } as const;
 
+type RawQuestRow = {
+  id: string;
+  name: string;
+  description: string | null;
+  xpReward: number;
+  status: string;
+  priority: string;
+  targetSkill: string | null;
+  deadline: Date | null;
+  completedAt: Date | null;
+  createdAt: Date;
+  assignee: { id: string; alias: string | null; name: string | null; image: string | null } | null;
+  creator: { id: string; alias: string | null; name: string | null } | null;
+};
+
+/** Maps a raw Quest row (with `name`) to the CustomQuestData shape (with `title`). */
+function mapToCustomQuestData(raw: RawQuestRow): CustomQuestData {
+  return {
+    id: raw.id,
+    title: raw.name,
+    description: raw.description,
+    xpReward: raw.xpReward,
+    status: raw.status,
+    priority: raw.priority,
+    targetSkill: raw.targetSkill,
+    deadline: raw.deadline,
+    completedAt: raw.completedAt,
+    createdAt: raw.createdAt,
+    assignee: raw.assignee ?? { id: "", alias: null, name: null, image: null },
+    creator: raw.creator ?? { id: "", alias: null, name: null },
+  };
+}
+
 /**
  * Get all custom quests (for admin/vuohi global view).
  * Requires quest:view or quest:manage permission.
@@ -53,15 +86,21 @@ export async function getAllCustomQuests(filters?: {
   }
 
   const sessionId = await getDemoSessionId();
-  const where: Record<string, unknown> = { deletedAt: null, sessionId };
+  const where: Record<string, unknown> = {
+    deletedAt: null,
+    sessionId,
+    assigneeId: { not: null },
+  };
   if (filters?.status) where.status = filters.status;
   if (filters?.assigneeId) where.assigneeId = filters.assigneeId;
 
-  return prisma.customQuest.findMany({
+  const rows = await prisma.quest.findMany({
     where,
     select: QUEST_SELECT,
     orderBy: [{ status: "asc" }, { priority: "desc" }, { createdAt: "desc" }],
-  }) as Promise<CustomQuestData[]>;
+  });
+
+  return (rows as unknown as RawQuestRow[]).map(mapToCustomQuestData);
 }
 
 /**
@@ -73,11 +112,13 @@ export async function getMyCustomQuests(): Promise<CustomQuestData[]> {
 
   const sessionId = await getDemoSessionId();
 
-  return prisma.customQuest.findMany({
+  const rows = await prisma.quest.findMany({
     where: { assigneeId: session.user.id, deletedAt: null, sessionId },
     select: QUEST_SELECT,
     orderBy: [{ status: "asc" }, { priority: "desc" }, { createdAt: "desc" }],
-  }) as Promise<CustomQuestData[]>;
+  });
+
+  return (rows as unknown as RawQuestRow[]).map(mapToCustomQuestData);
 }
 
 /**
@@ -90,12 +131,14 @@ export async function getCustomQuestById(questId: string): Promise<CustomQuestDa
 
   const sessionId = await getDemoSessionId();
 
-  const quest = (await prisma.customQuest.findFirst({
-    where: { id: questId, deletedAt: null, sessionId },
+  const raw = await prisma.quest.findFirst({
+    where: { id: questId, deletedAt: null, sessionId, assigneeId: { not: null } },
     select: QUEST_SELECT,
-  })) as CustomQuestData | null;
+  });
 
-  if (!quest) return null;
+  if (!raw) return null;
+
+  const quest = mapToCustomQuestData(raw as unknown as RawQuestRow);
 
   const permissions = (session.user.permissions as Record<string, boolean>) ?? {};
   const isAssignee = quest.assignee.id === session.user.id;
@@ -122,11 +165,12 @@ export async function getCustomQuestCounts(): Promise<{
   }
 
   const sessionId = await getDemoSessionId();
+  const baseWhere = { deletedAt: null, sessionId, assigneeId: { not: null } };
 
   const [open, inProgress, completed] = await Promise.all([
-    prisma.customQuest.count({ where: { status: "open", deletedAt: null, sessionId } }),
-    prisma.customQuest.count({ where: { status: "in_progress", deletedAt: null, sessionId } }),
-    prisma.customQuest.count({ where: { status: "completed", deletedAt: null, sessionId } }),
+    prisma.quest.count({ where: { ...baseWhere, status: "open" } }),
+    prisma.quest.count({ where: { ...baseWhere, status: "in_progress" } }),
+    prisma.quest.count({ where: { ...baseWhere, status: "completed" } }),
   ]);
 
   return { open, inProgress, completed, total: open + inProgress + completed };
@@ -147,26 +191,32 @@ export async function getRecentCompletedQuests(limit = 10): Promise<
 > {
   const sessionId = await getDemoSessionId();
 
-  return prisma.customQuest.findMany({
-    where: { status: "completed", deletedAt: null, completedAt: { not: null }, sessionId },
+  const rows = await prisma.quest.findMany({
+    where: {
+      status: "completed",
+      deletedAt: null,
+      completedAt: { not: null },
+      sessionId,
+      assigneeId: { not: null },
+    },
     orderBy: { completedAt: "desc" },
     take: limit,
     select: {
       id: true,
-      title: true,
+      name: true,
       xpReward: true,
       targetSkill: true,
       completedAt: true,
       assignee: { select: { alias: true, name: true } },
     },
-  }) as Promise<
-    Array<{
-      id: string;
-      title: string;
-      xpReward: number;
-      targetSkill: string | null;
-      completedAt: Date;
-      assignee: { alias: string | null; name: string | null };
-    }>
-  >;
+  });
+
+  return rows.map((r) => ({
+    id: r.id,
+    title: r.name,
+    xpReward: r.xpReward,
+    targetSkill: r.targetSkill,
+    completedAt: r.completedAt!,
+    assignee: r.assignee ?? { alias: null, name: null },
+  }));
 }
