@@ -31,6 +31,33 @@ export default function TutorialSpotlight() {
   const step = ctx?.currentStep;
   const isOnStepRoute = step ? matchRoute(step.route, pathname) : false;
 
+  // Inject spotlight CSS once into document head
+  useEffect(() => {
+    const id = "tutorial-spotlight-css";
+    if (document.getElementById(id)) return;
+    const style = document.createElement("style");
+    style.id = id;
+    style.textContent = `
+      .${SPOTLIGHT_CLASS} {
+        position: relative;
+        z-index: 1100;
+        outline: 3px solid #d4a843;
+        outline-offset: 3px;
+        border-radius: 4px;
+        animation: tutorialPulse 1.5s ease-in-out infinite;
+      }
+      @keyframes tutorialPulse {
+        0%, 100% {
+          box-shadow: 0 0 8px #d4a843, inset 0 0 3px #d4a843;
+        }
+        50% {
+          box-shadow: 0 0 24px #f0c050, 0 0 48px #d4a843, inset 0 0 6px #f0c050;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }, []);
+
   // Find and highlight the target element
   useEffect(() => {
     if (!step || !ctx?.isActive) {
@@ -50,11 +77,6 @@ export default function TutorialSpotlight() {
       // Remove previous spotlight
       document.querySelectorAll(`.${SPOTLIGHT_CLASS}`).forEach((prev) => {
         prev.classList.remove(SPOTLIGHT_CLASS);
-        (prev as HTMLElement).style.outline = "";
-        (prev as HTMLElement).style.outlineOffset = "";
-        (prev as HTMLElement).style.boxShadow = "";
-        (prev as HTMLElement).style.position = "";
-        (prev as HTMLElement).style.zIndex = "";
       });
 
       // When highlighting the user menu button, check if the menu is open
@@ -75,15 +97,7 @@ export default function TutorialSpotlight() {
 
       if (el) {
         el.classList.add(SPOTLIGHT_CLASS);
-        // Apply glow styles directly via JS — styled-jsx may not work
-        el.style.outline = "3px solid #d4a843";
-        el.style.outlineOffset = "3px";
-        el.style.borderRadius = "4px";
-        el.style.boxShadow = "0 0 20px #d4a843, 0 0 40px rgba(212,168,67,0.4)";
-        el.style.position = "relative";
-        el.style.zIndex = "1100";
         setAnchorEl(el);
-        // Auto-scroll target into view when spotlight appears
         setTimeout(() => {
           el.scrollIntoView({ behavior: "smooth", block: "center" });
         }, 100);
@@ -103,14 +117,8 @@ export default function TutorialSpotlight() {
 
     return () => {
       observerRef.current?.disconnect();
-      // Remove spotlight styles from all elements
       document.querySelectorAll(`.${SPOTLIGHT_CLASS}`).forEach((prev) => {
         prev.classList.remove(SPOTLIGHT_CLASS);
-        (prev as HTMLElement).style.outline = "";
-        (prev as HTMLElement).style.outlineOffset = "";
-        (prev as HTMLElement).style.boxShadow = "";
-        (prev as HTMLElement).style.position = "";
-        (prev as HTMLElement).style.zIndex = "";
       });
       setAnchorEl(null);
     };
@@ -123,38 +131,6 @@ export default function TutorialSpotlight() {
 
   return (
     <>
-      {/* Global spotlight CSS */}
-      <style jsx global>{`
-        .${SPOTLIGHT_CLASS} {
-          position: relative;
-          z-index: 1100;
-          animation: tutorialPulse 1.5s ease-in-out infinite;
-          border-radius: 4px;
-          outline: 2px solid #d4a843;
-          outline-offset: 2px;
-        }
-        @keyframes tutorialPulse {
-          0%,
-          100% {
-            box-shadow:
-              0 0 8px #d4a843,
-              inset 0 0 3px #d4a843;
-          }
-          50% {
-            box-shadow:
-              0 0 24px #f0c050,
-              0 0 48px #d4a843,
-              inset 0 0 6px #f0c050;
-          }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .${SPOTLIGHT_CLASS} {
-            animation: none;
-            box-shadow: 0 0 12px #d4a843;
-          }
-        }
-      `}</style>
-
       <Popper
         open
         anchorEl={anchorEl}
