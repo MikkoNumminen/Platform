@@ -55,7 +55,12 @@ export default function SignInPage() {
                 variant="contained"
                 fullWidth
                 startIcon={<PlayArrowIcon />}
-                onClick={() => signIn("demo", { callbackUrl: "/" })}
+                onClick={() => {
+                  localStorage.removeItem("platform_survey_submitted");
+                  localStorage.removeItem("tutorial-progress");
+                  localStorage.removeItem("demo-welcome-dismissed");
+                  signIn("demo", { callbackUrl: "/" });
+                }}
                 sx={{
                   backgroundColor: "#4ade80",
                   color: "#000",

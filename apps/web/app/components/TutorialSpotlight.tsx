@@ -48,8 +48,13 @@ export default function TutorialSpotlight() {
 
     function findTarget() {
       // Remove previous spotlight
-      document.querySelectorAll(`.${SPOTLIGHT_CLASS}`).forEach((el) => {
-        el.classList.remove(SPOTLIGHT_CLASS);
+      document.querySelectorAll(`.${SPOTLIGHT_CLASS}`).forEach((prev) => {
+        prev.classList.remove(SPOTLIGHT_CLASS);
+        (prev as HTMLElement).style.outline = "";
+        (prev as HTMLElement).style.outlineOffset = "";
+        (prev as HTMLElement).style.boxShadow = "";
+        (prev as HTMLElement).style.position = "";
+        (prev as HTMLElement).style.zIndex = "";
       });
 
       // When highlighting the user menu button, check if the menu is open
@@ -70,6 +75,13 @@ export default function TutorialSpotlight() {
 
       if (el) {
         el.classList.add(SPOTLIGHT_CLASS);
+        // Apply glow styles directly via JS — styled-jsx may not work
+        el.style.outline = "3px solid #d4a843";
+        el.style.outlineOffset = "3px";
+        el.style.borderRadius = "4px";
+        el.style.boxShadow = "0 0 20px #d4a843, 0 0 40px rgba(212,168,67,0.4)";
+        el.style.position = "relative";
+        el.style.zIndex = "1100";
         setAnchorEl(el);
         // Auto-scroll target into view when spotlight appears
         setTimeout(() => {
@@ -91,9 +103,14 @@ export default function TutorialSpotlight() {
 
     return () => {
       observerRef.current?.disconnect();
-      // Remove spotlight class from all elements
-      document.querySelectorAll(`.${SPOTLIGHT_CLASS}`).forEach((el) => {
-        el.classList.remove(SPOTLIGHT_CLASS);
+      // Remove spotlight styles from all elements
+      document.querySelectorAll(`.${SPOTLIGHT_CLASS}`).forEach((prev) => {
+        prev.classList.remove(SPOTLIGHT_CLASS);
+        (prev as HTMLElement).style.outline = "";
+        (prev as HTMLElement).style.outlineOffset = "";
+        (prev as HTMLElement).style.boxShadow = "";
+        (prev as HTMLElement).style.position = "";
+        (prev as HTMLElement).style.zIndex = "";
       });
       setAnchorEl(null);
     };

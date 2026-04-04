@@ -51,7 +51,12 @@ export default function UserMenu() {
         {showDemo && (
           <Button
             size="small"
-            onClick={() => signIn("demo", { callbackUrl: "/" })}
+            onClick={() => {
+              localStorage.removeItem("platform_survey_submitted");
+              localStorage.removeItem("tutorial-progress");
+              localStorage.removeItem("demo-welcome-dismissed");
+              signIn("demo", { callbackUrl: "/" });
+            }}
             sx={{
               color: colors.green400,
               fontWeight: 600,
@@ -244,6 +249,9 @@ export default function UserMenu() {
           <MenuItem
             onClick={() => {
               setAnchorEl(null);
+              localStorage.removeItem("platform_survey_submitted");
+              localStorage.removeItem("tutorial-progress");
+              localStorage.removeItem("demo-welcome-dismissed");
               signIn("demo", { callbackUrl: "/" });
             }}
           >
