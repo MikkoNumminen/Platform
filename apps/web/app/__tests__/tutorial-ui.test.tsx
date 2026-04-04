@@ -27,6 +27,12 @@ jest.mock("framer-motion", () => {
   };
 });
 
+const mockPush = jest.fn();
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockPush }),
+  usePathname: () => "/",
+}));
+
 // Mock TutorialProvider's useTutorialMaybe hook
 const mockContextValue = jest.fn();
 jest.mock("../components/TutorialProvider", () => ({

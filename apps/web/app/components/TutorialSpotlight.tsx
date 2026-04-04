@@ -16,7 +16,7 @@ const STEP_MENU_ITEMS: Record<string, string> = {
   view_achievements: '[data-tutorial="nav-achievements"]',
   check_leaderboard: '[data-tutorial="nav-leaderboard"]',
   view_survey_results: '[data-tutorial="nav-feedback"]',
-  view_gamification_dashboard: '[data-tutorial="nav-gamification"]',
+  view_gamification_dashboard: '[data-tutorial="nav-dashboard"]',
   manage_users: '[data-tutorial="nav-manage-users"]',
   approve_user: '[data-tutorial="nav-manage-users"]',
   edit_permissions: '[data-tutorial="nav-manage-users"]',
@@ -71,6 +71,10 @@ export default function TutorialSpotlight() {
       if (el) {
         el.classList.add(SPOTLIGHT_CLASS);
         setAnchorEl(el);
+        // Auto-scroll target into view when spotlight appears
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 100);
       } else {
         setAnchorEl(null);
       }

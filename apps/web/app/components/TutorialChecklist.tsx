@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Box, Chip, Collapse, IconButton, LinearProgress, Paper, Typography } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -29,6 +30,7 @@ const STEP_LABELS: Record<string, string> = {
 
 export default function TutorialChecklist() {
   const ctx = useTutorialMaybe();
+  const router = useRouter();
   const [expanded, setExpanded] = useState(false);
 
   if (!ctx?.isActive || ctx.allComplete) return null;
@@ -149,12 +151,19 @@ export default function TutorialChecklist() {
                   return (
                     <Box
                       key={step.id}
+                      onClick={() => {
+                        if (!done && typeof step.route === "string") router.push(step.route);
+                      }}
                       sx={{
                         display: "flex",
                         alignItems: "center",
                         gap: 1,
                         py: 0.3,
                         opacity: done ? 0.5 : 1,
+                        cursor: done ? "default" : "pointer",
+                        borderRadius: 0.5,
+                        px: 0.5,
+                        "&:hover": done ? {} : { backgroundColor: colors.hoverOverlay },
                       }}
                     >
                       {done ? (

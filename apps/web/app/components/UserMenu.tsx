@@ -184,7 +184,7 @@ export default function UserMenu() {
           </MenuItem>
         )}
         {isVuohiOrSuperuser && (
-          <MenuItem data-tutorial="nav-gamification" component={Link} href="/admin/dashboard">
+          <MenuItem data-tutorial="nav-dashboard" component={Link} href="/admin/dashboard">
             {tm("vuohiliittoDashboard")}
           </MenuItem>
         )}
