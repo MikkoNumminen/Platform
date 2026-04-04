@@ -87,6 +87,7 @@ jest.mock("@/lib/db", () => {
             ...data,
           }),
         ),
+      aggregate: jest.fn().mockResolvedValue({ _max: { number: 0 } }),
     };
   }
 

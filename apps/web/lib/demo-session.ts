@@ -266,10 +266,12 @@ export async function seedDemoData(sessionId: string): Promise<void> {
       }
     }
 
-    // Seed survey round
+    // Seed survey round — use unique number to avoid collision with real rounds
+    const maxRound = await tx.surveyRound.aggregate({ _max: { number: true } });
+    const demoRoundNumber = (maxRound._max.number ?? 0) + 1000 + Math.floor(Math.random() * 9000);
     const surveyRound = await tx.surveyRound.create({
       data: {
-        number: DEMO_SURVEY_ROUND.number,
+        number: demoRoundNumber,
         title: DEMO_SURVEY_ROUND.title,
         description: DEMO_SURVEY_ROUND.description,
         status: DEMO_SURVEY_ROUND.status,

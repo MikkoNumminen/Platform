@@ -19,7 +19,10 @@ export default async function Home() {
   const userId = session?.user?.id;
   const shouts = userId ? await getRecentShouts() : [];
   const conversations = userId ? await getMyConversations() : [];
-  const motd = await getMotd();
+  const isDemoUser = Boolean(session?.user?.demoSessionId);
+  const motd = isDemoUser
+    ? "Welcome to the demo! Explore the platform, try features, and follow the guided tour."
+    : await getMotd();
   const commits = await getRecentCommits();
 
   let surveyCompleted = false;
