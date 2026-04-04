@@ -26,6 +26,9 @@ jest.mock("@/auth", () => ({ auth: jest.fn() }));
 jest.mock("@/lib/tenant", () => ({
   getTenantFilter: jest.fn().mockResolvedValue({ tenant: "platform", sessionId: null }),
 }));
+jest.mock("@/lib/demo-session", () => ({
+  getDemoSessionId: jest.fn().mockResolvedValue(null),
+}));
 jest.mock("@/lib/demo-constants", () => ({ DEMO_EMAIL: "demo@platform.app" }));
 
 import { auth } from "@/auth";
