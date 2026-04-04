@@ -59,6 +59,7 @@ export default function SignInPage() {
                   localStorage.removeItem("platform_survey_submitted");
                   localStorage.removeItem("tutorial-progress");
                   localStorage.removeItem("demo-welcome-dismissed");
+                  localStorage.removeItem("tour-complete-seen");
                   signIn("demo", { callbackUrl: "/" });
                 }}
                 sx={{

@@ -124,10 +124,12 @@ export default function TutorialSpotlight() {
     };
   }, [step, pathname, isOnStepRoute, ctx?.isActive]);
 
-  // When tour is complete, highlight the back button to guide user home
+  // When tour is complete, highlight the back button once then remember dismissal
   const isComplete = ctx?.isActive && ctx?.allComplete;
+  const completeSeen =
+    typeof window !== "undefined" && localStorage.getItem("tour-complete-seen") === "true";
   useEffect(() => {
-    if (!isComplete) return;
+    if (!isComplete || completeSeen) return;
     const backBtn = document.querySelector<HTMLElement>('[data-tutorial="back-button"]');
     if (backBtn) {
       backBtn.classList.add(SPOTLIGHT_CLASS);
@@ -136,14 +138,16 @@ export default function TutorialSpotlight() {
         backBtn.scrollIntoView({ behavior: "smooth", block: "center" });
       }, 100);
     }
+    localStorage.setItem("tour-complete-seen", "true");
     return () => {
       document.querySelectorAll(`.${SPOTLIGHT_CLASS}`).forEach((prev) => {
         prev.classList.remove(SPOTLIGHT_CLASS);
       });
     };
-  }, [isComplete]);
+  }, [isComplete, completeSeen]);
 
   if (!ctx?.isActive) return null;
+  if (isComplete && completeSeen) return null;
   if (!isComplete && (!step || !anchorEl)) return null;
 
   // Find the hint text
