@@ -141,7 +141,6 @@
     "step_check_leaderboard": "Check the leaderboard",
     "step_view_survey_results": "View survey results",
     "step_view_gamification_dashboard": "View Vuohiliitto dashboard",
-    "step_resolve_issue": "Resolve an issue",
     "step_manage_users": "Open user management",
     "step_approve_user": "Approve a pending user",
     "step_edit_permissions": "Edit user permissions"

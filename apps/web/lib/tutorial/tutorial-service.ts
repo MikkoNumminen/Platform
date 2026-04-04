@@ -182,13 +182,6 @@ async function syncTourProgress(userId: string): Promise<void> {
       },
     },
     {
-      stepId: "create_post",
-      check: async () => {
-        const count = await prisma.post.count({ where: { authorId: userId } });
-        return count > 0;
-      },
-    },
-    {
       stepId: "write_comment",
       check: async () => {
         const count = await prisma.thread.count({ where: { authorId: userId } });
