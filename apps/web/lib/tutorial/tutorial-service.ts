@@ -136,10 +136,14 @@ export async function getMyTourProgress(): Promise<{
   const role = session.user.role ?? "pending";
 
   // Sync progress with actual user data (backfill steps done before tutorial existed)
-  try {
-    await syncTourProgress(session.user.id);
-  } catch (error) {
-    console.error("[tutorial] Sync progress error:", error);
+  // Skip for demo users — they get a fresh tutorial experience each session
+  const isDemoUser = Boolean(session.user.demoSessionId);
+  if (!isDemoUser) {
+    try {
+      await syncTourProgress(session.user.id);
+    } catch (error) {
+      console.error("[tutorial] Sync progress error:", error);
+    }
   }
 
   const completedSteps = await getTourProgress(session.user.id);

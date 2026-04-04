@@ -35,6 +35,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           data: { userId: user.id },
         });
 
+        // Reset tour progress for fresh demo experience
+        try {
+          await prisma.userTourProgress.deleteMany({ where: { userId: user.id } });
+        } catch {
+          // Table may not exist yet
+        }
+
         try {
           await seedDemoData(demoSession.id);
         } catch (error) {

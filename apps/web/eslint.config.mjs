@@ -11,7 +11,7 @@ const eslintConfig = [
   testingLibrary.configs["flat/react"],
   prettierConfig,
   {
-    ignores: ["node_modules/", ".next/", "__mocks__/", "coverage/", "next-env.d.ts"],
+    ignores: ["node_modules/", ".next/", "__mocks__/", "coverage/", "next-env.d.ts", "e2e/"],
   },
   {
     rules: {
