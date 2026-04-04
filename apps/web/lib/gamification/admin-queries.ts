@@ -32,7 +32,6 @@ async function fetchGamificationStats() {
     levelDistribution,
     topAchievementsRaw,
     questsWithCounts,
-    customQuests,
     recentActivity,
   ] = await Promise.all([
     prisma.userLevel.count({
@@ -74,19 +73,6 @@ async function fetchGamificationStats() {
       orderBy: { sortOrder: "asc" },
     }),
 
-    prisma.customQuest.findMany({
-      where: { deletedAt: null, sessionId },
-      select: {
-        id: true,
-        title: true,
-        xpReward: true,
-        status: true,
-        priority: true,
-        assignee: { select: { alias: true, name: true } },
-      },
-      orderBy: { createdAt: "desc" },
-    }),
-
     prisma.xpTransaction.findMany({
       where: { sessionId },
       orderBy: { createdAt: "desc" },
@@ -98,6 +84,33 @@ async function fetchGamificationStats() {
       },
     }),
   ]);
+
+  // Custom quests — separate query with own error handling to prevent
+  // schema mismatches (e.g. pending migrations) from crashing the entire dashboard
+  let customQuests: Array<{
+    id: string;
+    title: string;
+    xpReward: number;
+    status: string;
+    priority: string;
+    assignee: { alias: string | null; name: string | null };
+  }> = [];
+  try {
+    customQuests = await prisma.customQuest.findMany({
+      where: { deletedAt: null, sessionId },
+      select: {
+        id: true,
+        title: true,
+        xpReward: true,
+        status: true,
+        priority: true,
+        assignee: { select: { alias: true, name: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (error) {
+    console.error("[gamification] customQuest query failed:", error);
+  }
 
   // Resolve achievement names
   const achievementIds = topAchievementsRaw.map((g) => g.achievementId);
