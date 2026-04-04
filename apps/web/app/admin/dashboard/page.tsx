@@ -37,10 +37,12 @@ export default async function GamificationDashboardPage() {
   }
 
   const stats = await getGamificationStats();
+  const isDemoUser = Boolean(session?.user?.demoSessionId);
+  const dashboardTitle = isDemoUser ? "Platform Dashboard" : "Vuohiliitto Dashboard";
 
   return (
     <>
-      <TopBar title="Vuohiliitto Dashboard" backHref="/" />
+      <TopBar title={dashboardTitle} backHref="/" />
       <Box
         data-tutorial="gamification-dashboard"
         sx={{ maxWidth: 1280, mx: "auto", px: { xs: 1, sm: 2 }, py: 2 }}

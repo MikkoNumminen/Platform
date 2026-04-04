@@ -37,6 +37,7 @@ export default function TopBar({ title, backHref }: TopBarProps) {
       <Toolbar sx={{ maxWidth: 1280, width: "100%", mx: "auto", px: { xs: 1, sm: 2 } }}>
         {backHref && (
           <IconButton
+            data-tutorial="back-button"
             component={Link}
             href={backHref}
             aria-label="Go back"

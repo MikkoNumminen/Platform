@@ -124,22 +124,49 @@ export default function TutorialSpotlight() {
     };
   }, [step, pathname, isOnStepRoute, ctx?.isActive]);
 
-  if (!ctx?.isActive || !step || !anchorEl) return null;
+  // When tour is complete, highlight the back button to guide user home
+  const isComplete = ctx?.isActive && ctx?.allComplete;
+  useEffect(() => {
+    if (!isComplete) return;
+    const backBtn = document.querySelector<HTMLElement>('[data-tutorial="back-button"]');
+    if (backBtn) {
+      backBtn.classList.add(SPOTLIGHT_CLASS);
+      setAnchorEl(backBtn);
+      setTimeout(() => {
+        backBtn.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 100);
+    }
+    return () => {
+      document.querySelectorAll(`.${SPOTLIGHT_CLASS}`).forEach((prev) => {
+        prev.classList.remove(SPOTLIGHT_CLASS);
+      });
+    };
+  }, [isComplete]);
+
+  if (!ctx?.isActive) return null;
+  if (!isComplete && (!step || !anchorEl)) return null;
 
   // Find the hint text
-  const hintKey = isOnStepRoute ? `hint_${step.id}` : findNavigationHintKey(step, pathname);
+  const hintKey = isComplete
+    ? "hint_tour_complete"
+    : step
+      ? isOnStepRoute
+        ? `hint_${step.id}`
+        : findNavigationHintKey(step, pathname)
+      : null;
 
   return (
     <>
       <Popper
         open
         anchorEl={anchorEl}
-        placement="bottom-start"
+        placement="top-start"
         modifiers={[
           { name: "offset", options: { offset: [0, 12] } },
           { name: "preventOverflow", options: { padding: 16 } },
+          { name: "flip", options: { fallbackPlacements: ["bottom-start", "right-start"] } },
         ]}
-        sx={{ zIndex: 1200 }}
+        sx={{ zIndex: 1200, pointerEvents: "none" }}
       >
         <Paper
           elevation={8}
@@ -154,18 +181,18 @@ export default function TutorialSpotlight() {
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
             <Chip
-              label={`${ctx.completedCount + 1}/${ctx.totalSteps}`}
+              label={isComplete ? "✓" : `${ctx.completedCount + 1}/${ctx.totalSteps}`}
               size="small"
               sx={{
-                backgroundColor: colors.accentBorder,
-                color: colors.green400,
+                backgroundColor: isComplete ? colors.green400 : colors.accentBorder,
+                color: isComplete ? "#000" : colors.green400,
                 fontWeight: 700,
                 fontSize: "0.75rem",
                 height: 22,
               }}
             />
             <Typography variant="subtitle2" sx={{ color: colors.slate100, fontWeight: 600 }}>
-              {getStepTitle(step.id)}
+              {isComplete ? "Tour Complete!" : getStepTitle(step!.id)}
             </Typography>
           </Box>
           <Typography variant="body2" sx={{ color: colors.slate400, fontSize: "0.8rem" }}>
@@ -252,6 +279,7 @@ const HINT_TEXTS: Record<string, string> = {
   nav_click_gamification: "Click your avatar to open the menu, then Gamification Dashboard.",
   nav_click_issues: "Click your avatar to open the menu, then Issues.",
   nav_click_manage_users: "Click your avatar to open the menu, then Manage Users.",
+  hint_tour_complete: "Well done! Click the back arrow to return to the homepage.",
 };
 
 function getHintText(hintKey: string): string {
