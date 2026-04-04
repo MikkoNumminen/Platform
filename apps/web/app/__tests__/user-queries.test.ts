@@ -18,6 +18,10 @@ jest.mock("@/lib/demo-session", () => ({
   getDemoSessionId: jest.fn().mockResolvedValue(null),
 }));
 
+jest.mock("@/lib/tenant", () => ({
+  getActiveTenant: jest.fn().mockResolvedValue("platform"),
+}));
+
 jest.mock("@/lib/demo-constants", () => ({
   DEMO_EMAIL: "demo@platform.app",
 }));
@@ -62,6 +66,7 @@ describe("getUsers", () => {
         deletedAt: null,
         sessionId: null,
         email: { not: "demo@platform.app" },
+        role: { in: ["admin", "user", "pending"] },
       },
       orderBy: { createdAt: "desc" },
       take: 500,

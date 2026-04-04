@@ -6,14 +6,12 @@ import { revalidatePath } from "next/cache";
 import type { Tenant } from "./tenant";
 
 const TENANT_COOKIE = "active-tenant";
-const ELEVATED_ROLES = ["superuser", "vuohi"];
-
 export async function switchTenant(tenant: Tenant): Promise<{ error?: string }> {
   const session = await auth();
   if (!session?.user) return { error: "Not authenticated" };
 
   const role = session.user.role ?? "";
-  if (!ELEVATED_ROLES.includes(role)) {
+  if (role !== "superuser") {
     return { error: "Not authorized to switch tenants" };
   }
 

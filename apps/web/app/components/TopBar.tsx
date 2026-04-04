@@ -11,8 +11,6 @@ import UserMenu from "./UserMenu";
 import TenantSwitcher from "./TenantSwitcher";
 import { useActiveTenant } from "@/lib/use-tenant";
 
-const ELEVATED_ROLES = ["superuser", "vuohi"];
-
 interface TopBarProps {
   title: string;
   backHref?: string;
@@ -23,7 +21,7 @@ export default function TopBar({ title, backHref }: TopBarProps) {
   const role = String(session?.user?.role || "");
   const isDemoUser = Boolean(session?.user?.demoSessionId);
   const tenant = useActiveTenant(role, isDemoUser);
-  const canSwitch = ELEVATED_ROLES.includes(role) && !isDemoUser;
+  const canSwitch = role === "superuser" && !isDemoUser;
   const displayTitle =
     title === "Platform" ? (tenant === "vuohiliitto" ? "Vuohiliitto" : "Platform") : title;
 

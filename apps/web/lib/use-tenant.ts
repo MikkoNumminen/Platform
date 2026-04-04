@@ -1,15 +1,16 @@
 import type { Tenant } from "./tenant";
 
-const ELEVATED_ROLES = ["superuser", "vuohi"];
-
 /**
  * Client-side hook to read the active tenant from the cookie.
- * Falls back based on role if cookie is not set.
+ * - superuser: reads cookie (default vuohiliitto), can switch
+ * - vuohi: always vuohiliitto (locked)
+ * - everyone else: always platform
  */
 export function useActiveTenant(role: string, isDemoUser: boolean): Tenant {
   if (isDemoUser) return "vuohiliitto";
+  if (role === "vuohi") return "vuohiliitto";
 
-  if (ELEVATED_ROLES.includes(role)) {
+  if (role === "superuser") {
     if (typeof document !== "undefined") {
       const match = document.cookie.match(/(?:^|;\s*)active-tenant=(\w+)/);
       if (match) {

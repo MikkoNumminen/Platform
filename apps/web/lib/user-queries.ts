@@ -1,6 +1,10 @@
 import { prisma } from "@/lib/db";
 import { getDemoSessionId } from "@/lib/demo-session";
+import { getActiveTenant } from "@/lib/tenant";
 import { DEMO_EMAIL } from "@/lib/demo-constants";
+
+const VUOHILIITTO_ROLES = ["superuser", "vuohi"];
+const PLATFORM_ROLES = ["admin", "user", "pending"];
 
 export async function getUsers(): Promise<
   Array<{
@@ -17,8 +21,10 @@ export async function getUsers(): Promise<
   }>
 > {
   const sessionId = await getDemoSessionId();
+  const tenant = await getActiveTenant();
+  const roleFilter = tenant === "vuohiliitto" ? VUOHILIITTO_ROLES : PLATFORM_ROLES;
   return prisma.user.findMany({
-    where: { deletedAt: null, sessionId, email: { not: DEMO_EMAIL } },
+    where: { deletedAt: null, sessionId, email: { not: DEMO_EMAIL }, role: { in: roleFilter } },
     orderBy: { createdAt: "desc" },
     take: 500,
     select: {
