@@ -14,11 +14,9 @@ jest.mock("@/lib/db", () => ({
   },
 }));
 
-jest.mock("@/lib/demo-session", () => ({
-  getDemoSessionId: jest.fn().mockResolvedValue(null),
-  DEMO_EMAIL: "demo@test.com",
-  seedDemoData: jest.fn(),
-  cleanupStaleDemoSessions: jest.fn(),
+jest.mock("@/lib/tenant", () => ({
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "vuohiliitto", sessionId: null }),
+  getActiveTenant: jest.fn().mockResolvedValue("vuohiliitto"),
 }));
 
 describe("getSurveyResults", () => {

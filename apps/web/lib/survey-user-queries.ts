@@ -1,13 +1,13 @@
 import { prisma } from "@/lib/db";
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 
 export async function getUserSurveyStatus(userIds: string[]): Promise<Record<string, boolean>> {
   if (userIds.length === 0) return {};
 
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
 
   const responses = await prisma.surveyResponse.findMany({
-    where: { userId: { in: userIds }, sessionId },
+    where: { userId: { in: userIds }, tenant, sessionId },
     select: { userId: true },
     distinct: ["userId"],
   });

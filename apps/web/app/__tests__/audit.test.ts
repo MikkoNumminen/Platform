@@ -13,8 +13,8 @@ jest.mock("@/lib/db", () => ({
   },
 }));
 
-jest.mock("@/lib/demo-session", () => ({
-  getDemoSessionId: jest.fn().mockResolvedValue(null),
+jest.mock("@/lib/tenant", () => ({
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "platform", sessionId: null }),
 }));
 
 jest.mock("@/lib/logger", () => ({
@@ -53,6 +53,7 @@ describe("logAudit", () => {
         actorId: "admin-1",
         actorName: "Admin",
         details: { oldValues: { role: "user" }, newValues: { role: "admin" } },
+        tenant: "platform",
         sessionId: null,
       },
     });

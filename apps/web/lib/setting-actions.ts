@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { ActionError } from "@/lib/actionErrors";
 import { safe, type ActionResult } from "@/lib/actionUtils";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { getTenantFilter } from "@/lib/tenant";
 
 const MAX_MOTD_LENGTH = 300;
 
@@ -36,9 +37,11 @@ export async function setMotd(message: string): Promise<ActionResult> {
       throw new ActionError("invalidInput", `MOTD must be 1-${MAX_MOTD_LENGTH} characters`);
     }
 
+    const { tenant } = await getTenantFilter();
+
     await prisma.platformSetting.upsert({
-      where: { key: "motd" },
-      create: { key: "motd", value: trimmed },
+      where: { tenant_key: { tenant, key: "motd" } },
+      create: { tenant, key: "motd", value: trimmed },
       update: { value: trimmed },
     });
 

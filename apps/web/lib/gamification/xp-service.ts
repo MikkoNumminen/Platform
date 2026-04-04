@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 import {
   getLevelForXp,
   type XpSource,
@@ -24,11 +24,14 @@ async function applyXp(
   source: string,
   sourceId?: string,
 ): Promise<XpAwardResult> {
-  await prisma.xpTransaction.create({ data: { userId, amount, source, sourceId } });
+  const { tenant, sessionId } = await getTenantFilter();
+  await prisma.xpTransaction.create({
+    data: { userId, amount, source, sourceId, tenant, sessionId },
+  });
 
   const userLevel = await prisma.userLevel.upsert({
     where: { userId },
-    create: { userId, totalXp: amount, level: getLevelForXp(amount).level },
+    create: { userId, totalXp: amount, level: getLevelForXp(amount).level, tenant, sessionId },
     update: { totalXp: { increment: amount } },
   });
 
@@ -60,9 +63,16 @@ export async function awardXp(
   if (source === "shout:create") {
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
+    const { tenant: shoutTenant, sessionId: shoutSessionId } = await getTenantFilter();
     const todayShoutXp = await prisma.xpTransaction.aggregate({
       _sum: { amount: true },
-      where: { userId, source: "shout:create", createdAt: { gte: todayStart } },
+      where: {
+        userId,
+        source: "shout:create",
+        createdAt: { gte: todayStart },
+        tenant: shoutTenant,
+        sessionId: shoutSessionId,
+      },
     });
     if ((todayShoutXp._sum.amount ?? 0) >= DAILY_SHOUT_XP_CAP) return null;
   }
@@ -70,9 +80,16 @@ export async function awardXp(
   if (source === "dm:send") {
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
+    const { tenant: dmTenant, sessionId: dmSessionId } = await getTenantFilter();
     const todayDmXp = await prisma.xpTransaction.aggregate({
       _sum: { amount: true },
-      where: { userId, source: "dm:send", createdAt: { gte: todayStart } },
+      where: {
+        userId,
+        source: "dm:send",
+        createdAt: { gte: todayStart },
+        tenant: dmTenant,
+        sessionId: dmSessionId,
+      },
     });
     if ((todayDmXp._sum.amount ?? 0) >= DAILY_DM_XP_CAP) return null;
   }
@@ -95,7 +112,8 @@ export async function awardCustomXp(
 
 export async function getUserXpData(userId: string) {
   try {
-    const userLevel = await prisma.userLevel.findUnique({ where: { userId } });
+    const { tenant, sessionId } = await getTenantFilter();
+    const userLevel = await prisma.userLevel.findFirst({ where: { userId, tenant, sessionId } });
     return { totalXp: userLevel?.totalXp ?? 0, level: userLevel?.level ?? 1 };
   } catch (error) {
     console.error("[xp] getUserXpData failed:", error);
@@ -105,9 +123,9 @@ export async function getUserXpData(userId: string) {
 
 export async function getLeaderboard(limit = 20) {
   try {
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
     const entries = await prisma.userLevel.findMany({
-      where: { user: { deletedAt: null, sessionId } },
+      where: { tenant, sessionId, user: { deletedAt: null } },
       orderBy: { totalXp: "desc" },
       take: limit,
       include: {
@@ -133,8 +151,9 @@ export async function getLeaderboard(limit = 20) {
 }
 
 export async function getRecentXpTransactions(userId: string, limit = 20) {
+  const { tenant, sessionId } = await getTenantFilter();
   return prisma.xpTransaction.findMany({
-    where: { userId },
+    where: { userId, tenant, sessionId },
     orderBy: { createdAt: "desc" },
     take: limit,
   });

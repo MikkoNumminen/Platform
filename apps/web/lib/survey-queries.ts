@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { getDemoSessionId } from "./demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 
 const CustomQuestionSchema = z.object({
   id: z.string(),
@@ -32,8 +32,8 @@ export interface SurveyResultsData {
 }
 
 export async function getSurveyResults(roundId?: string | null): Promise<SurveyResultsData> {
-  const sessionId = await getDemoSessionId();
-  const where: Record<string, unknown> = { sessionId };
+  const { tenant, sessionId } = await getTenantFilter();
+  const where: Record<string, unknown> = { tenant, sessionId };
   if (roundId !== undefined) {
     where.roundId = roundId;
   }

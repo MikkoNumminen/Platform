@@ -15,6 +15,11 @@ jest.mock("@/lib/db", () => ({
 jest.mock("@/auth", () => ({ auth: jest.fn() }));
 jest.mock("next/cache", () => ({ revalidatePath: jest.fn(), revalidateTag: jest.fn() }));
 
+jest.mock("@/lib/tenant", () => ({
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "vuohiliitto", sessionId: null }),
+  getActiveTenant: jest.fn().mockResolvedValue("vuohiliitto"),
+}));
+
 import { auth } from "@/auth";
 import { setMotd } from "@/lib/setting-actions";
 
@@ -36,8 +41,8 @@ describe("setMotd", () => {
     const result = await setMotd("Welcome!");
     expect(result).toBeUndefined();
     expect(mockPlatformSettingUpsert).toHaveBeenCalledWith({
-      where: { key: "motd" },
-      create: { key: "motd", value: "Welcome!" },
+      where: { tenant_key: { tenant: "vuohiliitto", key: "motd" } },
+      create: { tenant: "vuohiliitto", key: "motd", value: "Welcome!" },
       update: { value: "Welcome!" },
     });
   });

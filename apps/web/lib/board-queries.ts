@@ -1,5 +1,5 @@
 import { prisma } from "./db";
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 
 export interface BoardListItem {
   id: string;
@@ -10,13 +10,13 @@ export interface BoardListItem {
 }
 
 export async function getBoards(): Promise<BoardListItem[]> {
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
   const boards = await prisma.board.findMany({
-    where: { deletedAt: null, sessionId },
+    where: { deletedAt: null, tenant, sessionId },
     orderBy: { sortOrder: "asc" },
     include: {
       _count: {
-        select: { posts: { where: { deletedAt: null, sessionId } } },
+        select: { posts: { where: { deletedAt: null, tenant, sessionId } } },
       },
     },
   });
@@ -38,9 +38,9 @@ export interface BoardDetail {
 }
 
 export async function getBoardBySlug(slug: string): Promise<BoardDetail | null> {
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
   return prisma.board.findFirst({
-    where: { slug, deletedAt: null, sessionId },
+    where: { slug, deletedAt: null, tenant, sessionId },
     select: { id: true, name: true, slug: true, description: true },
   });
 }

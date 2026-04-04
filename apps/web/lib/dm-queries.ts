@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 import { DEMO_EMAIL } from "@/lib/demo-constants";
 
 export interface ConversationSummary {
@@ -31,10 +31,11 @@ export async function getMyConversations(): Promise<ConversationSummary[]> {
   const session = await auth();
   if (!session?.user?.id) return [];
   const userId = session.user.id;
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
 
   const conversations = await prisma.conversation.findMany({
     where: {
+      tenant,
       sessionId,
       OR: [{ participantA: userId }, { participantB: userId }],
     },
@@ -139,10 +140,11 @@ export async function getDmUsers(): Promise<
 > {
   const session = await auth();
   if (!session?.user?.id) return [];
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
 
   const users = await prisma.user.findMany({
     where: {
+      tenant,
       sessionId,
       deletedAt: null,
       id: { not: session.user.id },

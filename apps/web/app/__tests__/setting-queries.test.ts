@@ -8,13 +8,8 @@ jest.mock("@/lib/db", () => ({
   },
 }));
 
-jest.mock("@/auth", () => ({ auth: jest.fn() }));
-jest.mock("@/lib/demo-session", () => ({
-  getDemoSessionId: jest.fn().mockResolvedValue(null),
-}));
-jest.mock("next/cache", () => ({
-  unstable_cache: (fn: (...args: unknown[]) => unknown) => fn,
-  revalidateTag: jest.fn(),
+jest.mock("@/lib/tenant", () => ({
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "platform", sessionId: null }),
 }));
 
 import { getMotd } from "@/lib/setting-queries";
@@ -28,7 +23,9 @@ describe("getMotd", () => {
     const result = await getMotd();
 
     expect(result).toBe("Hello, guild!");
-    expect(mockPlatformSettingFindUnique).toHaveBeenCalledWith({ where: { key: "motd" } });
+    expect(mockPlatformSettingFindUnique).toHaveBeenCalledWith({
+      where: { tenant_key: { tenant: "platform", key: "motd" } },
+    });
   });
 
   test("returns default motd when no setting found", async () => {

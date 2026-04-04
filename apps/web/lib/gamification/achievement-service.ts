@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
+import { getTenantFilter } from "@/lib/tenant";
 import { AchievementCriteriaSchema } from "@/lib/gamification/schemas";
 
 async function getActionCount(userId: string, action: string): Promise<number> {
@@ -35,9 +36,10 @@ async function getActionCount(userId: string, action: string): Promise<number> {
 }
 
 export async function checkAchievements(userId: string, action: string) {
+  const { tenant, sessionId } = await getTenantFilter();
   const allAchievements = await prisma.achievement.findMany();
   const userAchievements = await prisma.userAchievement.findMany({
-    where: { userId },
+    where: { userId, tenant, sessionId },
     select: { achievementId: true },
   });
   const unlockedIds = new Set(userAchievements.map((ua) => ua.achievementId));
@@ -52,7 +54,9 @@ export async function checkAchievements(userId: string, action: string) {
     if (criteria.action !== action) continue;
     if (criteria.type === "count") {
       if (actionCount >= criteria.threshold) {
-        await prisma.userAchievement.create({ data: { userId, achievementId: achievement.id } });
+        await prisma.userAchievement.create({
+          data: { userId, achievementId: achievement.id, tenant, sessionId },
+        });
         let xpAwarded = 0;
         if (achievement.xpReward > 0) {
           await prisma.xpTransaction.create({
@@ -61,11 +65,13 @@ export async function checkAchievements(userId: string, action: string) {
               amount: achievement.xpReward,
               source: "achievement:unlock",
               sourceId: achievement.id,
+              tenant,
+              sessionId,
             },
           });
           await prisma.userLevel.upsert({
             where: { userId },
-            create: { userId, totalXp: achievement.xpReward, level: 1 },
+            create: { userId, totalXp: achievement.xpReward, level: 1, tenant, sessionId },
             update: { totalXp: { increment: achievement.xpReward } },
           });
           xpAwarded = achievement.xpReward;
@@ -78,8 +84,9 @@ export async function checkAchievements(userId: string, action: string) {
 }
 
 export async function getUserAchievements(userId: string) {
+  const { tenant, sessionId } = await getTenantFilter();
   const unlocked = await prisma.userAchievement.findMany({
-    where: { userId },
+    where: { userId, tenant, sessionId },
     include: { achievement: true },
     orderBy: { unlockedAt: "desc" },
   });
@@ -88,11 +95,12 @@ export async function getUserAchievements(userId: string) {
 
 export async function getAllAchievementsWithStatus(userId: string) {
   try {
+    const { tenant, sessionId } = await getTenantFilter();
     const achievements = await prisma.achievement.findMany({
       orderBy: [{ category: "asc" }, { sortOrder: "asc" }],
     });
     const userAchievements = await prisma.userAchievement.findMany({
-      where: { userId },
+      where: { userId, tenant, sessionId },
       select: { achievementId: true, unlockedAt: true },
     });
     const unlockedMap = new Map(userAchievements.map((ua) => [ua.achievementId, ua.unlockedAt]));

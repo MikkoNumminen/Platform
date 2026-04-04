@@ -14,6 +14,7 @@ import type { ActionResult } from "@/lib/actionUtils";
 import { rateLimit } from "@/lib/rateLimit";
 import { triggerGamification } from "@/lib/gamification/trigger";
 import { logAudit } from "@/lib/audit";
+import { getTenantFilter } from "@/lib/tenant";
 
 const validateFeedback = createStringValidator("Feedback", 1000, "invalidInput", "invalidInput");
 
@@ -23,13 +24,14 @@ export async function submitFeedback(message: string): Promise<ActionResult> {
     await rateLimit("feedback:submit");
     const trimmed = validateFeedback(message);
 
-    const demoSessionId = (user as { demoSessionId?: string }).demoSessionId;
+    const { tenant, sessionId } = await getTenantFilter();
 
     const feedback = await prisma.feedback.create({
       data: {
         message: trimmed,
         authorId: user.id,
-        sessionId: demoSessionId ?? undefined,
+        tenant,
+        sessionId,
       },
     });
 
@@ -83,10 +85,10 @@ export async function getAllFeedback(): Promise<FeedbackItem[]> {
   const session = await auth();
   if (!session?.user?.id) return [];
 
-  const demoSessionId = session.user.demoSessionId;
+  const { tenant, sessionId } = await getTenantFilter();
 
   const feedbacks = await prisma.feedback.findMany({
-    where: demoSessionId ? { sessionId: demoSessionId } : { sessionId: null },
+    where: { tenant, sessionId },
     orderBy: { createdAt: "desc" },
     include: {
       author: { select: { id: true, alias: true, name: true, image: true } },

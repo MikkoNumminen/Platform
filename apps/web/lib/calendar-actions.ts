@@ -11,7 +11,7 @@ import {
   type CreateEventInput,
   type UpdateEventInput,
 } from "./calendar-schemas";
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 
 export async function fetchEvents(year: number, month: number): Promise<CalendarEvent[]> {
   const dbEvents = await getEvents(year, month);
@@ -32,12 +32,13 @@ export const createEvent = guardedAction(
   "event:create",
   async (session, input: CreateEventInput) => {
     const data = validateEventInput(input);
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     await prisma.calendarEvent.create({
       data: {
         ...data,
         authorId: session.user.id,
+        tenant,
         sessionId,
       },
     });
@@ -52,10 +53,10 @@ export const updateEvent = guardedAction(
   async (session, input: UpdateEventInput) => {
     validateUUID(input.id, "event ID");
     const data = validateEventInput(input);
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     const existing = await prisma.calendarEvent.findFirst({
-      where: { id: input.id, deletedAt: null, sessionId },
+      where: { id: input.id, deletedAt: null, tenant, sessionId },
     });
     if (!existing) {
       throw new ActionError("eventNotFound", "Event not found");
@@ -79,10 +80,10 @@ export const deleteEvent = guardedAction(
   "event:delete",
   async (_session, id: string) => {
     validateUUID(id, "event ID");
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     const existing = await prisma.calendarEvent.findFirst({
-      where: { id, deletedAt: null, sessionId },
+      where: { id, deletedAt: null, tenant, sessionId },
     });
     if (!existing) {
       throw new ActionError("eventNotFound", "Event not found");

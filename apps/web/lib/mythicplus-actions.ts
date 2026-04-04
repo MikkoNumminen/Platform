@@ -6,7 +6,7 @@ import { ActionError } from "@/lib/actionErrors";
 import { safe, validateUUID, type ActionResult } from "@/lib/actionUtils";
 import { rateLimit } from "@/lib/rateLimit";
 import { revalidatePath } from "next/cache";
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 import { fetchRaiderIoCharacter } from "@/lib/raiderio";
 
 const VALID_REGIONS = ["us", "eu", "kr", "tw"] as const;
@@ -39,13 +39,14 @@ export async function addCharacter(
 
     await rateLimit("mythicplus:add");
 
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     const existing = await prisma.wowCharacter.findFirst({
       where: {
         characterName: { equals: trimmedName, mode: "insensitive" },
         realm: trimmedRealm,
         region,
+        tenant,
         sessionId,
       },
     });
@@ -70,6 +71,7 @@ export async function addCharacter(
         profileUrl: data.profileUrl,
         lastFetchedAt: new Date(),
         addedById: session.user.id,
+        tenant,
         sessionId,
       },
     });
@@ -86,10 +88,10 @@ export async function removeCharacter(characterId: string): Promise<ActionResult
     }
 
     validateUUID(characterId, "character ID");
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     const character = await prisma.wowCharacter.findFirst({
-      where: { id: characterId, sessionId },
+      where: { id: characterId, tenant, sessionId },
     });
     if (!character) {
       throw new ActionError("notFound", "Character not found");
@@ -109,10 +111,10 @@ export async function refreshCharacter(characterId: string): Promise<ActionResul
     }
 
     validateUUID(characterId, "character ID");
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     const character = await prisma.wowCharacter.findFirst({
-      where: { id: characterId, sessionId },
+      where: { id: characterId, tenant, sessionId },
     });
     if (!character) {
       throw new ActionError("notFound", "Character not found");
@@ -150,10 +152,10 @@ export async function refreshAllCharacters(): Promise<ActionResult> {
       throw new ActionError("permissionDenied", "Not authenticated");
     }
 
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     const characters = await prisma.wowCharacter.findMany({
-      where: { sessionId, addedById: session.user.id },
+      where: { tenant, sessionId, addedById: session.user.id },
     });
 
     for (const character of characters) {
@@ -204,12 +206,13 @@ export async function createTeam(name: string): Promise<ActionResult> {
       throw new ActionError("invalidInput", "Team name is required (max 50 characters)");
     }
 
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     await prisma.mythicPlusTeam.create({
       data: {
         name: trimmed,
         creatorId: session.user.id,
+        tenant,
         sessionId,
       },
     });
@@ -236,10 +239,10 @@ export async function updateTeamSlot(
       throw new ActionError("invalidInput", `Invalid slot: ${slot}`);
     }
 
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     const team = await prisma.mythicPlusTeam.findFirst({
-      where: { id: teamId, sessionId },
+      where: { id: teamId, tenant, sessionId },
     });
     if (!team) {
       throw new ActionError("notFound", "Team not found");
@@ -262,10 +265,10 @@ export async function deleteTeam(teamId: string): Promise<ActionResult> {
     }
 
     validateUUID(teamId, "team ID");
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     const team = await prisma.mythicPlusTeam.findFirst({
-      where: { id: teamId, sessionId },
+      where: { id: teamId, tenant, sessionId },
     });
     if (!team) {
       throw new ActionError("notFound", "Team not found");

@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
+import { getTenantFilter } from "@/lib/tenant";
 import { awardCustomXp } from "@/lib/gamification/xp-service";
 
 /**
@@ -13,6 +14,7 @@ export async function autoCompleteCampaignQuest(
   titlePrefix: string,
 ): Promise<void> {
   try {
+    const { tenant, sessionId } = await getTenantFilter();
     const quest = await prisma.quest.findFirst({
       where: {
         assigneeId: userId,
@@ -20,6 +22,8 @@ export async function autoCompleteCampaignQuest(
         status: { not: "completed" },
         deletedAt: null,
         deadline: { not: null },
+        tenant,
+        sessionId,
       },
       orderBy: { createdAt: "asc" },
     });

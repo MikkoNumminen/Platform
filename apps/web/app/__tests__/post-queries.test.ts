@@ -10,8 +10,9 @@ jest.mock("@/lib/db", () => ({
   },
 }));
 
-jest.mock("@/lib/demo-session", () => ({
-  getDemoSessionId: jest.fn().mockResolvedValue(null),
+jest.mock("@/lib/tenant", () => ({
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "vuohiliitto", sessionId: null }),
+  getActiveTenant: jest.fn().mockResolvedValue("vuohiliitto"),
 }));
 
 import { getPostsByBoard, getPostBySlug } from "@/lib/post-queries";
@@ -94,7 +95,7 @@ describe("getPostsByBoard", () => {
 
     expect(mockFindMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { boardId: "board-123", deletedAt: null, sessionId: null },
+        where: { boardId: "board-123", deletedAt: null, tenant: "vuohiliitto", sessionId: null },
       }),
     );
   });

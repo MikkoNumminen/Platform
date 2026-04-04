@@ -26,6 +26,17 @@ jest.mock("@/lib/audit-queries", () => ({
   getAuditActionTypes: (...a: unknown[]) => mockGetAuditActionTypes(...a),
 }));
 
+jest.mock("@/lib/tenant", () => ({
+  getActiveTenant: jest.fn().mockResolvedValue("vuohiliitto"),
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "vuohiliitto", sessionId: null }),
+}));
+
+jest.mock("@/app/components/TopBar", () => {
+  return function MockTopBar({ title }: { title: string }) {
+    return <div data-testid="topbar">{title}</div>;
+  };
+});
+
 jest.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
   useLocale: () => "en",

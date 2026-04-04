@@ -8,8 +8,9 @@ jest.mock("@/lib/db", () => ({
   },
 }));
 
-jest.mock("@/lib/demo-session", () => ({
-  getDemoSessionId: jest.fn().mockResolvedValue(null),
+jest.mock("@/lib/tenant", () => ({
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "vuohiliitto", sessionId: null }),
+  getActiveTenant: jest.fn().mockResolvedValue("vuohiliitto"),
 }));
 
 import { getThreadsByParent } from "@/lib/thread-queries";

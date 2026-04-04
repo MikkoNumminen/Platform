@@ -25,8 +25,8 @@ jest.mock("@/lib/gamification/trigger", () => ({
   triggerGamification: (...a: any[]) => mockTriggerGamification(...a),
 }));
 
-jest.mock("@/lib/demo-session", () => ({
-  getDemoSessionId: jest.fn().mockResolvedValue(null),
+jest.mock("@/lib/tenant", () => ({
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "platform", sessionId: null }),
 }));
 
 jest.mock("@/lib/rateLimit", () => ({
@@ -187,14 +187,14 @@ describe("feedback-actions", () => {
       expect(result[0].adminReply).toBe("Thanks!");
     });
 
-    test("filters by demo session when in demo mode", async () => {
-      mockAuth.mockResolvedValue({ user: { id: "u1", demoSessionId: "demo-123" } } as any);
+    test("filters by tenant and session", async () => {
+      mockAuth.mockResolvedValue({ user: { id: "u1" } } as any);
       mockFeedbackFindMany.mockResolvedValue([]);
 
       await getAllFeedback();
       expect(mockFeedbackFindMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { sessionId: "demo-123" },
+          where: { tenant: "platform", sessionId: null },
         }),
       );
     });

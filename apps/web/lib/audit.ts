@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 import { logger } from "@/lib/logger";
 import type { Prisma } from "@prisma/client";
 
@@ -16,7 +16,7 @@ export interface AuditEntry {
 
 export async function logAudit(entry: AuditEntry): Promise<void> {
   try {
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
     await prisma.auditLog.create({
       data: {
         action: entry.action,
@@ -25,6 +25,7 @@ export async function logAudit(entry: AuditEntry): Promise<void> {
         actorId: entry.actorId,
         actorName: entry.actorName ?? null,
         details: (entry.details as Prisma.InputJsonValue) ?? undefined,
+        tenant,
         sessionId,
       },
     });

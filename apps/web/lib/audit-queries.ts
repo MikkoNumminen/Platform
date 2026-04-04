@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 
 export interface AuditLogRow {
   id: string;
@@ -18,9 +18,9 @@ export async function getAuditLogs(params: {
   action?: string;
   search?: string;
 }): Promise<{ logs: AuditLogRow[]; total: number }> {
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
 
-  const where: Record<string, unknown> = { sessionId };
+  const where: Record<string, unknown> = { tenant, sessionId };
   if (params.action) {
     where.action = params.action;
   }
@@ -46,9 +46,9 @@ export async function getAuditLogs(params: {
 }
 
 export async function getAuditActionTypes(): Promise<string[]> {
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
   const results = await prisma.auditLog.findMany({
-    where: { sessionId },
+    where: { tenant, sessionId },
     select: { action: true },
     distinct: ["action"],
     orderBy: { action: "asc" },

@@ -8,6 +8,8 @@ import { colors } from "../styles";
 import ThemeSwitcher from "./ThemeSwitcher";
 import LanguageSwitcher from "./LanguageSwitcher";
 import UserMenu from "./UserMenu";
+import TenantSwitcher from "./TenantSwitcher";
+import { useActiveTenant } from "@/lib/use-tenant";
 
 const ELEVATED_ROLES = ["superuser", "vuohi"];
 
@@ -20,8 +22,10 @@ export default function TopBar({ title, backHref }: TopBarProps) {
   const { data: session } = useSession();
   const role = String(session?.user?.role || "");
   const isDemoUser = Boolean(session?.user?.demoSessionId);
+  const tenant = useActiveTenant(role, isDemoUser);
+  const canSwitch = ELEVATED_ROLES.includes(role) && !isDemoUser;
   const displayTitle =
-    title === "Platform" && ELEVATED_ROLES.includes(role) && !isDemoUser ? "Vuohiliitto" : title;
+    title === "Platform" ? (tenant === "vuohiliitto" ? "Vuohiliitto" : "Platform") : title;
 
   return (
     <AppBar
@@ -58,6 +62,7 @@ export default function TopBar({ title, backHref }: TopBarProps) {
           {displayTitle}
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          {canSwitch && <TenantSwitcher currentTenant={tenant} />}
           <LanguageSwitcher />
           <ThemeSwitcher />
           <UserMenu />

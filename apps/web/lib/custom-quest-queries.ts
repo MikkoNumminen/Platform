@@ -2,7 +2,7 @@
 
 import { prisma } from "./db";
 import { auth } from "@/auth";
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 
 export type CustomQuestData = {
   id: string;
@@ -85,9 +85,10 @@ export async function getAllCustomQuests(filters?: {
     return [];
   }
 
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
   const where: Record<string, unknown> = {
     deletedAt: null,
+    tenant,
     sessionId,
     assigneeId: { not: null },
   };
@@ -110,10 +111,10 @@ export async function getMyCustomQuests(): Promise<CustomQuestData[]> {
   const session = await auth();
   if (!session?.user?.id) return [];
 
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
 
   const rows = await prisma.quest.findMany({
-    where: { assigneeId: session.user.id, deletedAt: null, sessionId },
+    where: { assigneeId: session.user.id, deletedAt: null, tenant, sessionId },
     select: QUEST_SELECT,
     orderBy: [{ status: "asc" }, { priority: "desc" }, { createdAt: "desc" }],
   });
@@ -129,10 +130,10 @@ export async function getCustomQuestById(questId: string): Promise<CustomQuestDa
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
 
   const raw = await prisma.quest.findFirst({
-    where: { id: questId, deletedAt: null, sessionId, assigneeId: { not: null } },
+    where: { id: questId, deletedAt: null, tenant, sessionId, assigneeId: { not: null } },
     select: QUEST_SELECT,
   });
 
@@ -164,8 +165,8 @@ export async function getCustomQuestCounts(): Promise<{
     return { open: 0, inProgress: 0, completed: 0, total: 0 };
   }
 
-  const sessionId = await getDemoSessionId();
-  const baseWhere = { deletedAt: null, sessionId, assigneeId: { not: null } };
+  const { tenant, sessionId } = await getTenantFilter();
+  const baseWhere = { deletedAt: null, tenant, sessionId, assigneeId: { not: null } };
 
   const [open, inProgress, completed] = await Promise.all([
     prisma.quest.count({ where: { ...baseWhere, status: "open" } }),
@@ -189,13 +190,14 @@ export async function getRecentCompletedQuests(limit = 10): Promise<
     assignee: { alias: string | null; name: string | null };
   }>
 > {
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
 
   const rows = await prisma.quest.findMany({
     where: {
       status: "completed",
       deletedAt: null,
       completedAt: { not: null },
+      tenant,
       sessionId,
       assigneeId: { not: null },
     },

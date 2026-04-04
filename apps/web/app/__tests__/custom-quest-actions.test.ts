@@ -47,6 +47,11 @@ jest.mock("next/headers", () => ({
   headers: jest.fn().mockResolvedValue({ get: () => null }),
 }));
 
+jest.mock("@/lib/tenant", () => ({
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "vuohiliitto", sessionId: null }),
+  getActiveTenant: jest.fn().mockResolvedValue("vuohiliitto"),
+}));
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 jest.mock("@/lib/guardedAction", () => require("./helpers/mock-guarded-action"));
 
@@ -101,6 +106,8 @@ describe("createCustomQuest", () => {
           priority: "high",
           assigneeId,
           creatorId: "superuser-1",
+          tenant: "vuohiliitto",
+          sessionId: null,
         }),
       }),
     );

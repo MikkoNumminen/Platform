@@ -9,7 +9,7 @@ import { validateSurveyData, type SurveyData } from "@/lib/survey-config";
 import type { CustomAnswers } from "@/lib/custom-survey-config";
 import type { Prisma } from "@prisma/client";
 import { triggerGamification } from "@/lib/gamification/trigger";
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 import { awardCustomXp } from "@/lib/gamification/xp-service";
 
 async function completeSurveyQuest(userId: string, roundId: string): Promise<void> {
@@ -44,7 +44,7 @@ export async function submitSurvey(data: SurveyData, roundId?: string): Promise<
 
     const session = await auth();
     const userId = session?.user?.id ?? null;
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     await prisma.surveyResponse.create({
       data: {
@@ -57,6 +57,7 @@ export async function submitSurvey(data: SurveyData, roundId?: string): Promise<
         developmentSkills: data.developmentSkills ?? [],
         userId,
         roundId: roundId ?? null,
+        tenant,
         sessionId,
       },
     });
@@ -89,7 +90,7 @@ export async function submitCustomSurvey(
     }
 
     const userId = authUser.id;
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     await prisma.surveyResponse.create({
       data: {
@@ -99,6 +100,7 @@ export async function submitCustomSurvey(
         customAnswers: answers as unknown as Prisma.InputJsonValue,
         userId,
         roundId,
+        tenant,
         sessionId,
       },
     });

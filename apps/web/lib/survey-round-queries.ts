@@ -1,5 +1,5 @@
 import { prisma } from "./db";
-import { getDemoSessionId } from "./demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 
 export interface SurveyRoundData {
   id: string;
@@ -17,8 +17,9 @@ export interface SurveyRoundData {
 }
 
 export async function getAllSurveyRounds(): Promise<SurveyRoundData[]> {
-  const _sessionId = await getDemoSessionId();
+  const { tenant } = await getTenantFilter();
   const rounds = await prisma.surveyRound.findMany({
+    where: { tenant },
     orderBy: { number: "desc" },
     include: {
       _count: { select: { responses: true } },
@@ -43,8 +44,9 @@ export async function getAllSurveyRounds(): Promise<SurveyRoundData[]> {
 }
 
 export async function getActiveSurveyRound(): Promise<SurveyRoundData | null> {
+  const { tenant } = await getTenantFilter();
   const round = await prisma.surveyRound.findFirst({
-    where: { status: "active" },
+    where: { tenant, status: "active" },
     include: {
       _count: { select: { responses: true } },
       creator: { select: { alias: true, name: true } },

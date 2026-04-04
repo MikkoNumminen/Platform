@@ -10,8 +10,9 @@ jest.mock("@/lib/db", () => ({
   },
 }));
 
-jest.mock("@/lib/demo-session", () => ({
-  getDemoSessionId: jest.fn().mockResolvedValue(null),
+jest.mock("@/lib/tenant", () => ({
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "vuohiliitto", sessionId: null }),
+  getActiveTenant: jest.fn().mockResolvedValue("vuohiliitto"),
 }));
 
 import { getBoards, getBoardBySlug } from "@/lib/board-queries";
@@ -56,7 +57,7 @@ describe("getBoards", () => {
 
     expect(mockFindMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { deletedAt: null, sessionId: null },
+        where: { deletedAt: null, tenant: "vuohiliitto", sessionId: null },
         orderBy: { sortOrder: "asc" },
       }),
     );
@@ -101,7 +102,7 @@ describe("getBoardBySlug", () => {
 
     expect(mockFindFirst).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { slug: "test-board", deletedAt: null, sessionId: null },
+        where: { slug: "test-board", deletedAt: null, tenant: "vuohiliitto", sessionId: null },
       }),
     );
   });

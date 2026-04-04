@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
+import { getTenantFilter } from "@/lib/tenant";
 import { QuestCriteriaSchema } from "@/lib/gamification/schemas";
 
 export async function updateQuestProgress(
@@ -15,6 +16,7 @@ export async function updateQuestProgress(
     xpAwarded: number;
   }>
 > {
+  const { tenant, sessionId } = await getTenantFilter();
   const quests = await prisma.quest.findMany({
     where: { deletedAt: null },
   });
@@ -27,7 +29,7 @@ export async function updateQuestProgress(
   }> = [];
 
   const allProgress = await prisma.userQuestProgress.findMany({
-    where: { userId },
+    where: { userId, tenant, sessionId },
   });
   const progressMap = new Map(allProgress.map((p) => [p.questId, p]));
 
@@ -52,6 +54,8 @@ export async function updateQuestProgress(
         progress: newProgress,
         completed: isComplete,
         completedAt: isComplete ? new Date() : null,
+        tenant,
+        sessionId,
       },
       update: {
         progress: newProgress,
@@ -62,11 +66,18 @@ export async function updateQuestProgress(
     let xpAwarded = 0;
     if (isComplete && quest.xpReward > 0) {
       await prisma.xpTransaction.create({
-        data: { userId, amount: quest.xpReward, source: "quest:complete", sourceId: quest.id },
+        data: {
+          userId,
+          amount: quest.xpReward,
+          source: "quest:complete",
+          sourceId: quest.id,
+          tenant,
+          sessionId,
+        },
       });
       await prisma.userLevel.upsert({
         where: { userId },
-        create: { userId, totalXp: quest.xpReward, level: 1 },
+        create: { userId, totalXp: quest.xpReward, level: 1, tenant, sessionId },
         update: { totalXp: { increment: quest.xpReward } },
       });
       xpAwarded = quest.xpReward;
@@ -99,6 +110,7 @@ export async function getActiveQuests(userId: string): Promise<
   }>
 > {
   try {
+    const { tenant: aqTenant, sessionId: aqSessionId } = await getTenantFilter();
     const quests = await prisma.quest.findMany({
       where: {
         deletedAt: null,
@@ -111,7 +123,9 @@ export async function getActiveQuests(userId: string): Promise<
       },
       orderBy: [{ type: "asc" }, { sortOrder: "asc" }],
     });
-    const progress = await prisma.userQuestProgress.findMany({ where: { userId } });
+    const progress = await prisma.userQuestProgress.findMany({
+      where: { userId, tenant: aqTenant, sessionId: aqSessionId },
+    });
     const progressMap = new Map(progress.map((p) => [p.questId, p]));
     return quests.flatMap((quest) => {
       const p = progressMap.get(quest.id);

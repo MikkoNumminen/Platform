@@ -3,6 +3,7 @@ const mockXpTransactionAggregate = jest.fn();
 const mockXpTransactionCreate = jest.fn();
 const mockXpTransactionFindMany = jest.fn();
 const mockUserLevelFindUnique = jest.fn();
+const mockUserLevelFindFirst = jest.fn();
 const mockUserLevelFindMany = jest.fn();
 const mockUserLevelUpsert = jest.fn();
 const mockUserLevelUpdate = jest.fn();
@@ -37,6 +38,7 @@ jest.mock("@/lib/db", () => ({
     },
     userLevel: {
       findUnique: (...a: any[]) => mockUserLevelFindUnique(...a),
+      findFirst: (...a: any[]) => mockUserLevelFindFirst(...a),
       findMany: (...a: any[]) => mockUserLevelFindMany(...a),
       upsert: (...a: any[]) => mockUserLevelUpsert(...a),
       update: (...a: any[]) => mockUserLevelUpdate(...a),
@@ -71,8 +73,9 @@ jest.mock("@/lib/db", () => ({
   },
 }));
 
-jest.mock("@/lib/demo-session", () => ({
-  getDemoSessionId: jest.fn().mockResolvedValue(null),
+jest.mock("@/lib/tenant", () => ({
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "vuohiliitto", sessionId: null }),
+  getActiveTenant: jest.fn().mockResolvedValue("vuohiliitto"),
 }));
 jest.mock("@/auth", () => ({ auth: jest.fn() }));
 
@@ -115,7 +118,14 @@ describe("xp-service", () => {
       const result = await awardXp("u1", "issue:create", "issue-1");
 
       expect(mockXpTransactionCreate).toHaveBeenCalledWith({
-        data: { userId: "u1", amount: 15, source: "issue:create", sourceId: "issue-1" },
+        data: {
+          userId: "u1",
+          amount: 15,
+          source: "issue:create",
+          sourceId: "issue-1",
+          tenant: "vuohiliitto",
+          sessionId: null,
+        },
       });
       expect(mockUserLevelUpsert).toHaveBeenCalled();
       expect(result).toEqual({
@@ -161,13 +171,13 @@ describe("xp-service", () => {
 
   describe("getUserXpData", () => {
     test("returns user xp data when user exists", async () => {
-      mockUserLevelFindUnique.mockResolvedValue({ totalXp: 500, level: 3 });
+      mockUserLevelFindFirst.mockResolvedValue({ totalXp: 500, level: 3 });
       const data = await getUserXpData("u1");
       expect(data).toEqual({ totalXp: 500, level: 3 });
     });
 
     test("returns defaults when user has no xp data", async () => {
-      mockUserLevelFindUnique.mockResolvedValue(null);
+      mockUserLevelFindFirst.mockResolvedValue(null);
       const data = await getUserXpData("u1");
       expect(data).toEqual({ totalXp: 0, level: 1 });
     });

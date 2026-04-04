@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
+import { getTenantFilter } from "@/lib/tenant";
 import { awardXp } from "./xp-service";
 import { updateQuestProgress } from "./quest-service";
 import { checkAchievements } from "./achievement-service";
@@ -8,13 +9,14 @@ import { checkAchievements } from "./achievement-service";
 export async function recordLogin(
   userId: string,
 ): Promise<{ streak: number; xpAwarded: number; isNewDay: boolean }> {
+  const { tenant, sessionId } = await getTenantFilter();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const existing = await prisma.loginStreak.findUnique({ where: { userId } });
 
   if (!existing) {
     await prisma.loginStreak.create({
-      data: { userId, currentStreak: 1, longestStreak: 1, lastLoginDate: today },
+      data: { userId, currentStreak: 1, longestStreak: 1, lastLoginDate: today, tenant, sessionId },
     });
     const result = await awardXp(userId, "daily:login");
     await updateQuestProgress(userId, "daily:login");

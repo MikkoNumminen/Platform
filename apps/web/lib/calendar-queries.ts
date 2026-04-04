@@ -1,14 +1,15 @@
 import { prisma } from "@/lib/db";
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 
 export async function getEvents(year: number, month: number) {
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
   const start = new Date(year, month, 1);
   const end = new Date(year, month + 1, 1);
 
   return prisma.calendarEvent.findMany({
     where: {
       deletedAt: null,
+      tenant,
       sessionId,
       startTime: { gte: start, lt: end },
     },
@@ -30,9 +31,9 @@ export async function getEvents(year: number, month: number) {
 }
 
 export async function getEventById(id: string) {
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
   return prisma.calendarEvent.findFirst({
-    where: { id, deletedAt: null, sessionId },
+    where: { id, deletedAt: null, tenant, sessionId },
     select: {
       id: true,
       title: true,

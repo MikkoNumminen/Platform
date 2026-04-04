@@ -6,7 +6,9 @@ jest.mock("@/lib/db", () => ({
   },
 }));
 
-jest.mock("@/lib/demo-session", () => ({ getDemoSessionId: jest.fn().mockResolvedValue(null) }));
+jest.mock("@/lib/tenant", () => ({
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "platform", sessionId: null }),
+}));
 
 import { getTeamCharacters } from "@/lib/mythicplus-queries";
 

@@ -23,6 +23,11 @@ jest.mock("@/lib/gamification/admin-queries", () => ({
   getGamificationStats: () => mockGetGamificationStats(),
 }));
 
+jest.mock("@/lib/tenant", () => ({
+  getActiveTenant: jest.fn().mockResolvedValue("vuohiliitto"),
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "vuohiliitto", sessionId: null }),
+}));
+
 jest.mock("@/app/components/TopBar", () => {
   return function MockTopBar({ title }: { title: string }) {
     return <div data-testid="topbar">{title}</div>;

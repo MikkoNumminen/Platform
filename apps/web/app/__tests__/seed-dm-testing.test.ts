@@ -23,7 +23,10 @@ jest.mock("@/lib/db", () => ({
 }));
 
 jest.mock("@/auth", () => ({ auth: jest.fn() }));
-jest.mock("@/lib/demo-session", () => ({ getDemoSessionId: jest.fn().mockResolvedValue(null) }));
+jest.mock("@/lib/tenant", () => ({
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "vuohiliitto", sessionId: null }),
+  getActiveTenant: jest.fn().mockResolvedValue("vuohiliitto"),
+}));
 jest.mock("next/headers", () => ({ headers: jest.fn().mockResolvedValue({ get: () => null }) }));
 jest.mock("@/lib/logger", () => ({
   logger: { error: jest.fn(), info: jest.fn(), warn: jest.fn() },

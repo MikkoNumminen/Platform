@@ -1,6 +1,7 @@
 const mockAuth = jest.fn();
 const mockXpFindMany = jest.fn();
 const mockUserLevelFindUnique = jest.fn();
+const mockUserLevelFindFirst = jest.fn();
 const mockLoginStreakFindUnique = jest.fn();
 const mockUserAchievementFindMany = jest.fn();
 
@@ -8,10 +9,18 @@ jest.mock("@/auth", () => ({
   auth: () => mockAuth(),
 }));
 
+jest.mock("@/lib/tenant", () => ({
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "vuohiliitto", sessionId: null }),
+  getActiveTenant: jest.fn().mockResolvedValue("vuohiliitto"),
+}));
+
 jest.mock("@/lib/db", () => ({
   prisma: {
     xpTransaction: { findMany: (...a: unknown[]) => mockXpFindMany(...a) },
-    userLevel: { findUnique: (...a: unknown[]) => mockUserLevelFindUnique(...a) },
+    userLevel: {
+      findUnique: (...a: unknown[]) => mockUserLevelFindUnique(...a),
+      findFirst: (...a: unknown[]) => mockUserLevelFindFirst(...a),
+    },
     loginStreak: { findUnique: (...a: unknown[]) => mockLoginStreakFindUnique(...a) },
     userAchievement: { findMany: (...a: unknown[]) => mockUserAchievementFindMany(...a) },
   },
@@ -34,7 +43,7 @@ describe("getLatestXpGains", () => {
       { amount: 10, source: "post:create", createdAt: new Date() },
       { amount: 5, source: "shout:create", createdAt: new Date() },
     ]);
-    mockUserLevelFindUnique.mockResolvedValue({ totalXp: 150, level: 2 });
+    mockUserLevelFindFirst.mockResolvedValue({ totalXp: 150, level: 2 });
 
     const since = new Date(Date.now() - 60000);
     const result = await getLatestXpGains(since);
@@ -54,7 +63,7 @@ describe("getLatestXpGains", () => {
   test("returns level 1 when no user level record", async () => {
     mockAuth.mockResolvedValue(authenticatedSession());
     mockXpFindMany.mockResolvedValue([]);
-    mockUserLevelFindUnique.mockResolvedValue(null);
+    mockUserLevelFindFirst.mockResolvedValue(null);
 
     const result = await getLatestXpGains(new Date());
     expect(result.totalXp).toBe(0);
@@ -64,7 +73,7 @@ describe("getLatestXpGains", () => {
   test("queries transactions since provided date", async () => {
     mockAuth.mockResolvedValue(authenticatedSession());
     mockXpFindMany.mockResolvedValue([]);
-    mockUserLevelFindUnique.mockResolvedValue(null);
+    mockUserLevelFindFirst.mockResolvedValue(null);
 
     const since = new Date("2026-03-01T00:00:00Z");
     await getLatestXpGains(since);
@@ -93,7 +102,7 @@ describe("getMyGamificationProfile", () => {
 
   test("returns profile for authenticated user", async () => {
     mockAuth.mockResolvedValue(authenticatedSession());
-    mockUserLevelFindUnique.mockResolvedValue({ totalXp: 500, level: 5 });
+    mockUserLevelFindFirst.mockResolvedValue({ totalXp: 500, level: 5 });
     mockLoginStreakFindUnique.mockResolvedValue({ currentStreak: 3, longestStreak: 7 });
     mockUserAchievementFindMany.mockResolvedValue([
       {
@@ -114,7 +123,7 @@ describe("getMyGamificationProfile", () => {
 
   test("returns defaults when no level or streak records exist", async () => {
     mockAuth.mockResolvedValue(authenticatedSession());
-    mockUserLevelFindUnique.mockResolvedValue(null);
+    mockUserLevelFindFirst.mockResolvedValue(null);
     mockLoginStreakFindUnique.mockResolvedValue(null);
     mockUserAchievementFindMany.mockResolvedValue([]);
 

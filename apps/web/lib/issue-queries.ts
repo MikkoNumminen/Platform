@@ -1,5 +1,5 @@
 import { prisma } from "./db";
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 
 export interface IssueData {
   id: string;
@@ -12,9 +12,9 @@ export interface IssueData {
 }
 
 export async function getIssueReports(): Promise<IssueData[]> {
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
   const issues = await prisma.issueReport.findMany({
-    where: { sessionId },
+    where: { tenant, sessionId },
     orderBy: [{ resolvedAt: "asc" }, { createdAt: "desc" }],
     take: 200,
     include: { author: { select: { alias: true, name: true } } },

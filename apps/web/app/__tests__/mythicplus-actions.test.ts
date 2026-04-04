@@ -26,8 +26,8 @@ jest.mock("@/lib/rateLimit", () => ({
 
 jest.mock("next/cache", () => ({ revalidatePath: jest.fn() }));
 
-jest.mock("@/lib/demo-session", () => ({
-  getDemoSessionId: jest.fn().mockResolvedValue(null),
+jest.mock("@/lib/tenant", () => ({
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "platform", sessionId: null }),
 }));
 
 jest.mock("@/lib/raiderio", () => ({

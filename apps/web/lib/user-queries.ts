@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 import { DEMO_EMAIL } from "@/lib/demo-constants";
 
 export async function getUsers(): Promise<
@@ -16,9 +16,9 @@ export async function getUsers(): Promise<
     createdAt: Date;
   }>
 > {
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
   return prisma.user.findMany({
-    where: { deletedAt: null, sessionId, email: { not: DEMO_EMAIL } },
+    where: { deletedAt: null, tenant, sessionId, email: { not: DEMO_EMAIL } },
     orderBy: { createdAt: "desc" },
     take: 500,
     select: {
@@ -70,9 +70,9 @@ export async function getUserById(id: string): Promise<{
   developmentSkills: string[];
   createdAt: Date;
 } | null> {
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
   return prisma.user.findFirst({
-    where: { id, deletedAt: null, sessionId },
+    where: { id, deletedAt: null, tenant, sessionId },
     select: {
       id: true,
       email: true,

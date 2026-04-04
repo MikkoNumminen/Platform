@@ -7,7 +7,7 @@ import { safe, requireUser, validateUUID, type ActionResult } from "@/lib/action
 import { rateLimit } from "@/lib/rateLimit";
 import { revalidatePath } from "next/cache";
 import { triggerGamification } from "./gamification/trigger";
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 import { autoCompleteCampaignQuest } from "@/lib/campaign-completion";
 
 const MAX_DM_LENGTH = 500;
@@ -42,13 +42,14 @@ export async function sendDirectMessage(
       throw new ActionError("permissionDenied", "Not a participant of this conversation");
     }
 
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     await prisma.directMessage.create({
       data: {
         conversationId,
         senderId: userId,
         message: trimmed,
+        tenant,
         sessionId,
       },
     });
@@ -95,12 +96,13 @@ export async function startConversation(
     return { error: "Rate limited", code: "rateLimited" };
   }
 
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
 
   // Verify other user exists and is in same session
   const otherUser = await prisma.user.findFirst({
     where: {
       id: otherUserId,
+      tenant,
       sessionId,
       deletedAt: null,
       role: { not: "pending" },
@@ -117,11 +119,11 @@ export async function startConversation(
 
   // findFirst + create instead of upsert (null sessionId breaks unique constraint in upsert)
   let conversation = await prisma.conversation.findFirst({
-    where: { participantA, participantB, sessionId },
+    where: { participantA, participantB, tenant, sessionId },
   });
   if (!conversation) {
     conversation = await prisma.conversation.create({
-      data: { participantA, participantB, sessionId, lastMessageAt: new Date() },
+      data: { participantA, participantB, tenant, sessionId, lastMessageAt: new Date() },
     });
   } else {
     await prisma.conversation.update({
@@ -135,6 +137,7 @@ export async function startConversation(
       conversationId: conversation.id,
       senderId: userId,
       message: trimmed,
+      tenant,
       sessionId,
     },
   });

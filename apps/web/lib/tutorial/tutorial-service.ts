@@ -2,6 +2,7 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { getTenantFilter } from "@/lib/tenant";
 import { getStepsForRole, TIER_XP_BONUS } from "./tutorial-config";
 
 export async function completeTourStep(stepId: string): Promise<{
@@ -15,6 +16,7 @@ export async function completeTourStep(stepId: string): Promise<{
   const userId = session.user.id;
   const role = session.user.role ?? "pending";
   const steps = getStepsForRole(role);
+  const { tenant, sessionId } = await getTenantFilter();
 
   // Verify step is valid for this role
   const step = steps.find((s) => s.id === stepId);
@@ -28,7 +30,7 @@ export async function completeTourStep(stepId: string): Promise<{
 
   // Mark complete
   await prisma.userTourProgress.create({
-    data: { userId, stepId },
+    data: { userId, stepId, tenant, sessionId },
   });
 
   // Award step XP
@@ -39,11 +41,18 @@ export async function completeTourStep(stepId: string): Promise<{
       // Manually award XP since quest:complete is 0 in config
       const { prisma: db } = await import("@/lib/db");
       await db.xpTransaction.create({
-        data: { userId, amount: step.xpReward, source: "tour:step", sourceId: stepId },
+        data: {
+          userId,
+          amount: step.xpReward,
+          source: "tour:step",
+          sourceId: stepId,
+          tenant,
+          sessionId,
+        },
       });
       await db.userLevel.upsert({
         where: { userId },
-        create: { userId, totalXp: step.xpReward, level: 1 },
+        create: { userId, totalXp: step.xpReward, level: 1, tenant, sessionId },
         update: { totalXp: { increment: step.xpReward } },
       });
     } catch (error) {
@@ -53,7 +62,7 @@ export async function completeTourStep(stepId: string): Promise<{
 
   // Check if a tier was just completed
   const allProgress = await prisma.userTourProgress.findMany({
-    where: { userId },
+    where: { userId, tenant, sessionId },
     select: { stepId: true },
   });
   const completedIds = new Set(allProgress.map((p) => p.stepId));
@@ -85,11 +94,18 @@ export async function completeTourStep(stepId: string): Promise<{
           try {
             const { prisma: db } = await import("@/lib/db");
             await db.xpTransaction.create({
-              data: { userId, amount: tierBonus, source: "tour:tier", sourceId: `tier_${tier}` },
+              data: {
+                userId,
+                amount: tierBonus,
+                source: "tour:tier",
+                sourceId: `tier_${tier}`,
+                tenant,
+                sessionId,
+              },
             });
             await db.userLevel.upsert({
               where: { userId },
-              create: { userId, totalXp: tierBonus, level: 1 },
+              create: { userId, totalXp: tierBonus, level: 1, tenant, sessionId },
               update: { totalXp: { increment: tierBonus } },
             });
           } catch (error) {
@@ -116,15 +132,17 @@ export async function completeTourStep(stepId: string): Promise<{
 }
 
 export async function getTourProgress(userId: string): Promise<string[]> {
+  const { tenant, sessionId } = await getTenantFilter();
   const progress = await prisma.userTourProgress.findMany({
-    where: { userId },
+    where: { userId, tenant, sessionId },
     select: { stepId: true },
   });
   return progress.map((p) => p.stepId);
 }
 
 export async function resetTour(userId: string): Promise<void> {
-  await prisma.userTourProgress.deleteMany({ where: { userId } });
+  const { tenant, sessionId } = await getTenantFilter();
+  await prisma.userTourProgress.deleteMany({ where: { userId, tenant, sessionId } });
 }
 
 export async function getMyTourProgress(): Promise<{
@@ -155,8 +173,9 @@ export async function getMyTourProgress(): Promise<{
  * This handles the case where users completed actions before the tutorial system existed.
  */
 async function syncTourProgress(userId: string): Promise<void> {
+  const { tenant, sessionId } = await getTenantFilter();
   const existing = await prisma.userTourProgress.findMany({
-    where: { userId },
+    where: { userId, tenant, sessionId },
     select: { stepId: true },
   });
   const completedIds = new Set(existing.map((p) => p.stepId));
@@ -209,7 +228,7 @@ async function syncTourProgress(userId: string): Promise<void> {
 
   if (toComplete.length > 0) {
     await prisma.userTourProgress.createMany({
-      data: toComplete.map((stepId) => ({ userId, stepId })),
+      data: toComplete.map((stepId) => ({ userId, stepId, tenant, sessionId })),
       skipDuplicates: true,
     });
   }

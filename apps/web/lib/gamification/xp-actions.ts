@@ -2,6 +2,7 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { getTenantFilter } from "@/lib/tenant";
 import { getLevelForXp } from "./xp-config";
 
 export async function getLatestXpGains(since: Date): Promise<{
@@ -13,13 +14,14 @@ export async function getLatestXpGains(since: Date): Promise<{
   if (!session?.user?.id) return { gains: [], level: 1, totalXp: 0 };
   const userId = session.user.id;
   try {
+    const { tenant, sessionId } = await getTenantFilter();
     const [transactions, userLevel] = await Promise.all([
       prisma.xpTransaction.findMany({
-        where: { userId, createdAt: { gt: since } },
+        where: { userId, createdAt: { gt: since }, tenant, sessionId },
         orderBy: { createdAt: "desc" },
         take: 10,
       }),
-      prisma.userLevel.findUnique({ where: { userId } }),
+      prisma.userLevel.findFirst({ where: { userId, tenant, sessionId } }),
     ]);
     const totalXp = userLevel?.totalXp ?? 0;
     const level = getLevelForXp(totalXp);
@@ -50,11 +52,12 @@ export async function getMyGamificationProfile(): Promise<{
   if (!session?.user?.id) return null;
   const userId = session.user.id;
   try {
+    const { tenant, sessionId } = await getTenantFilter();
     const [userLevel, streak, recentAchievements] = await Promise.all([
-      prisma.userLevel.findUnique({ where: { userId } }),
+      prisma.userLevel.findFirst({ where: { userId, tenant, sessionId } }),
       prisma.loginStreak.findUnique({ where: { userId } }),
       prisma.userAchievement.findMany({
-        where: { userId },
+        where: { userId, tenant, sessionId },
         include: { achievement: true },
         orderBy: { unlockedAt: "desc" },
         take: 5,

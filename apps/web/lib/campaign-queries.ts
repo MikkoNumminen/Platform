@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 
 export interface CampaignQuest {
   id: string;
@@ -26,7 +26,7 @@ export async function getActiveCampaign(): Promise<ActiveCampaign | null> {
   if (!session?.user?.id) return null;
 
   const userId = session.user.id;
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
 
   // Find the active survey round with a deadline (campaign rounds)
   const round = await prisma.surveyRound.findFirst({
@@ -52,7 +52,8 @@ export async function getActiveCampaign(): Promise<ActiveCampaign | null> {
       type: "campaign",
       deletedAt: null,
       OR: [{ surveyRoundId: round.id }, { deadline: round.deadline }],
-      ...(sessionId ? {} : { assignee: { sessionId: null } }),
+      tenant,
+      sessionId,
     },
     select: {
       id: true,

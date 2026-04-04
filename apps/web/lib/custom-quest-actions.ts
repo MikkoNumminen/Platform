@@ -8,7 +8,7 @@ import { revalidatePath } from "next/cache";
 import { awardCustomXp } from "./gamification/xp-service";
 import { DEVELOPMENT_SKILL_OPTIONS } from "./survey-config";
 import { logAudit } from "./audit";
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 
 const VALID_STATUSES = ["open", "in_progress", "completed"] as const;
 const VALID_PRIORITIES = ["low", "normal", "high", "urgent"] as const;
@@ -68,7 +68,7 @@ export const createCustomQuest = guardedAction(
       if (isNaN(d.getTime())) throw new ActionError("invalidInput", "Invalid deadline date");
     }
 
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     const created = await prisma.quest.create({
       data: {
@@ -81,6 +81,7 @@ export const createCustomQuest = guardedAction(
         assigneeId,
         creatorId: session.user.id,
         deadline: deadline ? new Date(deadline) : null,
+        tenant,
         sessionId,
       },
     });
@@ -118,8 +119,9 @@ export const updateCustomQuest = guardedAction(
   ) => {
     validateUUID(questId, "questId");
 
+    const { tenant, sessionId } = await getTenantFilter();
     const quest = await prisma.quest.findFirst({
-      where: { id: questId, deletedAt: null },
+      where: { id: questId, deletedAt: null, tenant, sessionId },
     });
     if (!quest) {
       throw new ActionError("questNotFound", "Quest not found");
@@ -204,8 +206,9 @@ export const completeCustomQuest = guardedAction(
   async (session, questId: string) => {
     validateUUID(questId, "questId");
 
+    const { tenant, sessionId } = await getTenantFilter();
     const quest = await prisma.quest.findFirst({
-      where: { id: questId, deletedAt: null },
+      where: { id: questId, deletedAt: null, tenant, sessionId },
     });
     if (!quest) {
       throw new ActionError("questNotFound", "Quest not found");
@@ -247,6 +250,8 @@ export const completeCustomQuest = guardedAction(
           progress: 1,
           completed: true,
           completedAt: new Date(),
+          tenant,
+          sessionId,
         },
       });
     }
@@ -271,8 +276,9 @@ export const deleteCustomQuest = guardedAction(
   async (session, questId: string) => {
     validateUUID(questId, "questId");
 
+    const { tenant, sessionId } = await getTenantFilter();
     const quest = await prisma.quest.findFirst({
-      where: { id: questId, deletedAt: null },
+      where: { id: questId, deletedAt: null, tenant, sessionId },
     });
     if (!quest) {
       throw new ActionError("questNotFound", "Quest not found");

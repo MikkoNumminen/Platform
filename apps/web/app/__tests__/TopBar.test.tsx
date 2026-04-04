@@ -20,6 +20,26 @@ jest.mock("../components/UserMenu", () => {
   };
 });
 
+jest.mock("../components/TenantSwitcher", () => {
+  return function MockTenantSwitcher() {
+    return <div data-testid="tenant-switcher" />;
+  };
+});
+
+jest.mock("../components/LanguageSwitcher", () => {
+  return function MockLanguageSwitcher() {
+    return <div data-testid="language-switcher" />;
+  };
+});
+
+jest.mock("@/lib/use-tenant", () => ({
+  useActiveTenant: (role: string, isDemoUser: boolean) => {
+    if (isDemoUser) return "vuohiliitto";
+    if (["superuser", "vuohi"].includes(role)) return "vuohiliitto";
+    return "platform";
+  },
+}));
+
 describe("TopBar", () => {
   beforeEach(() => {
     mockUseSession.mockReturnValue({ data: null });

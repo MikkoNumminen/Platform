@@ -6,7 +6,7 @@ import { ActionError } from "./actionErrors";
 import { validateUUID, createStringValidator } from "./actionUtils";
 import { revalidatePath } from "next/cache";
 
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 
 const validateThreadBody = createStringValidator(
   "Comment",
@@ -29,12 +29,12 @@ export const createThread = guardedAction(
     validateUUID(parentId, "parentId");
     if (replyToId) validateUUID(replyToId, "replyToId");
     const validBody = validateThreadBody(body);
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     // Verify parent exists
     if (parentType === "POST") {
       const post = await prisma.post.findFirst({
-        where: { id: parentId, deletedAt: null, sessionId },
+        where: { id: parentId, deletedAt: null, tenant, sessionId },
       });
       if (!post) {
         throw new ActionError("postNotFound", "Post not found");
@@ -44,7 +44,7 @@ export const createThread = guardedAction(
     // Verify reply target exists
     if (replyToId) {
       const replyTarget = await prisma.thread.findFirst({
-        where: { id: replyToId, deletedAt: null, sessionId },
+        where: { id: replyToId, deletedAt: null, tenant, sessionId },
       });
       if (!replyTarget) {
         throw new ActionError("threadNotFound", "Reply target not found");
@@ -60,6 +60,7 @@ export const createThread = guardedAction(
         parentId,
         authorId,
         replyToId: replyToId ?? null,
+        tenant,
         sessionId,
       },
     });
@@ -77,10 +78,10 @@ export const deleteThread = guardedAction(
   "thread:delete",
   async (session, threadId: string, revalidateUrl?: string) => {
     validateUUID(threadId, "threadId");
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     const thread = await prisma.thread.findFirst({
-      where: { id: threadId, deletedAt: null, sessionId },
+      where: { id: threadId, deletedAt: null, tenant, sessionId },
     });
     if (!thread) {
       throw new ActionError("threadNotFound", "Comment not found");

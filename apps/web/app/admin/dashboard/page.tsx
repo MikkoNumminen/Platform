@@ -16,6 +16,7 @@ import TopBar from "../../components/TopBar";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getGamificationStats } from "@/lib/gamification/admin-queries";
+import { getActiveTenant } from "@/lib/tenant";
 import { LEVEL_THRESHOLDS, XP_AMOUNTS } from "@/lib/gamification/xp-config";
 import {
   colors,
@@ -37,8 +38,8 @@ export default async function GamificationDashboardPage() {
   }
 
   const stats = await getGamificationStats();
-  const isDemoUser = Boolean(session?.user?.demoSessionId);
-  const dashboardTitle = isDemoUser ? "Platform Dashboard" : "Vuohiliitto Dashboard";
+  const tenant = await getActiveTenant();
+  const dashboardTitle = tenant === "vuohiliitto" ? "Vuohiliitto Dashboard" : "Platform Dashboard";
 
   return (
     <>

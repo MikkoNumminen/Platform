@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 
 export interface WowCharacterData {
   id: string;
@@ -20,10 +20,10 @@ export interface WowCharacterData {
 }
 
 export async function getTeamCharacters(): Promise<WowCharacterData[]> {
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
 
   const characters = await prisma.wowCharacter.findMany({
-    where: { sessionId },
+    where: { tenant, sessionId },
     include: { addedBy: { select: { alias: true, name: true } } },
     orderBy: { mythicPlusRating: "desc" },
   });
@@ -83,10 +83,10 @@ const SLOT_SELECT = {
 };
 
 export async function getTeams(): Promise<MythicPlusTeamData[]> {
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
 
   const teams = await prisma.mythicPlusTeam.findMany({
-    where: { sessionId },
+    where: { tenant, sessionId },
     include: {
       tank: SLOT_SELECT,
       healer: SLOT_SELECT,

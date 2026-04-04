@@ -7,7 +7,7 @@ import { validateUUID, createStringValidator } from "./actionUtils";
 import { revalidatePath } from "next/cache";
 import { slugify } from "./slug-utils";
 
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 
 const validatePostTitle = createStringValidator(
   "Post title",
@@ -30,14 +30,14 @@ export const createPost = guardedAction(
     const validTitle = validatePostTitle(title);
     const validBody = validatePostBody(body);
     const baseSlug = slugify(validTitle);
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     if (!baseSlug) {
       throw new ActionError("invalidPostTitle", "Post title produces an invalid URL slug");
     }
 
     const board = await prisma.board.findFirst({
-      where: { id: boardId, deletedAt: null, sessionId },
+      where: { id: boardId, deletedAt: null, tenant, sessionId },
     });
     if (!board) {
       throw new ActionError("boardNotFound", "Board not found");
@@ -50,7 +50,7 @@ export const createPost = guardedAction(
     let suffix = 1;
     while (
       await prisma.post.findFirst({
-        where: { boardId, slug, deletedAt: null, sessionId },
+        where: { boardId, slug, deletedAt: null, tenant, sessionId },
       })
     ) {
       slug = `${baseSlug}-${suffix++}`;
@@ -63,6 +63,7 @@ export const createPost = guardedAction(
         body: validBody,
         authorId,
         boardId,
+        tenant,
         sessionId,
       },
     });
@@ -80,10 +81,10 @@ export const updatePost = guardedAction(
     validateUUID(postId, "postId");
     const validTitle = validatePostTitle(title);
     const validBody = validatePostBody(body);
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     const post = await prisma.post.findFirst({
-      where: { id: postId, deletedAt: null, sessionId },
+      where: { id: postId, deletedAt: null, tenant, sessionId },
       include: { board: { select: { slug: true } } },
     });
     if (!post) {
@@ -105,7 +106,14 @@ export const updatePost = guardedAction(
     let suffix = 1;
     while (
       await prisma.post.findFirst({
-        where: { boardId: post.boardId, slug, deletedAt: null, id: { not: postId }, sessionId },
+        where: {
+          boardId: post.boardId,
+          slug,
+          deletedAt: null,
+          id: { not: postId },
+          tenant,
+          sessionId,
+        },
       })
     ) {
       slug = `${baseSlug}-${suffix++}`;
@@ -125,10 +133,10 @@ export const togglePostPin = guardedAction(
   "post:edit",
   async (_session, postId: string) => {
     validateUUID(postId, "postId");
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     const post = await prisma.post.findFirst({
-      where: { id: postId, deletedAt: null, sessionId },
+      where: { id: postId, deletedAt: null, tenant, sessionId },
       include: { board: { select: { slug: true } } },
     });
     if (!post) {
@@ -149,10 +157,10 @@ export const deletePost = guardedAction(
   "post:delete",
   async (_session, postId: string) => {
     validateUUID(postId, "postId");
-    const sessionId = await getDemoSessionId();
+    const { tenant, sessionId } = await getTenantFilter();
 
     const post = await prisma.post.findFirst({
-      where: { id: postId, deletedAt: null, sessionId },
+      where: { id: postId, deletedAt: null, tenant, sessionId },
       include: { board: { select: { slug: true } } },
     });
     if (!post) {

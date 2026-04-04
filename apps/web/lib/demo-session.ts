@@ -43,6 +43,7 @@ export async function seedDemoData(sessionId: string): Promise<void> {
           developerTag: seed.developerTag,
           developmentSkills: [...seed.developmentSkills],
           hasSeenPromotion: true,
+          tenant: "vuohiliitto",
           sessionId,
         },
       });
@@ -58,6 +59,7 @@ export async function seedDemoData(sessionId: string): Promise<void> {
           slug: `${seed.slug}-${sessionId.slice(0, 8)}`,
           description: seed.description,
           sortOrder: i,
+          tenant: "vuohiliitto",
           sessionId,
         },
       });
@@ -75,6 +77,7 @@ export async function seedDemoData(sessionId: string): Promise<void> {
           pinned: seed.pinned,
           authorId: userMap.get(seed.authorIndex)!,
           boardId: boardMap.get(seed.boardIndex)!,
+          tenant: "vuohiliitto",
           sessionId,
         },
       });
@@ -91,6 +94,7 @@ export async function seedDemoData(sessionId: string): Promise<void> {
           parentId: postMap.get(seed.postIndex)!,
           authorId: userMap.get(seed.authorIndex)!,
           replyToId: seed.replyToIndex !== null ? (threadMap.get(seed.replyToIndex) ?? null) : null,
+          tenant: "vuohiliitto",
           sessionId,
         },
       });
@@ -102,6 +106,7 @@ export async function seedDemoData(sessionId: string): Promise<void> {
         data: {
           message: seed.message,
           authorId: userMap.get(seed.authorIndex)!,
+          tenant: "vuohiliitto",
           sessionId,
         },
       });
@@ -129,6 +134,7 @@ export async function seedDemoData(sessionId: string): Promise<void> {
           endTime,
           allDay: seed.allDay,
           authorId: userMap.get(seed.authorIndex)!,
+          tenant: "vuohiliitto",
           sessionId,
         },
       });
@@ -142,6 +148,7 @@ export async function seedDemoData(sessionId: string): Promise<void> {
           url: seed.url,
           authorId: userMap.get(seed.authorIndex)!,
           resolvedAt: seed.resolved ? new Date() : null,
+          tenant: "vuohiliitto",
           sessionId,
         },
       });
@@ -158,6 +165,7 @@ export async function seedDemoData(sessionId: string): Promise<void> {
           wantsToDevelop: seed.wantsToDevelop,
           developmentSkills: [...seed.developmentSkills],
           userId: seed.authorIndex !== null ? (userMap.get(seed.authorIndex) ?? null) : null,
+          tenant: "vuohiliitto",
           sessionId,
         },
       });
@@ -171,6 +179,7 @@ export async function seedDemoData(sessionId: string): Promise<void> {
           userId,
           totalXp: seed.totalXp,
           level: seed.level,
+          tenant: "vuohiliitto",
           sessionId,
         },
       });
@@ -180,6 +189,7 @@ export async function seedDemoData(sessionId: string): Promise<void> {
           userId,
           amount: seed.totalXp,
           source: "demo:seed",
+          tenant: "vuohiliitto",
           sessionId,
         },
       });
@@ -190,6 +200,7 @@ export async function seedDemoData(sessionId: string): Promise<void> {
           currentStreak: seed.level,
           longestStreak: seed.level * 2,
           lastLoginDate: new Date(),
+          tenant: "vuohiliitto",
           sessionId,
         },
       });
@@ -208,6 +219,7 @@ export async function seedDemoData(sessionId: string): Promise<void> {
           assigneeId: userMap.get(seed.assigneeIndex)!,
           creatorId: userMap.get(seed.creatorIndex)!,
           completedAt: seed.completed ? new Date() : null,
+          tenant: "vuohiliitto",
           sessionId,
         },
       });
@@ -220,7 +232,7 @@ export async function seedDemoData(sessionId: string): Promise<void> {
         const achievement = await tx.achievement.findUnique({ where: { key } });
         if (achievement) {
           await tx.userAchievement.create({
-            data: { userId, achievementId: achievement.id, sessionId },
+            data: { userId, achievementId: achievement.id, tenant: "vuohiliitto", sessionId },
           });
         }
       }
@@ -238,6 +250,7 @@ export async function seedDemoData(sessionId: string): Promise<void> {
             progress: seed.progress,
             completed: seed.completed,
             completedAt: seed.completed ? new Date() : null,
+            tenant: "vuohiliitto",
             sessionId,
           },
         });
@@ -251,7 +264,13 @@ export async function seedDemoData(sessionId: string): Promise<void> {
       const [participantA, participantB] = aId < bId ? [aId, bId] : [bId, aId];
 
       const conversation = await tx.conversation.create({
-        data: { participantA, participantB, sessionId, lastMessageAt: new Date() },
+        data: {
+          participantA,
+          participantB,
+          tenant: "vuohiliitto",
+          sessionId,
+          lastMessageAt: new Date(),
+        },
       });
 
       for (const msg of seed.messages) {
@@ -260,6 +279,7 @@ export async function seedDemoData(sessionId: string): Promise<void> {
             conversationId: conversation.id,
             senderId: userMap.get(msg.senderIndex)!,
             message: msg.message,
+            tenant: "vuohiliitto",
             sessionId,
           },
         });
@@ -277,6 +297,8 @@ export async function seedDemoData(sessionId: string): Promise<void> {
         status: DEMO_SURVEY_ROUND.status,
         xpReward: DEMO_SURVEY_ROUND.xpReward,
         creatorId: userMap.get(DEMO_SURVEY_ROUND.creatorIndex)!,
+        tenant: "vuohiliitto",
+        sessionId,
       },
     });
 

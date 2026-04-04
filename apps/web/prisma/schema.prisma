@@ -90,6 +90,7 @@ model Board {
   slug        String    @unique
   description String?
   sortOrder   Int       @default(0)
+  tenant      String    @default("vuohiliitto")
   sessionId   String?
   deletedAt   DateTime?
   createdAt   DateTime  @default(now())
@@ -100,6 +101,7 @@ model Board {
   @@index([deletedAt])
   @@index([sortOrder])
   @@index([sessionId])
+  @@index([tenant])
 }
 
 model Post {
@@ -110,6 +112,7 @@ model Post {
   pinned    Boolean   @default(false)
   authorId  String
   boardId   String
+  tenant    String    @default("vuohiliitto")
   sessionId String?
   deletedAt DateTime?
   createdAt DateTime  @default(now())
@@ -125,6 +128,7 @@ model Post {
   @@index([pinned])
   @@index([createdAt])
   @@index([sessionId])
+  @@index([tenant])
 }
 
 // ─── Forum System ────────────────────────────────────────────────────────────
@@ -135,6 +139,7 @@ model Forum {
   slug        String    @unique
   description String?
   sortOrder   Int       @default(0)
+  tenant      String    @default("vuohiliitto")
   sessionId   String?
   deletedAt   DateTime?
   createdAt   DateTime  @default(now())
@@ -145,6 +150,7 @@ model Forum {
   @@index([deletedAt])
   @@index([sortOrder])
   @@index([sessionId])
+  @@index([tenant])
 }
 
 model Topic {
@@ -156,6 +162,7 @@ model Topic {
   locked    Boolean   @default(false)
   authorId  String
   forumId   String
+  tenant    String    @default("vuohiliitto")
   sessionId String?
   deletedAt DateTime?
   createdAt DateTime  @default(now())
@@ -171,6 +178,7 @@ model Topic {
   @@index([pinned])
   @@index([createdAt])
   @@index([sessionId])
+  @@index([tenant])
 }
 
 // ─── Unified Thread/Reply System ─────────────────────────────────────────────
@@ -187,6 +195,7 @@ model Thread {
   parentId   String
   authorId   String
   replyToId  String?
+  tenant     String     @default("vuohiliitto")
   sessionId  String?
   deletedAt  DateTime?
   createdAt  DateTime   @default(now())
@@ -202,6 +211,7 @@ model Thread {
   @@index([replyToId])
   @@index([createdAt])
   @@index([sessionId])
+  @@index([tenant])
 }
 
 // ─── Calendar System ─────────────────────────────────────────────────────────
@@ -215,6 +225,7 @@ model CalendarEvent {
   endTime     DateTime
   allDay      Boolean   @default(false)
   authorId    String?
+  tenant      String    @default("vuohiliitto")
   sessionId   String?
   deletedAt   DateTime?
   createdAt   DateTime  @default(now())
@@ -226,6 +237,7 @@ model CalendarEvent {
   @@index([authorId])
   @@index([startTime, endTime])
   @@index([sessionId])
+  @@index([tenant])
 }
 
 // ─── Shoutbox ───────────────────────────────────────────────────────────────
@@ -234,6 +246,7 @@ model Shout {
   id        String   @id @default(uuid())
   message   String
   authorId  String
+  tenant    String   @default("vuohiliitto")
   sessionId String?
   createdAt DateTime @default(now())
 
@@ -242,6 +255,7 @@ model Shout {
   @@index([createdAt])
   @@index([authorId])
   @@index([sessionId])
+  @@index([tenant])
 }
 
 // ─── Issue Reports ──────────────────────────────────────────────────────────
@@ -252,6 +266,7 @@ model IssueReport {
   description String
   url         String?
   authorId    String
+  tenant      String    @default("vuohiliitto")
   sessionId   String?
   resolvedAt  DateTime?
   createdAt   DateTime  @default(now())
@@ -262,6 +277,7 @@ model IssueReport {
   @@index([authorId])
   @@index([resolvedAt])
   @@index([sessionId])
+  @@index([tenant])
 }
 
 // ─── Rate Limiting ──────────────────────────────────────────────────────────
@@ -289,6 +305,7 @@ model SurveyRound {
   customQuestions  Json?
   deadline        DateTime?
   creatorId       String
+  tenant          String    @default("vuohiliitto")
   closedAt        DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -299,6 +316,7 @@ model SurveyRound {
 
   @@index([status])
   @@index([creatorId])
+  @@index([tenant])
 }
 
 model SurveyResponse {
@@ -313,6 +331,7 @@ model SurveyResponse {
   customAnswers     Json?
   userId            String?
   roundId           String?
+  tenant            String    @default("vuohiliitto")
   sessionId         String?
   submittedAt       DateTime @default(now())
 
@@ -323,6 +342,7 @@ model SurveyResponse {
   @@index([userId])
   @@index([roundId])
   @@index([sessionId])
+  @@index([tenant])
 }
 
 // ─── Feedback ───────────────────────────────────────────────────────────────
@@ -334,6 +354,7 @@ model Feedback {
   adminReply     String?
   adminReplyById String?
   adminRepliedAt DateTime?
+  tenant         String    @default("vuohiliitto")
   sessionId      String?
   createdAt      DateTime  @default(now())
 
@@ -343,6 +364,7 @@ model Feedback {
   @@index([authorId])
   @@index([createdAt])
   @@index([sessionId])
+  @@index([tenant])
 }
 
 // ─── WoW Mythic+ Tracking ─────────────────────────────────────────────────
@@ -362,6 +384,7 @@ model WowCharacter {
   profileUrl       String?
   lastFetchedAt    DateTime?
   addedById        String
+  tenant           String    @default("vuohiliitto")
   sessionId        String?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
@@ -377,6 +400,7 @@ model WowCharacter {
   @@unique([characterName, realm, region, sessionId])
   @@index([addedById])
   @@index([sessionId])
+  @@index([tenant])
 }
 
 model MythicPlusTeam {
@@ -388,6 +412,7 @@ model MythicPlusTeam {
   dps2Id    String?
   dps3Id    String?
   creatorId String
+  tenant    String   @default("vuohiliitto")
   sessionId String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -401,6 +426,7 @@ model MythicPlusTeam {
 
   @@index([creatorId])
   @@index([sessionId])
+  @@index([tenant])
 }
 
 // ─── Gamification ──────────────────────────────────────────────────────────
@@ -411,6 +437,7 @@ model XpTransaction {
   amount    Int
   source    String
   sourceId  String?
+  tenant    String   @default("vuohiliitto")
   sessionId String?
   createdAt DateTime @default(now())
 
@@ -421,6 +448,7 @@ model XpTransaction {
   @@index([source])
   @@index([userId, source])
   @@index([sessionId])
+  @@index([tenant])
 }
 
 model UserLevel {
@@ -428,6 +456,7 @@ model UserLevel {
   userId    String   @unique
   totalXp   Int      @default(0)
   level     Int      @default(1)
+  tenant    String   @default("vuohiliitto")
   sessionId String?
   updatedAt DateTime @updatedAt
 
@@ -436,6 +465,7 @@ model UserLevel {
   @@index([level])
   @@index([totalXp])
   @@index([sessionId])
+  @@index([tenant])
 }
 
 model Achievement {
@@ -458,6 +488,7 @@ model UserAchievement {
   id            String   @id @default(uuid())
   userId        String
   achievementId String
+  tenant        String   @default("vuohiliitto")
   sessionId     String?
   unlockedAt    DateTime @default(now())
 
@@ -467,6 +498,7 @@ model UserAchievement {
   @@unique([userId, achievementId])
   @@index([userId])
   @@index([sessionId])
+  @@index([tenant])
 }
 
 model Quest {
@@ -490,6 +522,7 @@ model Quest {
   status        String    @default("active")
   completedAt   DateTime?
   deletedAt     DateTime?
+  tenant        String    @default("vuohiliitto")
   sessionId     String?
   updatedAt     DateTime  @default(now()) @updatedAt
 
@@ -504,6 +537,7 @@ model Quest {
   @@index([deletedAt])
   @@index([sessionId])
   @@index([surveyRoundId])
+  @@index([tenant])
 }
 
 model UserQuestProgress {
@@ -514,6 +548,7 @@ model UserQuestProgress {
   completed   Boolean   @default(false)
   completedAt DateTime?
   resetAt     DateTime?
+  tenant      String    @default("vuohiliitto")
   sessionId   String?
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -523,6 +558,7 @@ model UserQuestProgress {
   @@index([userId])
   @@index([completed])
   @@index([sessionId])
+  @@index([tenant])
 }
 
 model LoginStreak {
@@ -531,12 +567,14 @@ model LoginStreak {
   currentStreak Int      @default(0)
   longestStreak Int      @default(0)
   lastLoginDate DateTime
+  tenant        String   @default("vuohiliitto")
   sessionId     String?
   updatedAt     DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([sessionId])
+  @@index([tenant])
 }
 
 // ─── Demo Mode ────────────────────────────────────────────────────────────
@@ -558,6 +596,7 @@ model UserTourProgress {
   id          String   @id @default(uuid())
   userId      String
   stepId      String
+  tenant      String   @default("vuohiliitto")
   sessionId   String?
   completedAt DateTime @default(now())
 
@@ -566,6 +605,7 @@ model UserTourProgress {
   @@unique([userId, stepId])
   @@index([userId])
   @@index([sessionId])
+  @@index([tenant])
 }
 
 // ─── Audit Log ───────────────────────────────────────────────────────────
@@ -578,6 +618,7 @@ model AuditLog {
   actorId    String
   actorName  String?
   details    Json?
+  tenant     String   @default("vuohiliitto")
   sessionId  String?
   createdAt  DateTime @default(now())
 
@@ -586,14 +627,18 @@ model AuditLog {
   @@index([actorId])
   @@index([createdAt])
   @@index([sessionId])
+  @@index([tenant])
 }
 
 // ─── Platform Settings ────────────────────────────────────────────────────
 
 model PlatformSetting {
-  key       String   @id
+  key       String
+  tenant    String   @default("vuohiliitto")
   value     String
   updatedAt DateTime @updatedAt
+
+  @@id([tenant, key])
 }
 
 // ─── Direct Messages ──────────────────────────────────────────────────────
@@ -604,6 +649,7 @@ model Conversation {
   participantB  String
   isPrivacy     Boolean   @default(false)
   lastMessageAt DateTime  @default(now())
+  tenant        String    @default("vuohiliitto")
   sessionId     String?
   createdAt     DateTime  @default(now())
 
@@ -616,6 +662,7 @@ model Conversation {
   @@index([participantB])
   @@index([lastMessageAt])
   @@index([sessionId])
+  @@index([tenant])
 }
 
 model DirectMessage {
@@ -624,6 +671,7 @@ model DirectMessage {
   senderId       String
   message        String
   readAt         DateTime?
+  tenant         String    @default("vuohiliitto")
   sessionId      String?
   createdAt      DateTime  @default(now())
 
@@ -633,4 +681,5 @@ model DirectMessage {
   @@index([conversationId, createdAt])
   @@index([senderId])
   @@index([sessionId])
+  @@index([tenant])
 }

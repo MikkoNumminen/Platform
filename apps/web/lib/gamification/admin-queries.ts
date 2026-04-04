@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { getDemoSessionId } from "@/lib/demo-session";
+import { getTenantFilter } from "@/lib/tenant";
 import { LEVEL_THRESHOLDS } from "./xp-config";
 
 export async function getGamificationStats() {
@@ -25,7 +25,7 @@ export async function getGamificationStats() {
 }
 
 async function fetchGamificationStats() {
-  const sessionId = await getDemoSessionId();
+  const { tenant, sessionId } = await getTenantFilter();
   const [
     totalUsersWithXp,
     xpAggregates,
@@ -35,11 +35,11 @@ async function fetchGamificationStats() {
     recentActivity,
   ] = await Promise.all([
     prisma.userLevel.count({
-      where: { sessionId },
+      where: { tenant, sessionId },
     }),
 
     prisma.userLevel.aggregate({
-      where: { sessionId },
+      where: { tenant, sessionId },
       _sum: { totalXp: true },
       _avg: { totalXp: true },
       _max: { totalXp: true },
@@ -47,14 +47,14 @@ async function fetchGamificationStats() {
 
     prisma.userLevel.groupBy({
       by: ["level"],
-      where: { sessionId },
+      where: { tenant, sessionId },
       _count: { level: true },
       orderBy: { level: "asc" },
     }),
 
     prisma.userAchievement.groupBy({
       by: ["achievementId"],
-      where: { sessionId },
+      where: { tenant, sessionId },
       _count: { achievementId: true },
       orderBy: { _count: { achievementId: "desc" } },
       take: 10,
@@ -66,7 +66,7 @@ async function fetchGamificationStats() {
         _count: {
           select: {
             userProgress: {
-              where: { completed: true, sessionId },
+              where: { completed: true, tenant, sessionId },
             },
           },
         },
@@ -75,7 +75,7 @@ async function fetchGamificationStats() {
     }),
 
     prisma.xpTransaction.findMany({
-      where: { sessionId },
+      where: { tenant, sessionId },
       orderBy: { createdAt: "desc" },
       take: 20,
       include: {
@@ -97,7 +97,7 @@ async function fetchGamificationStats() {
   }> = [];
   try {
     const rawCustomQuests = await prisma.quest.findMany({
-      where: { type: { in: ["assigned", "campaign"] }, deletedAt: null, sessionId },
+      where: { type: { in: ["assigned", "campaign"] }, deletedAt: null, tenant, sessionId },
       select: {
         id: true,
         name: true,

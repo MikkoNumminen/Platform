@@ -22,8 +22,9 @@ jest.mock("next/cache", () => ({
   revalidatePath: jest.fn(),
 }));
 
-jest.mock("@/lib/demo-session", () => ({
-  getDemoSessionId: jest.fn().mockResolvedValue(null),
+jest.mock("@/lib/tenant", () => ({
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "vuohiliitto", sessionId: null }),
+  getActiveTenant: jest.fn().mockResolvedValue("vuohiliitto"),
 }));
 
 import { createShout } from "@/lib/shout-actions";
@@ -44,7 +45,7 @@ describe("createShout", () => {
     const result = await createShout("Hello world!");
     expect(result).toBeUndefined();
     expect(mockCreate).toHaveBeenCalledWith({
-      data: { message: "Hello world!", authorId: "user-1", sessionId: null },
+      data: { message: "Hello world!", authorId: "user-1", tenant: "vuohiliitto", sessionId: null },
     });
   });
 
@@ -52,7 +53,7 @@ describe("createShout", () => {
     mockAuth.mockResolvedValue(authenticatedSession());
     await createShout("  trimmed  ");
     expect(mockCreate).toHaveBeenCalledWith({
-      data: { message: "trimmed", authorId: "user-1", sessionId: null },
+      data: { message: "trimmed", authorId: "user-1", tenant: "vuohiliitto", sessionId: null },
     });
   });
 

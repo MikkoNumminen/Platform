@@ -14,8 +14,8 @@ jest.mock("@/lib/db", () => ({
   },
 }));
 
-jest.mock("@/lib/demo-session", () => ({
-  getDemoSessionId: jest.fn().mockResolvedValue(null),
+jest.mock("@/lib/tenant", () => ({
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "platform", sessionId: null }),
 }));
 
 jest.mock("@/lib/demo-constants", () => ({
@@ -58,7 +58,12 @@ describe("getUsers", () => {
     const result = await getUsers();
     expect(result).toEqual(users);
     expect(mockUserFindMany).toHaveBeenCalledWith({
-      where: { deletedAt: null, sessionId: null, email: { not: "demo@platform.app" } },
+      where: {
+        deletedAt: null,
+        tenant: "platform",
+        sessionId: null,
+        email: { not: "demo@platform.app" },
+      },
       orderBy: { createdAt: "desc" },
       take: 500,
       select: {
@@ -101,7 +106,7 @@ describe("getUserById", () => {
     const result = await getUserById("1");
     expect(result).toEqual(user);
     expect(mockUserFindFirst).toHaveBeenCalledWith({
-      where: { id: "1", deletedAt: null, sessionId: null },
+      where: { id: "1", deletedAt: null, tenant: "platform", sessionId: null },
       select: {
         id: true,
         email: true,

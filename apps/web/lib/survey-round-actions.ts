@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 import { getSurveyResults } from "./survey-queries";
 import type { SurveyResultsData } from "./survey-queries";
 import { logAudit } from "./audit";
+import { getTenantFilter } from "@/lib/tenant";
 
 const validateTitle = createStringValidator(
   "Round title",
@@ -22,9 +23,13 @@ export const createSurveyRound = guardedAction(
   async (session, title: string, description?: string, xpReward?: number) => {
     const validTitle = validateTitle(title);
     const reward = Math.round(Math.max(0, Math.min(xpReward ?? 0, 10000)));
+    const { tenant } = await getTenantFilter();
 
     // Auto-increment round number
-    const maxRound = await prisma.surveyRound.aggregate({ _max: { number: true } });
+    const maxRound = await prisma.surveyRound.aggregate({
+      where: { tenant },
+      _max: { number: true },
+    });
     const nextNumber = (maxRound._max.number ?? 0) + 1;
 
     const round = await prisma.surveyRound.create({
@@ -34,6 +39,7 @@ export const createSurveyRound = guardedAction(
         description: description?.trim() || null,
         xpReward: reward,
         creatorId: session.user.id,
+        tenant,
       },
     });
 
@@ -80,8 +86,9 @@ export const closeSurveyRound = guardedAction(
   async (session, roundId: string) => {
     validateUUID(roundId, "roundId");
 
+    const { tenant } = await getTenantFilter();
     const round = await prisma.surveyRound.findFirst({
-      where: { id: roundId, status: "active" },
+      where: { id: roundId, tenant, status: "active" },
     });
     if (!round) {
       throw new ActionError("roundNotFound", "Active round not found");

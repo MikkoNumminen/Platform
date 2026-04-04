@@ -26,8 +26,9 @@ jest.mock("next/cache", () => ({
   revalidatePath: jest.fn(),
 }));
 
-jest.mock("@/lib/demo-session", () => ({
-  getDemoSessionId: jest.fn().mockResolvedValue(null),
+jest.mock("@/lib/tenant", () => ({
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "vuohiliitto", sessionId: null }),
+  getActiveTenant: jest.fn().mockResolvedValue("vuohiliitto"),
 }));
 
 import { createIssueReport, resolveIssue } from "@/lib/issue-actions";
@@ -59,6 +60,7 @@ describe("createIssueReport", () => {
         description: "It broke",
         url: "/boards",
         authorId: "user-1",
+        tenant: "vuohiliitto",
         sessionId: null,
       },
     });

@@ -47,6 +47,10 @@ jest.mock("@/lib/db", () => ({
 
 jest.mock("@/auth", () => ({ auth: jest.fn() }));
 
+jest.mock("@/lib/tenant", () => ({
+  getTenantFilter: jest.fn().mockResolvedValue({ tenant: "vuohiliitto", sessionId: null }),
+}));
+
 jest.mock("@/lib/gamification/trigger", () => ({
   triggerGamification: jest.fn(),
 }));
@@ -114,7 +118,7 @@ describe("tutorial-service", () => {
       const result = await completeTourStep("set_alias");
       expect(result.completed).toBe(true);
       expect(mockUserTourProgressCreate).toHaveBeenCalledWith({
-        data: { userId: "u1", stepId: "set_alias" },
+        data: { userId: "u1", stepId: "set_alias", tenant: "vuohiliitto", sessionId: null },
       });
       expect(mockXpTransactionCreate).toHaveBeenCalled();
       expect(mockUserLevelUpsert).toHaveBeenCalled();
@@ -232,7 +236,7 @@ describe("tutorial-service", () => {
 
       await resetTour("u1");
       expect(mockUserTourProgressDeleteMany).toHaveBeenCalledWith({
-        where: { userId: "u1" },
+        where: { userId: "u1", tenant: "vuohiliitto", sessionId: null },
       });
     });
   });
@@ -290,8 +294,8 @@ describe("tutorial-service", () => {
       const result = await getMyTourProgress();
       expect(mockUserTourProgressCreateMany).toHaveBeenCalledWith({
         data: expect.arrayContaining([
-          { userId: "u1", stepId: "set_alias" },
-          { userId: "u1", stepId: "complete_survey" },
+          { userId: "u1", stepId: "set_alias", tenant: "vuohiliitto", sessionId: null },
+          { userId: "u1", stepId: "complete_survey", tenant: "vuohiliitto", sessionId: null },
         ]),
         skipDuplicates: true,
       });
