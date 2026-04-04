@@ -56,13 +56,22 @@ packages/config/ — Shared types and config (@platform/config)
 - **Character tracking** — Add WoW characters by name/realm/region; stats fetched from [Raider.IO](https://raider.io) API
 - **Team roster** — Shared view at `/mythic-plus` showing all team characters sorted by M+ rating
 - **Character cards** — Avatar, name-realm, class/spec/race, item level badge, M+ rating badge color-coded by WoW quality tiers (gray → green → blue → purple → orange)
+- **Team composition** — Build 5-man M+ teams with role slots (Tank, Healer, DPS×3); dropdown character assignment filtered from roster; team stats (avg iLvl, avg M+ rating); create/delete teams
 - **Live refresh** — Refresh individual characters or all at once from Raider.IO
 - **No login required** — Uses the free Raider.IO API (no Battle.net OAuth needed)
+
+### Multi-Tenancy
+- **Two isolated services** — "Vuohiliitto" (community) and "Platform" (general) with completely separate content
+- **Tenant-scoped data** — Shoutbox, quests, achievements, leaderboard, surveys, issues, DMs, feedback, calendar, and all gamification data are isolated per tenant
+- **Role-based access** — `superuser` and `vuohi` roles see Vuohiliitto by default; `admin`, `user`, and `pending` roles see only Platform
+- **Tenant switcher** — Superuser/vuohi get a toggle button in the TopBar to switch between Vuohiliitto and Platform views
+- **Per-tenant settings** — MOTD, dashboard title, and platform settings are tenant-aware (composite PK)
+- **Existing data preserved** — All existing data tagged as `"vuohiliitto"`; Platform starts fresh
 
 ### Demo Mode
 - **Zero-credential demo** — "Try Demo" button in TopBar for unauthenticated visitors; one-click login as superuser
 - **Welcome overlay** — First-time demo users see a modal explaining the platform with dismiss and localStorage persistence
-- **Isolated mock data** — Demo sessions are fully isolated via `sessionId` scoping; real community data is never exposed
+- **Isolated mock data** — Demo sessions are fully isolated via `sessionId` scoping within the Vuohiliitto tenant; real community data is never exposed
 - **Comprehensive seed data** — 6 users, 2 boards, 5 posts, 12 comments, 10 shoutbox messages, 2 DM conversations, 6 calendar events, 4 issues, 5 survey responses, 4 custom quests, gamification profiles with XP/achievements/quest progress
 - **Auto-cleanup** — Stale demo sessions (>24h) are automatically cascade-deleted
 - **Tutorial integration** — Guided tour auto-activates for demo users with fresh state
@@ -109,6 +118,7 @@ packages/config/ — Shared types and config (@platform/config)
 - **Standardized server actions** — All actions use `safe()` + `ActionError` pattern with `requireUser()`/`requireAdmin()` auth helpers and `createStringValidator()` for input validation
 - **Deduplicated logic** — Shared `applyXp()` core, `completeSurveyQuest()` helper, `guardedAction` test mock helper, centralized `DEMO_EMAIL`, `WHISPER_COLOR`, `CRITERIA_ACTIONS` constants
 - **Accessibility** — Skip-to-content link, `<main>` landmark, `aria-label` on all icon buttons, WCAG AA color contrast, keyboard-accessible expand/collapse controls
+- **E2E test suite** — 42 Playwright browser tests across 9 spec files covering auth, navigation, chat, admin, Mythic+, feedback, gamification; shared auth state via storageState for fast execution
 - **Production audit** — 121-finding audit completed (106 fixed), covering security, type safety, performance, accessibility, and testing
 
 ### Shared Components
@@ -157,12 +167,15 @@ npx turbo run build --filter=web # Production build
 
 ## Testing
 
-1280+ tests across 144 test suites covering all server actions, query functions, gamification services, and UI components. Pre-push hooks enforce 100% test pass rate. Jest coverage threshold enforced at 70% lines/functions, 60% branches.
+**Unit & Integration:** 1388 tests across 153 test suites covering all server actions, query functions, gamification services, and UI components (Jest + React Testing Library). Pre-push hooks enforce 100% test pass rate. Coverage threshold enforced at 70% lines/functions, 60% branches.
+
+**End-to-End:** 42 Playwright tests across 9 spec files — real browser tests that click through auth flows, navigation, chat messaging, admin pages, Mythic+, feedback, and gamification. Uses shared auth state (storageState) so demo login only runs once.
 
 ```bash
 npx turbo run test --filter=web           # All unit/integration tests
 npx turbo run test:coverage --filter=web  # With coverage
-cd apps/web && npm run test:e2e           # Playwright E2E tests
+cd apps/web && npm run test:e2e           # Playwright E2E tests (requires running app or auto-starts)
+cd apps/web && npm run test:e2e:ui        # Playwright interactive UI mode
 ```
 
 ## Architecture
@@ -175,6 +188,15 @@ Platform and HRM are **separate applications with separate databases**. They are
 - **HRM** — a standalone HR management showpiece (git submodule at `apps/hrm/`)
 
 New features are developed in the HRM repo first, then ported to Platform as needed using the same patterns but fresh code. HRM is never modified from within this repo.
+
+### Multi-tenancy model
+
+The platform runs two isolated services from a single deployment:
+
+- **Vuohiliitto** — The community service for `superuser` and `vuohi` roles. All existing data lives here.
+- **Platform** — A separate service for `admin`, `user`, and `pending` roles. Starts with a clean slate.
+
+Every content model has a `tenant` field (default `"vuohiliitto"`). All queries filter by tenant, ensuring complete data isolation. Superusers can switch between tenants via the TopBar toggle. Demo users are locked to the Vuohiliitto tenant.
 
 ### User access model
 
