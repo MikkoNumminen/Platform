@@ -196,7 +196,7 @@ export default function TutorialSpotlight() {
             </Typography>
           </Box>
           <Typography variant="body2" sx={{ color: colors.slate400, fontSize: "0.8rem" }}>
-            {getHintText(hintKey ?? `hint_${step.id}`)}
+            {getHintText(hintKey ?? (step ? `hint_${step.id}` : "hint_tour_complete"))}
           </Typography>
         </Paper>
       </Popper>
