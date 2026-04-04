@@ -15,9 +15,12 @@ export default async function ManageGamificationPage() {
     redirect("/");
   }
 
-  const [achievements, quests] = await Promise.all([
+  const [achievements, rawQuests] = await Promise.all([
     prisma.achievement.findMany({ orderBy: [{ category: "asc" }, { sortOrder: "asc" }] }),
-    prisma.quest.findMany({ orderBy: [{ type: "asc" }, { sortOrder: "asc" }] }),
+    prisma.quest.findMany({
+      where: { type: { notIn: ["assigned", "campaign"] }, deletedAt: null },
+      orderBy: [{ type: "asc" }, { sortOrder: "asc" }],
+    }),
   ]);
 
   return (
@@ -26,7 +29,18 @@ export default async function ManageGamificationPage() {
         ...a,
         criteria: a.criteria as Record<string, unknown>,
       }))}
-      quests={quests.map((q) => ({ ...q, criteria: q.criteria as Record<string, unknown> }))}
+      quests={rawQuests.map((q) => ({
+        id: q.id,
+        key: q.key,
+        name: q.name,
+        description: q.description,
+        icon: q.icon,
+        type: q.type,
+        xpReward: q.xpReward,
+        criteria: q.criteria as Record<string, unknown> | null,
+        repeatable: q.repeatable,
+        sortOrder: q.sortOrder,
+      }))}
     />
   );
 }

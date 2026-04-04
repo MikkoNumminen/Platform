@@ -172,7 +172,9 @@ export default function QuestEditor({ quests, setError }: QuestEditorProps) {
                       )}
                     </Box>
                     <Typography variant="caption" sx={{ color: colors.slate400 }}>
-                      {q.description} — {criteria.action}:{criteria.count} — +{q.xpReward} XP
+                      {q.description}
+                      {criteria?.action ? ` — ${criteria.action}:${criteria.count}` : ""}
+                      {" — "}+{q.xpReward} XP
                     </Typography>
                   </Box>
                   <Chip
