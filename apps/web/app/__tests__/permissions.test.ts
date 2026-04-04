@@ -35,11 +35,11 @@ describe("permissions", () => {
       expect(perms["survey:results"]).toBe(true);
     });
 
-    test("admin gets most permissions but not admin:users", () => {
+    test("admin gets most permissions including admin:users", () => {
       const perms = resolvePermissions("admin");
       expect(perms["board:create"]).toBe(true);
       expect(perms["survey:results"]).toBe(true);
-      expect(perms["admin:users"]).toBe(false);
+      expect(perms["admin:users"]).toBe(true);
     });
 
     test("pending role gets zero permissions", () => {

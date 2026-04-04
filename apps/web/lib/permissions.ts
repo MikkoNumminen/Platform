@@ -74,6 +74,7 @@ const ROLE_DEFAULTS: Record<Role, PermissionKey[]> = {
     "dm:send",
   ],
   admin: [
+    "admin:users",
     "board:create",
     "board:edit",
     "board:delete",
