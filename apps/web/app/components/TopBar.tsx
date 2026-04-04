@@ -41,7 +41,7 @@ export default function TopBar({ title, backHref }: TopBarProps) {
             component={Link}
             href={backHref}
             aria-label="Go back"
-            sx={{ color: colors.slate100, mr: 1 }}
+            sx={{ color: colors.slate100, mr: 1, minWidth: 44, minHeight: 44 }}
             size="small"
           >
             <ArrowBackIcon />

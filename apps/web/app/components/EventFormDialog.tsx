@@ -165,7 +165,7 @@ export default function EventFormDialog({
         />
 
         {allDay ? (
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 2 }}>
             <TextField
               label="Start Date"
               type="date"
@@ -186,7 +186,7 @@ export default function EventFormDialog({
             />
           </Box>
         ) : (
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 2 }}>
             <TextField
               label="Start Time"
               type="datetime-local"

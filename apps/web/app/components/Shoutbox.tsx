@@ -539,7 +539,7 @@ export default function Shoutbox({ initialShouts, initialConversations, motd }: 
       <Box
         ref={scrollRef}
         sx={{
-          height: CHAT_HEIGHT,
+          height: { xs: 250, sm: CHAT_HEIGHT },
           overflowY: "auto",
           px: 1.5,
           py: 1,

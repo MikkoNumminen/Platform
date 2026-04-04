@@ -149,13 +149,14 @@ export default function UserMenu() {
         size="small"
         aria-label={`User menu for ${displayName}`}
         aria-haspopup="true"
+        sx={{ minWidth: 44, minHeight: 44 }}
       >
         <Avatar
           src={user.image ?? undefined}
           alt={displayName ?? "User"}
           sx={{
-            width: 32,
-            height: 32,
+            width: { xs: 36, sm: 32 },
+            height: { xs: 36, sm: 32 },
             fontSize: "0.875rem",
             ...(isDemoUser && {
               backgroundColor: colors.green400,

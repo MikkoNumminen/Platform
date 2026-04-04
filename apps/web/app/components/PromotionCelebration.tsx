@@ -176,8 +176,8 @@ export default function PromotionCelebration({ onComplete }: { onComplete?: () =
                 src="/animations/goat.gif"
                 alt="GOAT"
                 style={{
-                  width: "280px",
-                  height: "280px",
+                  width: "min(280px, 70vw)",
+                  height: "min(280px, 70vw)",
                   objectFit: "contain",
                 }}
                 animate={{
