@@ -113,25 +113,27 @@ export default function TutorialSpotlight() {
           z-index: 1100;
           animation: tutorialPulse 1.5s ease-in-out infinite;
           border-radius: 4px;
+          outline: 2px solid #d4a843;
+          outline-offset: 2px;
         }
         @keyframes tutorialPulse {
           0%,
           100% {
             box-shadow:
-              0 0 6px ${colors.accentBorder},
-              inset 0 0 2px ${colors.accentBorder};
+              0 0 8px #d4a843,
+              inset 0 0 3px #d4a843;
           }
           50% {
             box-shadow:
-              0 0 20px ${colors.accentGlow},
-              0 0 40px ${colors.accentBorder},
-              inset 0 0 4px ${colors.accentGlow};
+              0 0 24px #f0c050,
+              0 0 48px #d4a843,
+              inset 0 0 6px #f0c050;
           }
         }
         @media (prefers-reduced-motion: reduce) {
           .${SPOTLIGHT_CLASS} {
             animation: none;
-            box-shadow: 0 0 8px ${colors.accentGlow};
+            box-shadow: 0 0 12px #d4a843;
           }
         }
       `}</style>
