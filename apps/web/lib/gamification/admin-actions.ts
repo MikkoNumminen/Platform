@@ -104,7 +104,7 @@ export async function createAchievement(data: {
       details: { key: data.key, name: data.name },
     });
 
-    revalidatePath("/admin/gamification/manage");
+    revalidatePath("/admin/dashboard/manage");
   });
 }
 
@@ -151,7 +151,7 @@ export async function updateAchievement(
       details: { name: existing.name, changes: data },
     });
 
-    revalidatePath("/admin/gamification/manage");
+    revalidatePath("/admin/dashboard/manage");
   });
 }
 
@@ -174,7 +174,7 @@ export async function deleteAchievement(id: string): Promise<ActionResult> {
       details: { key: existing.key, name: existing.name },
     });
 
-    revalidatePath("/admin/gamification/manage");
+    revalidatePath("/admin/dashboard/manage");
   });
 }
 
@@ -219,7 +219,7 @@ export async function createQuest(data: {
       details: { key: data.key, name: data.name, xpReward: data.xpReward },
     });
 
-    revalidatePath("/admin/gamification/manage");
+    revalidatePath("/admin/dashboard/manage");
   });
 }
 
@@ -266,7 +266,7 @@ export async function updateQuest(
       details: { name: existing.name, changes: data },
     });
 
-    revalidatePath("/admin/gamification/manage");
+    revalidatePath("/admin/dashboard/manage");
   });
 }
 
@@ -289,6 +289,6 @@ export async function deleteQuest(id: string): Promise<ActionResult> {
       details: { key: existing.key, name: existing.name },
     });
 
-    revalidatePath("/admin/gamification/manage");
+    revalidatePath("/admin/dashboard/manage");
   });
 }

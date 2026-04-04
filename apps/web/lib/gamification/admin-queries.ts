@@ -61,6 +61,7 @@ async function fetchGamificationStats() {
     }),
 
     prisma.quest.findMany({
+      where: { type: { notIn: ["assigned", "campaign"] }, deletedAt: null },
       include: {
         _count: {
           select: {

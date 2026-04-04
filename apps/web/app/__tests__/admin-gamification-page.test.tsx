@@ -29,7 +29,7 @@ jest.mock("@/app/components/TopBar", () => {
   };
 });
 
-import GamificationDashboardPage from "../admin/gamification/page";
+import GamificationDashboardPage from "../admin/dashboard/page";
 
 const mockStats = {
   summary: {

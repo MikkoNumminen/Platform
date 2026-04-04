@@ -49,7 +49,7 @@ export default async function GamificationDashboardPage() {
         <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
           <Button
             component={Link}
-            href="/admin/gamification/manage"
+            href="/admin/dashboard/manage"
             variant="outlined"
             sx={{ color: colors.green400, borderColor: colors.green400 }}
           >

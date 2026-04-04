@@ -21,7 +21,7 @@ jest.mock("@/app/components/TopBar", () => {
   };
 });
 
-import ManageGamification from "../admin/gamification/manage/ManageGamification";
+import ManageGamification from "../admin/dashboard/manage/ManageGamification";
 
 const sampleAchievements = [
   {

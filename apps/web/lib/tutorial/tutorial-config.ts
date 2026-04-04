@@ -183,7 +183,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
   },
   {
     id: "view_gamification_dashboard",
-    route: "/admin/gamification",
+    route: "/admin/dashboard",
     targetSelector: '[data-tutorial="gamification-dashboard"]',
     autoCompleteOnRoute: true,
     tier: 3,

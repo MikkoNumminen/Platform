@@ -20,7 +20,7 @@ export default function ManageGamification({
 
   return (
     <>
-      <TopBar title="Manage Achievements & Quests" backHref="/admin/gamification" />
+      <TopBar title="Manage Achievements & Quests" backHref="/admin/dashboard" />
       <Box sx={{ maxWidth: 1000, mx: "auto", px: { xs: 1, sm: 2 }, py: 2 }}>
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>

@@ -21,7 +21,7 @@ jest.mock("@/lib/db", () => ({
   },
 }));
 
-jest.mock("../admin/gamification/manage/ManageGamification", () => {
+jest.mock("../admin/dashboard/manage/ManageGamification", () => {
   return function MockManageGamification({
     achievements,
     quests,
@@ -37,7 +37,7 @@ jest.mock("../admin/gamification/manage/ManageGamification", () => {
   };
 });
 
-import ManageGamificationPage from "../admin/gamification/manage/page";
+import ManageGamificationPage from "../admin/dashboard/manage/page";
 
 describe("ManageGamificationPage", () => {
   beforeEach(() => {
