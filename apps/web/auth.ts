@@ -100,8 +100,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.demoSessionId = user.demoSessionId;
       }
 
+      // Skip the per-request DB check if we synced recently (5 min TTL).
+      // This is the biggest single CPU saver — without this every page render
+      // triggered a prisma.user.findUnique. Mutations that change role or
+      // permissions bump permissionsVersion, so users with stale tokens will
+      // re-sync within 5 min. Sign-in always forces a fresh sync.
+      const SYNC_TTL_MS = 5 * 60_000;
+      const now = Date.now();
+      const lastSync = token.lastDbSync ?? 0;
+      const isFresh = now - lastSync < SYNC_TTL_MS;
+
       const needsRefresh =
         trigger === "signIn" || !token.role || typeof token.permissionsVersion !== "number";
+
+      if (!needsRefresh && isFresh) {
+        return token;
+      }
 
       if (needsRefresh) {
         const dbUser = await prisma.user.findUnique({
@@ -138,6 +152,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         } catch (error) {
           logger.error("Login streak error", error, "gamification");
         }
+
+        token.lastDbSync = now;
       } else {
         // Lightweight check: detect permission/role changes
         const dbUser = await prisma.user.findUnique({
@@ -185,6 +201,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             token.permissions = resolvePermissions(fullUser.role, overrides);
           }
         }
+
+        token.lastDbSync = now;
       }
 
       return token;

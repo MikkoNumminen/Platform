@@ -37,5 +37,6 @@ declare module "next-auth/jwt" {
     permissionsVersion?: number;
     permissions?: Record<string, boolean>;
     demoSessionId?: string;
+    lastDbSync?: number;
   }
 }

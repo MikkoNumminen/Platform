@@ -29,17 +29,17 @@ describe("usePromotionPolling", () => {
     renderHook(() => usePromotionPolling("pending"));
 
     act(() => {
-      jest.advanceTimersByTime(5000);
+      jest.advanceTimersByTime(60000);
     });
     expect(global.fetch).toHaveBeenCalledTimes(1);
 
     act(() => {
-      jest.advanceTimersByTime(5000);
+      jest.advanceTimersByTime(60000);
     });
     expect(global.fetch).toHaveBeenCalledTimes(2);
 
     act(() => {
-      jest.advanceTimersByTime(5000);
+      jest.advanceTimersByTime(60000);
     });
     expect(global.fetch).toHaveBeenCalledTimes(3);
   });
@@ -53,7 +53,7 @@ describe("usePromotionPolling", () => {
     const { result } = renderHook(() => usePromotionPolling("pending"));
 
     await act(async () => {
-      jest.advanceTimersByTime(5000);
+      jest.advanceTimersByTime(60000);
     });
 
     expect(result.current.shouldCelebrate).toBe(true);
@@ -68,7 +68,7 @@ describe("usePromotionPolling", () => {
     const { result } = renderHook(() => usePromotionPolling("pending"));
 
     await act(async () => {
-      jest.advanceTimersByTime(5000);
+      jest.advanceTimersByTime(60000);
     });
 
     expect(result.current.shouldCelebrate).toBe(false);
@@ -91,7 +91,7 @@ describe("usePromotionPolling", () => {
     const { result } = renderHook(() => usePromotionPolling("pending"));
 
     await act(async () => {
-      jest.advanceTimersByTime(5000);
+      jest.advanceTimersByTime(60000);
     });
 
     expect(result.current.shouldCelebrate).toBe(true);
@@ -123,7 +123,7 @@ describe("usePromotionPolling", () => {
     const { result } = renderHook(() => usePromotionPolling("pending"));
 
     await act(async () => {
-      jest.advanceTimersByTime(5000);
+      jest.advanceTimersByTime(60000);
     });
 
     expect(result.current.shouldCelebrate).toBe(false);

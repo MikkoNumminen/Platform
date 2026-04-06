@@ -1,5 +1,3 @@
-export const dynamic = "force-dynamic";
-
 import { Box } from "@mui/material";
 import TopBar from "../components/TopBar";
 import CalendarGrid from "../components/CalendarGrid";

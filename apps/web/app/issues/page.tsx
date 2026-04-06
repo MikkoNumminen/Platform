@@ -1,5 +1,3 @@
-export const dynamic = "force-dynamic";
-
 import { Box, Typography, Button } from "@mui/material";
 import BugReportIcon from "@mui/icons-material/BugReport";
 import { redirect } from "next/navigation";
