@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { prisma } from "./db";
 import { getTenantFilter } from "@/lib/tenant";
 
@@ -12,21 +13,29 @@ export interface ShoutData {
 
 const SHOUT_LIMIT = 50;
 
+const fetchShouts = unstable_cache(
+  async (tenant: string, sessionId: string | null): Promise<ShoutData[]> => {
+    const shouts = await prisma.shout.findMany({
+      where: { tenant, sessionId },
+      orderBy: { createdAt: "desc" },
+      take: SHOUT_LIMIT,
+      include: { author: { select: { alias: true, name: true, role: true, developerTag: true } } },
+    });
+
+    return shouts.reverse().map((s) => ({
+      id: s.id,
+      message: s.message,
+      alias: s.author.alias ?? s.author.name ?? "Unknown",
+      role: s.author.role,
+      developerTag: s.author.developerTag,
+      createdAt: s.createdAt.toISOString(),
+    }));
+  },
+  ["shouts"],
+  { revalidate: 60, tags: ["shouts"] },
+);
+
 export async function getRecentShouts(): Promise<ShoutData[]> {
   const { tenant, sessionId } = await getTenantFilter();
-  const shouts = await prisma.shout.findMany({
-    where: { tenant, sessionId },
-    orderBy: { createdAt: "desc" },
-    take: SHOUT_LIMIT,
-    include: { author: { select: { alias: true, name: true, role: true, developerTag: true } } },
-  });
-
-  return shouts.reverse().map((s) => ({
-    id: s.id,
-    message: s.message,
-    alias: s.author.alias ?? s.author.name ?? "Unknown",
-    role: s.author.role,
-    developerTag: s.author.developerTag,
-    createdAt: s.createdAt.toISOString(),
-  }));
+  return fetchShouts(tenant, sessionId);
 }

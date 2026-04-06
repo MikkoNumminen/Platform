@@ -29,7 +29,11 @@ jest.mock("@/lib/db", () => ({
 jest.mock("@/auth", () => ({ auth: jest.fn() }));
 jest.mock("@/lib/rateLimit", () => ({ rateLimit: jest.fn().mockResolvedValue(undefined) }));
 jest.mock("@/lib/demo-session", () => ({ getDemoSessionId: jest.fn().mockResolvedValue(null) }));
-jest.mock("next/cache", () => ({ revalidatePath: jest.fn() }));
+jest.mock("next/cache", () => ({
+  unstable_cache: <T extends (...args: unknown[]) => unknown>(fn: T) => fn,
+  revalidatePath: jest.fn(),
+  revalidateTag: jest.fn(),
+}));
 jest.mock("next/headers", () => ({ headers: jest.fn().mockResolvedValue({ get: () => null }) }));
 
 jest.mock("@/lib/survey-queries", () => ({

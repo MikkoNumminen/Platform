@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { ActionError } from "@/lib/actionErrors";
 import { safe, requireUser, validateUUID, type ActionResult } from "@/lib/actionUtils";
 import { rateLimit } from "@/lib/rateLimit";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { guardedAction } from "@/lib/guardedAction";
 import { triggerGamification } from "@/lib/gamification/trigger";
 import { getTenantFilter } from "@/lib/tenant";
@@ -57,6 +57,7 @@ export async function createIssueReport(
 
     await triggerGamification(user.id, "issue:create");
 
+    revalidateTag("issues");
     revalidatePath("/issues");
   });
 }
@@ -90,6 +91,7 @@ export const resolveIssue = guardedAction(
       details: { title: issue.title },
     });
 
+    revalidateTag("issues");
     revalidatePath("/issues");
   },
 );

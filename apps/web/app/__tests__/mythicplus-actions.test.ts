@@ -24,7 +24,11 @@ jest.mock("@/lib/rateLimit", () => ({
   rateLimit: jest.fn().mockResolvedValue(undefined),
 }));
 
-jest.mock("next/cache", () => ({ revalidatePath: jest.fn() }));
+jest.mock("next/cache", () => ({
+  unstable_cache: <T extends (...args: unknown[]) => unknown>(fn: T) => fn,
+  revalidatePath: jest.fn(),
+  revalidateTag: jest.fn(),
+}));
 
 jest.mock("@/lib/tenant", () => ({
   getTenantFilter: jest.fn().mockResolvedValue({ tenant: "platform", sessionId: null }),

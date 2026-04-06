@@ -3,7 +3,7 @@
   "framework": "nextjs",
   "installCommand": "npm install --ignore-scripts",
   "buildCommand": "npx prisma generate && next build",
-  "ignoreCommand": "npx turbo-ignore",
+  "ignoreCommand": "git diff HEAD^ HEAD --quiet -- ':(exclude)README.md' ':(exclude)TODO.md' ':(exclude)AUDIT.md' ':(exclude)GDPR-ANALYSIS.md' ':(exclude)CLAUDE.md' ':(exclude)apps/web/app/__tests__' ':(exclude)apps/web/e2e' ':(exclude)apps/web/jest.config.ts' ':(exclude)apps/web/jest.setup.ts' ':(exclude)apps/web/playwright.config.ts' ':(exclude).github' ':(exclude).husky' ':(exclude).gitignore' ':(exclude)apps/hrm'",
   "crons": [
     {
       "path": "/api/cron/purge-deleted",

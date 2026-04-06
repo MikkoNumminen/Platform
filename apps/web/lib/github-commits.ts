@@ -1,6 +1,6 @@
 const REPO = "MikkoNumminen/Platform";
 const COMMIT_COUNT = 10;
-const CACHE_TTL = 600; // 10 minutes
+const CACHE_TTL = 60 * 60; // 1 hour
 
 export interface CommitEntry {
   sha: string;

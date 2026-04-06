@@ -29,7 +29,8 @@ jest.mock("@/lib/tenant", () => ({
   getActiveTenant: jest.fn().mockResolvedValue("vuohiliitto"),
 }));
 jest.mock("next/cache", () => ({
-  unstable_cache: (fn: (...args: unknown[]) => unknown) => fn,
+  unstable_cache: <T extends (...args: unknown[]) => unknown>(fn: T) => fn,
+  revalidatePath: jest.fn(),
   revalidateTag: jest.fn(),
 }));
 

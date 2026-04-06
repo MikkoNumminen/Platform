@@ -4,7 +4,7 @@ import { prisma } from "./db";
 import { guardedAction } from "./guardedAction";
 import { ActionError } from "./actionErrors";
 import { validateUUID, createStringValidator } from "./actionUtils";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { slugify } from "./slug-utils";
 import { getTenantFilter } from "@/lib/tenant";
 
@@ -50,6 +50,7 @@ export const createBoard = guardedAction(
       },
     });
 
+    revalidateTag("boards");
     revalidatePath("/boards");
   },
 );
@@ -90,6 +91,7 @@ export const updateBoard = guardedAction(
       },
     });
 
+    revalidateTag("boards");
     revalidatePath("/boards");
   },
 );
@@ -113,6 +115,7 @@ export const deleteBoard = guardedAction(
       data: { deletedAt: new Date() },
     });
 
+    revalidateTag("boards");
     revalidatePath("/boards");
   },
 );

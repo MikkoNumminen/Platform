@@ -4,7 +4,7 @@ import { prisma } from "./db";
 import { guardedAction } from "./guardedAction";
 import { ActionError } from "./actionErrors";
 import { validateUUID, createStringValidator } from "./actionUtils";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { slugify } from "./slug-utils";
 
 import { getTenantFilter } from "@/lib/tenant";
@@ -70,6 +70,7 @@ export const createPost = guardedAction(
 
     // Posts don't award XP (boards feature is in backlog)
 
+    revalidateTag("posts");
     revalidatePath(`/boards/${board.slug}`);
   },
 );
@@ -124,6 +125,7 @@ export const updatePost = guardedAction(
       data: { title: validTitle, slug, body: validBody },
     });
 
+    revalidateTag("posts");
     revalidatePath(`/boards/${post.board.slug}`);
   },
 );
@@ -148,6 +150,7 @@ export const togglePostPin = guardedAction(
       data: { pinned: !post.pinned },
     });
 
+    revalidateTag("posts");
     revalidatePath(`/boards/${post.board.slug}`);
   },
 );
@@ -172,6 +175,7 @@ export const deletePost = guardedAction(
       data: { deletedAt: new Date() },
     });
 
+    revalidateTag("posts");
     revalidatePath(`/boards/${post.board.slug}`);
   },
 );

@@ -1,6 +1,5 @@
 const mockAuth = jest.fn();
 const mockRateLimit = jest.fn();
-const mockRevalidatePath = jest.fn();
 
 const mockQuestFindFirst = jest.fn();
 const mockQuestCreate = jest.fn();
@@ -19,7 +18,9 @@ jest.mock("@/lib/rateLimit", () => ({
 }));
 
 jest.mock("next/cache", () => ({
-  revalidatePath: (...args: any[]) => mockRevalidatePath(...args),
+  unstable_cache: <T extends (...args: unknown[]) => unknown>(fn: T) => fn,
+  revalidatePath: jest.fn(),
+  revalidateTag: jest.fn(),
 }));
 
 jest.mock("@/lib/db", () => ({

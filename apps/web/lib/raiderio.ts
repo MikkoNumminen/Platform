@@ -44,6 +44,7 @@ export async function fetchRaiderIoCharacter(
 
   const response = await fetch(url.toString(), {
     signal: AbortSignal.timeout(10000),
+    next: { revalidate: 60 * 60 * 24, tags: ["raiderio"] },
   });
 
   if (response.status === 400 || response.status === 404) {

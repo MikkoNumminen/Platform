@@ -31,7 +31,11 @@ jest.mock("@/lib/gamification/trigger", () => ({
 jest.mock("@/lib/campaign-completion", () => ({
   autoCompleteCampaignQuest: jest.fn().mockResolvedValue(undefined),
 }));
-jest.mock("next/cache", () => ({ revalidatePath: jest.fn() }));
+jest.mock("next/cache", () => ({
+  unstable_cache: <T extends (...args: unknown[]) => unknown>(fn: T) => fn,
+  revalidatePath: jest.fn(),
+  revalidateTag: jest.fn(),
+}));
 
 import { auth } from "@/auth";
 import { sendDirectMessage, startConversation } from "@/lib/dm-actions";

@@ -4,7 +4,7 @@ import { prisma } from "./db";
 import { guardedAction } from "./guardedAction";
 import { ActionError } from "./actionErrors";
 import { validateUUID, createStringValidator } from "./actionUtils";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 import { getTenantFilter } from "@/lib/tenant";
 
@@ -67,6 +67,7 @@ export const createThread = guardedAction(
 
     // Threads don't award XP (forums feature is in backlog)
 
+    revalidateTag("threads");
     if (revalidateUrl) {
       revalidatePath(revalidateUrl);
     }
@@ -99,6 +100,7 @@ export const deleteThread = guardedAction(
       data: { deletedAt: new Date() },
     });
 
+    revalidateTag("threads");
     if (revalidateUrl) {
       revalidatePath(revalidateUrl);
     }

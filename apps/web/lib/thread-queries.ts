@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { prisma } from "./db";
 import { getTenantFilter } from "@/lib/tenant";
 import type { ThreadData } from "@/app/types/thread";
@@ -10,26 +11,39 @@ interface FlatThread {
   replyToId: string | null;
 }
 
+const fetchThreadsByParent = unstable_cache(
+  async (
+    parentType: "POST" | "TOPIC",
+    parentId: string,
+    tenant: string,
+    sessionId: string | null,
+  ): Promise<ThreadData[]> => {
+    const flat = await prisma.thread.findMany({
+      where: { parentType, parentId, deletedAt: null, tenant, sessionId },
+      orderBy: { createdAt: "asc" },
+      include: { author: { select: { alias: true, name: true } } },
+    });
+
+    const threads: FlatThread[] = flat.map((t) => ({
+      id: t.id,
+      body: t.body,
+      authorName: t.author.alias ?? t.author.name ?? "Unknown",
+      createdAt: t.createdAt,
+      replyToId: t.replyToId,
+    }));
+
+    return buildTree(threads);
+  },
+  ["threads-by-parent"],
+  { revalidate: 60, tags: ["threads"] },
+);
+
 export async function getThreadsByParent(
   parentType: "POST" | "TOPIC",
   parentId: string,
 ): Promise<ThreadData[]> {
   const { tenant, sessionId } = await getTenantFilter();
-  const flat = await prisma.thread.findMany({
-    where: { parentType, parentId, deletedAt: null, tenant, sessionId },
-    orderBy: { createdAt: "asc" },
-    include: { author: { select: { alias: true, name: true } } },
-  });
-
-  const threads: FlatThread[] = flat.map((t) => ({
-    id: t.id,
-    body: t.body,
-    authorName: t.author.alias ?? t.author.name ?? "Unknown",
-    createdAt: t.createdAt,
-    replyToId: t.replyToId,
-  }));
-
-  return buildTree(threads);
+  return fetchThreadsByParent(parentType, parentId, tenant, sessionId);
 }
 
 function buildTree(flat: FlatThread[]): ThreadData[] {

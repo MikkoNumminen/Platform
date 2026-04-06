@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { prisma } from "./db";
 import { getTenantFilter } from "@/lib/tenant";
 
@@ -11,22 +12,30 @@ export interface IssueData {
   createdAt: Date;
 }
 
+const fetchIssueReports = unstable_cache(
+  async (tenant: string, sessionId: string | null): Promise<IssueData[]> => {
+    const issues = await prisma.issueReport.findMany({
+      where: { tenant, sessionId },
+      orderBy: [{ resolvedAt: "asc" }, { createdAt: "desc" }],
+      take: 200,
+      include: { author: { select: { alias: true, name: true } } },
+    });
+
+    return issues.map((i) => ({
+      id: i.id,
+      title: i.title,
+      description: i.description,
+      url: i.url,
+      authorAlias: i.author.alias ?? i.author.name ?? "Unknown",
+      resolved: i.resolvedAt !== null,
+      createdAt: i.createdAt,
+    }));
+  },
+  ["issue-reports"],
+  { revalidate: 60, tags: ["issues"] },
+);
+
 export async function getIssueReports(): Promise<IssueData[]> {
   const { tenant, sessionId } = await getTenantFilter();
-  const issues = await prisma.issueReport.findMany({
-    where: { tenant, sessionId },
-    orderBy: [{ resolvedAt: "asc" }, { createdAt: "desc" }],
-    take: 200,
-    include: { author: { select: { alias: true, name: true } } },
-  });
-
-  return issues.map((i) => ({
-    id: i.id,
-    title: i.title,
-    description: i.description,
-    url: i.url,
-    authorAlias: i.author.alias ?? i.author.name ?? "Unknown",
-    resolved: i.resolvedAt !== null,
-    createdAt: i.createdAt,
-  }));
+  return fetchIssueReports(tenant, sessionId);
 }

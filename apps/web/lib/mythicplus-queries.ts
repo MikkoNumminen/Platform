@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getTenantFilter } from "@/lib/tenant";
 
@@ -19,32 +20,39 @@ export interface WowCharacterData {
   createdAt: string;
 }
 
+const fetchTeamCharacters = unstable_cache(
+  async (tenant: string, sessionId: string | null): Promise<WowCharacterData[]> => {
+    const characters = await prisma.wowCharacter.findMany({
+      where: { tenant, sessionId },
+      include: { addedBy: { select: { alias: true, name: true } } },
+      orderBy: { mythicPlusRating: "desc" },
+    });
+
+    return characters.map((c) => ({
+      id: c.id,
+      characterName: c.characterName,
+      realm: c.realm,
+      region: c.region,
+      className: c.className,
+      spec: c.spec,
+      specRole: c.specRole,
+      race: c.race,
+      itemLevel: c.itemLevel,
+      mythicPlusRating: c.mythicPlusRating,
+      thumbnailUrl: c.thumbnailUrl,
+      profileUrl: c.profileUrl,
+      lastFetchedAt: c.lastFetchedAt?.toISOString() ?? null,
+      addedBy: c.addedBy.alias ?? c.addedBy.name ?? "Unknown",
+      createdAt: c.createdAt.toISOString(),
+    }));
+  },
+  ["wow-characters"],
+  { revalidate: 300, tags: ["mythicplus"] },
+);
+
 export async function getTeamCharacters(): Promise<WowCharacterData[]> {
   const { tenant, sessionId } = await getTenantFilter();
-
-  const characters = await prisma.wowCharacter.findMany({
-    where: { tenant, sessionId },
-    include: { addedBy: { select: { alias: true, name: true } } },
-    orderBy: { mythicPlusRating: "desc" },
-  });
-
-  return characters.map((c) => ({
-    id: c.id,
-    characterName: c.characterName,
-    realm: c.realm,
-    region: c.region,
-    className: c.className,
-    spec: c.spec,
-    specRole: c.specRole,
-    race: c.race,
-    itemLevel: c.itemLevel,
-    mythicPlusRating: c.mythicPlusRating,
-    thumbnailUrl: c.thumbnailUrl,
-    profileUrl: c.profileUrl,
-    lastFetchedAt: c.lastFetchedAt?.toISOString() ?? null,
-    addedBy: c.addedBy.alias ?? c.addedBy.name ?? "Unknown",
-    createdAt: c.createdAt.toISOString(),
-  }));
+  return fetchTeamCharacters(tenant, sessionId);
 }
 
 export interface TeamSlotData {
@@ -82,29 +90,36 @@ const SLOT_SELECT = {
   },
 };
 
+const fetchTeams = unstable_cache(
+  async (tenant: string, sessionId: string | null): Promise<MythicPlusTeamData[]> => {
+    const teams = await prisma.mythicPlusTeam.findMany({
+      where: { tenant, sessionId },
+      include: {
+        tank: SLOT_SELECT,
+        healer: SLOT_SELECT,
+        dps1: SLOT_SELECT,
+        dps2: SLOT_SELECT,
+        dps3: SLOT_SELECT,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return teams.map((t) => ({
+      id: t.id,
+      name: t.name,
+      tank: t.tank,
+      healer: t.healer,
+      dps1: t.dps1,
+      dps2: t.dps2,
+      dps3: t.dps3,
+      createdAt: t.createdAt.toISOString(),
+    }));
+  },
+  ["mythicplus-teams"],
+  { revalidate: 300, tags: ["mythicplus"] },
+);
+
 export async function getTeams(): Promise<MythicPlusTeamData[]> {
   const { tenant, sessionId } = await getTenantFilter();
-
-  const teams = await prisma.mythicPlusTeam.findMany({
-    where: { tenant, sessionId },
-    include: {
-      tank: SLOT_SELECT,
-      healer: SLOT_SELECT,
-      dps1: SLOT_SELECT,
-      dps2: SLOT_SELECT,
-      dps3: SLOT_SELECT,
-    },
-    orderBy: { createdAt: "desc" },
-  });
-
-  return teams.map((t) => ({
-    id: t.id,
-    name: t.name,
-    tank: t.tank,
-    healer: t.healer,
-    dps1: t.dps1,
-    dps2: t.dps2,
-    dps3: t.dps3,
-    createdAt: t.createdAt.toISOString(),
-  }));
+  return fetchTeams(tenant, sessionId);
 }

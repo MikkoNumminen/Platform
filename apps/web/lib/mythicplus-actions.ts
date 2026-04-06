@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 import { ActionError } from "@/lib/actionErrors";
 import { safe, validateUUID, type ActionResult } from "@/lib/actionUtils";
 import { rateLimit } from "@/lib/rateLimit";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { getTenantFilter } from "@/lib/tenant";
 import { fetchRaiderIoCharacter } from "@/lib/raiderio";
 
@@ -76,6 +76,7 @@ export async function addCharacter(
       },
     });
 
+    revalidateTag("mythicplus");
     revalidatePath("/mythic-plus");
   });
 }
@@ -99,6 +100,7 @@ export async function removeCharacter(characterId: string): Promise<ActionResult
 
     await prisma.wowCharacter.delete({ where: { id: characterId } });
 
+    revalidateTag("mythicplus");
     revalidatePath("/mythic-plus");
   });
 }
@@ -141,6 +143,7 @@ export async function refreshCharacter(characterId: string): Promise<ActionResul
       },
     });
 
+    revalidateTag("mythicplus");
     revalidatePath("/mythic-plus");
   });
 }
@@ -185,6 +188,7 @@ export async function refreshAllCharacters(): Promise<ActionResult> {
       }
     }
 
+    revalidateTag("mythicplus");
     revalidatePath("/mythic-plus");
   });
 }
@@ -217,6 +221,7 @@ export async function createTeam(name: string): Promise<ActionResult> {
       },
     });
 
+    revalidateTag("mythicplus");
     revalidatePath("/mythic-plus");
   });
 }
@@ -253,6 +258,7 @@ export async function updateTeamSlot(
       data: { [slot]: characterId },
     });
 
+    revalidateTag("mythicplus");
     revalidatePath("/mythic-plus");
   });
 }
@@ -276,6 +282,7 @@ export async function deleteTeam(teamId: string): Promise<ActionResult> {
 
     await prisma.mythicPlusTeam.delete({ where: { id: teamId } });
 
+    revalidateTag("mythicplus");
     revalidatePath("/mythic-plus");
   });
 }

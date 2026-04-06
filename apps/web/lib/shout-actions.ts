@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { ActionError } from "@/lib/actionErrors";
 import { safe, requireUser, type ActionResult } from "@/lib/actionUtils";
 import { rateLimit } from "@/lib/rateLimit";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { triggerGamification } from "./gamification/trigger";
 import { getTenantFilter } from "@/lib/tenant";
 
@@ -34,6 +34,7 @@ export async function createShout(message: string): Promise<ActionResult> {
 
     await triggerGamification(user.id, "shout:create");
 
+    revalidateTag("shouts");
     revalidatePath("/");
   });
 }

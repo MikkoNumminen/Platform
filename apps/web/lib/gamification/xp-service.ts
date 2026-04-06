@@ -1,5 +1,6 @@
 "use server";
 
+import { unstable_cache, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getTenantFilter } from "@/lib/tenant";
 import {
@@ -42,6 +43,8 @@ async function applyXp(
   if (newLevel !== previousLevel) {
     await prisma.userLevel.update({ where: { userId }, data: { level: newLevel } });
   }
+
+  revalidateTag("leaderboard");
 
   return {
     xpAwarded: amount,
@@ -121,33 +124,48 @@ export async function getUserXpData(userId: string) {
   }
 }
 
-export async function getLeaderboard(limit = 20) {
-  try {
-    const { tenant, sessionId } = await getTenantFilter();
-    const entries = await prisma.userLevel.findMany({
-      where: { tenant, sessionId, user: { deletedAt: null } },
-      orderBy: { totalXp: "desc" },
-      take: limit,
-      include: {
-        user: {
-          select: { id: true, alias: true, name: true, image: true, avatarUrl: true, role: true },
+const fetchLeaderboard = unstable_cache(
+  async (tenant: string, sessionId: string | null, limit: number) => {
+    try {
+      const entries = await prisma.userLevel.findMany({
+        where: { tenant, sessionId, user: { deletedAt: null } },
+        orderBy: { totalXp: "desc" },
+        take: limit,
+        include: {
+          user: {
+            select: {
+              id: true,
+              alias: true,
+              name: true,
+              image: true,
+              avatarUrl: true,
+              role: true,
+            },
+          },
         },
-      },
-    });
-    return entries.map((e, index) => ({
-      rank: index + 1,
-      userId: e.userId,
-      alias: e.user.alias,
-      name: e.user.name,
-      image: e.user.avatarUrl ?? e.user.image,
-      role: e.user.role,
-      totalXp: e.totalXp,
-      level: e.level,
-    }));
-  } catch (error) {
-    console.error("[xp] getLeaderboard failed:", error);
-    return [];
-  }
+      });
+      return entries.map((e, index) => ({
+        rank: index + 1,
+        userId: e.userId,
+        alias: e.user.alias,
+        name: e.user.name,
+        image: e.user.avatarUrl ?? e.user.image,
+        role: e.user.role,
+        totalXp: e.totalXp,
+        level: e.level,
+      }));
+    } catch (error) {
+      console.error("[xp] getLeaderboard failed:", error);
+      return [];
+    }
+  },
+  ["leaderboard"],
+  { revalidate: 60, tags: ["leaderboard"] },
+);
+
+export async function getLeaderboard(limit = 20) {
+  const { tenant, sessionId } = await getTenantFilter();
+  return fetchLeaderboard(tenant, sessionId, limit);
 }
 
 export async function getRecentXpTransactions(userId: string, limit = 20) {
