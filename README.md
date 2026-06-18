@@ -37,7 +37,7 @@ packages/config/ — Shared types and config (@platform/config)
 ### Gamification
 - **XP System** — Earn XP for platform actions (shouts, completing surveys, submitting feedback, login streaks, sending DMs, reporting issues)
 - **10-level progression** — Newcomer through Mythic with XP thresholds and level-up celebrations
-- **Achievements** — 17 unlockable achievements across categories (onboarding, social, streaks, moderation) including "Demo Explorer" for completing the guided tutorial
+- **Achievements** — 16 unlockable achievements across categories (onboarding, social, streaks, moderation) including "Demo Explorer" for completing the guided tutorial
 - **Quest Log** — Daily, weekly, and special quests with progress tracking and XP rewards
 - **Leaderboard** — Top users ranked by XP with current user highlighting
 - **XP Toast notifications** — Real-time XP award popups after actions
@@ -118,7 +118,6 @@ packages/config/ — Shared types and config (@platform/config)
 - **Standardized server actions** — All actions use `safe()` + `ActionError` pattern with `requireUser()`/`requireAdmin()` auth helpers and `createStringValidator()` for input validation
 - **Deduplicated logic** — Shared `applyXp()` core, `completeSurveyQuest()` helper, `guardedAction` test mock helper, centralized `DEMO_EMAIL`, `WHISPER_COLOR`, `CRITERIA_ACTIONS` constants
 - **Accessibility** — Skip-to-content link, `<main>` landmark, `aria-label` on all icon buttons, WCAG AA color contrast, keyboard-accessible expand/collapse controls
-- **E2E test suite** — 42 Playwright browser tests across 9 spec files covering auth, navigation, chat, admin, Mythic+, feedback, gamification; shared auth state via storageState for fast execution
 - **Production audit** — 121-finding audit completed (106 fixed), covering security, type safety, performance, accessibility, and testing
 
 ### Shared Components
@@ -127,7 +126,7 @@ packages/config/ — Shared types and config (@platform/config)
 - **EmptyState** — Reusable empty state with icon, description, and action button
 - **SnackbarProvider** — Context-based notification system with `useSnackbar()` hook
 - **ConfirmDeleteDialog** — Reusable delete confirmation dialog
-- **Centralized color system** — 48+ theme-aware color tokens in `styles.ts`, all components reference centralized tokens
+- **Centralized color system** — 36 theme-aware color tokens in `styles.ts`, all components reference centralized tokens
 
 ### UX Polish
 - **Loading skeletons** — Skeleton loading states for all routes
@@ -167,15 +166,11 @@ npx turbo run build --filter=web # Production build
 
 ## Testing
 
-**Unit & Integration:** 1388 tests across 153 test suites covering all server actions, query functions, gamification services, and UI components (Jest + React Testing Library). Pre-push hooks enforce 100% test pass rate. Coverage threshold enforced at 70% lines/functions, 60% branches.
-
-**End-to-End:** 42 Playwright tests across 9 spec files — real browser tests that click through auth flows, navigation, chat messaging, admin pages, Mythic+, feedback, and gamification. Uses shared auth state (storageState) so demo login only runs once.
+**Unit & Integration:** Approximately 1,300 tests across 148 suites covering all server actions, query functions, gamification services, and UI components (Jest + React Testing Library). Pre-push hooks enforce 100% test pass rate. Coverage threshold enforced at 70% lines/functions, 60% branches.
 
 ```bash
 npx turbo run test --filter=web           # All unit/integration tests
 npx turbo run test:coverage --filter=web  # With coverage
-cd apps/web && npm run test:e2e           # Playwright E2E tests (requires running app or auto-starts)
-cd apps/web && npm run test:e2e:ui        # Playwright interactive UI mode
 ```
 
 ## Architecture
