@@ -2,7 +2,7 @@
 
 A Turborepo monorepo for a community platform built with Next.js 15, React 19, and Material UI.
 
-**Live:** [vuohiliitto.com](https://vuohiliitto.com) (production) | [Vercel deployment](https://platform-numminenmikkopetteri-6027s-projects.vercel.app)
+**Live:** [vuohiliitto.com](https://vuohiliitto.com)
 
 > This platform is in active production use by a real community, with the custom domain vuohiliitto.com configured on Vercel.
 
